@@ -1,0 +1,32 @@
+Package: occProfileR
+Title: Characterizing Species Occurrence Data Quality
+Version: 0.1
+Author: Pep Serra Diaz, Cory Merow, Brian Maitner
+Maintainer: Cory Merow <cory.merow@gmail.com>
+Description: Tools for determining the quality of occurrence data and optionally cleaning them. Profiling is based on (1) missing data and geographical errors; (2) Filtering duplicate records; (3) Sea/Terrestrial potential reassignment; (4) Country-related range analysis; (5) Geoenvironmental analysis. Based on the outcomes of these tests, each records is assigned a grade. Users can then optionally filter based on grades.
+Depends: R (>= 3.4.3)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+Imports:
+    raster,
+    rgeos,
+    rgdal,
+    biogeo,
+    stringr,
+    alphahull,
+    plyr,
+    sp,
+    methods,
+    stats,
+    utils,
+    outliers,
+    CoordinateCleaner
+Suggests:
+    speciesgeocodeR,
+    testthat,
+    knitr,
+    rmarkdown,
+    ggplot2
