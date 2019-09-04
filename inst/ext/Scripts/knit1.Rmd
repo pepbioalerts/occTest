@@ -1,0 +1,162 @@
+---
+title: "Intro Occurrence Profiler"
+author: "Pep Serra / B. Maitner / C. Merow"
+date: "February 23, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introduction
+
+occurrence.profiler is a function that enables the application of a grading system so that species presence records can rapidily been assessed in terms of quality. The system is especially thought for use in species distribution models, but it can also be assessed for other applications involving the use of presence records.   
+
+At the moment the system performs the grading system outlined in Serra-Diaz et al. (2017) Forest Ecosystems, but the system is flexible and can accomodate the own user grading system preferred.   
+
+## Data needed
+
+The basic data needed are:  
+
+1. the species table with coordinates long and lat (at the moment only longlat WGS84 system is available, working on that...)
+2. raster of altitude
+3. raster of environmental data
+4. country data polygons, with the field indicating the ISO3 country code
+5. raster of anthropogenic influence
+
+
+```{r load data}
+#### load some needed packages and functions
+require(raster)
+require(rgeos)
+require(rgdal)
+source ("./Scripts/F_workflow.R")
+
+
+#load data
+occ.species.nogeoscurb <-  read.csv ("./SampleData/Sp3Occurrence_v3.csv")
+environmental.variables.files <- paste0("./Environment/wc2.0_30s_bio/wc2.0_bio_30s_" , c("01","05","06","12","13","14"), ".tif" )
+raster.environement <- raster::stack (as.list(environmental.variables.files))
+raster.DEM <- raster ("./Altitude/Altitude.tif")
+countries.pol <- readOGR(dsn ="./CountryLevel",layer = 'Countries_SPDF')
+raster.humaninfluence <- raster ('./Environment/HII/hii_wgs84.tif')
+
+```
+
+Here we can display the species occurrence records.  
+We already see some issues: occurrences in the sea, in the coastline, potential outliers...
+
+```{r display initial data, echo=FALSE}
+#plot data
+occ.sp <- occ.species.nogeoscurb[,c('MAPX','MAPY')]
+occ.sp <- occ.sp [complete.cases(occ.sp),]
+coordinates (occ.sp) <-  ~ MAPX + MAPY
+occ.sp@proj4string <- CRS (projection (raster.DEM))
+plot (raster.DEM, ext=extent(-5, 7, 39, 46))
+plot (occ.sp, cex=1,add=T)
+#inspect data information in occurrence table
+names (occ.species.nogeoscurb)
+```
+
+# Key concepts
+
+## *occurrence.profiler* parameters
+
+There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.  
+
+**_output.dir_** :  Character. The folder where the output will be dumped.  
+**_sp.table_** : data.frame. Object with the coordinate data.   
+**_sp.name_** : character. Name of the species.   
+**_r.env_** : raster or rasterStack. Environmental data (e.g. typically climatic).  
+**_r.dem_** : raster. Elevation data (in meters).  
+**_countries.shapefile_** : SpatialPolygonsDataframe. Country borders with associated data on country name, etc. etc.   
+**_countryfield.shapefile_** : character. Name of the field in **_countries.shapefile_** where the 3 letter ISO is stored. Default is "ISO".  
+**_ntv.ctry_** : character. Three letter code of the country/countries were the species is native. If set to NULL then all occurrences will be considered as in the native range.  
+**_inv.ctry_** : character. Three letter code of the country/countries were the species is invasive If set to NULL then the species will never considered invasive anywhere.  
+**_ras.hii_** : raster. Raster with associated values informing on the degree of anthropogenic influence in a place.  
+**_x.field_** : character. Name of the field where the x coordinate is stored (typically longitude).  
+**_y.field_** : character. Name of the field where the y coordinate is stored (typically latitude).  
+**_t.field_** : character. Name of the field where the date of data collection is stored in the original dataset. Default NULL.  
+**_c.field_** : character. Name of the field where the registred country of data collection is stored in the original dataset. Default NULL.
+**_l.field_** : character. Name of the field where the toponim/location of data collection is stored in the original dataset. Default NULL. 
+**_e.field_** : character. Name of the field where the elevation of data collection is stored in the original dataset. Default NULL.  
+**_coordinate.decimal.precision_** : numeric. Decimal precision of the coordinates. Default is 4.  
+**_points.proj4string_** : CRS object. Projection of the orginal presence coordinates. Set toCRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"). This option can't be changed at the moment.  
+**_alpha.parameter_** : numeric. Parameter for determining the alpha.hull for geographic outlier detection. Default is 2.  
+**_th.human.influence_** : numeric. Maximum level of anthropogenic influence for anthropogenic issues detection. Default is 45.  
+**_th.perc.outenv_** : numeric. Ratio of variables considered outliers for evnironmental spaces issues detection. Default is 0.2.  
+**_elev.quality.threshold_** : numeric. Maximum difference between recorded and expected elevation allowed for elevation quality assessement. Default is 100.   
+**_qualifiers_** : logical. Compute qualifiers. Deafault is T.  
+**_qualifier.label.scoping_** : character. Quality grades over which to compute the qualifiers. Default is "A".  
+**_write.simple.output_** : logical. Write output table with basic information of the grading. Deafault is F.  
+**_write.full.output_** : logical. Write output table with full information of the grading. Deafault is F.  
+**_output.base.filename_**: character. Base filenames for outputs. Meaningfull if write outputs are set to T. Default is "QAQC"  
+
+
+
+# EXAMPLE 1
+RUN FUNCTION WITH THE MINIMUM PARAMETERS
+
+here we obviate theinformationon time, country of record, elevation...just presence and absence.
+Note here that we indeed add a native country (Spain) and an invasive country (France)
+
+
+```{r example 1 profiling, echo=T}
+occ.profiled.1    <- occurrence.profiler(output.dir = "./Example3/Output4",
+                                         sp.table = occ.species.nogeoscurb,
+                                         sp.name = "My species",
+                                         r.env = raster.environement,
+                                         r.dem = raster.DEM ,
+                                         countries.shapefile = countries.pol,
+                                         countryfield.shapefile = 'ISO',
+                                         ntv.ctry = c('ESP'),
+                                         inv.ctry = c('FRA') ,
+                                         ras.hii = raster.humaninfluence,
+                                         x.field = 'MAPX' ,
+                                         y.field = 'MAPY')
+```
+
+
+Now let's investigate the results:
+
+The result is a list 
+
+
+```{r example 1 results 1, echo=T}```
+
+The first element is the full table with all the data
+```{r example 1 results 1, echo=T}
+head (occ.profiled.1[[1]])
+```
+
+The second element is the short version with only coordinates and quality labels
+```{r example 1 results 1, echo=T}
+head (occ.profiled.1[[2]])
+```
+
+Take a look at the diferent quality grades
+```{r example 1 results 1, echo=T}
+table(occ.profiled.1$occ_short_profile$quality.grade)
+```
+
+Take a look at the diferent qualifier tags
+```{r example 1 results 1, echo=T}
+table(occ.profiled.1$occ_short_profile$qualifiers)
+```
+
+Take a look at the diferent quality lables
+```{r example 1 results 1, echo=T}
+table(occ.profiled.1$occ_short_profile$quality.label)
+```
+
+Distribution of the quality grades
+```{r example 1 results 1, echo=T}
+library (ggplot2)
+dat.to.plot <- full.qaqc
+dat.to.plot$grade.color<- color.to.plot
+ggplot (aes(x=quality.grade,fill=quality.grade),data = dat.to.plot)+geom_bar() + ggtitle('Example 1')
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,29 @@
+---
+title: "To Do List for occProfileR"
+output: html_document
+---
+
+## List of things to be incorporated/revised
+
+1. DELAYED :Match record time to hii layer (so that it is less than 100 years)
+2. add automatically load countryloadpol  ==> line   if (is.null(countries.shapefile)) in F_workflow
+3. implement BIEN method(e.g. Maitner method) in centroidDetection
+2. verbose the workflow
+3. shrink the code (particularly make the .status.tracker function to work in 1 line)
+4. add warning if country code is in two letters instead of three (potentially make that bypass internal)
+5. add a field on the short profiling that indicates what tests failed
+6. function that filters by test
+7. function that gives you the test that did not pass for each record. 
+
+
+
+
+
+
+
+
+
+
+
+
+

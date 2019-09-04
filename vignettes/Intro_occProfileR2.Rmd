@@ -20,50 +20,49 @@ knitr::opts_chunk$set(cache = TRUE)
 
 # What does occProfileR do?
 
-*occProfileR* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modelling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018) and profiles the occurrences according to several checks on the coordinates and environmental layers. Profiling should not be understood as data cleaning, but rather as the application of several test and a labelling scheme that enables the user to characterize the occurrence records. Such profiling should enable the user to characterize the data at hand. This is differs from the more classical approach of data selection, cleaning or scrubbing, but it is obviously a critical step prior to selecting data for a given analysis. 
+*occProfileR* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modelling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and profiles the occurrences according to several checks on the coordinates and environmental layers. 
 
-The packages is based on a combination of new created functions, and a wrapper of functions from packages biogeo (Patterson et al. ) and CoordinateCleaner(Zizka et al. ).
+Profiling should not be understood as data cleaning, but rather as the application of several test and a labelling scheme that enables the user to characterize the occurrence records. Such profiling should enable the user to make choose the best analysis with the data at hand and understand the limits of the data. This is differs from the more classical approach of data selection, cleaning or scrubbing, but it is obviously a critical step prior to cleaning data for a given analysis. 
+
+The packages is based on a combination of new created functions by J.M. Serra-Diaz, C.Merow and B.Maitner, and a wrapper of functions from packages biogeo (Patterson et al. ) and CoordinateCleaner(Zizka et al. ).
 
 ![](Workflow_diagram.png) 
 
 
 ## Workflow overview and data needed
 
-The main function, that implements the workflow is called *occurrenceProfile*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers) using multiple tests in each analysis in order to assess (e.g. 'profile') potential errors.  
+The main function, that implements the workflow is called *occurrenceClassify*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers) using multiple tests in each analysis in order to assess (e.g. 'profile') potential errors.  
 
 
-The workflow NEEDS a MINIMUM of two objects: 
+The workflow NEEDS a MINIMUM of THREE objects: 
 
-1. Species occurrence dataset (data.frame) 
-The species occurrence data.frame contains the presence records in latitude-longitude WGS84 geographic coordinate system, with the following potential field, but namings of the table fields may be flexible by the user.  
-2. Environmental raster (rasterStack), with quantitiative continuous variables such as a climate.
+1. Species name (sp.name; character)
+
+2. Species occurrence dataset (sp.table; data.frame) 
+The species occurrence data.frame contains the presence records in latitude-longitude WGS84 geographic coordinate system, with column name 'x' for longitude and column name 'y' for latitude (NOTE: these column names can be flexible and user defined, see below, but 'x' and 'y' are the defaults) 
+
+3. Environmental raster (r.env; rasterStack), with quantitiative continuous variables such as a climate.
 The environment raster is a rasterStack object that contains the climate variables intended for use in an SDM or another analysis relating species occurrence and climate. 
 
+```{r}
 
+library(spocc)
+df <- occ(query = 'Martes martes')
+occ.data <-occ2df(df)
 
-## Function specifications
+#we change the names here but we could just change it in the tableSettings
+names (occ.data)[2] <- 'x'
+names (occ.data)[3] <- 'y'
 
-Many specifications may be set to profile occurrences, although not all will be useful in all cases. We explain here the main parameters of the main function called occurrenceProfile
+#load needed data
+library (raster)
+rrr = raster::getData(name='worldclim',var='bio', res=10)
 
+#classify occurrences
+library(occProfileR)
+out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rrr)
 
-| Data    | Description     | occurrenceProfile parameter  |
-| ----------   |:------------------------------:| -------:|
-species name | (compulsory) a character with species name, separated by a space in the form Genus species | sp.name
-Coordinates table | (compulsory) right now, only longitude-latitude coordinates are accepted, column names should be noted 'x' and 'y' respectively, but they can modified in the settings | x.field
-environmental raster data | rasterStack with the environmental data for analysis | r.env
-
-
-Have more info? Use the settings
-
-We provide default specifications for the analysis, but you can easily overwrite them and create your custom analysis. This is especially useful when you have more detailed information on your target species.
-
-
-
-elevation | elevation in meters | e.field
-country | country of the record, right now implemented as ISO3 code | c.field
-location/locality | toponim,locality description | l.field
-coordinate uncertainty | coordinate uncertainty in meters, can be a vector with many fields corresponding to errors in X,Y | a.field
-dataset | name of the dataset to which the record corresponds | ds.field
+```
 
 ## *occurrenceProfile* output
 
@@ -72,9 +71,12 @@ The outputs of occurrenceProfile is a list with two elements:
 1. occ_full_profile : a dataframe with all the fields used in the analysis  
 2. occ_short_profile :a dataframe with coordinates , and the profile labeling system
 
-## Profile labeling scheme
 
-To ease the rapid interpretation of many analyses we developed a labeling system to quickly describe data in terms of quality for SDMs. Each label is composed of two elements: a grade (ranging from A to H, capital letter) and a qualifier(s) (letter(s) that further describes the occurrence record). Grades are meant to identify potential quality issues that compromise or largely affect SDMs, while qualifiers are meant to indicate that the selection of a particular occurrence is tied to a specific use. For instance, grades will help you differentiate between duplicated records, or missing coordinates, and qualifiers will inform you whether the record has a timestamp or whether it is in an invasive or native region 
+### Occurrence labeling scheme
+
+To ease the rapid interpretation of many analyses we developed a labeling system to quickly describe data in terms of quality for SDMs. Each label is composed of two elements: a grade (ranging from A to H, capital letter) and a qualifier(s) (letter(s) that further describes the occurrence record). 
+
+Grades are meant to identify potential quality issues that compromise or largely affect SDMs, while qualifiers are meant to indicate that the selection of a particular occurrence is tied to a specific use. For instance, grades will help you differentiate between duplicated records, or missing coordinates, and qualifiers will inform you whether the record has a timestamp or whether it is in an invasive or native region 
 Example:  
 A record is characterized by the profiling label *A/n-t-p*  
 This means:  
@@ -107,6 +109,144 @@ Qualifiers  currently implemented
 | i             | record in the invasive range                      | 
 | n             | record in the native range      |Missing environmental info, or in botanic garden or sea |
 | e             | record with elevation difference between elevation raster and recorded elevation less than a given threhsold   
+
+
+### Inspect the results 
+
+We acknowledge that users may have differnt thoughts and visions on how to classify occurrences, so we also show in the output the different tests performed and whether they passed the test or not (. Users will thus be able to classify the occurrences the way they want to. 
+
+In *occ_full_profile* different fields show the results of each analysis. The names of the fields show the following rationalle:
+
+[AnalysisType]_[SpecificTest]_test: binary. Shows whether the occurrence passes or not the test, being 1 a flag for a wrong record. 
+[AnalysisType]_[SpecificTest]_comment: character. Shows some comments related to the specific test.
+[AnalysisType]_comment: numeric. Averages the results of different tests performed
+
+
+Examples: 
+
+*institutionLocality_fromBotanicLocalityName_test* is a test (1/0) that tries to identify records located in biodiversity institutions, with the specific method of interpreting locality names using a set of keywords.
+*institutionLocality_score* summarizes all the test to identify records located in biodiversity institutions an outputs a value from 0 to 1. A value of 0.5 would indicate that half of the methods used indicate that is an insitution locality. 
+
+## Other optional arguments
+
+### Checking occurrences against checklists
+
+
+Set interactiveMode=T If you would like to interact with the workflow and take some decisions as you go. Right now, it asks whether you want the workflow to query several databases to find out checklists where your target species has been cited as native or invasive.
+
+
+```{r}
+out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rrr, 
+                         analysisSettings = mySettings$analysisSettings,interactiveMode = T)
+```
+
+
+
+## Customizing your analysis
+
+Many specifications may be set to profile occurrences, although not all will be useful in all cases. We guide you here to set specific parameters to your analysis.
+
+### tableSettings: when you have more than xy in your table
+
+Some occurrence data has more than x and y coordinates. If that is the case you can provide important information. The parameter *tableSettings* consists of a list with the following elements that should be identified. Note that even if you want to change only one value of the default you need to provide a full list, with each named elements.
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+taxonobservation.id | Name of the colum in the species table for the observation ID | character
+x.field             | Name of the colum in the species table for the longitude | character
+y.field             | Name of the colum in the species table for the latitude | character
+t.field            | Name of the colum in the species table for the observation date | character
+l.field             | Name of the colum in the species table for the locality name | character
+c.field            | Name of the colum in the species table for the REPORTED COUNTRY  | character
+e.field             | Name of the colum in the species table for the REPORTED ELEVATION (in meters) | character
+a.field              | Name of the colum in the species table for the accuracy (in meters) of the coordinates  | character
+ds.field          | Name of the colum in the species table for the source of the data  | character
+
+
+### analysisSettings: when you want to select or change the analysis
+Do you want to set up differnt implementations of the analysis? Set up your own parameters. The parameter *analysisSettings* consists of a list with the following elements that should be identified. Note that even if you want to change only one value of the default you need to provide the full list, with each named elements.
+
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+
+$geoSettings$coordinate.decimal.precision | decimal precision of the coordintes | numeric
+$geoSettings$points.proj4string| Projection to use | Proj4 character. CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+  
+$rangeAnalysis$countryfield.shapefile | spatialPolygonsDataFrame with the countries and their associated names/ISO3 codes in the dataframe | spatialPolygonsDataFrame. Defaults to rnaturalearth::ne_countries()
+$rangeAnalysis$doRangeAnalysis |whether the user wants to do perform the analysis of comparing coordinates countries to reported native or invasive countries | logical. Dafaults to T 
+$rangeAnalysis$excludeUnknownRanges | keep the analysis for occurrences out of the known native or alien countries? | logical. Defaults to F
+$rangeAnalysis$doCountryRecordAnalysis |whether the user wants to do perform the analysis of comparing reported countries to reported native or invasive countries | logical. Dafaults to T 
+$rangeAnalysis$excludeNotmatchCountry keep the analysis for occurrences when the reported country is different than the native or alien countries? | logical. Defaults to F
+  
+$centroidAnalysis$doCentroidDetection  |whether the user wants to do perform the analysis of centroid detection | logical. Dafaults to T 
+$centroidAnalysis$methodCentroidDetection | methods to use to detect centroids. Implemented are: 'BIEN','speciesGeoCodeR','CoordinateCleaner', 'all'| character. Dafaults to 'all' 
+  
+$humanAnalysis$doHyperHumanDetection whether the user wants to do perform the analysis of human influence | logical. Dafaults to T
+$humanAnalysis$methodHyperHumanDetection  |what methods to use to detect high human influence Implemented are: 'hii','urban', 'all'| character. Dafaults to 'all' 
+
+$humanAnalysis$th.human.influence | when methods are 'all' or 'hii' what is the threshold value for human influence | numeric. Dafaults to 40  
+$humanAnalysis$ras.hii | raster of the human influence index | raster. Defaults to SEDAC human infuence index
+  
+$institutionAnalysis$doInstitutionLocality |whether the user wants to do perform the analysis of records potentialy in biodiversity institutions | logical. Dafaults to T 
+$institutionAnalysis$methodInstitutionLocality | methods to use to detect records  in biodiversity institutions Implemented are: 'fromBotanicLocalityName','fromCoordinates', 'all'| character. Defaults to 'all'  
+  
+$geooutliersAnalysis$doGeoOutliers |whether the user wants to do perform the analysis of geographical outliers | logical. Dafaults to T 
+$geooutliersAnalysis$methodGeoOutliers | methods to use to geographic outliers. Implemented are: 'alphaHull','distance','median','quantSamplingCorrected','grubbs, 'all'| character. Defaults to 'all'  
+$geooutliersAnalysis$alpha.parameter | alpha parameter desired for method 'alphaHull'| numeric. Defaults to 2
+$geooutliersAnalysis$alpha.parameter
+  
+$envoutliersAnalysis$doEnvOutliers |whether the user wants to perform the analysis of environmental outliers | logical. Dafaults to T 
+$envoutliersAnalysis$methodEnvOutliers | methods to use to environmental outliers. Implemented are: 'bxp','grubbs', 'all'| character. Defaults to 'all'  
+$envoutliersAnalysis$th.perc.outenv | for method 'bxp' what is the percentage of variables found as an outlier to define it as an outlier| Numeric. Defaults to 0.2
+$accuracyAnalysis$do.geoEnvAccuracy|whether the user wants to perform the accuracy analysis | logical. Dafaults to T 
+$accuracyAnalysis$methodGeoEnvAccuracy | methods to use for the accuracy analysis. Implemented are: 'envDeviation','percDiffCell', 'elevDiff','lattice','rasterCell','all'| character. Defaults to 'all'  
+$accuracyAnalysis$elev.quality.threshold | for elevDiff method, threshold of the difference between reported and inferred elevation | numeric. Defaults to 100
+
+
+### gradingSettings: when you want to select or change the analysis
+
+The user can decide different ways to implement the grading system through different parameters in the list *gradingSettings*
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+$grading.test.type |How to consider the consensus when several methods implemented differ? Options implemented are: 'majority','strict' 'relaxed. For instance, 'strict' will flag a record as a geographic outlier if there is at least a method flagging it. 'majority' when the majority of methods agree and 'relaxed' when more than 70% of the methods agree.|charcter. Defaults to 'majority'   
+$qualifiers | should qualifiers be implemented |Logical. Defaults to T                       
+$qualifier.label.scoping | over which grades should qualifiers be implemented |character. Defaults to c('A','B','C','D','E') (all labels applied by default)
+
+
+### writeoutSettings: do you want to write the outputs?
+The user can specify if outputs are to be written.
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+$output.dir |Name of the output directory | character.Defaults to NULL
+$writeAllOutput | should all outptus be written | logical. Defaults to F 
+$write.simple.output | should simple output table be written | logical. Defaults to F 
+$write.simple.output | should full output table be written | logical. Defaults to F 
+$output.base.filename | what is the suffix of the output table filename? | character. Deafaults to 'QAQC'
+
+
+### an example of modifying settings
+
+We do not want to do the accuracy analysis in the workflow because we believe our data is accurate enough and/or we do not have enough information
+
+```{r}
+#load default settings
+mySettings <- defaultSettings()
+#change the attribute of interest (in this case setting an analysis off)
+mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
+#add your settings to the function
+out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rrr, 
+                         analysisSettings = mySettings$analysisSettings)
+
+
+```
+
+
 
 ## The occProfileR workflow step by step
 
