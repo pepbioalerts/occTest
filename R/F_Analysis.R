@@ -423,6 +423,7 @@ centroidDetection <- function (df=dat,
                                 .points.proj4string=points.proj4string,
                                 .r.env=r.env,
                                 .countries.shapefile=countries.shapefile,
+                                cfsf = countryfield.shapefile,
                                  method='all',
                                  do = T, verbose=F){
 
@@ -431,7 +432,7 @@ centroidDetection <- function (df=dat,
   # .points.proj4string=points.proj4string
   # .r.env=r.env;method='all';do = T
 
-
+browser()
 
   #table of outputs
   out = data.frame (centroidDetection_BIEN_test=NA,
@@ -479,7 +480,7 @@ centroidDetection <- function (df=dat,
       if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
       sp.xydat <- sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
       overlay.sp.xydat <- sp:::over(sp.xydat, .countries.shapefile)
-      country_ext <- overlay.sp.xydat$name
+      country_ext <- overlay.sp.xydat[,cfsf]
       occurrences.df$country <- country_ext
       
     }

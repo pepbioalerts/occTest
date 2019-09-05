@@ -1197,6 +1197,7 @@ occurrenceClassify <- function (
                                        .points.proj4string =
                                          points.proj4string,
                                        .countries.shapefile = countries.shapefile,
+                                       cfsf=countryfield.shapefile,
                                        method = methodCentroidDetection,
                                        do= doCentroidDetection)
   

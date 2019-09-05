@@ -8,7 +8,8 @@ centroidDetection(df = dat, xf = x.field, yf = y.field,
   cf = c.field, idf = taxonobservation.id, .ntv.ctry = ntv.ctry,
   .inv.ctry = inv.ctry, .points.proj4string = points.proj4string,
   .r.env = r.env, .countries.shapefile = countries.shapefile,
-  method = "all", do = T, verbose = F)
+  cfsf = countryfield.shapefile, method = "all", do = T,
+  verbose = F)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
