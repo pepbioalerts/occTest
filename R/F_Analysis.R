@@ -1246,8 +1246,8 @@ geoEnvAccuracy <- function (df,
   #output results
   out = data.frame (geoenvLowAccuracy_lattice_test = NA,
                     geoenvLowAccuracy_lattice_comments = NA,
-                    geoenvLowAccuracy_rasterCell_test = NA,
-                    geoenvLowAccuracy_rasterCell_comments = NA,
+                    geoenvLowAccuracy_percDiffCell_test = NA,
+                    geoenvLowAccuracy_percDiffCell_comments = NA,
                     geoenvLowAccuracy_envDiff_test =NA,
                     geoenvLowAccuracy_envDiff_comments =NA,
                     geoenvLowAccuracy_elevDiff_test =NA,
@@ -1260,6 +1260,7 @@ geoEnvAccuracy <- function (df,
   if (!do) {return (out)}
 
   #start method lattice
+
   if (any(method %in% c('lattice','all'))){
 
     if(!is.null(dsf)) {
@@ -1314,13 +1315,13 @@ geoEnvAccuracy <- function (df,
     }
 
 
-
-  # THIS SHOULD BE THE LAST METHOD
-  #check whether we need to do coordinate uncertainty methods because initial steps are time consuming
+  #Need coordinate uncertainty analysis ?
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
     out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
     return (out)}
+  
+  #Need coordinate uncertainty analysis ?
   if (is.null(af)) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
@@ -1358,14 +1359,15 @@ geoEnvAccuracy <- function (df,
 
     as.vector (out.bearing)
   })
+  
   #start method percentage of Differnt cells around uncertainty
   if (any(method %in% c('percDiffCell','all'))){
     perc.diff <- sapply (1:nrow(xydat), function (i){
       pdiff <- mean ((cellIds.directions[[i]]==xydat$occCellids[i]) * 1, na.rm = T)
       pdiff
     })
-    out$geoenvLowAccuracy_rasterCell_test = (perc.diff>accept.threshold.cell)*1
-    out$geoenvLowAccuracy_rasterCell_comments = paste('Nbufferlocations=',bearing.classes*distance.classes)
+    out$geoenvLowAccuracy_percDiffCell_test = (perc.diff>accept.threshold.cell)*1
+    out$geoenvLowAccuracy_percDiffCell_comments = paste('Nbufferlocations=',bearing.classes*distance.classes)
   }
   #start method percentage of environmental differences around uncertainty
   if (any(method %in% c('envDeviation','all'))) {

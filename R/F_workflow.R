@@ -783,7 +783,7 @@ occurrenceClassify <- function (
   
   
   ########################################################################
-  ### STEP 00: Load settings and study native and invasive countires
+  ### STEP 00: Load settings and study native and invasive countries
   ########################################################################
   defaultSettings = occProfileR::defaultSettings()
   
@@ -1258,7 +1258,7 @@ occurrenceClassify <- function (
   }
   if (excludeNotmatchCountry | !doCountryRecordAnalysis){
     Analysis.6 <- data.frame (countryStatusRangeAnalysis_wrongReportCtry=NA,
-                              countryStatusRangeAnalysis_wrongReportCtry_comments=NA,
+                              countryStatusRangeAnalysis_wrongReportCtry_comments='Analysis not performed',
                               wrongReportCtry_score= NA)[1:nrow(dat),]
     row.names(Analysis.6) <- NULL
   }

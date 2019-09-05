@@ -34,7 +34,7 @@ The packages is based on a combination of new created functions by J.M. Serra-Di
 The main function, that implements the workflow is called *occurrenceClassify*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers) using multiple tests in each analysis in order to assess (e.g. 'profile') potential errors.  
 
 
-The workflow NEEDS a MINIMUM of THREE objects: 
+The workflow NEEDS a MINIMUM of THREE parameters: 
 
 1. Species name (sp.name; character)
 
@@ -46,6 +46,7 @@ The environment raster is a rasterStack object that contains the climate variabl
 
 ```{r}
 
+#load data
 library(spocc)
 df <- occ(query = 'Martes martes')
 occ.data <-occ2df(df)
@@ -54,13 +55,13 @@ occ.data <-occ2df(df)
 names (occ.data)[2] <- 'x'
 names (occ.data)[3] <- 'y'
 
-#load needed data
+#load needed environmental data
 library (raster)
 rrr = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences
 library(occProfileR)
-out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rrr)
+outMartesMartes = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rrr)
 
 ```
 
@@ -68,9 +69,20 @@ out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rr
 
 The outputs of occurrenceProfile is a list with two elements:
 
-1. occ_full_profile : a dataframe with all the fields used in the analysis  
-2. occ_short_profile :a dataframe with coordinates , and the profile labeling system
+1. occ_full_profile : a dataframe with coordinates , and the profile labeling system, as well as the general results for each kind of analysis (geoOutliers, envOutliers) and each one of the tests perfomed on the data.
+2. occ_short_profile :a dataframe with coordinates , and the profile labeling system, as well as the general results for each kind of analysis (geoOutliers, envOutliers)
 
+```{r}
+#check the output
+class(outMartesMartes)
+names (outMartesMartes)
+
+head(outMartesMartes$occ_full_profile)
+head(outMartesMartes$occ_short_profile)
+
+#
+
+```
 
 ### Occurrence labeling scheme
 
@@ -249,6 +261,13 @@ out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = rr
 
 
 ## The occProfileR workflow step by step
+### Step 0: Initial checks
+Before starting the workflow the test checks that input data is correct, and tries to identify country checklists where the species may be considered native and or invasive (depending on your settings).
+
+| Function name    | What it does...      | Output  |
+| ----------   |:------------------------------:| -------:|
+
+nativeStatusCtry | checkes whether a species is found in different databases as native or as invasive | list with two elements: [['ntvCtry']], [['invCtry']]. These indicate the ISO3 codes of the countries where the species is considered native and invasive, respectively. 
 
 ### Step 1: Filter missing data and geographical errors [FILTER PHASE]
 First, the workflow checks whether there are missing data with the *filterMissing* function.
@@ -340,41 +359,134 @@ In this last step, we write the desired outputs.
 | write.full.output    |Logic. Default to F  | It writes the csv files with the profiled records, with a all analysis outputs|
 | output.base.filename    |Character. Default to 'QAQC'  | suffix used to write the output files|
 
-# Example 1: Making the function turn
 
+
+# Example 1: The hands-off analysis (default)
 ```{r}
+#load packages
+library(occProfileR)
+library(spocc)
+
+
+df <- occ(query = 'Pseudotsuga menziesii')
+occ.data <-occ2df(df)
+
+#we change the names here but we could just change it in the tableSettings
+names (occ.data)[2] <- 'x'
+names (occ.data)[3] <- 'y'
+
+#load needed environmental data
+library (raster)
+rrr = raster::getData(name='worldclim',var='bio', res=10)
+
+#classify occurrences but we will ask to resolve native and invasive countries (this obviously takes longer)
+library(occProfileR)
+outDougFir = occurrenceClassify(sp.name='Pseudotsuga menziesii', sp.table = occ.data,r.env = rrr,resolveAlienCtry = T, resolveNativeCtry = T,verbose = T)
+
+
+#check outputs
+outDougFir
+
+#see the classification
+table (outDougFir$occ_full_profile$quality.grade)
+
+
+
+
+```
+
+# Example 2: Making the function turn with more detailed data (and more options)
+
+
+```{r,fig.width=6,fig.height=4}
 #load packages
 library(occProfileR)
 library(ggplot2)
 library(raster)
 library(knitr)
 library(rgdal)
-```
 
-
-
-```{r,fig.width=6,fig.height=4}
 #load data
 occ.species.nogeoscrub.f = system.file('ext/SampleData/Sp3Occurrence_v4.csv'
                                      ,package='occProfileR')
 occ.species.nogeoscrub <-  read.table (file = occ.species.nogeoscrub.f,header = T,sep = ',',as.is = T)
-countries.pol.f = system.file('ext/CountryLevel',package='occProfileR')
-# # I assume this path was because readOGR doesn't take relative paths, right? I think this works now, so delete the commented stuff if you're satisfied.
-# if(Sys.info()["user"]=='pepserra'){ dsn='/Users/pepserra/Documents/RS/occProfileR/Rpackage/inst/ext/CountryLevel'}
-# if(Sys.info()["user"]=='ctg'){ dsn='/Users/ctg/Dropbox/Projects/R_Packages/occProfileR/occProfileR/Rpackage/inst/ext/CountryLevel'}
-#countries.pol = readOGR(dsn = dsn,layer='Countries_SPDF_MED')
-countries.pol = readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
 
+
+#load the reaster of the environmental variables
 ras.env.f = system.file('ext/AllEnv.tif',package='occProfileR')
 ras.env = raster::stack(ras.env.f)
 
+#load a high resolution raster of elevations
 ras.dem.f = system.file('ext/DEM.tif',package='occProfileR')
 ras.dem = raster(ras.dem.f)
 
-ras.humaninfluence.f = system.file('ext/HII.tif',package='occProfileR')
-ras.humaninfluence = raster(ras.humaninfluence.f)
+
+
+######## CHECK THE INPUT DATA TABLE
+occ.species.nogeoscrub
+str (occ.species.nogeoscrub)
+
 ```
 The sample species is a Mediterranean that is present in France, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc... 
+
+The table data shows:
+- Longitude and latitude are named as MAPX and MAPY (MAPX, MAPY)
+- There is a recorded name of a country in the table (COUNTRYRECORD)
+- Locality name field (LOCALITYNAME)
+- Uncertainty field value (UNCERTEINTY_X_M, UNCERTAINTY_Y_M)
+- Date field (DATE)
+
+We will incorporate this information into the workflow. To do so we need to modify the defaultSettings relatedo to table
+
+```{r}
+mySettings <- occProfileR::defaultSettings()
+mySettings$tableSettings$x.field <- 'MAPX'
+mySettings$tableSettings$y.field <- 'MAPY'
+mySettings$tableSettings$t.field <- 'DATE'
+mySettings$tableSettings$l.field <- 'LOCALITYNAME'
+mySettings$tableSettings$c.field <- 'COUNTRYRECORD'
+mySettings$tableSettings$e.field <- 'ELEVATION'
+mySettings$tableSettings$a.field <- c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M')
+
+```
+
+We have a more detailed raster of human influence than that of the report. In our of map high human influence is considered when a record is in a cell above 50. Let's modify our settings 
+
+```{r}
+
+#load your own human influence map
+ras.humaninfluence.f = system.file('ext/HII.tif',package='occProfileR')
+ras.humaninfluence = raster(ras.humaninfluence.f)
+
+#add it to the settings
+mySettings$analysisSettings$humanAnalysis$th.human.influence <-50
+mySettings$analysisSettings$humanAnalysis$methodHyperHumanDetection <-ras.humaninfluence
+
+```
+
+We also have a more detailed analysis of country borders 
+```{r}
+
+#load detailed country borders and shorelines
+countries.pol.f = system.file('ext/CountryLevel',package='occProfileR')
+countries.pol = readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
+names (countries.pol)
+
+#add it to the settings
+mySettings$analysisSettings$rangeAnalysis$countries.shapefile <-countries.pol 
+mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO' 
+
+```
+
+
+
+Now we will apply our settings to the function, and we will also incorporate our more detailed rasters of countries and elevation.
+
+
+
+
+
+
 
 ```{r}
 #prepare projections and plot data
@@ -390,7 +502,7 @@ head(occ.species.nogeoscrub)
 tail(occ.species.nogeoscrub)
 ```
 
-In this first example we are going to profile the data with the minimum number of parameters. Here we obviate the information on time, country of record, elevation...just presence and absence note here that we indeed add a native country (Spain) and an invasive country (France).
+In this first example we are going to profile the data with the minimum number of parameters. Here we obviate the information on time, country of record, elevation...just presence and absence note here that we set modify some settings here add a native country (Spain) and an invasive country (France).
   
 ```{r,fig.width=6,fig.height=4}
 occ.profiled.1=occurrenceProfile(output.dir = getwd(),
