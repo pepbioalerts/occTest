@@ -432,7 +432,7 @@ centroidDetection <- function (df=dat,
   # .points.proj4string=points.proj4string
   # .r.env=r.env;method='all';do = T
 
-browser()
+
 
   #table of outputs
   out = data.frame (centroidDetection_BIEN_test=NA,
@@ -492,18 +492,22 @@ browser()
     }
     
     cleaned_countries<-GNRS:::GNRS_super_simple(country = country_ext)
-    
+    matchedCtry <- cleaned_countries$match_status=='full match'
+    cleaned_countries <- cleaned_countries [matchedCtry,]
     
     for(i in 1:nrow(cleaned_countries)){
+      occurrences.df$country <- as.character(occurrences.df$country)
       occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
     }
     
     for(i in 1:nrow(cleaned_countries)){
+      occurrences.df$state_province <- as.character(occurrences.df$state_province)
       occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
                                             occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
     }
     
     for(i in 1:nrow(cleaned_countries)){
+      occurrences.df$county <- as.character(occurrences.df$county)
       occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
                                     occurrences.df$state_province ==cleaned_countries$state_province[i]&
                                     occurrences.df$county==cleaned_countries$county_parish_verbatim[i])] <- unlist(cleaned_countries$county_parish[i]) 
