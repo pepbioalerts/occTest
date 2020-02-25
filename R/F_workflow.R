@@ -1,4 +1,3 @@
-
 ###### ========================================
 
 
@@ -146,7 +145,6 @@ occurrenceProfile <- function (
     #if (is.null (inv.ctry)) {stop('missing inv.ctry')}
   #}
   #if () {if (missing (r.dem)) {stop('missing r.dem')}}
-  
 
   if (missing (sp.table)) {stop('missing sp.table')}
   if (missing (sp.name)) {stop('missing sp.name')}
@@ -786,7 +784,6 @@ occurrenceClassify <- function (
   ### STEP 00: Load settings and study native and invasive countries
   ########################################################################
   defaultSettings = occProfileR::defaultSettings()
-  
   #load table settings
   if (is.null(tableSettings)) { tableSettings = defaultSettings$tableSettings}
   taxonobservation.id = tableSettings$taxonobservation.id
@@ -1277,7 +1274,6 @@ occurrenceClassify <- function (
   
   
   ### ELEMENT 8: Coordinate accuracy
-  browser()
   Analysis.8 <- geoEnvAccuracy(df=dat,
                                xf = x.field,
                                yf = y.field,
@@ -1470,5 +1466,4 @@ occurrenceClassify <- function (
   
   
 }
-
 

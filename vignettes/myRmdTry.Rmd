@@ -1,0 +1,78 @@
+---
+title: "Untitled"
+output: html_document
+---
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+taxonobservation.id | Name of the colum in the species table for the observation ID | character
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$geoSettings\$coordinate.decimal.precision | decimal precision of the coordintes | numeric
+\$geoSettings\$points.proj4string | Projection to use | Proj4 character. CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+\$rangeAnalysis\$countryfield.shapefile | spatialPolygonsDataFrame with the countries and their associated names or ISO3 codes in the dataframe | spatialPolygonsDataFrame. Defaults to rnaturalearth::ne_countries()
+\$rangeAnalysis\$doRangeAnalysis | whether the user wants to do perform the analysis of comparing coordinates countries to reported native or invasive countries | logical. Dafaults to T 
+\$rangeAnalysis\$excludeUnknownRanges | keep the analysis for occurrences out of the known native or alien countries? | logical. Defaults to F
+\$rangeAnalysis\$doCountryRecordAnalysis | whether the user wants to do perform the analysis of comparing reported countries to reported native or invasive countries | logical. Dafaults to T 
+\$rangeAnalysis\$excludeNotmatchCountry keep the analysis for occurrences when the reported country is different than the native or alien countries? | logical. Defaults to F
+\$centroidAnalysis\$doCentroidDetection | whether the user wants to do perform the analysis of centroid detection | logical. Dafaults to T 
+\$centroidAnalysis\$methodCentroidDetection | methods to use to detect centroids. Implemented are: 'BIEN','speciesGeoCodeR','CoordinateCleaner', 'all' | character. Dafaults to 'all' 
+\$humanAnalysis\$doHyperHumanDetection | whether the user wants to do perform the analysis of human influence | logical. Dafaults to T
+\$humanAnalysis\$methodHyperHumanDetection | what methods to use to detect high human influence Implemented are: 'hii','urban', 'all' | character. Dafaults to 'all' 
+\$humanAnalysis\$th.human.influence | when methods are 'all' or 'hii' what is the threshold value for human influence | numeric. Dafaults to 40  
+\$humanAnalysis\$ras.hii | raster of the human influence index | raster. Defaults to SEDAC human infuence index | raster
+\$institutionAnalysis\$doInstitutionLocality | whether the user wants to do perform the analysis of records potentialy in biodiversity institutions | logical. Dafaults to T 
+\$institutionAnalysis\$methodInstitutionLocality | methods to use to detect records  in biodiversity institutions Implemented are: 'fromBotanicLocalityName','fromCoordinates', 'all' | character. Defaults to 'all'  
+\$geooutliersAnalysis\$doGeoOutliers | whether the user wants to do perform the analysis of geographical outliers  | logical. Dafaults to T 
+\$geooutliersAnalysis\$methodGeoOutliers | methods to use to geographic outliers. Implemented are: 'alphaHull','distance','median','quantSamplingCorrected','grubbs, 'all' | character. Defaults to 'all'  
+\$geooutliersAnalysis\$alpha.parameter | alpha parameter desired for method 'alphaHull' | numeric. Defaults to 2
+\$envoutliersAnalysis\$doEnvOutliers | whether the user wants to perform the analysis of environmental outliers | logical. Dafaults to T 
+\$envoutliersAnalysis\$methodEnvOutliers | methods to use to environmental outliers. Implemented are: 'bxp','grubbs', 'all' | character. Defaults to 'all'  
+\$envoutliersAnalysis\$th.perc.outenv | for method 'bxp' what is the percentage of variables found as an outlier to define it as an outlier | Numeric. Defaults to 0.2
+\$accuracyAnalysis\$do.geoEnvAccuracy | whether the user wants to perform the accuracy analysis | logical. Dafaults to T 
+\$accuracyAnalysis\$methodGeoEnvAccuracy | methods to use for the accuracy analysis. Implemented are: 'envDeviation','percDiffCell', 'elevDiff','lattice','rasterCell','all'| character. Defaults to 'all'  
+\$accuracyAnalysis\$elev.quality.threshold | for elevDiff method, threshold of the difference between reported and inferred elevation | numeric. Defaults to 100
+
+
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$grading.test.type | How to consider the consensus when several methods implemented differ? Options implemented are: 'majority','strict' 'relaxed. For instance, 'strict' will flag a record as a geographic outlier if there is at least a method flagging it. 'majority' when the majority of methods agree and 'relaxed' when more than 70% of the methods agree. | charcter. Defaults to 'majority'   
+\$qualifiers | should qualifiers be implemented | Logical. Defaults to T                       
+\$qualifier.label.scoping | over which grades should qualifiers be implemented |character. Defaults to c('A','B','C','D','E') (all labels applied by default)
+
+
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$output.dir | Name of the output directory | character.Defaults to NULL
+\$writeAllOutput | should all outptus be written | logical. Defaults to F 
+\$write.simple.output | should simple output table be written | logical. Defaults to F 
+\$write.simple.output | should full output table be written | logical. Defaults to F 
+\$output.base.filename | what is the suffix of the output table filename? | character. Deafaults to 'QAQC'
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
