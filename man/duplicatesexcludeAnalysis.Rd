@@ -4,9 +4,14 @@
 \alias{duplicatesexcludeAnalysis}
 \title{Duplicated records}
 \usage{
-duplicatesexcludeAnalysis(df = dat, xf = x.field, yf = y.field,
-  resolution.in.minutes = res.in.minutes, raster.grid = NULL,
-  verbose = F)
+duplicatesexcludeAnalysis(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  resolution.in.minutes = res.in.minutes,
+  raster.grid = NULL,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -28,12 +33,22 @@ Duplicated records
 \details{
 (inspired by biogeo duplicatesexclude function)
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

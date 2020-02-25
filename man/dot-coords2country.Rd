@@ -22,6 +22,7 @@ extracts data from database
 
 }
 \seealso{
-Other Geo: \code{\link{.getSRTM}}
+Other Geo: 
+\code{\link{.getSRTM}()}
 }
 \concept{Geo}

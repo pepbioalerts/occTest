@@ -1277,6 +1277,7 @@ occurrenceClassify <- function (
   
   
   ### ELEMENT 8: Coordinate accuracy
+  browser()
   Analysis.8 <- geoEnvAccuracy(df=dat,
                                xf = x.field,
                                yf = y.field,

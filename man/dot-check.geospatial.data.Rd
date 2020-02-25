@@ -21,8 +21,10 @@ Verify that all data are in the same projection
 }
 }
 \seealso{
-Other checks: \code{\link{.addmainfields2}},
-  \code{\link{.checkdatastr2}}, \code{\link{.checkfields}},
-  \code{\link{.status.tracker.and.escaping}}
+Other checks: 
+\code{\link{.addmainfields2}()},
+\code{\link{.checkdatastr2}()},
+\code{\link{.checkfields}()},
+\code{\link{.status.tracker.and.escaping}()}
 }
 \concept{checks}

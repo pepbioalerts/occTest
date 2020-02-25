@@ -28,6 +28,7 @@ Based on getData from raster
 
 }
 \seealso{
-Other Geo: \code{\link{.coords2country}}
+Other Geo: 
+\code{\link{.coords2country}()}
 }
 \concept{Geo}

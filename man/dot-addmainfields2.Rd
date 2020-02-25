@@ -24,8 +24,10 @@ Example<-"goes here"
 
 }
 \seealso{
-Other checks: \code{\link{.check.geospatial.data}},
-  \code{\link{.checkdatastr2}}, \code{\link{.checkfields}},
-  \code{\link{.status.tracker.and.escaping}}
+Other checks: 
+\code{\link{.check.geospatial.data}()},
+\code{\link{.checkdatastr2}()},
+\code{\link{.checkfields}()},
+\code{\link{.status.tracker.and.escaping}()}
 }
 \concept{checks}

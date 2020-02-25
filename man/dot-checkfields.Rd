@@ -4,9 +4,17 @@
 \alias{.checkfields}
 \title{Checking main fields}
 \usage{
-.checkfields(dat, xf = x.field, yf = y.field, ef = e.field,
-  tf = t.field, lf = l.field, cf = c.field,
-  idf = taxonobservation.id, verbose = F)
+.checkfields(
+  dat,
+  xf = x.field,
+  yf = y.field,
+  ef = e.field,
+  tf = t.field,
+  lf = l.field,
+  cf = c.field,
+  idf = taxonobservation.id,
+  verbose = F
+)
 }
 \arguments{
 \item{dat}{A dataframe containing occurrence data for checking.}
@@ -32,9 +40,10 @@ Original dataframe, dat.  Used primarily to generate warning messages.
 Verify that all main data fields are correctly populated.
 }
 \seealso{
-Other checks: \code{\link{.addmainfields2}},
-  \code{\link{.check.geospatial.data}},
-  \code{\link{.checkdatastr2}},
-  \code{\link{.status.tracker.and.escaping}}
+Other checks: 
+\code{\link{.addmainfields2}()},
+\code{\link{.check.geospatial.data}()},
+\code{\link{.checkdatastr2}()},
+\code{\link{.status.tracker.and.escaping}()}
 }
 \concept{checks}

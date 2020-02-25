@@ -4,12 +4,25 @@
 \alias{geoEnvAccuracy}
 \title{Coordinate accuracy}
 \usage{
-geoEnvAccuracy(df, xf = x.field, yf = y.field, af = a.field,
-  dsf = ds.field, ef = e.field, method = "all", r.env,
-  accept.threshold.cell = 0.5, accept.threshold.env = 0.5,
-  bearing.classes = 10, distance.classes = 5, env.quantiles = c(0.3,
-  0.7), elev.threshold = 100, raster.elevation = NULL, verbose = F,
-  do = do.geoEnvAccuracy)
+geoEnvAccuracy(
+  df,
+  xf = x.field,
+  yf = y.field,
+  af = a.field,
+  dsf = ds.field,
+  ef = e.field,
+  method = "all",
+  r.env,
+  accept.threshold.cell = 0.5,
+  accept.threshold.env = 0.5,
+  bearing.classes = 10,
+  distance.classes = 5,
+  env.quantiles = c(0.3, 0.7),
+  elev.threshold = 100,
+  raster.elevation = NULL,
+  verbose = F,
+  do = do.geoEnvAccuracy
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -24,15 +37,28 @@ geoEnvAccuracy(df, xf = x.field, yf = y.field, af = a.field,
 
 \item{accept.threshold}{acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept}
 }
+\value{
+
+}
 \description{
 Detect environmental outliers using jacknife and boxplot
+}
+\note{
+
 }
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{Analysis}

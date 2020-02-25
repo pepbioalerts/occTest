@@ -15,12 +15,22 @@ using package countrycode
 \details{
 right now not implemented with fuzzy matching, but is case insensitive.
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

@@ -12,12 +12,22 @@ list
 \description{
 Centroid assessment using BIEN methods
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

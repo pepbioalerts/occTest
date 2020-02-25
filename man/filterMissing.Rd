@@ -22,12 +22,22 @@ checks for missing coordinates in the occurrence dataframe
 \details{
 
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

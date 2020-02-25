@@ -4,9 +4,16 @@
 \alias{institutionLocality}
 \title{POTENTIAL BOTANIC GARDEN LOCALITY FROM NAME}
 \usage{
-institutionLocality(df = dat, xf = x.field, yf = y.field,
-  .points.proj4string = points.proj4string, lf = l.field,
-  method = "all", do = T, verbose = F)
+institutionLocality(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  .points.proj4string = points.proj4string,
+  lf = l.field,
+  method = "all",
+  do = T,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -19,12 +26,22 @@ list
 \description{
 Detect occurrences potentially in botanical gardens via locality name
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

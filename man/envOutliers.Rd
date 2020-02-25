@@ -4,10 +4,18 @@
 \alias{envOutliers}
 \title{ENVIRORNMENTAL OUTLIERS (using both jacknife and boxplot)}
 \usage{
-envOutliers(.r.env = r.env, df = dat, xf = x.field, yf = y.field,
-  .th.perc.outenv = th.perc.outenv, .sp.name = sp.name,
-  method = "all", .projString = points.proj4string, do = T,
-  verbose = F)
+envOutliers(
+  .r.env = r.env,
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  .th.perc.outenv = th.perc.outenv,
+  .sp.name = sp.name,
+  method = "all",
+  .projString = points.proj4string,
+  do = T,
+  verbose = F
+)
 }
 \arguments{
 \item{.r.env}{R enviroment}
@@ -30,12 +38,22 @@ list
 \description{
 Detect environmental outliers using jacknife and boxplot
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

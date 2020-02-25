@@ -4,11 +4,22 @@
 \alias{occurrenceClassify}
 \title{Validates and clean occurrence data}
 \usage{
-occurrenceClassify(sp.name, sp.table, r.env, tableSettings = NULL,
-  analysisSettings = NULL, gradingSettings = NULL,
-  writeoutSettings = NULL, r.dem = NULL, ntv.ctry = NULL,
-  inv.ctry = NULL, resolveAlienCtry = F, resolveNativeCtry = F,
-  interactiveMode = F, verbose = F)
+occurrenceClassify(
+  sp.name,
+  sp.table,
+  r.env,
+  tableSettings = NULL,
+  analysisSettings = NULL,
+  gradingSettings = NULL,
+  writeoutSettings = NULL,
+  r.dem = NULL,
+  ntv.ctry = NULL,
+  inv.ctry = NULL,
+  resolveAlienCtry = F,
+  resolveNativeCtry = F,
+  interactiveMode = F,
+  verbose = F
+)
 }
 \arguments{
 \item{sp.name}{character. Name of the species.}

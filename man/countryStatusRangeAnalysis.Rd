@@ -4,12 +4,21 @@
 \alias{countryStatusRangeAnalysis}
 \title{Range analysis}
 \usage{
-countryStatusRangeAnalysis(df = dat, xf = x.field, yf = y.field,
-  .ntv.ctry = ntv.ctry, .inv.ctry = inv.ctry, .c.field = c.field,
+countryStatusRangeAnalysis(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  .ntv.ctry = ntv.ctry,
+  .inv.ctry = inv.ctry,
+  .c.field = c.field,
   .points.proj4string = points.proj4string,
   .countries.shapefile = countries.shapefile,
-  cfsf = countryfield.shapefile, excludeUnknownRanges = F,
-  excludeNotmatchCountry = F, doRangeAnalysis = T, verbose = F)
+  cfsf = countryfield.shapefile,
+  excludeUnknownRanges = F,
+  excludeNotmatchCountry = F,
+  doRangeAnalysis = T,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -36,12 +45,22 @@ list
 \description{
 Range analysis of species records based on invsive and native country
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

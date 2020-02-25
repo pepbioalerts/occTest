@@ -4,12 +4,22 @@
 \alias{centroidDetection}
 \title{Centroid detection function}
 \usage{
-centroidDetection(df = dat, xf = x.field, yf = y.field,
-  cf = c.field, idf = taxonobservation.id, .ntv.ctry = ntv.ctry,
-  .inv.ctry = inv.ctry, .points.proj4string = points.proj4string,
-  .r.env = r.env, .countries.shapefile = countries.shapefile,
-  cfsf = countryfield.shapefile, method = "all", do = T,
-  verbose = F)
+centroidDetection(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  cf = c.field,
+  idf = taxonobservation.id,
+  .ntv.ctry = ntv.ctry,
+  .inv.ctry = inv.ctry,
+  .points.proj4string = points.proj4string,
+  .r.env = r.env,
+  .countries.shapefile = countries.shapefile,
+  cfsf = countryfield.shapefile,
+  method = "all",
+  do = T,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -32,12 +42,22 @@ list
 \description{
 Centroid detection function
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

@@ -4,8 +4,7 @@
 \alias{findSpatialOutliers}
 \title{omit outlying pres}
 \usage{
-findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T,
-  verbose = T)
+findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T, verbose = T)
 }
 \arguments{
 \item{x}{raster* object}

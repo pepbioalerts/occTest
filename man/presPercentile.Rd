@@ -4,8 +4,12 @@
 \alias{presPercentile}
 \title{omit outlying pres}
 \usage{
-presPercentile(xy, percent = 95, unin = c("m", "km"), unout = c("ha",
-  "km2", "m2"))
+presPercentile(
+  xy,
+  percent = 95,
+  unin = c("m", "km"),
+  unout = c("ha", "km2", "m2")
+)
 }
 \arguments{
 \item{x}{raster* object}

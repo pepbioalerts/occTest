@@ -4,8 +4,7 @@
 \alias{nativeStatusCtry}
 \title{Check native and alien ranges in countries}
 \usage{
-nativeStatusCtry(spName, resolveNative = T, resolveAlien = T,
-  verbose = T)
+nativeStatusCtry(spName, resolveNative = T, resolveAlien = T, verbose = T)
 }
 \arguments{
 \item{spName}{character. Species name in the form of Genus species}
@@ -25,12 +24,22 @@ performs several queries to
 \details{
 right now based on the package originatr. Future implementation may query more databases.
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

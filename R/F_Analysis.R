@@ -432,7 +432,6 @@ centroidDetection <- function (df=dat,
   # .points.proj4string=points.proj4string
   # .r.env=r.env;method='all';do = T
 
-browser()
 
   #table of outputs
   out = data.frame (centroidDetection_BIEN_test=NA,
@@ -1321,7 +1320,7 @@ geoEnvAccuracy <- function (df,
     #write final score
     out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
     return (out)}
-  
+
   #Need coordinate uncertainty analysis ?
   if (is.null(af)) {
     print ('no coordinate accuracy/uncertainty field provided')

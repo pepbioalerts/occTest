@@ -24,12 +24,22 @@ SeaLand reassignement
 \details{
 (function inspiered in nearestcell in biogeo bu modified)
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

@@ -4,8 +4,13 @@
 \alias{findEnvOutliers}
 \title{Find outlying occurrence data in environmental space}
 \usage{
-findEnvOutliers(myPres, myEnv = NULL, pvalSet = 1e-05,
-  checkPairs = F, verbose = T)
+findEnvOutliers(
+  myPres,
+  myEnv = NULL,
+  pvalSet = 1e-05,
+  checkPairs = F,
+  verbose = T
+)
 }
 \arguments{
 \item{myPres}{a `SpatialPointsDataFrame`}

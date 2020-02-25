@@ -4,12 +4,19 @@
 \alias{geoOutliers}
 \title{ALPHA HULL OUTLIERS}
 \usage{
-geoOutliers(df = dat, xf = x.field, yf = y.field,
-  .alpha.parameter = alpha.parameter, .distance.parameter = 1000,
+geoOutliers(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  .alpha.parameter = alpha.parameter,
+  .distance.parameter = 1000,
   .medianDeviation.parameter = 5,
-  .samplingIntensThreshold.parameter = 0.1, .projString = points. |
-  envOutliers | "bxp" | proj4string, method = "all", do = T,
-  verbose = F)
+  .samplingIntensThreshold.parameter = 0.1,
+  .projString = points. | envOutliers | "bxp" | proj4string,
+  method = "all",
+  do = T,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -26,12 +33,22 @@ list
 \description{
 ALPHA HULL OUTLIERS
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

@@ -4,8 +4,12 @@
 \alias{.add.to.qfield}
 \title{QUALITY GRADINGS}
 \usage{
-.add.to.qfield(x, qfield = "quality.comment", new.comment,
-  separation.charachter = ";")
+.add.to.qfield(
+  x,
+  qfield = "quality.comment",
+  new.comment,
+  separation.charachter = ";"
+)
 }
 \arguments{
 \item{qfield}{Field to add quality information in, default is "quality.comment"}
@@ -22,6 +26,9 @@ list
 \description{
 Assess record quality
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
@@ -29,7 +36,14 @@ example<-"goes here"
 
 
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

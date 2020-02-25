@@ -4,10 +4,17 @@
 \alias{hyperHumanDetection}
 \title{HYPER HUMAN ENVIRONMENT FUNCTION}
 \usage{
-hyperHumanDetection(df = dat, xf = x.field, yf = y.field,
-  method = "all", .points.proj4string = points.proj4string,
-  ras.hii = ras.hii, .th.human.influence = th.human.influence,
-  do = T, verbose = F)
+hyperHumanDetection(
+  df = dat,
+  xf = x.field,
+  yf = y.field,
+  method = "all",
+  .points.proj4string = points.proj4string,
+  ras.hii = ras.hii,
+  .th.human.influence = th.human.influence,
+  do = T,
+  verbose = F
+)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -28,12 +35,22 @@ list
 \description{
 Detect occurrences in heavily human-impacted environments
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}

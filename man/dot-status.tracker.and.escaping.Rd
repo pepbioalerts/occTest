@@ -4,10 +4,17 @@
 \alias{.status.tracker.and.escaping}
 \title{checking main fields}
 \usage{
-.status.tracker.and.escaping(dataset.to.continue = dat,
-  wfo = write.full.output, wso = write.simple.output, xf = x.field,
-  yf = y.field, od = output.dir, obf = output.base.filename,
-  sp = sp.name, verbose = F)
+.status.tracker.and.escaping(
+  dataset.to.continue = dat,
+  wfo = write.full.output,
+  wso = write.simple.output,
+  xf = x.field,
+  yf = y.field,
+  od = output.dir,
+  obf = output.base.filename,
+  sp = sp.name,
+  verbose = F
+)
 }
 \arguments{
 \item{dataset.to.continue}{A dataframe containing occurrence data for checking.}
@@ -50,12 +57,16 @@ Example<-"goes here"
 }
 }
 \seealso{
-Other checks: \code{\link{.addmainfields2}},
-  \code{\link{.check.geospatial.data}},
-  \code{\link{.checkdatastr2}}, \code{\link{.checkfields}}
+Other checks: 
+\code{\link{.addmainfields2}()},
+\code{\link{.check.geospatial.data}()},
+\code{\link{.checkdatastr2}()},
+\code{\link{.checkfields}()}
 
-Other checks: \code{\link{.addmainfields2}},
-  \code{\link{.check.geospatial.data}},
-  \code{\link{.checkdatastr2}}, \code{\link{.checkfields}}
+Other checks: 
+\code{\link{.addmainfields2}()},
+\code{\link{.check.geospatial.data}()},
+\code{\link{.checkdatastr2}()},
+\code{\link{.checkfields}()}
 }
 \concept{checks}

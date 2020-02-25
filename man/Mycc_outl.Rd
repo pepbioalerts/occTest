@@ -4,20 +4,41 @@
 \alias{Mycc_outl}
 \title{POTENTIAL BOTANIC GARDEN LOCALITY FROM NAME}
 \usage{
-Mycc_outl(x, lon = "decimallongitude", lat = "decimallatitude",
-  species = "species", method = "quantile", mltpl = 5, tdi = 1000,
-  value = "clean", sampling_thresh = 0, verbose = TRUE,
-  min_occs = 7, thinning = FALSE, thinning_res = 0.5)
+Mycc_outl(
+  x,
+  lon = "decimallongitude",
+  lat = "decimallatitude",
+  species = "species",
+  method = "quantile",
+  mltpl = 5,
+  tdi = 1000,
+  value = "clean",
+  sampling_thresh = 0,
+  verbose = TRUE,
+  min_occs = 7,
+  thinning = FALSE,
+  thinning_res = 0.5
+)
 }
 \description{
 own version of coordinate cleaner
+}
+\note{
+
 }
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{internal}
