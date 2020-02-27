@@ -771,6 +771,7 @@ occurrenceClassify <- function (
   analysisSettings=NULL,
   gradingSettings=NULL,
   writeoutSettings=NULL,
+  
   r.dem=NULL,
   ntv.ctry=NULL,
   inv.ctry=NULL,
@@ -1031,8 +1032,11 @@ occurrenceClassify <- function (
       })
       dat.excl.H = do.call(rbind, dat.excl.H)
     }
-    if (exists('dat.excl.H') & (nrow (get('dat.excl.H')) > 0))
-      dat.Q.H <- dat.excl.H
+    if (exists('dat.excl.H') & (!is.null (get('dat.excl.H')))) {
+      if (nrow (dat.excl.H)>0) dat.Q.H <- dat.excl.H
+      rm (dat.excl.H)
+    }
+      
     if (exists ('dat.Q.H1')) {rm (dat.Q.H1)} 
     if (exists ('dat.Q.H2')) {rm (dat.Q.H2)} 
     if (exists ('dat.Q.H3')) {rm (dat.Q.H3)} 

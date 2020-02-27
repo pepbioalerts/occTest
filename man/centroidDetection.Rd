@@ -57,7 +57,7 @@ example<-"goes here"
 
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+JM Serra-Diaz (pep.serradiaz@agroparistech.fr), B Maitner, C Merow
 }
 \concept{}
 \keyword{internal}

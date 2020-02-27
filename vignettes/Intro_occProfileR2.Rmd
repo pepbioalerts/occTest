@@ -61,7 +61,7 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences
 library(occProfileR)
-outMartesMartes = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+outMartesMartes = occProfileR::occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 
 ```
 
