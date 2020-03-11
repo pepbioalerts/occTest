@@ -47,7 +47,7 @@
   df2 <- subset (df,subset= df$quality.grade %in% qualifier.lab.scp)
   if (nrow (df2) == 0) {out <- rep (NA,nrow(df)); return (out)}
   #determining
-  df2$timestamp <- ifelse (is.na(df2[,tf]) | (df2[,tf] == '') , NA, tag)
+  df2$timestamp <- ifelse (is.na(df2[,tf]) | (as.character (df2[,tf]) == '') , NA, tag)
   #remerging
   join.df <-  suppressMessages(plyr:::join(df,df2))
   out <- join.df$timestamp

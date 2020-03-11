@@ -318,7 +318,7 @@ countryStatusRangeAnalysis=function(df=dat,
       country_ext <- occProfileR:::.coords2country (xydat)
     }
 
-  #inform for whether reported and country fo coordinates differ differ
+  #inform for whether reported and country in coordinates (extracted country) differ 
   if (is.null (.c.field)) {
     if(verbose) print ("No country reported in occurrence database")
     wrong.ctry.reported <- rep (NA,length(country_ext))
@@ -328,12 +328,16 @@ countryStatusRangeAnalysis=function(df=dat,
 
     #check if ISO3 format in country reported
     ctry.reported = as.character (df[,.c.field])
+    if (any (nchar (ctry.reported)!=3)) {
+      warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
+      wrong.ctry.reported <- rep (NA,length(country_ext))
+    }
+    
+    if (all(nchar (ctry.reported)==3)) {
+      #match reported country with extracted country
+      wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
+    }
 
-
-
-
-    #match reported country with extracted country
-    wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
   }
 
   #inform for which extracted countries are not in the native range
@@ -341,7 +345,9 @@ countryStatusRangeAnalysis=function(df=dat,
     if(verbose) print ('No info of native country. Assuming all records are native')
     wrong.ntv.ctry.xy <- rep (NA,length(country_ext))
   }
-  if(!is.null(.ntv.ctry) ) {wrong.ntv.ctry.xy <- (! country_ext %in% .ntv.ctry) * 1}
+  if(!is.null(.ntv.ctry) ) {
+    wrong.ntv.ctry.xy <- (! country_ext %in% .ntv.ctry) * 1
+    }
 
   #inform for which extracted countries are not in the invasive range
   if (is.null (.inv.ctry))   {
@@ -402,7 +408,7 @@ countryStatusRangeAnalysis=function(df=dat,
 #' @param .r.env R env
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), B Maitner, C Merow
+#' @author B Maitner, JM Serra-Diaz, C Merow
 #' @note
 #' @seealso
 #' @references
@@ -931,6 +937,7 @@ geoOutliers         <- function (df=dat,
     out$geoOutliers_alphaHull_test <- points.outside.alphahull
     out$geoOutliers_alphaHull_comments <- out.comments
 
+    ### NOT IMPLEMENTED YET
     #This is a bit experimental, when the user does not provide a predetermined value of alpha
     # we perform some analysis to get an "optimal" alpha parameter.
     # not implemented yet
