@@ -163,15 +163,17 @@ nativeStatusCtry <- function (spName,resolveNative=T,resolveAlien=T, verbose=T){
 #' }
 
 
-
-
-ctryToIso3 <- function (x){ 
-
+#### this function does not work properly. RECHECK
+ctryToIso3 <- function (x,mehtod='countrycode'){ 
+  
+  #initial checks
   if (!is.character(x) & !is.null(x)) {stop("Country should be character")}
-  if (length(x)==0 | is.null(x) ) {outIso3<- NULL}
-  if (length(x)>0 ) {
+  if (length(x)==0 | is.null(x) ) {return (NULL)}
+  
+  
+  if (method=='GNRS' ) {
     #try to correCt for potential bad spelling
-    template<-GNRS::GNRS_template(nrow = length(x))
+    tableTemplate<-GNRS::GNRS_template(nrow = length(x))
     template$country<- x
     gnrsResults  = GNRS:::GNRS(political_division_dataframe = template)
     iso2Ctry <- unlist(gnrsResults$country_iso)
@@ -182,10 +184,29 @@ ctryToIso3 <- function (x){
     if(length(outIso3) == 0) {outIso3 <- NULL}
     
   } 
+  
+  if (method=='countrycode' ) {
+    
+    #direct matching
+    outIso3 = countrycode:::countrycode (sourcevar = x, origin = 'country.name',destination = 'iso3c')
+    
+    #fuzzy matching  using stringdist package (not implemented yet)
+    # codesAll = countrycode::codelist
+    # colid  = grep (pattern = 'country.name.en.regex',names(codesAll))
+    # colid  = grep (pattern = 'cldr.variant.es',names(codesAll))
+    # dfForMatch = codesAll[,colid]
+    # adist (x,dfForMatch,method='osa',maxDist = 50)
+    # 
+    # apply (dfForMatch,MARGIN = 1,FUN = function (n){adist(n,x[1])})
+    #
+    
+    
+    
+  } 
+  
   return (outIso3)
   
-  
-  
+
   
 }
   

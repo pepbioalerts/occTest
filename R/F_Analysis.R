@@ -326,7 +326,7 @@ countryStatusRangeAnalysis=function(df=dat,
   }
   if (!is.null (.c.field)) {
 
-    #check if ISO3 format in country reported
+    #check if ISO3 format in country reported [FUTURE: use GNRS to automatically correct]
     ctry.reported = as.character (df[,.c.field])
     if (any (nchar (ctry.reported)!=3)) {
       warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
@@ -689,7 +689,7 @@ centroidDetection <- function (df=dat,
 #' }
 #' @export
 
-hyperHumanDetection <- function (df=dat,
+HumanDetection <- function (df=dat,
                                   xf=x.field,
                                   yf=y.field,
                                  method='all',
@@ -698,11 +698,11 @@ hyperHumanDetection <- function (df=dat,
                                   .th.human.influence =th.human.influence,
                                   do=T, verbose=F){
 
-  out <- data.frame (HumanInfluence_test=NA,
-                     HumanInfluence_comments= NA,
-                     UrbanAreas_test=NA,
-                     UrbanAreas_comments=NA,
-                     hyperHumanDetection_score=NA
+  out <- data.frame (HumanDetection_HumanInfluence_test=NA,
+                     HumanDetection_HumanInfluence_comments= NA,
+                     HumanDetection_UrbanAreas_test=NA,
+                     HumanDetection_UrbanAreas_comments=NA,
+                     HumanDetection_score=NA
                      )[1:nrow (df),]
   row.names(out) <- NULL
 
@@ -737,8 +737,8 @@ hyperHumanDetection <- function (df=dat,
 
     hii.sp.pres <-( hii.sp.pres[,2]>=.th.human.influence)*1
 
-    out$HumanInfluence_test=hii.sp.pres
-    out$HumanInfluence_comments= paste('Threshold influence=',.th.human.influence)
+    out$HumanDetection_HumanInfluence_test=hii.sp.pres
+    out$HumanDetection_HumanInfluence_comments= paste('Threshold influence=',.th.human.influence)
 
   }
 
@@ -747,17 +747,14 @@ hyperHumanDetection <- function (df=dat,
   #start uban areas
 
   if (any (method %in% c('urban','all')))  {
-
-    cc_urb_test = CoordinateCleaner::cc_urb(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
+    cc_urb_test = occProfileR:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
     cc_urb_test <- (!  cc_urb_test) * 1
-    out$UrbanAreas_test <- cc_urb_test
-    out$UrbanAreas_comments <- c('Urban areas from rnaturalearth')
-
-    #get output
-    out$hyperHumanDetection_score <- occProfileR:::.gimme.score (out)
-
-
+    out$HumanDetection_UrbanAreas_test <- cc_urb_test
+    out$HumanDetection_UrbanAreas_comments <- c('Urban areas from rnaturalearth')
   }
+  
+  #compute score
+  out$HumanDetection_score <- occProfileR:::.gimme.score (out)
 
 
   return (out)
@@ -1252,6 +1249,7 @@ geoEnvAccuracy <- function (df,
 
                          # to be implemented : doParallel=T
                          ){
+  
 
 
 

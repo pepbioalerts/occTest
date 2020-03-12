@@ -34,6 +34,7 @@ occurrenceClassify <- function (
   resolveNativeCtry=F,
   interactiveMode=F,
   verbose = F){
+  #browser()
   
   ########################################################################
   ### STEP 00: Load settings and study native and invasive countries
@@ -67,8 +68,8 @@ occurrenceClassify <- function (
   doCentroidDetection = analysisSettings$centroidAnalysis$doCentroidDetection
   methodCentroidDetection = analysisSettings$centroidAnalysis$methodCentroidDetection
   
-  doHyperHumanDetection = analysisSettings$humanAnalysis$doHyperHumanDetection
-  methodHyperHumanDetection = analysisSettings$humanAnalysis$methodHyperHumanDetection
+  doHumanDetection = analysisSettings$humanAnalysis$doHumanDetection
+  methodHumanDetection = analysisSettings$humanAnalysis$methodHumanDetection
   th.human.influence = analysisSettings$humanAnalysis$th.human.influence
   ras.hii = analysisSettings$humanAnalysis$ras.hii
   
@@ -134,6 +135,7 @@ occurrenceClassify <- function (
   
   if (missing (sp.table)) {stop('missing sp.table')}
   if (missing (r.env)) {stop('missing r.env')}
+  if (! pingr:::is_online()) { stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')}
   
   
   
@@ -451,13 +453,13 @@ occurrenceClassify <- function (
                                        do= doCentroidDetection)
   
   ### ELEMENT 2: HYPER-HUMAN ENVIRONMENT
-  Analysis.2 <- hyperHumanDetection(df = dat,
+  Analysis.2 <- HumanDetection     (df = dat,
                                     xf = x.field,
                                     yf = y.field,
                                     .points.proj4string =points.proj4string,
                                     ras.hii = ras.hii,
                                     .th.human.influence =th.human.influence,
-                                    do = doHyperHumanDetection)
+                                    do = doHumanDetection)
   
   
   
@@ -573,7 +575,7 @@ occurrenceClassify <- function (
     
   }
   
-  grade.E <- (.lazylogic (e = 'hyperHumanDetection_score >= test.strictness.value')) | (.lazylogic (e = 'institutionLocality_score >= test.strictness.value')) | (.lazylogic (e = 'centroidDetection_score >= test.strictness.value')) | (.lazylogic (e = 'unknownRange_score >= test.strictness.value')) | (.lazylogic (e = 'wrongReportCtry_score >= test.strictness.value') | (.lazylogic (e = 'envOutliers_missingEnv_score >= test.strictness.value')))
+  grade.E <- (.lazylogic (e = 'HumanDetection_score >= test.strictness.value')) | (.lazylogic (e = 'institutionLocality_score >= test.strictness.value')) | (.lazylogic (e = 'centroidDetection_score >= test.strictness.value')) | (.lazylogic (e = 'unknownRange_score >= test.strictness.value')) | (.lazylogic (e = 'wrongReportCtry_score >= test.strictness.value') | (.lazylogic (e = 'envOutliers_missingEnv_score >= test.strictness.value')))
   df.qualityAssessment$quality.grade[grade.E] <- 'E'
   to.continue <- is.na(df.qualityAssessment$quality.grade)
   
@@ -694,7 +696,7 @@ occurrenceClassify <- function (
   full.qaqc$quality.label <- occProfileR:::.paste3 (as.character(full.qaqc$quality.grade),full.qaqc$qualifiers,sep = '/')
   
   #reorder as the same as inputs
-  full.qaqc <- full.qaqc [sort (full.qaqc$ID,decreasing = F, na.last=T),]
+  full.qaqc <- full.qaqc [sort (full.qaqc$roworder,decreasing = F, na.last=T),]
   
 
   ########################################################################
@@ -708,7 +710,7 @@ occurrenceClassify <- function (
   
   short.qaqc<-full.qaqc[,c(x.field,y.field,'quality.grade',
                            'qualifiers','quality.label',
-                           "countryStatusRangeAnalysis_score", "centroidDetection_score" ,"hyperHumanDetection_score" ,"institutionLocality_score",
+                           "countryStatusRangeAnalysis_score", "centroidDetection_score" ,"HumanDetection_score" ,"institutionLocality_score",
                            "geoOutliers_score","unknownRange_score", "wrongReportCtry_score","envOutliers_score" ,"geoenvLowAccuracy_score")]
   if (write.simple.output==T) {
     write.csv (short.qaqc,

@@ -300,7 +300,7 @@ Perform several tests to flag environmental and geographical issues of the recor
 | Function name    | description of the tests                                               
 | -------------    |:---------------------------------------------------:|
 | centroidDetection    | is record  found in a centroid of a political entity? | 
-| hyperHumanDetection  | is record found in a highly human environment (agriculuture, urban areas)? | 
+| HumanDetection  | is record found in a highly human environment (agriculuture, urban areas)? | 
 | institutionLocality  | is record found near an institution (GBIF, botanic garden)? |
 | geoOutliers    | is record a geographical outlier?  |
 | envOutliers    | is record an environmental outlier? |
@@ -313,8 +313,8 @@ Each of these functions aims at identifying different potential errors of occurr
 | centroidDetection    |'BIEN'  |
 | centroidDetection    |'speciesGeoCodeR' |
 | centroidDetection    |'CoordinateCleaner', implemented from the DB of centroids from the pckg with the same names  |
-| hyperHumanDetection    |'hii' using the human influence index from NSDIC  | 
-| hyperHumanDetection    |'urban' using human areas from the naturalearth website | 
+| HumanDetection    |'hii' using the human influence index from NSDIC  | 
+| HumanDetection    |'urban' using human areas from the naturalearth website | 
 | institutionLocality    |'fromBotanicLocalityName' using text recognition pattern to identify different names associated with botanical records in the field locality  | 
 | institutionLocality    |'fromCoordinates' matching coordinates of the record with known institution coordinates  | 
 | geoOutliers    | 'alphahulls' using alpha hull geometry (alpha parameter=2) to destinguish point out of the alpha hull |  

@@ -28,7 +28,7 @@ alpha.parameter = 2;th.human.influence = 45;th.perc.outenv =  0.2;elev.quality.t
 write.simple.output=T
 write.full.output=T
 excludeUnknownRanges= F ; excludeNotmatchCountry= F ; do.centroidDetection=T ; centroidDetection.method='all';
-do.hyperHumanDetection=T ; do.institutionLocality=T ; institutionLocality.method='all'; do.geoOutliers=T ; geoOutliers.method='all'
+do.HumanDetection=T ; do.institutionLocality=T ; institutionLocality.method='all'; do.geoOutliers=T ; geoOutliers.method='all'
 output.base.filename="QAQC"
 
 

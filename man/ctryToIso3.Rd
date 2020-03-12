@@ -4,7 +4,7 @@
 \alias{ctryToIso3}
 \title{Convert country names to ISO3 codes}
 \usage{
-ctryToIso3(x)
+ctryToIso3(x, mehtod = "countrycode")
 }
 \arguments{
 \item{x}{character. country name}

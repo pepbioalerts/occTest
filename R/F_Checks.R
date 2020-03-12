@@ -108,7 +108,7 @@
 #'
 .checkdatastr2  <- function (dat,xf=x.field,yf=y.field, verbose=F) {
   cn <- names(dat)
-  fn <- c("ID", xf, yf, "Species", "x_original", "y_original",
+  fn <- c("roworder", xf, yf, "Species", "x_original", "y_original",
           "Correction", "Modified", "Exclude", "Reason")
   m <- rep(0, length(fn))
   for (i in 1:length(fn)) {
@@ -140,15 +140,21 @@
   else {
     Species <- dat[, species]
   }
-  reqNames <- c("ID", species, "x_original", "y_original",
+  reqNames <- c("roworder", species, "x_original", "y_original",
                 "Correction", "Modified", "Exclude", "Reason")
+  equal <- reqNames[sapply(reqNames, FUN = function(x) x %in%
+                                     names(dat))]
+  
+  if (length(equal)>1) {warning(paste("Table fields: ",equal,"already existed in your table, not overwritten by fieldchecks.",'\n',"check consistency of the field meanings in your table with occProfileR"))}
   missingNames <- reqNames[!sapply(reqNames, FUN = function(x) x %in%
                                      names(dat))]
-  z <- data.frame(dat, ID = 1:nrow(dat), Species, x = NA, y = NA,
-                  x_original = NA, y_original = NA, Correction = "........",
-                  Modified = Sys.time(), Exclude = 0, Reason = "........",
-                  stringsAsFactors = F)
-  z <- z[, c(names(dat), missingNames)]
+  newdf = lapply(missingNames, function(n) {data.frame (a=rep(NA,length.out=nrow(dat)))})
+  newdf = do.call (what = cbind, newdf)
+  names(newdf) = missingNames
+  if ('Exclude' %in% missingNames) newdf$Exclude = 0
+  if ('roworder' %in% missingNames) newdf$roworder = 1:nrow (newdf)
+  
+  z <- data.frame(dat, newdf,stringsAsFactors = F)
   return(z)
 }
 
