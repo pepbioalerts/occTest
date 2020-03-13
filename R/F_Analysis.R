@@ -115,7 +115,7 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' @title SeaLand reassignement
 #' @descriptions Reassign coastal coordinates as needed
 #' @details (function inspiered in nearestcell in biogeo bu modified)
-#' @param dat Data.frame of species occurrences
+#' @param dat Data.frame of species occurrences and a field named taxonobservationID
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
 #' @param rst An optional raster grid
@@ -142,7 +142,7 @@ nearestcell3 <- function (dat,
   fx <- which(dat$Exclude == 0)
   x1 <- biogeo::coord2numeric(dat[,xf][fx])
   y1 <- biogeo::coord2numeric(dat[,yf][fx])
-  datid <- dat$ID[fx]
+  datid <- dat$taxonobservationID[fx]
   dd <- data.frame(x1, y1)
   ce0 <- raster::cellFromXY(rst, dd)
   vals <- raster::extract(rst, dd)
@@ -176,7 +176,7 @@ nearestcell3 <- function (dat,
     dd2 <- dd[ff, ]
     id2 <- id[ff]
     bb  <- {}
-
+    
 
     for (i in 1:length(ce3)) {
       a <- raster::adjacent(rst, ce3[i], directions = 8, pairs = FALSE,
@@ -211,7 +211,7 @@ nearestcell3 <- function (dat,
       mod <- format(Sys.time(), "%d-%m-%Y %H:%M:%S")
       dat$Modified <- as.character(dat$Modified)
       for (i in 1:nrow(near)) {
-        f <- which(dat$ID == near$id2[i])
+        f <- which(dat$taxonobservationID == near$id2[i])
         dat$x_original[f] <- dat[,xf][f]
         dat$y_original[f] <- dat[,yf][f]
         dat[,xf][f] <- near$x[i]
@@ -294,9 +294,9 @@ countryStatusRangeAnalysis=function(df=dat,
   # exclude.wrong.country.recorded = F; doRangeAnalysis=T; verbose=F
 
   #initial user information printing
-  if (is.null (.ntv.ctry)  ) {if(verbose) print('WARNING: Species with no associated country. We assume all locations are native range')}
-  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided')}
-  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration')}
+  if (is.null (.ntv.ctry)  ) {if(verbose) print ('INFO: Species with no associated country. We assume all locations are native range')}
+  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysisis of invasive ranges not perfomred')}
+  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of coutnry recorded vs. coordinates not performed')}
 
   xydat <- df[,c(xf,yf)]
 
@@ -480,6 +480,7 @@ centroidDetection <- function (df=dat,
     #occurrences.df$cleaned_country<-NA
     
     #get admin unites from coordinates
+    #### TO REPLACE BY A FUNCTION  .coords2country
     xydat <- df[,c(xf,yf)]
     if (!is.null(.countries.shapefile)){
       
@@ -696,7 +697,7 @@ HumanDetection <- function (df=dat,
                                   .points.proj4string=points.proj4string,
                                   ras.hii=ras.hii,
                                   .th.human.influence =th.human.influence,
-                                  do=T, verbose=F){
+                                  do=T, verbose=F,output.dir=output.dir){
 
   out <- data.frame (HumanDetection_HumanInfluence_test=NA,
                      HumanDetection_HumanInfluence_comments= NA,
@@ -747,7 +748,14 @@ HumanDetection <- function (df=dat,
   #start uban areas
 
   if (any (method %in% c('urban','all')))  {
-    cc_urb_test = occProfileR:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
+
+    #check ref exists
+    newoutdir = paste0(output.dir,'/spatialData')
+    alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
+    if (alreadyDownloaded) myRef = rgdal:::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
+    if (!alreadyDownloaded) myRef= NULL 
+    
+    cc_urb_test = occProfileR:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_test <- cc_urb_test
     out$HumanDetection_UrbanAreas_comments <- c('Urban areas from rnaturalearth')

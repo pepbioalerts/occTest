@@ -32,12 +32,28 @@ occurrenceClassify <- function (
   inv.ctry=NULL,
   resolveAlienCtry=F,
   resolveNativeCtry=F,
+  
   interactiveMode=F,
+  outPath=NULL,
   verbose = F){
   #browser()
   
+  #set timer
+  tictoc:::tic()
+  
   ########################################################################
-  ### STEP 00: Load settings and study native and invasive countries
+  ### STEP 00: Initial checks
+  ########################################################################
+  #set timer
+  tictoc:::tic('Initial checks and formatting')
+  
+  if (missing (sp.table)) {stop('missing sp.table')}
+  if (missing (r.env)) {stop('missing r.env')}
+  if (! pingr:::is_online()) { stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')}
+  
+  
+  ########################################################################
+  ### STEP 0: Load settings and study native and invasive countries
   ########################################################################
   defaultSettings = occProfileR::defaultSettings()
   #load table settings
@@ -95,52 +111,19 @@ occurrenceClassify <- function (
   qualifiers = gradingSettings$qualifiers
   qualifier.label.scoping = gradingSettings$qualifier.label.scoping
   
-  #load writeOUtSettings
+  #load writeOutSettings
   if (is.null(writeoutSettings)) { writeoutSettings = defaultSettings$writeoutSettings}
+  browser()
   output.dir = writeoutSettings$output.dir
+  if (is.null(output.dir)) {output.dir = getwd() ; message('Output directory set to your current working directory')}
   writeAllOutput = writeoutSettings$writeAllOutput
   write.simple.output =  writeoutSettings$write.simple.output
   write.full.output = writeoutSettings$write.full.output
   output.base.filename = writeoutSettings$output.base.filename
   
-  #automatically resolve invasive and native countries for target species (not implemented yet) 
-  
-  if (interactiveMode & is.null (ntv.ctry) ){
-    resolveNativeCtry <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
-  }
-  if (interactiveMode & is.null (inv.ctry) ){
-    resolveAlienCtry <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
-  }
-  
-  if (any (resolveNativeCtry,resolveAlienCtry)){
-    checkCountries <- occProfileR::nativeStatusCtry(spName = sp.name, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
-    if (resolveNativeCtry) {
-      ntv.ctry <- c(ntv.ctry,checkCountries$ntvCtry)
-      ntv.ctry <- unique (ntv.ctry)
-    }
-    if (resolveAlienCtry) {
-      inv.ctry <- c(inv.ctry,checkCountries$invCtry)
-      inv.ctry <- unique (inv.ctry)
-    }
-    
-  }
-  
-  
-  
-  
-  ########################################################################
-  ### STEP 0: Initial checks
-  ########################################################################
-  
-  
-  if (missing (sp.table)) {stop('missing sp.table')}
-  if (missing (r.env)) {stop('missing r.env')}
-  if (! pingr:::is_online()) { stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')}
-  
-  
-  
+
   ##############################################################################
-  ### STEP 1: Data formatting and compatibility for biogeo and initial checks
+  ### STEP 1a: Data formatting and compatibility for biogeo and initial checks
   ##############################################################################
   
   #add fields necesary for initial table
@@ -195,8 +178,49 @@ occurrenceClassify <- function (
   res.in.minutes <- res (r.env[[1]])[1] * 60
   
   ##############################################################################
+  ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range 
+  ##############################################################################
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Resolve native and invasive countries')
+  
+  #automatically resolve invasive and native countries for target species (not implemented yet) 
+  
+  if (interactiveMode & is.null (ntv.ctry) ){
+    resolveNativeCtry <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+  }
+  if (interactiveMode & is.null (inv.ctry) ){
+    resolveAlienCtry <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+  }
+  
+  if (any (resolveNativeCtry,resolveAlienCtry)){
+    if (verbose) {print ("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
+    
+    xydatTemporary = dat[,c(x.field,y.field)]
+    xydatTemporary = xydatTemporary[complete.cases(xydatTemporary),]
+    
+    
+    checkCountries <- occProfileR:::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+    if (resolveNativeCtry) {
+      ntv.ctry <- c(ntv.ctry,checkCountries$ntvCtry)
+      ntv.ctry <- unique (ntv.ctry)
+    }
+    if (resolveAlienCtry) {
+      inv.ctry <- c(inv.ctry,checkCountries$invCtry)
+      inv.ctry <- unique (inv.ctry)
+    }
+    
+  }
+  
+  
+  ##############################################################################
   ### STEP 2: Quality H Filter : Identify records wo spatial info
   ##############################################################################
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Filter H')
+  if (verbose) {print ("**** RESOLIVNG QUALITY FILTER H: records wo Spatial Info ****")}
+  
   Analysis.H <- filterMissing(df = dat,xf = x.field,yf = y.field)
   dat.Q.H <- Analysis.H$stay
   dat <- Analysis.H$continue
@@ -309,6 +333,11 @@ occurrenceClassify <- function (
   ##########################################################################################
   ### STEP 4: Filter Quality G : Identify duplicate records (in geographic space) to prevent pseudoreplicaton
   ##########################################################################################
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Filter G')
+  if (verbose) {print ("**** RESOLIVNG QUALITY FILTER G: duplicates ****")}
+  
   #indicate duplicates with exact coordinates
   Analysis.G <- duplicatesexcludeAnalysis(df = dat,
                                           xf = x.field,
@@ -341,6 +370,11 @@ occurrenceClassify <- function (
   ############################################################################
   ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES -- and potential for Quality G again(duplicates)
   ############################################################################
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Filter G part 2')
+  if (verbose) {print ("**** RESOLIVNG QUALITY FILTER G: sea/terrestrial reassignment ****")}
+  #browser()
   #analysis of nearest cell next to the sea
   dat <- nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
@@ -349,8 +383,10 @@ occurrenceClassify <- function (
     dat <- dat[[1]]
     moved.points <- dat[['moved']]
     if (!is.null(output.dir)){
+      odir = paste0(output.dir,'/',sp.name)
+      dir.create(odir,showWarnings = F,recursive = T)
       write.csv( moved.points,
-                 paste0(output.dir,'/',sp,'_coastal_Reassignment.csv'))
+                 paste0(odir,'/',sp,'_coastal_Reassignment.csv'))
     }
     
     
@@ -390,7 +426,13 @@ occurrenceClassify <- function (
   ##########################################################################
   ### STEP 6: Filter Quality F Country selection
   
-
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Filter F')
+  if (verbose) {print ("**** RESOLIVNG QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
+  if (verbose & excludeUnknownRanges) {print('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')}
+  if (verbose & excludeNotmatchCountry) {print('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')}
+  
   Analysis.F <-occProfileR::countryStatusRangeAnalysis(df=dat,
                                                         xf = x.field,
                                                         yf = y.field,
@@ -427,16 +469,18 @@ occurrenceClassify <- function (
   ############################################################################
   ### STEP 7:  Quality A-E Environmental and Geographical outliers  - analysis chunk
   ############################################################################
+  #set timer
+  tictoc:::toc()
+  tictoc:::tic('Quality Assessment: A to E')
+  if (verbose) {print ("**** RESOLIVNG QUALITY LABELS A to E ****")}
   
   #ANALYSIS ELEMENTS
   #this is important for development, need to specify the number of ELEMENTS of analysis
   #to sumarize the results later on we will need that number
   N_analysis = 8
   
-  
-  
-  
   ### ELEMENT 1: CENTROID ISSUE DETECTION
+  tictoc:::tic('Centroid detection')
   Analysis.1     <- centroidDetection (.r.env = r.env,
                                        df = dat,
                                        xf = x.field,
@@ -451,26 +495,28 @@ occurrenceClassify <- function (
                                        cfsf=countryfield.shapefile,
                                        method = methodCentroidDetection,
                                        do= doCentroidDetection)
+  tictoc:::toc()
   
   ### ELEMENT 2: HYPER-HUMAN ENVIRONMENT
+  tictoc:::tic('Human detection')
   Analysis.2 <- HumanDetection     (df = dat,
                                     xf = x.field,
                                     yf = y.field,
                                     .points.proj4string =points.proj4string,
                                     ras.hii = ras.hii,
                                     .th.human.influence =th.human.influence,
-                                    do = doHumanDetection)
-  
-  
-  
-  
+                                    do = doHumanDetection,output.dir=output.dir)
+  tictoc:::toc()
   
   ### ELEMENT 3: BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
+  tictoc:::tic('Institution locality')
   Analysis.3 <- institutionLocality (df=dat,lf=l.field,xf = x.field,yf=y.field,
                                      do = doInstitutionLocality,
                                      method = methodInstitutionLocality)
+  tictoc:::toc()
   
   ### ELEMENT 4: GEOGRAPHICAL OUTLIER
+  tictoc:::tic('geographic outliers detection')
   Analysis.4 <- geoOutliers(df=dat,
                             xf=x.field,
                             yf=y.field,
@@ -478,10 +524,10 @@ occurrenceClassify <- function (
                             #do=doGeoOutliers,
                             method = methodGeoOutliers,
                             .projString = points.proj4string)
-  
+  tictoc:::toc()
   
   ### ELEMENT 5: ADD the geoIndicator of wrong country if that has not been determined to be an exclusive dimension
-  
+  tictoc:::tic('Country geoindication')
   if (!excludeUnknownRanges & doRangeAnalysis){
     
     a = dat$countryStatusRangeAnalysis_wrongNTV_test ; a[is.na(a)] <- 0
@@ -514,9 +560,10 @@ occurrenceClassify <- function (
                               wrongReportCtry_score= NA)[1:nrow(dat),]
     row.names(Analysis.6) <- NULL
   }
-  
+  tictoc:::toc()
+
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
-  
+  tictoc:::tic('Environmental outliers')
   Analysis.7 <- envOutliers (.r.env=r.env,
                              df= dat, xf=x.field,
                              yf =y.field,
@@ -526,8 +573,10 @@ occurrenceClassify <- function (
                              method = methodEnvOutliers,
                              do = doEnvOutliers)
   
+  tictoc:::toc()
   
   ### ELEMENT 8: Coordinate accuracy
+  tictoc:::tic('Environmental outliers')
   Analysis.8 <- geoEnvAccuracy(df=dat,
                                xf = x.field,
                                yf = y.field,
@@ -537,13 +586,7 @@ occurrenceClassify <- function (
                                ef= e.field,
                                raster.elevation = r.dem,
                                do = do.geoEnvAccuracy,method = methodGeoEnvAccuracy)
-  
-  
-  
-  
-  
-  
-  
+  tictoc:::toc()
   
   ### SUMMARY ANALYSIS RESULTS
   list.analysis = list()
@@ -555,11 +598,15 @@ occurrenceClassify <- function (
   row.names(df.qualityAssessment) <- NULL
   
   
+  #timer for the assigning label process
+  tictoc:::toc()
   
   ############################################################################
   #### STEP 8:  Quality A-E Environmental and Geographical outliers
   # assignation of grade to a record
   ###########################################################################
+  tictoc:::tic('Labeling occurrences')
+  
   if (gradingSettings$grading.test.type == 'strict')   {test.strictness.value = 0 }
   if (gradingSettings$grading.test.type == 'majority') {test.strictness.value = 0.5 }
   if (gradingSettings$grading.test.type == 'relaxed')  {test.strictness.value = 0.6 }
@@ -575,8 +622,11 @@ occurrenceClassify <- function (
     
   }
   
-  grade.E <- (.lazylogic (e = 'HumanDetection_score >= test.strictness.value')) | (.lazylogic (e = 'institutionLocality_score >= test.strictness.value')) | (.lazylogic (e = 'centroidDetection_score >= test.strictness.value')) | (.lazylogic (e = 'unknownRange_score >= test.strictness.value')) | (.lazylogic (e = 'wrongReportCtry_score >= test.strictness.value') | (.lazylogic (e = 'envOutliers_missingEnv_score >= test.strictness.value')))
-  df.qualityAssessment$quality.grade[grade.E] <- 'E'
+  #E is set so that it could be optional
+  if ('E' %in% gradingSettings$qualifier.label.scoping){
+    grade.E <- (.lazylogic (e = 'HumanDetection_score >= test.strictness.value')) | (.lazylogic (e = 'institutionLocality_score >= test.strictness.value')) | (.lazylogic (e = 'centroidDetection_score >= test.strictness.value')) | (.lazylogic (e = 'unknownRange_score >= test.strictness.value')) | (.lazylogic (e = 'wrongReportCtry_score >= test.strictness.value') | (.lazylogic (e = 'envOutliers_missingEnv_score >= test.strictness.value')))
+    df.qualityAssessment$quality.grade[grade.E] <- 'E'
+  }
   to.continue <- is.na(df.qualityAssessment$quality.grade)
   
   grade.D <- (.lazylogic (e = 'geoOutliers_score >= test.strictness.value') ) &  (.lazylogic ('envOutliers_score  >= test.strictness.value') )
@@ -597,8 +647,7 @@ occurrenceClassify <- function (
   
   #add labels to the data
   dat <- cbind(dat,df.qualityAssessment)
-  
-  
+  tictoc:::toc()
   
   ############################################################################
   ### STEP 9: BUILD FULL dataframe
@@ -609,10 +658,11 @@ occurrenceClassify <- function (
     full.qaqc <- plyr::rbind.fill(full.qaqc, get(o))
   }
   
-  
   ###########################################################################
   ### STEP 10: GET QUALIFIERS (attributes you want to add to your label that help decide its use)
   ###########################################################################
+  tictoc:::tic('Adding qualifiers name tags to  occurrences')
+  
   #check if user does not want the qualifiers, and return output
   if (gradingSettings$qualifiers == F) {
     
@@ -637,10 +687,6 @@ occurrenceClassify <- function (
                              occ_short_profile=short.qaqc)
     return (output.function)
   }
-  
-  
-  
-  
  
   #get the qualifiers
   tag1 <- occProfileR:::.qualifier.invasive.range(df=full.qaqc,
@@ -698,10 +744,13 @@ occurrenceClassify <- function (
   #reorder as the same as inputs
   full.qaqc <- full.qaqc [sort (full.qaqc$roworder,decreasing = F, na.last=T),]
   
-
+  tictoc:::toc()
+  
   ########################################################################
   ### STEP 11: WRITE THE OUTPUTS
   ########################################################################
+  tictoc:::tic('Writing outputs')
+  
   if (write.full.output==T) {
     write.csv (full.qaqc,  paste0(output.dir,'/',
                                   output.base.filename,'_',sp,'_long.csv'),
@@ -717,8 +766,11 @@ occurrenceClassify <- function (
                paste0(output.dir,'/',output.base.filename,'_',sp,
                       '_short.csv'),row.names = F)
   }
+  tictoc:::toc()
   
   output.function <- list (occ_full_profile=full.qaqc, occ_short_profile=short.qaqc)
+  tictoc:::toc()
+  
   return (output.function)
   
   

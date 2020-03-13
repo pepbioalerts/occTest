@@ -4,7 +4,13 @@
 \alias{.coords2country}
 \title{Identifies country ISO3 based on locations}
 \usage{
-.coords2country(points)
+.coords2country(
+  xydat,
+  .countries.shapefile = NULL,
+  .points.proj4string = NULL,
+  ctryNameField = NULL,
+  verbose = F
+)
 }
 \arguments{
 \item{points}{A dataframe with x and y coordinates}

@@ -7,7 +7,7 @@
 nearestcell3(dat, rst, xf = x.field, yf = y.field, verbose = F)
 }
 \arguments{
-\item{dat}{Data.frame of species occurrences}
+\item{dat}{Data.frame of species occurrences and a field named taxonobservationID}
 
 \item{rst}{An optional raster grid}
 

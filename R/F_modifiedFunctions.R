@@ -76,12 +76,13 @@ ne_download_occProfileR = function (scale = 110, type = "countries",
 #' }
 #' 
 cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
-                        ref = NULL, value = "clean", verbose = F) 
+                        ref = NULL, value = "clean", verbose = F,outdir=output.dir) 
 {
   match.arg(value, choices = c("clean", "flagged"))
   if (verbose) {
     message("Testing urban areas")
   }
+  browser()
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
     ref <- try(suppressWarnings(occProfileR:::ne_download_occProfileR(scale = "medium", 
@@ -95,12 +96,17 @@ cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallati
                                                             nrow(x))))
     }
     sp::proj4string(ref) <- ""
+    newoutdir = paste0(outdir,'/spatialData')
+    dir.create(newoutdir,showWarnings = F,recursive = T)
+    rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile")
+    
   }
   else {
     if (!any(is(ref) == "Spatial")) {
       ref <- as(ref, "Spatial")
     }
-    ref <- reproj(ref)
+    #this line is in the original code of coordinate cleaner but I do not know why, I guess it comes from pkg reproj
+    #ref <- reproj(ref)
   }
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = CRS(wgs84))

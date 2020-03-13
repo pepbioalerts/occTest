@@ -18,6 +18,7 @@ occurrenceClassify(
   resolveAlienCtry = F,
   resolveNativeCtry = F,
   interactiveMode = F,
+  outPath = NULL,
   verbose = F
 )
 }

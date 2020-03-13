@@ -10,7 +10,8 @@ cc_urb_occProfileR(
   lat = "decimallatitude",
   ref = NULL,
   value = "clean",
-  verbose = F
+  verbose = F,
+  outdir = output.dir
 )
 }
 \arguments{

@@ -4,10 +4,18 @@
 \alias{nativeStatusCtry}
 \title{Check native and alien ranges in countries}
 \usage{
-nativeStatusCtry(spName, resolveNative = T, resolveAlien = T, verbose = T)
+nativeStatusCtry(
+  spName,
+  xydat,
+  resolveNative = T,
+  resolveAlien = T,
+  verbose = T
+)
 }
 \arguments{
 \item{spName}{character. Species name in the form of Genus species}
+
+\item{xydat}{dataframe Species longitude latitude coordinates.}
 
 \item{resolveNative}{logical. Should the function attempt to find countries where species are considered native?}
 

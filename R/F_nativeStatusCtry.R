@@ -6,6 +6,7 @@
 #' @details right now based on the package originatr. Future implementation may query more databases.
 #'
 #' @param spName character. Species name in the form of Genus species
+#' @param xydat dataframe Species longitude latitude coordinates.
 #' @param resolveNative logical. Should the function attempt to find countries where species are considered native?
 #' @param resolveAlien logical. Should the function attempt to find countries where species are considered introduced?
 #' @param verbose logical. Want to print information during the process?
@@ -24,58 +25,34 @@
 #' @export
 #' 
 
-# 
-# nsr("Pinus ponderosa", country = "United States")
-# is_native
-# library (countrycode)
-# 
-# countrycode('spain', 'country.name', 'iso3c')
-# 
-# devtools::install_github("ropensci/originr")
-# 
-# 
-# 
-# ### examples start here
-# 
-# spName = 'Ailanthus altissima'
-# 
-# if (interactiveMode & is.null (ntv.range) ){
-#   resolveNative <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
-# }
-# if (interactiveMode & is.null (inv.range) ){
-#   resolveAlien <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
-# }
-# if (resolveAlienNative) {resolveAlien = T ;resolveNative = T }
-# 
-# if (any (resolveAlien, resolveNative)){
-#   
+nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verbose=T){
 
 
-
-nativeStatusCtry <- function (spName,resolveNative=T,resolveAlien=T, verbose=T){
-
-  #check data from flora Europaea
-  try (floraEurope <- originr::flora_europaea(spName), silent=T)
+  #CHECK FLORA EUROPAEA
+  try (floraEurope <- originr::flora_europaea(spName,messages = verbose), silent=T)
   
-  #check gisd (it also contains info on native range)
-  try (gisdInvasive <- originr::gisd(x = spName), silent=T)
+  #CHECK GISD (it also contains info on native range)
+  try (gisdInvasive <- originr::gisd(x = spName,messages = verbose), silent=T)
   
-  #check info en several invasive checklists
+  #CHECK BIEN NRS (contains both invasive and native )
+  ctryFromCoords =  occProfileR:::.coords2country (xydat)
+  ctryFromCoords =  unique (ctryFromCoords)
+  ctry4GNRS = countrycode:::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
+  #we apply over bcause GNRS only accepts one query at at ime
+  listNSR = lapply (ctry4GNRS, function (x,s=spName){
+    try (originr::nsr(s,x),silent = T)
+  })
+  listNsrClean = try (expr = Filter(Negate(is.null), listNSR), silent=T)
+  listNsrClean = try (expr = do.call (rbind,listNsrClean)    , silent=T)
+  
+  #CHECK INFO INVASIVE LISTS 
   if (resolveAlien){
     #not implemented
     #try (eolInvasive <- originr::eol(name = spName),silent=T)
     try (griisInvasive <-originr::griis(name = spName), silent = T)
   }
   
-  #check data from BIEN native species resolver 
-  data (nsr_countries,package = 'originr')
-  listNSR = lapply (nsr_countries, function (x,s=spName){
-    try (originr::nsr(s,x),silent = T)
-  })
-  try (listNsrClean <- lapply (listNSR, function (x) if (class(x)=='try-error' ) {NULL} else {x}), silent=T )
-  try (listNsrClean <- do.call (rbind,listNsrClean), silent= T)
-  
-  #gather data for natives
+  #GATHER DATA NATIVES
   if (resolveNative){
     ntvCtryResolved <- NULL
     if (exists('floraEurope') & class(floraEurope)=="list") {ntvCtryResolved <- c(ntvCtryResolved,floraEurope$native)}
@@ -88,14 +65,12 @@ nativeStatusCtry <- function (spName,resolveNative=T,resolveAlien=T, verbose=T){
       ntvCtryResolved <- c (ntvCtryResolved,gisdInvasive[[1]]$native_range)
     }
     
-    
     ntvCtryResolved <- ntvCtryResolved[!is.na(ntvCtryResolved)]
     if (length(ntvCtryResolved)==0 & verbose) {"no native countries found. Native countries set to NULL"}
     if (length(ntvCtryResolved)>0 & verbose) {paste("Native countries found",ntvCtryResolved)}
-    
   }
   
-  #gather data for alien ranges in countries
+  #GATHER DATA INVASIVE 
   if (resolveAlien){
     invCtryResolved <- NULL
     if (exists('floraEurope') & class(floraEurope)=="list") {invCtryResolved <- c(invCtryResolved,floraEurope$exotic)}
@@ -164,7 +139,7 @@ nativeStatusCtry <- function (spName,resolveNative=T,resolveAlien=T, verbose=T){
 
 
 #### this function does not work properly. RECHECK
-ctryToIso3 <- function (x,mehtod='countrycode'){ 
+ctryToIso3 <- function (x,method='countrycode'){ 
   
   #initial checks
   if (!is.character(x) & !is.null(x)) {stop("Country should be character")}
@@ -207,7 +182,31 @@ ctryToIso3 <- function (x,mehtod='countrycode'){
   return (outIso3)
   
 
-  
 }
   
+# 
+# nsr("Pinus ponderosa", country = "United States")
+# is_native
+# library (countrycode)
+# 
+# countrycode('spain', 'country.name', 'iso3c')
+# 
+# devtools::install_github("ropensci/originr")
+# 
+# 
+# 
+# ### examples start here
+# 
+# spName = 'Ailanthus altissima'
+# 
+# if (interactiveMode & is.null (ntv.range) ){
+#   resolveNative <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+# }
+# if (interactiveMode & is.null (inv.range) ){
+#   resolveAlien <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+# }
+# if (resolveAlienNative) {resolveAlien = T ;resolveNative = T }
+# 
+# if (any (resolveAlien, resolveNative)){
+#   
 

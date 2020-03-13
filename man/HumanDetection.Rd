@@ -13,7 +13,8 @@ HumanDetection(
   ras.hii = ras.hii,
   .th.human.influence = th.human.influence,
   do = T,
-  verbose = F
+  verbose = F,
+  output.dir = output.dir
 )
 }
 \arguments{

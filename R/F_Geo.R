@@ -8,30 +8,20 @@
 #'
 #' }
 #' 
-# The single argument to this function, points, is a data.frame in which:
+# The most important argument argument to this function, points, is a data.frame in which:
 #   - column 1 contains the longitude in degrees
 #   - column 2 contains the latitude in degrees
-.coords2country = function(points)
-{  
-  countriesSP <- rworldmap:::getMap(resolution='low')
-  #countriesSP <- getMap(resolution='high') #you could use high res map from rworldxtra if you were concerned about detail
+# ,GNRScheck=F (whether we want to implement a gnrs check)
+.coords2country = function(xydat,.countries.shapefile=NULL,.points.proj4string=NULL,ctryNameField=NULL,verbose=F){  
+  if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap:::getMap(resolution='high') ;  ctryNameField ='ISO3'}
+  if (!class(.countries.shapefile)== 'SpatialPolygonsDataFrame') {stop (".countries shapefile not loaded ")}
+  if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
+  sp.xydat = sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
+  overlay.sp.xydat = sp:::over(sp.xydat, .countries.shapefile)
+  country_ext = as.character (overlay.sp.xydat[, ctryNameField])
+  country_ext
+  }
   
-  # convert our list of points to a SpatialPoints object
-  
-  # pointsSP = SpatialPoints(points, proj4string=CRS(" +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"))
-  
-  #setting CRS directly to that from rworldmap
-  pointsSP = sp:::SpatialPoints(points, proj4string=sp:::CRS(sp:::proj4string(countriesSP)))  
-  
-  # use 'over' to get indices of the Polygons object containing each point 
-  indices = sp:::over(pointsSP, countriesSP)
-  
-  # return the ADMIN names of each country
-  #indices$ADMIN  
-  as.character(indices$ISO3) # returns the ISO3 code 
-  #indices$continent   # returns the continent (6 continent model)
-  #indices$REGION   # returns the continent (7 continent model)
-}
 
 
 

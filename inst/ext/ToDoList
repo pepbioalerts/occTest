@@ -2,18 +2,13 @@ ToDo WishList
 
 - detecting centroids is slow. Possibly due to man for loops across rows. Maybe vectorize?
 
-- Make downloads from rnaturalearth silent, also save them in the same folder so if we do the same in the same session for other species it can check on the downloads.
-R: added a ping to check w have internet connection before we download. 
+- Make an informative output path for the results
+- Save them in the same folder so if we do the same in the same session for other species it can check on the downloads.
 
 - Too verbose in the beginning fo the workflow. Make a function to assign parameter values
-
-
-- Make an informative output path for the results
 - Harmonize printed info with the header "WARNING" OR "INFO"
 
-
 #checks to be donE
-- verify resolving ntv and inv countries
-- check what happens when no internet and tries downloads from naturalEarth
+- add rworldxtra data package (recheck all the packages that are needed)
 
 
