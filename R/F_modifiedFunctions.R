@@ -82,7 +82,6 @@ cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallati
   if (verbose) {
     message("Testing urban areas")
   }
-  browser()
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
     ref <- try(suppressWarnings(occProfileR:::ne_download_occProfileR(scale = "medium", 

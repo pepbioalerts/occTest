@@ -690,7 +690,7 @@ centroidDetection <- function (df=dat,
 #' }
 #' @export
 
-HumanDetection <- function (df=dat,
+humanDetection <- function (df=dat,
                                   xf=x.field,
                                   yf=y.field,
                                  method='all',
@@ -918,6 +918,7 @@ geoOutliers         <- function (df=dat,
   xydat <- df[,c(xf,yf)]
 
   if (any (method %in% c('alphaHull','all'))){
+ 
 
 
 
@@ -1061,9 +1062,9 @@ geoOutliers         <- function (df=dat,
   }
 
   if (any (method %in% c('quantSamplingCorrected','all'))){
-    
 
-    cc_qsc_tst = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
+
+    cc_qsc_tst = occProfileR:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
                                             verbose=F)
@@ -1237,30 +1238,30 @@ envOutliers  <- function (.r.env=r.env,
 #' }
 #' @export
 
-geoEnvAccuracy <- function (df,
-                         xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,
-
-                         method='all',
-
-                         r.env,
-                         accept.threshold.cell =0.5,
-                         accept.threshold.env = 0.5,
-
-                         bearing.classes=10,
-                         distance.classes=5,
-                         env.quantiles=c(0.3,0.7),
-
-                         elev.threshold = 100,
-                         raster.elevation=NULL,
-                         verbose=F,
-                         do=do.geoEnvAccuracy
-
-                         # to be implemented : doParallel=T
-                         ){
+geoEnvAccuracy  <- function (df,
+                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,
+                             
+                             method='all',
+                             
+                             r.env,
+                             accept.threshold.cell =0.5,
+                             accept.threshold.env = 0.5,
+                             
+                             bearing.classes=10,
+                             distance.classes=5,
+                             env.quantiles=c(0.3,0.7),
+                             
+                             elev.threshold = 100,
+                             raster.elevation=NULL,
+                             verbose=F,
+                             do=do.geoEnvAccuracy,
+                             doParallel=F,
+                             mc.cores= 2
+){
   
-
-
-
+  
+  
+  
   #output results
   out = data.frame (geoenvLowAccuracy_lattice_test = NA,
                     geoenvLowAccuracy_lattice_comments = NA,
@@ -1270,17 +1271,24 @@ geoEnvAccuracy <- function (df,
                     geoenvLowAccuracy_envDiff_comments =NA,
                     geoenvLowAccuracy_elevDiff_test =NA,
                     geoenvLowAccuracy_elevDiff_comments =NA,
-
+                    
                     geoenvLowAccuracy_score=NA
-                    )[1:nrow (df),]
-
+  )[1:nrow (df),]
+  
   row.names(x = out) <- NULL
   if (!do) {return (out)}
-
+  
+  #check if need parallel
+  os = occProfileR:::get_os()
+  if (doParallel==T & os=='mac') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='linux') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='windows') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  if (doParallel==F) {mymclapply <- lapply}
+  
   #start method lattice
-
+  
   if (any(method %in% c('lattice','all'))){
-
+    
     if(!is.null(dsf)) {
       xydat = df[,c(xf,yf,dsf)]
     }
@@ -1289,23 +1297,23 @@ geoEnvAccuracy <- function (df,
       xydat = df[,c(xf,yf)]
       xydat$dataset = 'TemporaryDatasetName'
       dsf <- 'dataset'
-      }
-
-
-      cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
-      out$geoenvLowAccuracy_lattice_test = (!cd_round_test) * 1
-      out$geoenvLowAccuracy_lattice_comments = ('Based on default values of CoordinateCleaner::cd_round')
+    }
+    
+    
+    cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
+    out$geoenvLowAccuracy_lattice_test = (!cd_round_test) * 1
+    out$geoenvLowAccuracy_lattice_comments = ('Based on default values of CoordinateCleaner::cd_round')
   }
-
+  
   #start methods requiring elevation
   #method elevation
   if (any(method %in% c('elevDiff','all'))) {
-
+    
     #check and provide elevation
     if (is.null (ef) ) { out$elevDiff_test <- rep (NA,nrow(df))}
-
+    
     if (!is.null(ef)){
-
+      
       if (is.null (raster.elevation)) {
         if (verbose) print ('elevation raster not provided, downloading from SRTM')
         do.srtm.download = T
@@ -1313,9 +1321,9 @@ geoEnvAccuracy <- function (df,
       #if no elevation raster provided, download it
       if (do.srtm.download){
         raster.elevation = try  (expr = {.getSRTM (xydat=df,download=T, verbose=F)},silent = T)
-
+        
       }
-
+      
       #determining elevation test
       if (class(raster.elevation) == "RasterLayer" ) {
         elev.xy <- extract (raster.elevation, df[,c(xf,yf)])
@@ -1329,10 +1337,10 @@ geoEnvAccuracy <- function (df,
         out$elevDiff_test <- (rep (NA,nrow(df)))
       }
     }
-
-    }
-
-
+    
+  }
+  
+  
   #Need coordinate uncertainty analysis ?
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
@@ -1345,25 +1353,25 @@ geoEnvAccuracy <- function (df,
     #write final score
     out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
     return (out)
-    }
-
+  }
+  
   #start methods requiring coordinate uncertainty
   if(length(af)>1) {df$new_accuracy = max(df[,af],na.rm=T); af = 'new_accuracy'}
   xydat = df[,c(xf,yf,af)]
   xydat$occCellids = cellFromXY(r.env,as.data.frame (df[,c(xf,yf)]))
   #get cell IDs of buffer points
-  cellIds.directions = lapply (1:nrow (xydat), function (i){
-
+  cellIds.directions = mymclapply (1:nrow (xydat), function (i){
+    
     distance.accuracy = as.numeric (xydat[i,c(af)])
     if (is.na (distance.accuracy) |is.na (xydat$occCellids[i])  ) {return (NA)}
     if (distance.accuracy>1){
       sequence.pts = seq(from=0, to=as.numeric(distance.accuracy) ,length.out = distance.classes +1)
       sequence.pts = sequence.pts [-1]
     } else {sequence.pts <- distance.accuracy}
-
+    
     myAngles = seq(from=1,to=360,length.out=bearing.classes)
     out.bearing = sapply(myAngles, function (bearing){
-
+      
       points.buffer.id = sapply(sequence.pts, function (dpoints){
         dest.point = geosphere::destPoint(p = xydat[i,c(xf,yf)],b=bearing,d=dpoints)
         dest.point.cellID = raster::cellFromXY(object = r.env, dest.point)
@@ -1374,9 +1382,11 @@ geoEnvAccuracy <- function (df,
       #perc.points.buffer = mean (points.buffer,na.rm=T)
       points.buffer.id
     })
-
+    
     as.vector (out.bearing)
   })
+  
+  
   
   #start method percentage of Differnt cells around uncertainty
   if (any(method %in% c('percDiffCell','all'))){
@@ -1389,50 +1399,50 @@ geoEnvAccuracy <- function (df,
   }
   #start method percentage of environmental differences around uncertainty
   if (any(method %in% c('envDeviation','all'))) {
-
+    
     uniqueCellBuff <- unique (unlist (cellIds.directions))
     df.CellBuff = raster::extract(r.env,uniqueCellBuff,df=T)
     df.CellBuff$cellID = uniqueCellBuff
-
+    
     targetCellUnique =   xydat$occCellids [!xydat$occCellids %in% uniqueCellBuff]
     df.CellTarget = raster::extract(r.env,targetCellUnique,df=T)
     df.CellTarget$cellID = targetCellUnique
-
+    
     df.cells = rbind (df.CellBuff,df.CellTarget)
-
-    env.test = lapply (1:nrow(xydat), function (i){
-
-
+    
+    env.test = mymclapply (1:nrow(xydat), function (i){
+      
+      
       NcellReps = table (cellIds.directions[[i]])
-
+      
       df.env.cellBuffs  = lapply (1:length(NcellReps), function (m){
         cellID= as.numeric (names (NcellReps[m]))
         times = as.numeric (NcellReps[m])
         df.env.var = df.cells[which(df.cells$cellID ==cellID ), ]
         do.call("rbind", replicate(times, df.env.var, simplify = FALSE))
-
+        
       })
       df.env.cellBuffs  = do.call(rbind,df.env.cellBuffs)
       df.env.cellBuffs  = df.env.cellBuffs[complete.cases(df.env.cellBuffs),]
       df.env.targetcell = df.cells[which(df.cells$cellID == xydat$occCellids[i] ), ]
-
+      
       if (nrow (df.env.cellBuffs)==0) {
         vars.outlier = rep(NA,length(names (r.env))+1 )
         names (vars.outlier) = c(names (r.env),'all')
         vars.outlier = as.data.frame (t(vars.outlier))
         return (vars.outlier)
       }
-
+      
       if (any ( is.na (df.env.targetcell [,names (r.env)]) )) {
         vars.outlier = rep(NA,length(names (r.env))+1 )
         names (vars.outlier) = c(names (r.env),'all')
         vars.outlier = as.data.frame (t(vars.outlier))
         return (vars.outlier)
       }
-
-
+      
+      
       vars.outlier  <- sapply (names (r.env), function (nvar){
-
+        
         qprobs = quantile (df.env.cellBuffs[,nvar],probs=env.quantiles)
         if (df.env.targetcell[,nvar] < qprobs[1]) {(return(1))}
         if (df.env.targetcell[,nvar] > qprobs[2]) {(return(1))}
@@ -1441,19 +1451,20 @@ geoEnvAccuracy <- function (df,
       vars.outlier =  as.data.frame (t(vars.outlier))
       vars.outlier$all <- mean (as.numeric(vars.outlier[1,]),na.rm=T)
       vars.outlier
-
+      
     })
-
+    
     env.test = do.call (rbind, env.test)
     out$geoenvLowAccuracy_envDiff_test = (env.test$all > accept.threshold.env)*1
     out$geoenvLowAccuracy_envDiff_comments = paste('envQuantiles=',paste(env.quantiles,collapse = ','),';PercOutVariablesTh=',accept.threshold.env)
-
+    
   }
-
+  
   #write final score
   out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
   return (out)
 }
+
 
 #'QUALITY GRADINGS
 #'

@@ -19,7 +19,9 @@ occurrenceClassify(
   resolveNativeCtry = F,
   interactiveMode = F,
   outPath = NULL,
-  verbose = F
+  verbose = F,
+  doParallel = F,
+  mc.cores = 2
 )
 }
 \arguments{

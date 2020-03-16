@@ -125,7 +125,8 @@ Mycc_outl <- function (x, lon = "decimallongitude", lat = "decimallatitude",
     else {
       ref <- rnaturalearth::ne_countries(scale = "medium")
       sp::proj4string(ref) <- ""
-      area <- data.frame(country = ref@data$iso_a3, area = geosphere::areaPolygon(ref))
+      #change from AZizka: changed to iso_a2 because in vapply rgbiff:occ count looks for 2 digit country codes
+      area <- data.frame(country = ref@data$iso_a2, area = geosphere::areaPolygon(ref))
       area <- area[!is.na(area$area), ]
       area <- area[!is.na(area$country), ]
       nrec <- vapply(area$country, FUN = function(k) {
@@ -135,7 +136,10 @@ Mycc_outl <- function (x, lon = "decimallongitude", lat = "decimallatitude",
                          row.names = NULL)
       nrec_norm <- dplyr::left_join(nrec, area, by = "country")
       nrec_norm$norm <- log(nrec_norm$recs/(nrec_norm$area/1e+06/100))
-      ref <- raster::crop(ref, raster::extent(pts) + 1)
+      
+      #change from AZizka: commented out bc it introduces warnings that may freak out users (e.g. the etent of the coordinates may go beyond the world)
+      #ref <- raster::crop(ref, raster::extent(pts) + 1)
+      
       country <- sp::over(x = pts, y = ref)[, "iso_a3"]
       thresh <- stats::quantile(nrec_norm$norm, probs = sampling_thresh)
       s_flagged <- nrec_norm$norm[match(country, nrec_norm$country)]

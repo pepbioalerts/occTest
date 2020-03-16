@@ -35,7 +35,9 @@ occurrenceClassify <- function (
   
   interactiveMode=F,
   outPath=NULL,
-  verbose = F){
+  verbose = F,
+  doParallel=F,
+  mc.cores=2){
   #browser()
   
   #set timer
@@ -113,7 +115,6 @@ occurrenceClassify <- function (
   
   #load writeOutSettings
   if (is.null(writeoutSettings)) { writeoutSettings = defaultSettings$writeoutSettings}
-  browser()
   output.dir = writeoutSettings$output.dir
   if (is.null(output.dir)) {output.dir = getwd() ; message('Output directory set to your current working directory')}
   writeAllOutput = writeoutSettings$writeAllOutput
@@ -160,7 +161,6 @@ occurrenceClassify <- function (
   
   #the development should be in the direction of automatically check and transform
   #occProfileR:::.check.geospatial.data (list.geospatial.objects =actual.input.geosp.objects)
-  
   #lapply (actual.input.geosp.objects, function (x) raster:::projection (x))
   
   
@@ -374,7 +374,6 @@ occurrenceClassify <- function (
   tictoc:::toc()
   tictoc:::tic('Filter G part 2')
   if (verbose) {print ("**** RESOLIVNG QUALITY FILTER G: sea/terrestrial reassignment ****")}
-  #browser()
   #analysis of nearest cell next to the sea
   dat <- nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
@@ -383,10 +382,11 @@ occurrenceClassify <- function (
     dat <- dat[[1]]
     moved.points <- dat[['moved']]
     if (!is.null(output.dir)){
-      odir = paste0(output.dir,'/',sp.name)
+      sp.name2= occProfileR:::.join.spname(sp.name)
+      odir = paste0(output.dir,'/',sp.name2)
       dir.create(odir,showWarnings = F,recursive = T)
       write.csv( moved.points,
-                 paste0(odir,'/',sp,'_coastal_Reassignment.csv'))
+                 paste0(odir,'/',sp.name2,'_coastal_Reassignment.csv'))
     }
     
     
@@ -400,12 +400,13 @@ occurrenceClassify <- function (
     dat.Q.G.second.time <- rbind (Analysis.G.second.time$Dups.Grid,
                                   Analysis.G.second.time$Dups.Exact)
     if  (nrow (dat.Q.G.second.time) !=  0) {
-      dat.Q.G.second.time$quality.grade <- 'G'}
-    
-    if (nrow (dat.Q.G.second.time) !=  0) {
-      dat.Q.G <- rbind(dat.Q.G,dat.Q.G.second.time)}
-    
+      dat.Q.G.second.time$quality.grade = 'G'
+      dat.Q.G = rbind(dat.Q.G,dat.Q.G.second.time)
+      dat = Analysis.G.second.time$continue
+      }
+
     rm (dat.Q.G.second.time)
+    
   }
   
   #check outputs and escape if need be //
@@ -429,7 +430,7 @@ occurrenceClassify <- function (
   #set timer
   tictoc:::toc()
   tictoc:::tic('Filter F')
-  if (verbose) {print ("**** RESOLIVNG QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
+  if (verbose) {print ("**** RESOLVING QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
   if (verbose & excludeUnknownRanges) {print('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')}
   if (verbose & excludeNotmatchCountry) {print('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')}
   
@@ -499,7 +500,7 @@ occurrenceClassify <- function (
   
   ### ELEMENT 2: HYPER-HUMAN ENVIRONMENT
   tictoc:::tic('Human detection')
-  Analysis.2 <- HumanDetection     (df = dat,
+  Analysis.2 <- humanDetection     (df = dat,
                                     xf = x.field,
                                     yf = y.field,
                                     .points.proj4string =points.proj4string,
@@ -507,7 +508,7 @@ occurrenceClassify <- function (
                                     .th.human.influence =th.human.influence,
                                     do = doHumanDetection,output.dir=output.dir)
   tictoc:::toc()
-  
+
   ### ELEMENT 3: BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
   tictoc:::tic('Institution locality')
   Analysis.3 <- institutionLocality (df=dat,lf=l.field,xf = x.field,yf=y.field,
@@ -585,7 +586,7 @@ occurrenceClassify <- function (
                                r.env = r.env,
                                ef= e.field,
                                raster.elevation = r.dem,
-                               do = do.geoEnvAccuracy,method = methodGeoEnvAccuracy)
+                               do = do.geoEnvAccuracy,method = methodGeoEnvAccuracy,doParallel=doParallel,mc.cores=mc.cores)
   tictoc:::toc()
   
   ### SUMMARY ANALYSIS RESULTS
@@ -752,7 +753,10 @@ occurrenceClassify <- function (
   tictoc:::tic('Writing outputs')
   
   if (write.full.output==T) {
-    write.csv (full.qaqc,  paste0(output.dir,'/',
+    sp2 = occProfileR:::.join.spname (sp)
+    newdir = paste0(output.dir,'/',sp2)
+    dir.create (newdir,recursive = T,showWarnings = F)
+    write.csv (full.qaqc,  paste0(newdir,'/',
                                   output.base.filename,'_',sp,'_long.csv'),
                row.names = F)
   }
@@ -762,8 +766,12 @@ occurrenceClassify <- function (
                            "countryStatusRangeAnalysis_score", "centroidDetection_score" ,"HumanDetection_score" ,"institutionLocality_score",
                            "geoOutliers_score","unknownRange_score", "wrongReportCtry_score","envOutliers_score" ,"geoenvLowAccuracy_score")]
   if (write.simple.output==T) {
+    sp2 = occProfileR:::.join.spname (sp)
+    newdir = paste0(output.dir,'/',sp2)
+    dir.create (newdir,recursive = T,showWarnings = F)
+    
     write.csv (short.qaqc,
-               paste0(output.dir,'/',output.base.filename,'_',sp,
+               paste0(newdir,'/',output.base.filename,'_',sp,
                       '_short.csv'),row.names = F)
   }
   tictoc:::toc()

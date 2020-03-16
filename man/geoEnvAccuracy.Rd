@@ -21,7 +21,9 @@ geoEnvAccuracy(
   elev.threshold = 100,
   raster.elevation = NULL,
   verbose = F,
-  do = do.geoEnvAccuracy
+  do = do.geoEnvAccuracy,
+  doParallel = F,
+  mc.cores = 2
 )
 }
 \arguments{

@@ -211,5 +211,45 @@
   
 }
 
+###### ========================================
 
+#'Checks the Operative System 
+#'
+#' @return a character function. 
+#' @note #TInternal function copied from utiles wickham to know which is the os used by the computer
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
 
+get_os <- function() {
+  if (.Platform$OS.type == "windows") { 
+    "win"
+  } else if (Sys.info()["sysname"] == "Darwin") {
+    "mac" 
+  } else if (.Platform$OS.type == "unix") { 
+    "unix"
+  } else {
+    stop("Unknown OS")
+  }
+}
+
+###### ========================================
+#' Hijacking functions to change default parameters
+#'
+#' @return a function 
+#' @note #Internal function that I got from stack overflow MrFlick
+#' @examples \dontrun{
+#' .data.frame <- hijack(data.frame, stringsAsFactors = FALSE)
+#' dat <- .data.frame(x1 = 1:3, x2 = c("a", "b", "c"))
+#' str(dat)  # yay! strings are character
+#' }
+#' 
+#' 
+hijack <- function (FUN, ...) {
+  .FUN <- FUN
+  args <- list(...)
+  invisible(lapply(seq_along(args), function(i) {
+    formals(.FUN)[[names(args)[i]]] <<- args[[i]]
+  }))
+  .FUN
+}
