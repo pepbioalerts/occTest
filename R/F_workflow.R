@@ -751,14 +751,15 @@ occurrenceClassify <- function (
   ### STEP 11: WRITE THE OUTPUTS
   ########################################################################
   tictoc:::tic('Writing outputs')
-  
   if (write.full.output==T) {
     sp2 = occProfileR:::.join.spname (sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create (newdir,recursive = T,showWarnings = F)
-    write.csv (full.qaqc,  paste0(newdir,'/',
+    written = try (write.csv (full.qaqc,  paste0(newdir,'/',
                                   output.base.filename,'_',sp,'_long.csv'),
-               row.names = F)
+               row.names = F),silent = T)
+    if (class(written)=='try-error') save (list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
+    if (class(written)=='try-error') try (file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
   
   short.qaqc<-full.qaqc[,c(x.field,y.field,'quality.grade',

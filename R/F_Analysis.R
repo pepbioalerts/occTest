@@ -619,8 +619,7 @@ centroidDetection <- function (df=dat,
       }
 
       #get raster cells in centroids
-      focal.cell.ids <- raster::extract (.r.env,y = cc, cellnumbers=T, df=T)
-      focal.cell.ids <- focal.cell.ids$cells
+      focal.cell.ids <- raster::cellFromXY (.r.env, cc)
       focal.cells.ids <- focal.cell.ids[is.na(focal.cell.ids)]
       neig.cells <- 8 #we could choose other
       adj.cells  <- raster::adjacent (.r.env,cells = focal.cell.ids, directions = neig.cells, include = F, id=F)
@@ -641,10 +640,10 @@ centroidDetection <- function (df=dat,
       }
 
       #get species presence cells
-      cell.ids.sp <- raster::extract (.r.env,y = data.sp.pres, cellnumbers=T, df=T)
+      cell.ids.sp <- raster::cellFromXY (.r.env, data.sp.pres)
 
       #species presence in centroids or neighbors?
-      sp.in.centroid <- cell.ids.sp$cells %in% cell.ids * 1
+      sp.in.centroid <- cell.ids.sp %in% cell.ids * 1
 
       out$centroidDetection_speciesGeoCodeR_test <- sp.in.centroid
       out$centroidDetection_speciesGeoCodeR_comments <- NA
@@ -936,7 +935,7 @@ geoOutliers         <- function (df=dat,
 
     if (nrow (df) <=5 ) {
       points.outside.alphahull <- rep (NA, nrow(df) )
-      out.comments <- paste0('Not enough samples for GeoIndicator alphaHull.')
+      out.comments <- paste0('N<=5. Analysis not run')
     }
 
     #write results into the results dataframe
@@ -1042,12 +1041,16 @@ geoOutliers         <- function (df=dat,
 
   if (any (method %in% c('distance','all'))){
     #create fake species list for Coordinate cleaner
+    
     df$species <- 'MyFakeSp'
     cc_dist_test = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
     cc_dist_test <- (!  cc_dist_test) * 1
     out$geoOutliers_distance_test  = cc_dist_test
     out$geoOutliers_distance_comments = rep(paste('dist.threshold=',.distance.parameter,'m'),times=nrow(out))
-    if (nrow (df)<7) {out$geoOutliers_distance_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))}
+    if (nrow (df)<7) {
+      out$geoOutliers_distance_test = rep(NA,times=nrow(out))
+      out$geoOutliers_distance_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
+    }
   }
   
 
@@ -1057,8 +1060,11 @@ geoOutliers         <- function (df=dat,
     cc_med_test <- (!  cc_med_test) * 1
     out$geoOutliers_median_test  = cc_med_test
     out$geoOutliers_median_comments = rep(paste('medDeviation=', .medianDeviation.parameter),times=nrow(out))
-    if (nrow (df)<7) {out$geoOutliers_median_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))}
-    
+
+    if (nrow (df)<7) {
+      out$geoOutliers_median_test = rep(NA,times=nrow(out))
+      out$geoOutliers_median_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
+    }
   }
 
   if (any (method %in% c('quantSamplingCorrected','all'))){
@@ -1073,22 +1079,41 @@ geoOutliers         <- function (df=dat,
 
     out$geoOutliers_quantileSamplingCorr_test = cc_qsc_tst
     out$geoOutliers_quantileSamplingCorr_comments = rep(paste('IQRmultiplier=', .medianDeviation.parameter,';SamplIntensityThres=',.samplingIntensThreshold.parameter),times=nrow(out))
-    if (nrow (df)<7) {out$geoOutliers_quantileSamplingCorr_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))}
+    if (nrow (df)<7) {
+      out$geoOutliers_quantileSamplingCorr_test = rep(NA,times=nrow(out))
+      out$geoOutliers_quantileSamplingCorr_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
+      }
     
 
   }
 
   if (any (method %in% c('grubbs','all'))) {
     spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
-
-    grubbs_tst = rep(0,times=nrow(out))
-    grubbs.outl = occProfileR:::findSpatialOutliers(myPres = spdf,verbose = F)
-    grubbs_tst [grubbs.outl] = 1
-    grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
-
-    out$geoOutliers_Grubbs_test = grubbs_tst
-    out$geoOutliers_Grubbs_comments = grubbs_comment
-  }
+    if (length (spdf)<=5) {
+      out$geoOutliers_Grubbs_test = rep(NA,times=nrow(out))
+      out$geoOutliers_Grubbs_comments = rep(paste('N<5. Analysis not run'),times=nrow(out))
+      }
+    
+    if (length (spdf)>5){
+      grubbs_tst = rep(0,times=nrow(out))
+      grubbs.outl = try(occProfileR:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
+      
+      if (class(grubbs.outl)=='try-error') {
+        grubbs_tst = rep(NA,times=nrow(out)) 
+        grubbs_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
+      }
+      
+      if (class(grubbs.outl)!='try-error') {
+        grubbs_tst [grubbs.outl] = 1
+        grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
+      }
+      
+      out$geoOutliers_Grubbs_test = grubbs_tst
+      out$geoOutliers_Grubbs_comments = grubbs_comment
+    }
+      
+    }
+    
 
   out$geoOutliers_score <- occProfileR:::.gimme.score (out)
 
@@ -1152,8 +1177,8 @@ envOutliers  <- function (.r.env=r.env,
   if (any (method %in% c('bxp','all'))) {
 
     outlier.method.biogeo = '-bxp'
-    dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
-    missingEnvironment <- (!complete.cases(dat.environment))*1
+    # dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
+    # missingEnvironment <- (!complete.cases(dat.environment))*1
     species <- rep(.sp.name, nrow(dat.environment))
     dups <- rep(0, nrow(dat.environment))
     environmental.columns <- 2:ncol(dat.environment)
@@ -1183,8 +1208,6 @@ envOutliers  <- function (.r.env=r.env,
     if (class(.r.env)=="RasterStack") {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
     if (class(.r.env)=="RasterBrick") {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
 
-    # outlier.level.bxp <- round (rowMeans(a.df [,grep (names(a.df),pattern = '-bxp')]) ,digits=2)
-
     outlier.env <- (outlier.level >= .th.perc.outenv)*1
     comments.outlier.env <- paste (paste("Outlier",outlier.method.biogeo,".level="), outlier.level)
 
@@ -1194,12 +1217,12 @@ envOutliers  <- function (.r.env=r.env,
   }
 
   if (any (method %in% c('grubbs','all')))  {
+    #browser()
 
-    xydat <- df[,c(xf,yf)]
-    spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
+    #spdf = sp::SpatialPointsDataFrame(data = dat.environment[,-1],coords = df[,c(xf,yf)] ,proj4string =.projString )
 
     env.grubbs_tst = rep(0,times=nrow(out))
-    env.grubbs.outl = occProfileR::findEnvOutliers(myPres = spdf,myEnv = .r.env,verbose = F)
+    env.grubbs.outl = occProfileR::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
     env.grubbs_tst [env.grubbs.outl] = 1
     env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
 
@@ -1388,7 +1411,7 @@ geoEnvAccuracy  <- function (df,
   
   
   
-  #start method percentage of Differnt cells around uncertainty
+  #start method percentage of Different cells around uncertainty
   if (any(method %in% c('percDiffCell','all'))){
     perc.diff <- sapply (1:nrow(xydat), function (i){
       pdiff <- mean ((cellIds.directions[[i]]==xydat$occCellids[i]) * 1, na.rm = T)
