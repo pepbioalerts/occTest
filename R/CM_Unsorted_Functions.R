@@ -177,6 +177,7 @@ findEnvOutliers=function(myPres,
   #  myPres=presDF; pvalSet=1e-5; checkPairs=F; myEnv=NULL
   #  myEnv=env
   #  myPres=myPres; env=myEnv; pvalSet=1e-5
+  #browser()
   if(!is.null(myEnv)){ p.env=raster::extract(myEnv,myPres)} else {p.env=myPres}
   p.env=scale(p.env)
   # remove variables that are the same for all observations
