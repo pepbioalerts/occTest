@@ -7,6 +7,7 @@ library (bit64)
 library (rgbif)
 library (parallel)
 library (profvis)
+library (parallelsugar)
 
 #use the downloaded data from GBIF 
 #occGBIF = fread('/Users/pserra/RS/cleanOccAnalysis/GBIFdownolad/OccPyreneesArea.csv')
@@ -18,41 +19,21 @@ toEliminate = which(spPyr=='')
 spPyr = spPyr [(-1) * toEliminate]
 
 #Histogram of occurrences by species
-Nsp =  (table (occGBIF$species))
-hist (Nsp)
-summary  (as.numeric (Nsp))
-rm (occGBIF)
-gc()
-save(list = c('spPyr'), file = '/Users/pserra/RS/cleanOccAnalysis/GBIFdownolad/SpPyr.RData')
-
-#get occurrence counts among all gbif data (occ counts with geographic data)
-
-    # NspGBIF = lapply (spPyr, function (x){
-    #   print(which (spPyr==x))
-    #   key <- name_suggest(q=x, rank='species')$key[1]
-    #   Ngeoref <- occ_count(taxonKey = key,georeferenced = T)
-    #   data.frame (sp=x,Ngeoref=Ngeoref)  
-    # })
-    # 
-    # NspGBIF = do.call (rbind,NspGBIF)
-    # spidLowN = which (NspGBIF$Ngeoref<7)
-    # length(spidLowN)
-    # spidMedN = which (NspGBIF$Ngeoref<200 & NspGBIF$Ngeoref>=7)
-    # length(spidMedN)
-    # spidHighN = which (NspGBIF$Ngeoref<2000 & NspGBIF$Ngeoref>=200)
-    # length(spidHighN)
-    # spidSuperHighN = which (NspGBIF$Ngeoref>=2000)
-    # length(spidHighN)
+  # Nsp =  (table (occGBIF$species))
+  # hist (Nsp)
+  # summary  (as.numeric (Nsp))
+  # rm (occGBIF)
+  # gc()
+  # save(list = c('spPyr'), file = '/Users/pserra/RS/cleanOccAnalysis/GBIFdownolad/SpPyr.RData')
 
 #get climate 
 
-lf = list.files ("/Users/pserra/RS/GIS/CHELSA/",full.names = T)
-env = raster::stack (lf)
-
+lf = paste0 ("D:/quercus/BD_SIG/climat/monde/Chelsa_1979_2013/climatologies/bio/CHELSA_bio10_",c(1,5,6,12,13,14),'.tif')
+env = raster::stack (x = lf)
 
 
 #get digital elevation model
-elev = raster::raster('/Users/pserra/RS/GIS/mn30_grd/mn30.tif')
+elev = raster::raster('D:/quercus/BD_SIG/climat/monde/Chelsa_1979_2013/dem/mn30.tif')
 
 #mySettings
 mySettings <- occProfileR::defaultSettings()
@@ -65,49 +46,66 @@ mySettings$tableSettings$e.field <- 'elevation_m'
 mySettings$tableSettings$a.field <- c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M')
 
 
-#download and save the data for each species 
-spPyrDone = list.dirs(path ="/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/" ,full.names = F,recursive = F)
-spPyrNotDone = setdiff(spPyr,spPyrDone)
+#download and save the data for each species
+library (foreach)
+library (parallel)
+library (doSNOW)
 
-out = lapply (spPyrNotDone, function (spModel){
-  print (spModel)
-    outDownload  = try({
-    
+dir.create("D:/Write/Pep/PyrSDM/OccData")
+spPyrDone = list.dirs(path ="D:/Write/Pep/PyrSDM/OccData" ,full.names = F,recursive = F)
+spPyrNotDone = setdiff(spPyr,spPyrDone)
+cl = makeCluster(5)
+registerDoSNOW(cl)
+iterations = length(spPyrNotDone)
+pb = txtProgressBar(max = iterations, style = 3)
+progress = function(n) setTxtProgressBar(pb, n)
+opts = list(progress = progress)
+lp = loaded_packages()
+
+out = foreach::foreach(spModel = spPyrNotDone,.options.snow=opts, .errorhandling = 'remove',.packages = lp$package) %dopar% {
+  
+  outDownload  = try({
     print(which (spPyr == spModel) )
-    occRGBIF = occ_data(scientificName = spModel,limit = 10000)
-    #need to go from 2-digit to three digit for occ profiler
-    occRGBIF$data$countryCode3c = countrycode::countrycode (occRGBIF$data$countryCode,origin ='iso2c',destination = 'iso3c')
+    occRGBIF = rgbif::occ_search(scientificName = spModel,limit = 10000)
     #get the citations for the species
     cit = gbif_citation(occRGBIF)
+    #need to go from 2-digit to three digit for occ profiler
+    occRGBIF$data$countryCode3c = countrycode::countrycode (occRGBIF$data$countryCode,origin ='iso2c',destination = 'iso3c')
     #write inputs 
-    pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
     jspModel = occProfileR:::.join.spname(spModel)
-    dir.create (pathInputs,showWarnings = F,recursive = T)
+    pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
+    dir.create (pathInputs,showWarnings = T,recursive = T)
     save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
-    save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))  },silent = T)
-    
-    
-    if (class(outDownload)=="try-error") {return ("Error")} else {return ('Download ended')}
-    
-    
-    
+    save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))  }
+    ,silent = T)
+  
+  if (class(outDownload)=="try-error") {return ("Error")} else {return ('Download ended')}
+  
+}
+registerDoSEQ()
+stopCluster(cl)
+spPyrDone = list.dirs(path ="D:/Write/Pep/PyrSDM/OccData" ,full.names = F,recursive = F)
+jspPyr  =  unlist (lapply (spPyr, function (x) occProfileR:::.join.spname(x)))
+spPyrNotDone = setdiff(jspPyr,spPyrDone)
+idsSpNotDone = which (! jspPyr %in% spPyrDone)
+spPyrNotDone = spPyr[idsSpNotDone]
 
-})
+
 
 
 
 #this species could not be downloaded by rgbif, we use BIEN
 spPyrNotDoneRGBIF = spPyrNotDone
-lapply (13:length(spPyrNotDoneRGBIF), function (i){
+lapply (1:length(spPyrNotDoneRGBIF), function (i){
   print (i)
   spModel= spPyrNotDoneRGBIF[i]
   occBIEN = BIEN_occurrence_species(species = spModel,cultivated = T,only.new.world = F,native.status = T,political.boundaries = T,collection.info = T)
-  if (nrow (occBIEN)==0) {return (NULL)}
+  if (nrow (occBIEN)==0) {return (NULL) ; print ('No records found')}
   #need to go from 2-digit to three digit for occ profiler
   occBIEN$country = countrycode::countrycode (occBIEN$country ,origin ='country.name',destination = 'iso3c')
   #write inputs 
   jspModel = occProfileR:::.join.spname(spModel)
-  pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',jspModel)
+  pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
   dir.create (pathInputs,showWarnings = F,recursive = T)
   save(occBIEN,file = paste0(pathInputs,'/', jspModel,'_BIEN.RData'))
   
@@ -115,7 +113,7 @@ lapply (13:length(spPyrNotDoneRGBIF), function (i){
 })
 
 #recheck folder names
-pathInputs = "/Users/pserra/RS/cleanOccAnalysis/QAQCinputs"
+pathInputs = "D:/Write/Pep/PyrSDM/OccData"
 ldirs = list.dirs(path = pathInputs,full.names = T,recursive = F)
 lapply (ldirs, function (x){
   ssplit = strsplit (x, ' ')[[1]]
@@ -126,26 +124,45 @@ lapply (ldirs, function (x){
 })
 
 
-#compute QAQC in parallel for those species with >500 records
-out = lapply (spPyr[8:length(spPyr)], function (spModel){
+#check occurrence counts 
+ldirs = list.dirs(path = pathInputs,full.names = T,recursive = F)
+library (parallelsugar)
+NoccSp= mclapply (ldirs,mc.cores= 10,FUN =  function (l){
+  print (which (ldirs==l))
+  
+  allfiles = list.files(path = l,full.names = T)
+  dfile = allfiles[1]
+  spName = strsplit (basename(dfile),split = '.RData')[[1]]
+  occDat = load(dfile)
+  occDat = (get(occDat))
+  if (class(occDat)=='gbif') {occDat = occDat$data; occinfo='RGBIF'} else {occinfo='BIEN'}
+  Nocc=nrow(occDat)
+  data.frame(spName, Nocc)
+  
+})
+NoccSp = do.call (rbind, NoccSp)
+
+
+#how many occurrence per species ?
+Nclassification = cut (NoccSp$Nocc,c(10,50,200,500,100001))
+table (Nclassification)
+spLarge = as.character (NoccSp[which(NoccSp$Nocc>200),'spName'])
+
+
+#compute QAQC in occProfileR parallel MODE for those species with >200 records
+out = lapply (spLarge[2:6], function (spModel){
   try({
     
-    print(which (spPyr == spModel) )
     
-    occRGBIF = occ_data(scientificName = spModel,limit = 10000)
-    #need to go from 2-digit to three digit for occ profiler
-    occRGBIF$data$countryCode3c = countrycode::countrycode (occRGBIF$data$countryCode,origin ='iso2c',destination = 'iso3c')
-    #get the citations for the species
-    cit = gbif_citation(occRGBIF)
-    #write inputs 
-    pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
-    jspModel = occProfileR:::.join.spname(spModel)
-    dir.create (pathInputs,showWarnings = F,recursive = T)
-    save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
-    save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))
-    
-    if (nrow (occRGBIF$data) <250) {return(spModel)}
-    
+    #LOAD THE DATA 
+    pathInputs = "D:/Write/Pep/PyrSDM/OccData"
+    allfiles = list.files(path = paste0(pathInputs,'/',spModel) ,full.names = T)
+    dfile = allfiles[1]
+    spName = strsplit (basename(dfile),split = '.RData')[[1]]
+    occDat = load(dfile)
+    occDat = (get(occDat))
+    if (class(occDat)=='gbif') {occDat = occDat$data; occinfo='RGBIF'} else {occinfo='BIEN'}
+
     
     #build the Settings for QAQC
     rgbifSettings <- occProfileR:::defaultSettings()
@@ -155,16 +172,20 @@ out = lapply (spPyr[8:length(spPyr)], function (spModel){
     rgbifSettings$tableSettings$l.field <- 'locality'
     rgbifSettings$tableSettings$e.field <- 'elevation' #or should we use verbatimElevation?
     rgbifSettings$tableSettings$c.field <- 'countryCode3c'
-    rgbifSettings$tableSettings$a.field <- c('coordinateUncertaintyInMeters','coordinateUncertaintyInMeters')
     
-    myOutputs = '/Users/pserra/RS/cleanOccAnalysis/QAQCoutputs'
+    if (occinfo=='RGBIF') {rgbifSettings$tableSettings$a.field <- c('coordinateUncertaintyInMeters','coordinateUncertaintyInMeters')}
+    
+    #PREPARE OUTPUTS
+    myOutputs = "D:/Write/Pep/PyrSDM/OccProfile"
     dir.create (myOutputs, recursive = T,showWarnings = F)
     
     rgbifSettings$writeoutSettings$output.dir = myOutputs
     rgbifSettings$writeoutSettings$write.simple.output = T
     rgbifSettings$writeoutSettings$write.full.output = T
     
-    spProfile_1 = occurrenceClassify(sp.name= spModel,
+    #RUN FUNCTION
+    spSci = occProfileR:::splitSpname(spModel)
+    spProfile_1 = occProfileR:::occurrenceClassify(sp.name= spSci,
                                      sp.table = occRGBIF$data, 
                                      r.env = env , 
                                      r.dem = elev,

@@ -497,7 +497,7 @@ centroidDetection <- function (df=dat,
       country_ext <- occProfileR:::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    
+    browser()
     cleaned_countries<-GNRS:::GNRS_super_simple(country = country_ext)
     matchedCtry <- cleaned_countries$match_status=='full match'
     cleaned_countries <- cleaned_countries [matchedCtry,]
@@ -1306,6 +1306,7 @@ geoEnvAccuracy  <- function (df,
   if (doParallel==T & os=='mac') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
   if (doParallel==T & os=='linux') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
   if (doParallel==T & os=='windows') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='win') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
   
   #start method lattice
