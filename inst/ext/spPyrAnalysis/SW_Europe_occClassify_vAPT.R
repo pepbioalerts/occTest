@@ -48,7 +48,7 @@ save(list = c('spPyr'), file = '/Users/pserra/RS/cleanOccAnalysis/GBIFdownolad/S
 
 lf = list.files ("/Users/pserra/RS/GIS/CHELSA/",full.names = T)
 env = raster::stack (lf)
-
+#idontkwno
 
 
 #get digital elevation model
