@@ -17,7 +17,7 @@
 #' example<-"goes here"
 #' }
 #' @export
-occurrenceClassify <- function (
+occurrenceTests <- function (
   sp.name,
   sp.table,
   r.env,

@@ -38,10 +38,6 @@
 }
 
 
-
-
-
-
 .make.qgrading <- function (incase, .grading.scheme, verbose=F){
   attach(incase,warn.conflicts = F)
 

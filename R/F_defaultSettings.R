@@ -38,16 +38,16 @@ defaultSettings <- function (x){
       writeAllOutput=F, #overwrites write.simple.output, write.full.output
       write.simple.output=F,
       write.full.output=F,
-      output.base.filename="QAQC")
+      output.base.filename="occTest")
     ,
     #tableSettings
     tableSettings = list (taxonobservation.id = NULL,
                           x.field = 'x',
                           y.field = 'y',
-                          t.field = NULL,
-                          l.field = NULL,
-                          c.field = NULL,
-                          e.field = NULL,
+                          t.field = NULL, #time field (date)  
+                          l.field = NULL, #locality field 
+                          c.field = NULL, #country field field (date)   in meters
+                          e.field = NULL, #elevation recoreded  in meters
                           a.field = NULL, #coordinate uncertainty in meters
                           ds.field = NULL #dataset field identifier
     )
