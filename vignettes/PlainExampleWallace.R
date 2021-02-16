@@ -14,8 +14,8 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10)
 #start testing  occurrences
 library(occProfileR)
 outMartesMartes = occurrenceTests (sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
-str (outMartesMartes)
-outMartesMartes$
+str (outMartesMartes)s
+str(outMartesMartes$occTest_full)
 #run wrapper function (test + classify, ont implemented yet, now it gives the same results)
 outMartesMartes2 = occSimpleClassification (spOcc = occ.data,env = environmentRaster)
 
