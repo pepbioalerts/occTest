@@ -20,10 +20,11 @@
 #' @export
 
 #wallace simple wrapping funciton
-occSimpleClassification = function (spOcc,env,speciesName='My species',x='x',y='y',date=NULL,isoCountry=NULL,classification=NULL ){
+occSimpleClassification = function (spOcc,env,speciesName='My species',x='x',y='y',
+                                    date=NULL,isoCountry=NULL,classification=NULL ){
   
   #set up params
-  mySettings = occProfileR::defaultSettings()
+  mySettings = occTest::defaultSettings()
   mySettings$tableSettings$x.field <- x
   mySettings$tableSettings$y.field <- y
   mySettings$tableSettings$t.field <- date
@@ -31,10 +32,10 @@ occSimpleClassification = function (spOcc,env,speciesName='My species',x='x',y='
   
   
   #run test functions 
-  output =  occurrenceTests   (sp.name = speciesName,
-                               sp.table = spOcc, 
-                               r.env = env,
-                               tableSettings =mySettings$tableSettings)
+  output =  occurrenceTests(sp.name = speciesName,
+                            sp.table = spOcc, 
+                            r.env = env,
+                            tableSettings =mySettings$tableSettings)
   
   #classify
   if(classification == 'custom') print ('not implemented yet')

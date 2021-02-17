@@ -57,7 +57,7 @@ occurrenceClassify_orignial <- function (
   ########################################################################
   ### STEP 0: Load settings and study native and invasive countries
   ########################################################################
-  defaultSettings = occProfileR::defaultSettings()
+  defaultSettings = occTest::defaultSettings()
   #load table settings
   if (is.null(tableSettings)) { tableSettings = defaultSettings$tableSettings}
   taxonobservation.id = tableSettings$taxonobservation.id
@@ -128,18 +128,18 @@ occurrenceClassify_orignial <- function (
   ##############################################################################
   
   #add fields necesary for initial table
-  sp <- occProfileR:::.join.spname(sp.name)
+  sp <- occTest:::.join.spname(sp.name)
   sp.table$Species <- sp
   
-  sp.table2 <- occProfileR:::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
+  sp.table2 <- occTest:::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
                                           ef = e.field,tf = t.field,lf = l.field,
                                           cf = c.field,          idf = taxonobservation.id)
   
-  dat <- occProfileR:::.addmainfields2(sp.table2,species = 'Species')
+  dat <- occTest:::.addmainfields2(sp.table2,species = 'Species')
   dat$comments <- rep('', nrow(dat))
   
   #check data structure
-  ck  <- occProfileR:::.checkdatastr2(dat,xf = x.field,yf=y.field)
+  ck  <- occTest:::.checkdatastr2(dat,xf = x.field,yf=y.field)
   if (sum(ck$Present)!=10) {stop ("Error: required table fields could not be created")}
   
   
@@ -157,10 +157,10 @@ occurrenceClassify_orignial <- function (
                                   points.proj4string)
   x <- sapply(potential.geosp.objects, is.null)
   actual.input.geosp.objects <- potential.geosp.objects[-x]
-  actual.input.geosp.objects <- occProfileR:::.subsetlist.nonNULL(actual.input.geosp.objects)
+  actual.input.geosp.objects <- occTest:::.subsetlist.nonNULL(actual.input.geosp.objects)
   
   #the development should be in the direction of automatically check and transform
-  #occProfileR:::.check.geospatial.data (list.geospatial.objects =actual.input.geosp.objects)
+  #occTest:::.check.geospatial.data (list.geospatial.objects =actual.input.geosp.objects)
   #lapply (actual.input.geosp.objects, function (x) raster:::projection (x))
   
   
@@ -200,7 +200,7 @@ occurrenceClassify_orignial <- function (
     xydatTemporary = xydatTemporary[complete.cases(xydatTemporary),]
     
     
-    checkCountries <- occProfileR:::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+    checkCountries <- occTest:::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
     if (resolveNativeCtry) {
       ntv.ctry <- c(ntv.ctry,checkCountries$ntvCtry)
       ntv.ctry <- unique (ntv.ctry)
@@ -235,7 +235,7 @@ occurrenceClassify_orignial <- function (
     dat = dat[cc_val_test,]
     
     
-    status.out <- occProfileR:::.status.tracker.and.escaping (dataset.to.continue = dat,
+    status.out <- occTest:::.status.tracker.and.escaping (dataset.to.continue = dat,
                                                               wfo = write.full.output,
                                                               wso = write.simple.output,
                                                               xf = x.field,
@@ -249,7 +249,7 @@ occurrenceClassify_orignial <- function (
     dat.Q.H2 = dat[!cc_zero_test,]
     dat = dat[cc_zero_test,]
     
-    status.out <- occProfileR:::.status.tracker.and.escaping (dataset.to.continue = dat,
+    status.out <- occTest:::.status.tracker.and.escaping (dataset.to.continue = dat,
                                                               wfo = write.full.output,
                                                               wso = write.simple.output,
                                                               xf = x.field,
@@ -266,7 +266,7 @@ occurrenceClassify_orignial <- function (
     if (ds.field == 'MyInventedCommonDataset') ds.field <- NULL
     rm (dat.tmp)
     
-    status.out <- occProfileR:::.status.tracker.and.escaping (dataset.to.continue = dat,
+    status.out <- occTest:::.status.tracker.and.escaping (dataset.to.continue = dat,
                                                               wfo = write.full.output,
                                                               wso = write.simple.output,
                                                               xf = x.field,
@@ -319,7 +319,7 @@ occurrenceClassify_orignial <- function (
   }
   
   #check outputs and escape ifneedbe //
-  status.out <- occProfileR:::.status.tracker.and.escaping (dataset.to.continue = dat,
+  status.out <- occTest:::.status.tracker.and.escaping (dataset.to.continue = dat,
                                                             wfo = write.full.output,
                                                             wso = write.simple.output,
                                                             xf = x.field,
@@ -353,7 +353,7 @@ occurrenceClassify_orignial <- function (
   dat <- Analysis.G$continue
   
   #check outputs and escape ifneedbe //
-  status.out=occProfileR:::.status.tracker.and.escaping(
+  status.out=occTest:::.status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -382,7 +382,7 @@ occurrenceClassify_orignial <- function (
     dat <- dat[[1]]
     moved.points <- dat[['moved']]
     if (!is.null(output.dir)){
-      sp.name2= occProfileR:::.join.spname(sp.name)
+      sp.name2= occTest:::.join.spname(sp.name)
       odir = paste0(output.dir,'/',sp.name2)
       dir.create(odir,showWarnings = F,recursive = T)
       write.csv( moved.points,
@@ -410,7 +410,7 @@ occurrenceClassify_orignial <- function (
   }
   
   #check outputs and escape if need be //
-  status.out <- occProfileR:::.status.tracker.and.escaping(
+  status.out <- occTest:::.status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -433,7 +433,7 @@ occurrenceClassify_orignial <- function (
   if (verbose) {print ("**** RESOLVING QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
   if (verbose & excludeUnknownRanges) {print('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')}
   if (verbose & excludeNotmatchCountry) {print('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')}
-  Analysis.F <-occProfileR::countryStatusRangeAnalysis(df=dat,
+  Analysis.F <-occTest::countryStatusRangeAnalysis(df=dat,
                                                        xf = x.field,
                                                        yf = y.field,
                                                        .ntv.ctry = ntv.ctry,
@@ -453,7 +453,7 @@ occurrenceClassify_orignial <- function (
   dat <- Analysis.F$continue
   
   #check outputs and escape ifneedbe //
-  status.out <- occProfileR:::.status.tracker.and.escaping (
+  status.out <- occTest:::.status.tracker.and.escaping (
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -536,7 +536,7 @@ occurrenceClassify_orignial <- function (
     Analysis.5 <-  a+b
     Analysis.5 <-  ifelse(test = Analysis.5>1,yes = 1,no = 0)
     Analysis.5 <- data.frame (countryStatusRangeAnalysis_notinKnownRange_test=Analysis.5, countryStatusRangeAnalysis_notinKnownRange_comments='')
-    Analysis.5$unknownRange_score <- occProfileR:::.gimme.score(Analysis.5)
+    Analysis.5$unknownRange_score <- occTest:::.gimme.score(Analysis.5)
     row.names(Analysis.5) <- NULL
     rm(a);rm(b)
   }
@@ -552,7 +552,7 @@ occurrenceClassify_orignial <- function (
     Analysis.6 = dat$countryStatusRangeAnalysis_wrongCTRY_test
     Analysis.6 <- data.frame (countryStatusRangeAnalysis_wrongReportCtry_test=Analysis.6,
                               countryStatusRangeAnalysis_wrongReportCtry_comments='')
-    Analysis.6$wrongReportCtry_score <- occProfileR:::.gimme.score(Analysis.6)
+    Analysis.6$wrongReportCtry_score <- occTest:::.gimme.score(Analysis.6)
   }
   if (excludeNotmatchCountry | !doCountryRecordAnalysis){
     Analysis.6 <- data.frame (countryStatusRangeAnalysis_wrongReportCtry=NA,
@@ -689,21 +689,21 @@ occurrenceClassify_orignial <- function (
   }
   
   #get the qualifiers
-  tag1 <- occProfileR:::.qualifier.invasive.range(df=full.qaqc,
+  tag1 <- occTest:::.qualifier.invasive.range(df=full.qaqc,
                                                   tag = 'i',
                                                   qualifier.lab.scp = qualifier.label.scoping)
-  tag2 <- occProfileR:::.qualifier.native.range(df=full.qaqc,
+  tag2 <- occTest:::.qualifier.native.range(df=full.qaqc,
                                                 tag = 'n',
                                                 qualifier.lab.scp = qualifier.label.scoping)
   
   #we will also add if we have a time stamp
-  tag3 <-  occProfileR:::.qualifier.timestamp(df=full.qaqc,
+  tag3 <-  occTest:::.qualifier.timestamp(df=full.qaqc,
                                               tf = t.field,
                                               tag = 'T',
                                               qualifier.lab.scp = qualifier.label.scoping)
   
   #we will also add if we have the right precision
-  tag4 <- occProfileR:::.qualifier.precision(df=full.qaqc,tag='p',
+  tag4 <- occTest:::.qualifier.precision(df=full.qaqc,tag='p',
                                              .s = res.in.minutes,
                                              .e = res.in.minutes,
                                              xf = x.field,
@@ -711,7 +711,7 @@ occurrenceClassify_orignial <- function (
                                              qualifier.lab.scp = qualifier.label.scoping)
   
   #we will also add an elevation threshold level
-  tag5 <- occProfileR:::.qualifier.elevation (df=full.qaqc,tag='e',
+  tag5 <- occTest:::.qualifier.elevation (df=full.qaqc,tag='e',
                                               qualifier.lab.scp = qualifier.label.scoping 
   )
   
@@ -739,7 +739,7 @@ occurrenceClassify_orignial <- function (
   full.qaqc$qualifiers <- tag.output
   
   #collapse to a unique label
-  full.qaqc$quality.label <- occProfileR:::.paste3 (as.character(full.qaqc$quality.grade),full.qaqc$qualifiers,sep = '/')
+  full.qaqc$quality.label <- occTest:::.paste3 (as.character(full.qaqc$quality.grade),full.qaqc$qualifiers,sep = '/')
   
   #reorder as the same as inputs
   full.qaqc <- full.qaqc [sort (full.qaqc$roworder,decreasing = F, na.last=T),]
@@ -751,7 +751,7 @@ occurrenceClassify_orignial <- function (
   ########################################################################
   tictoc:::tic('Writing outputs')
   if (write.full.output==T) {
-    sp2 = occProfileR:::.join.spname (sp)
+    sp2 = occTest:::.join.spname (sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create (newdir,recursive = T,showWarnings = F)
     written = try (write.csv (full.qaqc,  paste0(newdir,'/',
@@ -766,7 +766,7 @@ occurrenceClassify_orignial <- function (
                            "countryStatusRangeAnalysis_score", "centroidDetection_score" ,"HumanDetection_score" ,"institutionLocality_score",
                            "geoOutliers_score","unknownRange_score", "wrongReportCtry_score","envOutliers_score" ,"geoenvLowAccuracy_score")]
   if (write.simple.output==T) {
-    sp2 = occProfileR:::.join.spname (sp)
+    sp2 = occTest:::.join.spname (sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create (newdir,recursive = T,showWarnings = F)
     

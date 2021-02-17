@@ -327,7 +327,7 @@ countryStatusRangeAnalysis=function(df=dat,
 
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occProfileR:::.coords2country (xydat)
+      country_ext <- occTest:::.coords2country (xydat)
     }
 
   #inform for whether reported and country in coordinates (extracted country) differ 
@@ -404,7 +404,7 @@ countryStatusRangeAnalysis=function(df=dat,
   }
 
   #output
-  df$countryStatusRange_score = occProfileR:::.gimme.score (df)
+  df$countryStatusRange_score = occTest:::.gimme.score (df)
   out <- list (stay = df[which(df$Exclude==1),], continue = df[which(df$Exclude!=1),])
   return (out)
 
@@ -510,7 +510,7 @@ centroidDetection <- function (df=dat,
     
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occProfileR:::.coords2country (xydat)
+      country_ext <- occTest:::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
     
@@ -696,7 +696,7 @@ centroidDetection <- function (df=dat,
 
   }
 
-  out$centroidDetection_score = occProfileR:::.gimme.score (x = out)
+  out$centroidDetection_score = occTest:::.gimme.score (x = out)
   return (out)
 
 }
@@ -795,7 +795,7 @@ humanDetection <- function (df=dat,
     if (alreadyDownloaded) myRef = rgdal:::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
     if (!alreadyDownloaded) myRef= NULL 
     
-    cc_urb_test = occProfileR:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
+    cc_urb_test = occTest:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_value <- cc_urb_test
     out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
@@ -803,7 +803,7 @@ humanDetection <- function (df=dat,
   }
   
   #compute score
-  out$HumanDetection_score <- occProfileR:::.gimme.score (out)
+  out$HumanDetection_score <- occTest:::.gimme.score (out)
 
 
   return (out)
@@ -899,11 +899,11 @@ institutionLocality <- function (df=dat,
     
     out$institutionLocality_fromCoordinates_value = ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0)
     out$institutionLocality_fromCoordinates_test = as.logical (ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0))
-    out$institutionLocality_fromCoordinates_comments = occProfileR:::.paste3(cc_gbif_comments,cc_inst_comments)
+    out$institutionLocality_fromCoordinates_comments = occTest:::.paste3(cc_gbif_comments,cc_inst_comments)
 
   }
 
-  out$institutionLocality_score <- occProfileR:::.gimme.score (out)
+  out$institutionLocality_score <- occTest:::.gimme.score (out)
 
   return (out)
 
@@ -986,7 +986,7 @@ geoOutliers         <- function (df=dat,
 
       points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
       points.outside.alphahull <- points.outside.alphahull * 1
-      #ahshape <- occProfileR:::.ah2sp(ah.2alpha)
+      #ahshape <- occTest:::.ah2sp(ah.2alpha)
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
 
@@ -1104,7 +1104,7 @@ geoOutliers         <- function (df=dat,
     #create fake species list for Coordinate cleaner
     
     df$species <- 'MyFakeSp'
-    cc_dist_test = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
+    cc_dist_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
     cc_dist_test <- (!  cc_dist_test) 
     out$geoOutliers_distance_value  = cc_dist_test * 1
     out$geoOutliers_distance_test  = cc_dist_test
@@ -1119,7 +1119,7 @@ geoOutliers         <- function (df=dat,
 
   if (any (method %in% c('median','all'))){
 
-    cc_med_test = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
+    cc_med_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
     cc_med_test <- (!  cc_med_test) * 1
     out$geoOutliers_median_value = cc_med_test
     out$geoOutliers_median_test  = as.logical(cc_med_test)
@@ -1135,7 +1135,7 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('quantSamplingCorrected','all'))){
 
 
-    cc_qsc_tst = occProfileR:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
+    cc_qsc_tst = occTest:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
                                             verbose=F)
@@ -1163,7 +1163,7 @@ geoOutliers         <- function (df=dat,
     
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
-      grubbs.outl = try(occProfileR:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
+      grubbs.outl = try(occTest:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
       
       if (class(grubbs.outl)=='try-error') {
         grubbs_tst = rep(NA,times=nrow(out)) 
@@ -1183,7 +1183,7 @@ geoOutliers         <- function (df=dat,
     }
     
 
-  out$geoOutliers_score <- occProfileR:::.gimme.score (out)
+  out$geoOutliers_score <- occTest:::.gimme.score (out)
 
   return (out)
 }
@@ -1305,7 +1305,7 @@ envOutliers  <- function (.r.env=r.env,
     #spdf = sp::SpatialPointsDataFrame(data = dat.environment[,-1],coords = df[,c(xf,yf)] ,proj4string =.projString )
 
     env.grubbs_tst = rep(0,times=nrow(out))
-    env.grubbs.outl = occProfileR::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
+    env.grubbs.outl = occTest::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
     env.grubbs_tst [env.grubbs.outl] = 1
     env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
     
@@ -1317,7 +1317,7 @@ envOutliers  <- function (.r.env=r.env,
   }
 
 
-  out$envOutliers_score <- occProfileR:::.gimme.score (out)
+  out$envOutliers_score <- occTest:::.gimme.score (out)
   return (out)
 }
 
@@ -1394,10 +1394,10 @@ geoEnvAccuracy  <- function (df,
   if (!do) {return (out)}
   
   #check if need parallel
-  os = occProfileR:::get_os()
-  if (doParallel==T & os=='mac') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='linux') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='windows') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  os = occTest:::get_os()
+  if (doParallel==T & os=='mac') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='linux') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='windows') {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
   
   #start method lattice
@@ -1456,14 +1456,14 @@ geoEnvAccuracy  <- function (df,
   #Need coordinate uncertainty analysis ?
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
-    out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
     return (out)}
   
   #Need coordinate uncertainty analysis ?
   if (is.null(af)) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
-    out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
     return (out)
   }
   
@@ -1573,7 +1573,7 @@ geoEnvAccuracy  <- function (df,
   }
   
   #write final score
-  out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+  out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
   return (out)
 }
 

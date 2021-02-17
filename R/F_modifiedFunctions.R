@@ -84,7 +84,7 @@ cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallati
   }
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
-    ref <- try(suppressWarnings(occProfileR:::ne_download_occProfileR(scale = "medium", 
+    ref <- try(suppressWarnings(occTest:::ne_download_occProfileR(scale = "medium", 
                                                  type = "urban_areas")), silent = TRUE)
     if (class(ref) == "try-error") {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 

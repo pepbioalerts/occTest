@@ -92,8 +92,8 @@
 .qgrade.data.frame <-  function (df,grading.scheme, verbose=F){
   
   if(verbose) print('Performing QAQC')
-  q.out <-  lapply (1:nrow (df), function (r){
-    out <- occProfileR:::.make.qgrading (incase = df[r,] , .grading.scheme =grading.scheme )
+  q.out <- lapply (1:nrow (df), function (r){
+    out <- occTest:::.make.qgrading (incase = df[r,] , .grading.scheme =grading.scheme )
     return (out)
   })
   

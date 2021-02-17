@@ -55,7 +55,7 @@ env = raster::stack (lf)
 elev = raster::raster('/Users/pserra/RS/GIS/mn30_grd/mn30.tif')
 
 #mySettings
-mySettings <- occProfileR::defaultSettings()
+mySettings <- occTest::defaultSettings()
 mySettings$tableSettings$x.field <- 'longitude'
 mySettings$tableSettings$y.field <- 'latitude'
 mySettings$tableSettings$t.field <- 'date_collected'
@@ -81,7 +81,7 @@ out = lapply (spPyrNotDone, function (spModel){
     cit = gbif_citation(occRGBIF)
     #write inputs 
     pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
-    jspModel = occProfileR:::.join.spname(spModel)
+    jspModel = occTest:::.join.spname(spModel)
     dir.create (pathInputs,showWarnings = F,recursive = T)
     save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
     save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))  },silent = T)
@@ -106,7 +106,7 @@ lapply (13:length(spPyrNotDoneRGBIF), function (i){
   #need to go from 2-digit to three digit for occ profiler
   occBIEN$country = countrycode::countrycode (occBIEN$country ,origin ='country.name',destination = 'iso3c')
   #write inputs 
-  jspModel = occProfileR:::.join.spname(spModel)
+  jspModel = occTest:::.join.spname(spModel)
   pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',jspModel)
   dir.create (pathInputs,showWarnings = F,recursive = T)
   save(occBIEN,file = paste0(pathInputs,'/', jspModel,'_BIEN.RData'))
@@ -139,7 +139,7 @@ out = lapply (spPyr[8:length(spPyr)], function (spModel){
     cit = gbif_citation(occRGBIF)
     #write inputs 
     pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
-    jspModel = occProfileR:::.join.spname(spModel)
+    jspModel = occTest:::.join.spname(spModel)
     dir.create (pathInputs,showWarnings = F,recursive = T)
     save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
     save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))
@@ -148,7 +148,7 @@ out = lapply (spPyr[8:length(spPyr)], function (spModel){
     
     
     #build the Settings for QAQC
-    rgbifSettings <- occProfileR:::defaultSettings()
+    rgbifSettings <- occTest:::defaultSettings()
     rgbifSettings$tableSettings$x.field <- 'decimalLongitude'
     rgbifSettings$tableSettings$y.field <- 'decimalLatitude'
     rgbifSettings$tableSettings$t.field <- 'eventDate'
