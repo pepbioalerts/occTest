@@ -38,7 +38,6 @@ occurrenceTests <- function (
   verbose = F,
   doParallel=F,
   mc.cores=2){
-  
   #set timer
   tictoc:::tic()
   
@@ -91,6 +90,11 @@ occurrenceTests <- function (
   th.human.influence = analysisSettings$humanAnalysis$th.human.influence
   ras.hii = analysisSettings$humanAnalysis$ras.hii
   
+  doLandUseSelect = analysisSettings$landUseAnalysis$doLandUse
+  methodLandUseSelect = analysisSettings$landUseAnalysis$methodLandUse
+  landUseCodes = analysisSettings$landUseAnalysis$landUseCodes
+  ras.landUse = analysisSettings$landUseAnalysis$ras.landUse
+
   doInstitutionLocality = analysisSettings$institutionAnalysis$doInstitutionLocality
   methodInstitutionLocality = analysisSettings$institutionAnalysis$methodInstitutionLocality
   
@@ -107,12 +111,12 @@ occurrenceTests <- function (
   elev.quality.threshold=analysisSettings$accuracyAnalysis$elev.quality.threshold
   
   #load gradingSettings
-  if (is.null(gradingSettings)) { gradingSettings = defaultSettings$gradingSettings}
-  
-  grading.test.type = gradingSettings$grading.test.type
-  qualifiers = gradingSettings$qualifiers
-  qualifier.label.scoping = gradingSettings$qualifier.label.scoping
-  
+  # if (is.null(gradingSettings)) { gradingSettings = defaultSettings$gradingSettings}
+  # 
+  # grading.test.type = gradingSettings$grading.test.type
+  # qualifiers = gradingSettings$qualifiers
+  # qualifier.label.scoping = gradingSettings$qualifier.label.scoping
+  # 
   #load writeOutSettings
   if (is.null(writeoutSettings)) { writeoutSettings = defaultSettings$writeoutSettings}
   output.dir = writeoutSettings$output.dir
@@ -504,7 +508,7 @@ occurrenceTests <- function (
   #to sumarize the results later on we will need that number
   N_analysis = 8
   
-  ### ELEMENT 1: CENTROID ISSUE DETECTION
+  ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc:::tic('Centroid detection')
   print ('Centroid detection started ...')
 
@@ -524,7 +528,7 @@ occurrenceTests <- function (
                                        do= doCentroidDetection)
   tictoc:::toc()
   
-  ### ELEMENT 2: HYPER-HUMAN ENVIRONMENT
+  ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc:::tic('Land Use Land Cover analysis')
   print ('Land Use Land Cover analysis started ...')
   Analysis.2 <- humanDetection     (df = dat,
@@ -536,19 +540,35 @@ occurrenceTests <- function (
                                     do = doHumanDetection,output.dir=output.dir)
   tictoc:::toc()
   
-  ### ELEMENT 3: BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
+  ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
   tictoc:::tic('Institution locality')
   print  ('Institution locality started ...')
   Analysis.3 <- institutionLocality (df=dat,xf = x.field,yf=y.field,
                                      lf=l.field,
                                      do = doInstitutionLocality,
                                      method = methodInstitutionLocality)
+  
   tictoc:::toc()
   
-  ### ELEMENT 4: GEOGRAPHICAL OUTLIER
+  ### ELEMENT : land use
+  tictoc:::tic('Records in land use')
+  print  ('Records in land use started...')
+  Analysis.4 <- landUseSelect       (df=dat,xf = x.field,yf=y.field,
+                                     .points.proj4string =points.proj4string,
+                                     .landUseCodes = landUseCodes,
+                                     ras.landUse = ras.landUse,
+                                     method = methodLandUseSelect,
+                                     do = doLandUseSelect)
+  
+  tictoc:::toc()
+  
+  
+  
+  
+  ### ELEMENT : GEOGRAPHICAL OUTLIER
   tictoc:::tic('geographic outliers detection')
   print ('geographic outliers detection started')
-  Analysis.4 <- geoOutliers(df=dat,
+  Analysis.5 <- geoOutliers(df=dat,
                             xf=x.field,
                             yf=y.field,
                             .alpha.parameter = alpha.parameter,
@@ -557,46 +577,13 @@ occurrenceTests <- function (
                             .projString = points.proj4string)
   tictoc:::toc()
   
-  ### ELEMENT 5: ADD the geoIndicator of wrong country if that has not been determined to be an exclusive dimension
-  # tictoc:::tic('Country geoindication')
-  # if (!excludeUnknownRanges & doRangeAnalysis){
-  #   
-  #   a = dat$countryStatusRange_wrongNTV_test ; a[is.na(a)] <- 0
-  #   b = dat$countryStatusRange_wrongINV_test ; b[is.na(b)] <- 0
-  #   
-  #   Analysis.5 <-  a+b
-  #   Analysis.5 <-  ifelse(test = Analysis.5>1,yes = 1,no = 0)
-  #   Analysis.5 <- data.frame (countryStatusRange_notinKnownRange_test=Analysis.5, countryStatusRange_notinKnownRange_comments='')
-  #   Analysis.5$unknownRange_score <- occTest:::.gimme.score(Analysis.5)
-  #   row.names(Analysis.5) <- NULL
-  #   rm(a);rm(b)
-  # }
-  # if (excludeUnknownRanges | !doRangeAnalysis){
-  #   Analysis.5 <- data.frame (countryStatusRange_notinKnownRange=NA,
-  #                             countryStatusRange_notinKnownRange_comments='unkonown ranges are classifed as F directly',
-  #                             unknownRange_score=NA)[1:nrow(dat),]
-  #   row.names(Analysis.5) <- NULL
-  # }
-  # 
-  # ### ELEMENT 6: ADD the geoIndicator of country recorded different than country coordinates
-  # if (!excludeNotmatchCountry & doCountryRecordAnalysis){
-  #   Analysis.6 = dat$countryStatusRange_wrongCTRY_test
-  #   Analysis.6 <- data.frame (countryStatusRange_wrongReportCtry_test=Analysis.6,
-  #                             countryStatusRange_wrongReportCtry_comments='')
-  #   Analysis.6$wrongReportCtry_score <- occTest:::.gimme.score(Analysis.6)
-  # }
-  # if (excludeNotmatchCountry | !doCountryRecordAnalysis){
-  #   Analysis.6 <- data.frame (countryStatusRange_wrongReportCtry=NA,
-  #                             countryStatusRange_wrongReportCtry_comments='Analysis not performed',
-  #                             wrongReportCtry_score= NA)[1:nrow(dat),]
-  #   row.names(Analysis.6) <- NULL
-  # }
-  # tictoc:::toc()
   
+  
+ 
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc:::tic('Environmental outliers')
   print ('Environmental outliers analysis started...')
-  Analysis.7 <- envOutliers (.r.env=r.env,
+  Analysis.6 <- envOutliers (.r.env=r.env,
                              df= dat, xf=x.field,
                              yf =y.field,
                              .th.perc.outenv = th.perc.outenv,
@@ -611,18 +598,20 @@ occurrenceTests <- function (
   tictoc:::tic('geoEnvironmental accuracy')
   print ('geoEnvironmental accuracy analysis started...')
   
-  Analysis.8 <- geoEnvAccuracy(df=dat,
+
+  Analysis.7 <- geoEnvAccuracy(df=dat,
                                xf = x.field,
                                yf = y.field,
                                af = a.field,
                                dsf= ds.field,
+                               tf= t.field,
                                r.env = r.env,
                                ef= e.field,
                                raster.elevation = r.dem,
                                do = do.geoEnvAccuracy,method = methodGeoEnvAccuracy,doParallel=doParallel,mc.cores=mc.cores)
   tictoc:::toc()
   
-  ### SUMMARY ANALYSIS RESULTS
+  ### SUMMARY ANALYSIS RESULTS (NEED TO BE IMPROVED !)
   list.analysis = list()
   for (i in 1:N_analysis){
     if (exists(paste0('Analysis.',i))){
@@ -636,158 +625,23 @@ occurrenceTests <- function (
   
   #timer for the analytic processes
   tictoc:::toc()
-  
-  ############################################################################
-  #### STEP 8:  Quality A-E Environmental and Geographical outliers
-  # assignation of grade to a record
-  ###########################################################################
-  # tictoc:::tic('Labeling occurrences')
-  # 
-  # if (gradingSettings$grading.test.type == 'strict')   {test.strictness.value = 0 }
-  # if (gradingSettings$grading.test.type == 'majority') {test.strictness.value = 0.5 }
-  # if (gradingSettings$grading.test.type == 'relaxed')  {test.strictness.value = 0.6 }
-  # #start assigning values depending on conditions
-  # suppressMessages (attach(df.qualityAssessment))
-  # df.qualityAssessment$quality.grade <- NA
-  # 
-  # #load lazylogic function
-  # .lazylogic <- function (e,...){
-  #   
-  #   o <- eval(parse(text=e))
-  #   ifelse(is.na(o),F,o)
-  #   
-  # }
-  # 
-  # 
-  # #E is set so that it could be optional
-  # if ('E' %in% gradingSettings$qualifier.label.scoping){
-  #   grade.E <- (.lazylogic (e = 'HumanDetection_score >= test.strictness.value')) | (.lazylogic (e = 'institutionLocality_score >= test.strictness.value')) | (.lazylogic (e = 'centroidDetection_score >= test.strictness.value')) | (.lazylogic (e = 'unknownRange_score >= test.strictness.value')) | (.lazylogic (e = 'wrongReportCtry_score >= test.strictness.value') | (.lazylogic (e = 'envOutliers_missingEnv_score >= test.strictness.value')))
-  #   df.qualityAssessment$quality.grade[grade.E] <- 'E'
-  # }
-  # to.continue <- is.na(df.qualityAssessment$quality.grade)
-  # 
-  # grade.D <- (.lazylogic (e = 'geoOutliers_score >= test.strictness.value') ) &  (.lazylogic ('envOutliers_score  >= test.strictness.value') )
-  # df.qualityAssessment$quality.grade[to.continue & grade.D] <- 'D'
-  # to.continue <- is.na(df.qualityAssessment$quality.grade)
-  # 
-  # grade.C <- .lazylogic ('envOutliers_score  >= test.strictness.value')
-  # df.qualityAssessment$quality.grade[to.continue & grade.C] <- 'C'
-  # to.continue <- is.na(df.qualityAssessment$quality.grade)
-  # 
-  # grade.B <- .lazylogic (e = 'geoOutliers_score >= test.strictness.value') | (.lazylogic (e = 'geoenvLowAccuracy_score >= test.strictness.value') ) 
-  # df.qualityAssessment$quality.grade[to.continue & grade.B] <- 'B'
-  # to.continue <- is.na(df.qualityAssessment$quality.grade)
-  # 
-  # df.qualityAssessment$quality.grade[to.continue] <- 'A'
-  # 
-  # detach(df.qualityAssessment)
-  # 
-  # #add labels to the data
-  # dat <- cbind(dat,df.qualityAssessment)
-  # tictoc:::toc()
-  # 
-  # ############################################################################
+
+  #############################################################################
   ### STEP 9: BUILD FULL dataframe
   ############################################################################
-  previous.Q.objects <- grep(pattern = 'dat.Q.',ls(),value = T)
+  
+  #load previous filtered objects
+  previousFiltered <- grep(pattern = 'dat.Q.',ls(),value = T)
   full.qaqc <- cbind(dat, df.qualityAssessment)
   
-  for (o in previous.Q.objects){
+  for (o in previousFiltered){
     rowsToAdd = get(o)
     if (nrow (rowsToAdd)> 0) {full.qaqc <- dplyr::bind_rows(full.qaqc, get(o))}
     
   }
   
-  ###########################################################################
-  ### STEP 10: GET QUALIFIERS (attributes you want to add to your label that help decide its use)
-  ###########################################################################
-  # tictoc:::tic('Adding qualifiers name tags to  occurrences')
-  # 
-  # #check if user does not want the qualifiers, and return output
-  # if (gradingSettings$qualifiers == F) {
-  #   
-  #   full.qaqc$qualifiers <- NA
-  #   full.qaqc$quality.label <- full.qaqc$quality.grade
-  #   
-  #   #WRITE OUTPUTS AND END THE PROCESS
-  #   if (write.full.output==T) {
-  #     write.csv (full.qaqc,   paste0(output.dir,'/',sp,'_long_' ,
-  #                                    output.base.filename,'.csv'),row.names = F)
-  #   }
-  #   
-  #   short.qaqc<-full.qaqc[,c(x.field,y.field,'quality.grade',
-  #                            'qualifiers','quality.label')]
-  #   if (write.simple.output==T) {
-  #     write.csv (short.qaqc,
-  #                paste0(output.dir,'/',sp,'_short_' ,output.base.filename,
-  #                       '.csv'),row.names = F)
-  #   }
-  #   
-  #   output.function <- list (occ_full_profile=full.qaqc,
-  #                            occ_short_profile=short.qaqc)
-  #   return (output.function)
-  # }
-  # 
-  # #get the qualifiers
-  # tag1 <- occTest:::.qualifier.invasive.range(df=full.qaqc,
-  #                                                 tag = 'i',
-  #                                                 qualifier.lab.scp = qualifier.label.scoping)
-  # tag2 <- occTest:::.qualifier.native.range(df=full.qaqc,
-  #                                               tag = 'n',
-  #                                               qualifier.lab.scp = qualifier.label.scoping)
-  # 
-  # #we will also add if we have a time stamp
-  # tag3 <-  occTest:::.qualifier.timestamp(df=full.qaqc,
-  #                                             tf = t.field,
-  #                                             tag = 'T',
-  #                                             qualifier.lab.scp = qualifier.label.scoping)
-  # 
-  # #we will also add if we have the right precision
-  # tag4 <- occTest:::.qualifier.precision(df=full.qaqc,tag='p',
-  #                                            .s = res.in.minutes,
-  #                                            .e = res.in.minutes,
-  #                                            xf = x.field,
-  #                                            yf = y.field,
-  #                                            qualifier.lab.scp = qualifier.label.scoping)
-  # 
-  # #we will also add an elevation threshold level
-  # tag5 <- occTest:::.qualifier.elevation (df=full.qaqc,tag='e',
-  #                                             qualifier.lab.scp = qualifier.label.scoping 
-  # )
-  # 
-  # #get all tags together
-  # tags.applied <- grep('tag',ls(),value=T)
-  # tag.output <- lapply (1:length(tag1), function (i){
-  #   
-  #   row.tag <- unlist(lapply (tags.applied, function (x){a <- get(x)[i] }))
-  #   row.tag <- paste(row.tag,collapse = '-')
-  #   
-  #   return(row.tag)
-  #   
-  # })
-  # tag.output <- unlist (tag.output)
-  # tag.output <- lapply (tag.output, function (x){
-  #   
-  #   row.tag <- strsplit (x,split='-')[[1]]
-  #   row.tag <- row.tag [row.tag!="NA"]
-  #   if (length(row.tag)==0){return(NA)}
-  #   if (length(row.tag)==1){return(row.tag)}
-  #   if (length(row.tag)>1) {row.tag <- paste(row.tag,collapse = '-'); return (row.tag)}
-  #   
-  # })
-  # tag.output <- unlist (tag.output)
-  # full.qaqc$qualifiers <- tag.output
-  # 
-  # #collapse to a unique label
-  # full.qaqc$quality.label <- occTest:::.paste3 (as.character(full.qaqc$quality.grade),full.qaqc$qualifiers,sep = '/')
-  # 
-  # #reorder as the same as inputs
-  # full.qaqc <- full.qaqc [sort (full.qaqc$roworder,decreasing = F, na.last=T),]
-  # 
-  # tictoc:::toc()
-  # 
   ########################################################################
-  ### STEP 11: WRITE THE OUTPUTS
+  ### STEP 10: WRITE THE OUTPUTS
   ########################################################################
   tictoc:::tic('Preparing and Writing outputs')
   print('Preparing and Writing outputs started ...')

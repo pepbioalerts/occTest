@@ -689,6 +689,7 @@ centroidDetection <- function (df=dat,
     cc_cap_test = (!cc_cap_test) *1
     cc_cen_test <- CoordinateCleaner::cc_cen (x = df, lon =xf,lat=yf ,value='flagged', verbose = F)
     cc_cen_test <- (!cc_cen_test) * 1
+    out$centroidDetection_CoordinateCleaner_value =  cc_cen_test+cc_cen_test
     out$centroidDetection_CoordinateCleaner_test = ifelse ((cc_cap_test==1 | cc_cen_test==1),T,F)
     out$centroidDetection_CoordinateCleaner_comment = ''
     out$centroidDetection_CoordinateCleaner_comment [cc_cap_test==1] = 'capital centroid'
@@ -1347,7 +1348,7 @@ envOutliers  <- function (.r.env=r.env,
 #' @export
 
 geoEnvAccuracy  <- function (df,
-                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,
+                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,tf=t.field,
                              
                              method='all',
                              
@@ -1386,6 +1387,20 @@ geoEnvAccuracy  <- function (df,
                     geoenvLowAccuracy_elevDiff_value =NA,
                     geoenvLowAccuracy_elevDiff_test =NA,
                     geoenvLowAccuracy_elevDiff_comments =NA,
+                    
+                    geoenvLowAccuracy_noDate_value =NA,
+                    geoenvLowAccuracy_noDate_test =NA,
+                    geoenvLowAccuracy_noDate_comments =NA,
+                    
+                    geoenvLowAccuracy_noDateFormatKnown_value =NA,
+                    geoenvLowAccuracy_noDateFormatKnown_test =NA,
+                    geoenvLowAccuracy_noDateFormatKnown_comments =NA,
+                    
+                    geoenvLowAccuracy_outDateRange_value =NA,
+                    geoenvLowAccuracy_outDateRange_test =NA,
+                    geoenvLowAccuracy_outDateRange_comments =NA,
+                    
+                    
                     
                     geoenvLowAccuracy_score=NA
   )[1:nrow (df),]
@@ -1448,6 +1463,77 @@ geoEnvAccuracy  <- function (df,
       if (class(raster.elevation) != "RasterLayer" ) {
         if(verbose) warning ("raster.elevation is not a raster; skipping elevDiff method")
       }
+    }
+    
+  }
+  
+  
+  #has time stamp? 
+  if (any(method %in% c('noDate','all'))) {
+    if (!is.null(tf)){
+      vecTime = df[,tf]
+      dfEmptyVals = data.frame (na=is.na(vecTime),
+                                null=is.null(vecTime),
+                                isEmpty = (vecTime==''),
+                                isEmptySpace = vecTime== '  ')
+      
+      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==T)})
+      out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #has format stamp? 
+  if (any(method %in% c('noDateFormatKnown','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method noDateFormatKnown under development. Sorry')
+      # vecTime = df[,tf]
+      # 
+      # dfVectime = data.frame(vecTime[1])
+      # 
+      # a = identify_dates(dfVectime)
+      # dfVectime = data.table::as.data.table(dfVectime)
+      # k = find_and_transform_dates(dfVectime)
+      # 
+      # 
+      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #has format stamp? 
+  if (any(method %in% c('noDateFormatKnown','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method noDateFormatKnown under development. Sorry')
+      # vecTime = df[,tf]
+      # 
+      # dfVectime = data.frame(vecTime[1])
+      # 
+      # a = identify_dates(dfVectime)
+      # dfVectime = data.table::as.data.table(dfVectime)
+      # k = find_and_transform_dates(dfVectime)
+      # 
+      # 
+      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #is within time range ?
+  
+  if (any(method %in% c('outDateRange','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method outDateRange under development. Sorry')
+
     }
     
   }
@@ -1572,6 +1658,8 @@ geoEnvAccuracy  <- function (df,
     
   }
   
+
+  
   #write final score
   out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
   return (out)
@@ -1616,7 +1704,7 @@ geoEnvAccuracy  <- function (df,
 #' @param 
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author Brian Maitner
 #' @note
 #' @seealso
 #' @references
@@ -1837,4 +1925,83 @@ centroid_assessment<-function(occurrences,centroid_data){
   return(output)
   
 }
+
+
+
+#' @title Selection of records within a land use selectino
+#'
+#' @descriptions Selection of records within a land use selection
+#' @details
+#' @param 
+#' @return data.frame
+#' @keywords internal
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+# #' @export
+
+landUseSelect <- function (df=dat,
+                            xf=x.field,
+                            yf=y.field,
+                            method='in', #out would be the other one
+                            .points.proj4string=points.proj4string,
+                             ras.landUse=ras.landUse,
+                           .landUseCodes = landUseCodes,
+                            do=T, verbose=F,output.dir=output.dir){
+  
+
+  out <- data.frame (landUse_wrongLU_value=NA,
+                     landUse_wrongLU_test=NA,
+                     landUse_wrongLU_comments= NA)[1:nrow (df),]
+  row.names(out) <- NULL
+  
+  if (!do) {return (out)}
+  
+  #start human influence analysis
+  xydat <- df[,c(xf,yf)]
+  
+  #get species presence
+  data.sp.pres <- as.data.frame (xydat)
+  coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  
+  #start with land use raster
+  if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
+    
+    #accommodate projections
+    if (is.null (.points.proj4string)){proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.null (.points.proj4string)) {proj4string(data.sp.pres) <- .points.proj4string}
+    if (proj4string(data.sp.pres) != projection (ras.landUse)){
+      if (is.na (projection (ras.landUse)) ) {proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+      if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
+    }
+    
+    lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)
+    row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
+    if (length (row.id.lu.NA) != 0) {
+      output.comments <- rep (NA,length =nrow (xydat))
+      output.comments [row.id.lu.NA] <- paste0('No land cover available for this record;' )
+    }
+    
+    lu.sp.value = lu.sp.pres[,2]
+    
+    if (method %in% c('in','all'))   {lu.sp.pres <- ( lu.sp.value %in% .landUseCodes)}
+    if (method %in% c('out'))        {lu.sp.pres <- (!lu.sp.value %in% .landUseCodes)}
+    
+    out$landUse_wrongLU_value= !lu.sp.pres * 1
+    out$landUse_wrongLU_test= !lu.sp.pres
+    out$landUse_wrongLU_comments= paste(method,.landUseCodes)
+    
+     #compute score
+     out$landUse_score <- occTest:::.gimme.score (out)
+  
+  
+  return (out)
+}
+
 

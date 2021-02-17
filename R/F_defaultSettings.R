@@ -79,6 +79,12 @@ defaultSettings <- function (x){
                            ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occProfileR'))
       )
       ,
+      landUseAnalysis= list (doLandUse=T,
+                             methodLandUse='in',
+                             landUseCodes = NULL,
+                             ras.landUse=NULL #we need a default here to be downloaded
+      )
+      ,
       institutionAnalysis = list (doInstitutionLocality=T,
                                   methodInstitutionLocality='all'
       )

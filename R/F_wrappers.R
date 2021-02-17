@@ -20,8 +20,8 @@
 #' @export
 
 #wallace simple wrapping funciton
-occSimpleClassification = function (spOcc,env,speciesName='My species',x='x',y='y',
-                                    date=NULL,isoCountry=NULL,classification=NULL ){
+occSimpFilter = function (spOcc,env,speciesName='My species',x='x',y='y',
+                                    date=NULL,isoCountry=NULL,classification='majority',filterCols=T ){
   
   #set up params
   mySettings = occTest::defaultSettings()
@@ -32,16 +32,26 @@ occSimpleClassification = function (spOcc,env,speciesName='My species',x='x',y='
   
   
   #run test functions 
+  #output is a list of 2 data.frames (the full and  the short, we continue with the full, see below)
   output =  occurrenceTests(sp.name = speciesName,
                             sp.table = spOcc, 
                             r.env = env,
                             tableSettings =mySettings$tableSettings)
   
-  #classify
-  if(classification == 'custom') print ('not implemented yet')
+  #select records
+  #ouput 2 is a list of 2 data.frames one with the filtered data after all tests, the other one with
+  # the statistics of the scores by each of the domains used
+  output2 = occFilter(df = output$occTest_full,level = 1,errorAcceptance = classification)
+
+  
+  #to consider, maybe you do not want to drag all the columns for wallace or any other thing, right
+  if (filterCols == T) { output2$fitleredDataset[,names (spOcc)]} else {
+    output2$fitleredDataset
+  }
   
   
-  output 
-  
+
+
+
   
 }

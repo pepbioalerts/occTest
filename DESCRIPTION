@@ -23,7 +23,15 @@ Imports:
     stats,
     utils,
     outliers,
-    CoordinateCleaner
+    CoordinateCleaner,
+    plyr,
+    tictoc,
+    rgbif,
+    countrycode,
+    rnaturalearth,
+    svMisc,
+    spocc,
+    tidyverse
 Suggests:
     speciesgeocodeR,
     testthat,
