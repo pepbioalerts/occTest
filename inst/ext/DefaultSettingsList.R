@@ -1,7 +1,3 @@
-
-require (rnaturalearth)
-
-
 defaultSettings = list (
   
   

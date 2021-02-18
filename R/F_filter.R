@@ -56,8 +56,7 @@ occFilter <- function (df,
                        level=1,
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL) {
-  library(tidyverse)
-  
+
   #load column metadata
    colMetaData = read.csv  (system.file('ext/fieldMetadata.csv',package='occTest'))
    colMetaData = dplyr::as_tibble(colMetaData)
@@ -104,7 +103,7 @@ occFilter <- function (df,
     if (errorAcceptance == 'relaxed')   {errorThreshold =0.7}
     if (errorAcceptance == 'majority')  {errorThreshold =0.5}
   }
-  toss = apply (dfScoreVals,1,function (x) {any (x >= errorAcceptance)})
+  toss = apply (dfScoreVals,1,function (x) {any (x >= errorThreshold)})
   #output
   list (fitleredDataset = dfFiltered[!toss,],
         summaryStats = dfScores)
