@@ -20,8 +20,9 @@
 #' @export
 
 #wallace simple wrapping funciton
-occSimpFilter = function (spOcc,env,speciesName='My species',x='x',y='y',
-                                    date=NULL,isoCountry=NULL,classification='majority',filterCols=T ){
+occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
+                         date=NULL,isoCountry=NULL,
+                         classification='majority',filterCols=T ){
   
   #set up params
   mySettings = occTest::defaultSettings()

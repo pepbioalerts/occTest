@@ -15,9 +15,12 @@ tableSettings$y.field='latitude'
 outMartesMartes = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,
                                   r.env = environmentRaster,
                                   tableSettings = tableSettings)
+out2=occFilter(df = outMartesMartes,level = 1,errorAcceptance = 'majority')
+
 
 #run wrapper function (test + filter together)
-outMartesMartes2 = occSimpFilter(spOcc = occ.data,env = environmentRaster)
+# CM: this one won't work with the demo unless you match the occ.data colnames to the standardized colnames of occTest
+#outMartesMartes2 = occSimpFilter(spOcc = occ.data,env = environmentRaster)
 
 #for wallace you may check occSimpFilter and implement it in two steps
 # in occSimpFilter the names of the columns have defaults, and you can change them for x, y, data, isocountry.
