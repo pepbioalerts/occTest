@@ -41,7 +41,6 @@ occurrenceTests <- function (
   
   #  for testing
   # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
-  
   #set timer
   tictoc:::tic()
   
@@ -333,21 +332,20 @@ occurrenceTests <- function (
         
         
       })
-      dat.excl.H = do.call(rbind, dat.excl.H)
+      dat.excl.H = dplyr::bind_rows(dat.excl.H)
     }
-    if (exists('dat.excl.H') & (!is.null (get('dat.excl.H')))) {
-      if (nrow (dat.excl.H)>0) dat.Q.H <- dat.excl.H
-      rm (dat.excl.H)
-    }
-    if (exists('dat.excl.H') & (is.null (get('dat.excl.H')))) {
-      rm (dat.excl.H)
+    if (exists('dat.excl.H')) {
+      if (!is.null (get('dat.excl.H'))){
+        if (nrow (dat.excl.H)>0) {
+          dat.Q.H <- dat.excl.H
+          rm (dat.excl.H) } else {rm (dat.excl.H)}
     }
     if (exists ('dat.Q.H1')) {rm (dat.Q.H1)} 
     if (exists ('dat.Q.H2')) {rm (dat.Q.H2)} 
     if (exists ('dat.Q.H3')) {rm (dat.Q.H3)} 
     
-    
-  }
+    }
+    }
   
   #check outputs and escape ifneedbe //
   status.out <- occTest:::.status.tracker.and.escaping (dataset.to.continue = dat,

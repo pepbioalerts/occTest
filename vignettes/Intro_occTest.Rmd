@@ -196,10 +196,8 @@ mySettings <- defaultSettings()
 #change the attribute of interest (in this case setting an analysis off)
 mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
 #add your settings to the function
-out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+out = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
                          analysisSettings = mySettings$analysisSettings)
-
-
 ```
 
 
@@ -250,10 +248,9 @@ errorThreshold  | if errorAcceptance set to custom. The threshold of error accep
 
 
 ```{r}
-outDougFirSelec = occFilter(df = outDougFir,level = 2) 
+outDougFirSelec = occFilter(df = outDougFir,level = 2,errorAcceptance = 'relaxed') 
 names (outDougFirSelec)
 outDougFirSelec[['fitleredDataset']]
-
 ```
 
 The output statisics allow you to inspect, for different groupingTestLevels the [groupLeve]_score (the average across specific tests), [groupLevel]_rateTestPerformed (e.g. 0.14 means you performed 14% of the available tests for a given groupLevel) and  [groupLevel]__rateTesttPerformed_NtestPeformed (e.g. the total number of tests perfomed).
@@ -262,25 +259,12 @@ The output statisics allow you to inspect, for different groupingTestLevels the 
 outDougFirSelec[['summaryStats']]
 ```
 
-check how the groupings changed with different levels and differnt threshold accpetance levels 
-
+check how the groupings changed with different levels and different threshold acceptance levels 
 
 ```{r}
-outDougFirSelec2 = occFilter(df = outDougFir, level = 2, errorAcceptance = 'stringent') 
-
-nrow (outDougFirSelec2[['fitleredDataset']])
-
+outDougFirSelec2 = occFilter (df = outDougFir, level = 2,errorAcceptance = 'stringent')
+nrow (outDougFirSelec2 [['fitleredDataset']] )
 nrow (outDougFirSelec[['fitleredDataset']])
-
-
-outDougFirSelec2[['summaryStats']]
-```
-
-
-
-```{r}
-outDougFirSelec2 = occFilter(df = outDougFir, level = 2, errorAcceptance = 'stringent') 
-outDougFirSelec2[['summaryStats']]
 ```
 
 
@@ -302,23 +286,15 @@ library(knitr)
 library(rgdal)
 
 #load data
-occ.species.nogeoscrub.f = system.file('ext/SampleData/Sp3Occurrence_v4.csv'
-                                     ,package='occTest')
-occ.species.nogeoscrub <-  read.table (file = occ.species.nogeoscrub.f,header = T,sep = ',',as.is = T)
+spMed = system.file('ext/SampleData/Sp3Occurrence_v4.csv',package='occTest')
+occ.species.nogeoscrub <-  read.table (file = spMed,header = T,sep = ',',as.is = T)
 
-
-#load the reaster of the environmental variables
+#load the raster of the environmental variables
 ras.env.f = system.file('ext/AllEnv.tif',package='occTest')
 ras.env = raster::stack(ras.env.f)
 
-#load a high resolution raster of elevations
-ras.dem.f = system.file('ext/DEM.tif',package='occTest')
-ras.dem = raster(ras.dem.f)
-
-
 ######## CHECK THE INPUT DATA TABLE
 str (occ.species.nogeoscrub)
-
 ```
 
 The table data shows:
@@ -339,7 +315,15 @@ mySettings$tableSettings$l.field <- 'LOCALITYNAME'
 mySettings$tableSettings$c.field <- 'COUNTRYRECORD'
 mySettings$tableSettings$e.field <- 'ELEVATION'
 mySettings$tableSettings$a.field <- c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M')
+```
 
+
+We have a more detailed raster of elevation that will allow us to know whether the elevation recorded in our dataset is different from that inferred from the terrain model used to build the climate variables  
+
+```{r}
+#load a high resolution raster of elevations
+ras.dem.f = system.file('ext/DEM.tif',package='occTest')
+ras.dem = raster(ras.dem.f)
 ```
 
 We have a more detailed raster of human influence than that of the report. In our of map high human influence is considered when a record is in a cell above 50. Let's modify our settings 
@@ -367,13 +351,11 @@ names (countries.pol)
 #add it to the settings
 mySettings$analysisSettings$rangeAnalysis$countries.shapefile <-countries.pol 
 mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO' 
-
 ```
 
 We also know that the species is native to Spain ('ESP') and considered invasive in France ('FRA') so we will also specify it, and flag anything that is not in these countries
-
 ```{r}
-out <- occurrenceClassify(sp.name = 'My species',
+out <- occurrenceTests   (sp.name = 'My species',
                           sp.table = occ.species.nogeoscrub,
                           r.env =ras.env,
                           tableSettings = mySettings$tableSettings, 
@@ -383,25 +365,6 @@ out <- occurrenceClassify(sp.name = 'My species',
                           inv.ctry = 'FRA',
                           verbose = T)
 
-table (out$occ_short_profile$quality.label)
 
 ```
 
-
-Now let's plot the results in a map
-
-```{r}
-# 
-# full.qaqc <-out$occ_full_profile
-# proposed.color.grading <- data.frame (row.names =
-#                                         c('A','B','C','D','E','F','G','H'),
-#                                       color.qgrade=c('#4575b4','#74add1',
-#                                                      '#abd9e9','#e0f3f8',
-#                                                      '#fee090','#fdae61',
-#                                                      '#f46d43','#d73027'))
-# color.to.plot<-as.character(sapply(full.qaqc$quality.grade,
-#                                    function (x){
-#                                      proposed.color.grading[x,'color.qgrade'] }))
-# plot(ras.dem)
-# points(x=full.qaqc$MAPX,y=full.qaqc$MAPY,col='black',pch=22,bg=color.to.plot)
-```
