@@ -22,11 +22,11 @@ defaultSettings <- function (x){
   defaultSettings = list (
     
     #grading Settings
-    gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
-                            qualifiers=T,
-                            qualifier.label.scoping=c('A','B','C','D','E'))
-    
-    ,
+    # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
+    #                         qualifiers=T,
+    #                         qualifier.label.scoping=c('A','B','C','D','E'))
+    # 
+    # ,
     #writing outputs settings
     writeoutSettings = list (#writing outputs
       output.dir=NULL,
@@ -36,15 +36,15 @@ defaultSettings <- function (x){
       output.base.filename="occTest")
     ,
     #tableSettings
-    tableSettings = list (taxonobservation.id = NULL,
-                          x.field = 'x',
-                          y.field = 'y',
-                          t.field = NULL, #time field (date)  
-                          l.field = NULL, #locality field 
-                          c.field = NULL, #country field field (date)   in meters
-                          e.field = NULL, #elevation recoreded  in meters
-                          a.field = NULL, #coordinate uncertainty in meters
-                          ds.field = NULL #dataset field identifier
+    tableSettings = list (taxonobservation.id = 'taxonID',
+                          x.field = 'decimalLatitude',
+                          y.field = 'decimalLongitude',
+                          t.field = 'eventDate', #time field (date)  
+                          l.field = 'verbatimLocality', #locality field 
+                          c.field = 'countryCode', #country field field (date)   
+                          e.field = 'recordedElevation', #elevation recoreded  in meters
+                          a.field = 'coordinateUncertaintyInMeters', #coordinate uncertainty in meters
+                          ds.field = 'datasetName' #dataset field identifier
     )
     ,                     
     #analysis settings

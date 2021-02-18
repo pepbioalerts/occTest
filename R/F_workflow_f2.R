@@ -60,21 +60,37 @@ occurrenceTests <- function (
   ### STEP 0: Load settings and study native and invasive countries
   ########################################################################
   defaultSettings = occTest::defaultSettings()
-  #load table settings
+  #load table settings (old stuff, we  could attache the different labels)
   if (is.null(tableSettings)) { tableSettings = defaultSettings$tableSettings}
-  taxonobservation.id = tableSettings$taxonobservation.id
+
   x.field             = tableSettings$x.field
   y.field             = tableSettings$y.field
-  t.field             = tableSettings$t.field
-  l.field             = tableSettings$l.field  
-  c.field             = tableSettings$c.field
-  e.field             = tableSettings$e.field
-  a.field             =  tableSettings$a.field
-  ds.field            =  tableSettings$ds.field
   
+  if  (! all (c(x.field,y.field) %in%  names (sp.table) ) ) {stop ('No coordinate fields specified')}
+  
+  taxonobservation.id = tableSettings$taxonobservation.id
+  if (! taxonobservation.id %in% names (sp.table))    taxonobservation.id = NULL
+  
+  t.field             = tableSettings$t.field
+  if (! t.field %in% names (sp.table))    t.field = NULL
+  
+  l.field             = tableSettings$l.field  
+  if (! l.field %in% names (sp.table))    l.field = NULL
+  
+  c.field             = tableSettings$c.field
+  if (! c.field %in% names (sp.table))    c.field = NULL
+  
+  e.field             = tableSettings$e.field
+  if (! e.field %in% names (sp.table))    e.field = NULL
+  
+  a.field             = tableSettings$a.field
+  if (! a.field %in% names (sp.table))    a.field = NULL
+  
+  ds.field            =  tableSettings$ds.field
+  if (! ds.field %in% names (sp.table))    ds.field = NULL
+
   #load analysisSettings
   if (is.null(analysisSettings)) { analysisSettings = defaultSettings$analysisSettings}
-  
   coordinate.decimal.precision =  analysisSettings$geoSettings$coordinate.decimal.precision
   points.proj4string = analysisSettings$geoSettings$points.proj4string
   
