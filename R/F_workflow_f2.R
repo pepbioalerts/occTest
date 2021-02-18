@@ -38,6 +38,10 @@ occurrenceTests <- function (
   verbose = F,
   doParallel=F,
   mc.cores=2){
+  
+  #  for testing
+  # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
+  
   #set timer
   tictoc:::tic()
   

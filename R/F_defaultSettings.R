@@ -19,12 +19,9 @@
 
 defaultSettings <- function (x){
   
-  require (rnaturalearth)
-  
+  # require (rnaturalearth) # CM: this isn't supposed tbe done in functions. namespace and functions from it
   
   defaultSettings = list (
-    
-    
     
     #grading Settings
     gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
@@ -51,7 +48,6 @@ defaultSettings <- function (x){
                           a.field = NULL, #coordinate uncertainty in meters
                           ds.field = NULL #dataset field identifier
     )
-    
     ,                     
     #analysis settings
     analysisSettings =list (
@@ -76,7 +72,7 @@ defaultSettings <- function (x){
       humanAnalysis= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occProfileR'))
+                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occTest'))
       )
       ,
       landUseAnalysis= list (doLandUse=T,
