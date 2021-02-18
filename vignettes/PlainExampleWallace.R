@@ -9,7 +9,12 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = te
 
 #start testing  occurrences
 library(occTest)
-outMartesMartes = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+tableSettings=occTest::defaultSettings()$tableSettings
+tableSettings$x.field='longitude'
+tableSettings$y.field='latitude'
+outMartesMartes = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,
+                                  r.env = environmentRaster,
+                                  tableSettings = tableSettings)
 
 #run wrapper function (test + filter together)
 outMartesMartes2 = occSimpFilter(spOcc = occ.data,env = environmentRaster)

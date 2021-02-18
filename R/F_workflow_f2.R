@@ -49,7 +49,7 @@ occurrenceTests <- function (
   ########################################################################
   #set timer
   tictoc:::tic('Initial checks and formatting')
-  print ('Initial checks and formatting started...')
+  message ('Initial checks and formatting started...')
   
   if (missing (sp.table)) {stop('missing sp.table')}
   if (missing (r.env)) {stop('missing r.env')}
@@ -224,7 +224,7 @@ occurrenceTests <- function (
     resolveAlienCtry <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
   }
   if (any (resolveNativeCtry,resolveAlienCtry)){
-    if (verbose) {print ("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
+    if (verbose) {message ("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
     
     xydatTemporary = dat[,c(x.field,y.field)]
     xydatTemporary = xydatTemporary[complete.cases(xydatTemporary),]
@@ -248,9 +248,9 @@ occurrenceTests <- function (
   ##############################################################################
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
-  print('Filter major coordinate Issues statrted...')
+  message('Filter major coordinate Issues statrted...')
   
-  if (verbose) {print ("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
+  if (verbose) {message ("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
   
   Analysis.H <- filterMissing(df = dat,xf = x.field,yf = y.field)
   dat.Q.H <- Analysis.H$stay
@@ -380,8 +380,8 @@ occurrenceTests <- function (
   ##########################################################################################
   #set timer
   tictoc:::tic('Filter duplicates')
-  print('Filter duplicates started')
-  if (verbose) {print ("**** RESOLVING: duplicates ****")}
+  message('Filter duplicates started')
+  if (verbose) {message ("**** RESOLVING: duplicates ****")}
   
   #indicate duplicates with exact coordinates
   Analysis.G <- duplicatesexcludeAnalysis(df = dat,
@@ -417,8 +417,8 @@ occurrenceTests <- function (
   ############################################################################
   #set timer
   tictoc:::tic('Resolving coastal reassignment')
-  print ('Resolving coastal reassignment started...')
-  if (verbose) {print ("**** RESOLVING : sea/terrestrial reassignment ****")}
+  message ('Resolving coastal reassignment started...')
+  if (verbose) {message ("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
   dat <- nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
@@ -475,10 +475,10 @@ occurrenceTests <- function (
   
   #set timer
   tictoc:::tic('Resolving countryStatusRange Analysis')
-  print('Resolving countryStatusRange Analysis started...')
-  if (verbose) {print ("**** RESOLVING QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
-  if (verbose & excludeUnknownRanges) {print('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')}
-  if (verbose & excludeNotmatchCountry) {print('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')}
+  message('Resolving countryStatusRange Analysis started...')
+  if (verbose) {message ("**** RESOLVING QUALITY FILTER F: CountryStatus ranege analysis (invasive?native?unkonwn?) ****")}
+  if (verbose & excludeUnknownRanges) {message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')}
+  if (verbose & excludeNotmatchCountry) {message('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')}
   Analysis.F <-occTest::countryStatusRangeAnalysis(df=dat,
                                                        xf = x.field,
                                                        yf = y.field,
@@ -517,9 +517,9 @@ occurrenceTests <- function (
   ############################################################################
   #set timer
   tictoc:::tic('Total Geographic and Range Analysis:')
-  print('Total Geographic and Range Analysis started....')
+  message('Total Geographic and Range Analysis started....')
   
-  if (verbose) {print ("**** RESOLIVNG  ****")}
+  if (verbose) {message ("**** RESOLIVNG  ****")}
   
   #ANALYSIS ELEMENTS
   #this is important for development, need to specify the number of ELEMENTS of analysis
@@ -528,7 +528,7 @@ occurrenceTests <- function (
   
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc:::tic('Centroid detection')
-  print ('Centroid detection started ...')
+  message ('Centroid detection started ...')
 
   Analysis.1     <- centroidDetection (.r.env = r.env,
                                        df = dat,
@@ -548,7 +548,7 @@ occurrenceTests <- function (
   
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc:::tic('Land Use Land Cover analysis')
-  print ('Land Use Land Cover analysis started ...')
+  message ('Land Use Land Cover analysis started ...')
   Analysis.2 <- humanDetection     (df = dat,
                                     xf = x.field,
                                     yf = y.field,
@@ -560,7 +560,7 @@ occurrenceTests <- function (
   
   ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
   tictoc:::tic('Institution locality')
-  print  ('Institution locality started ...')
+  message  ('Institution locality started ...')
   Analysis.3 <- institutionLocality (df=dat,xf = x.field,yf=y.field,
                                      lf=l.field,
                                      do = doInstitutionLocality,
@@ -570,7 +570,7 @@ occurrenceTests <- function (
   
   ### ELEMENT : land use
   tictoc:::tic('Records in land use')
-  print  ('Records in land use started...')
+  message  ('Records in land use started...')
   Analysis.4 <- landUseSelect       (df=dat,xf = x.field,yf=y.field,
                                      .points.proj4string =points.proj4string,
                                      .landUseCodes = landUseCodes,
@@ -585,7 +585,7 @@ occurrenceTests <- function (
   
   ### ELEMENT : GEOGRAPHICAL OUTLIER
   tictoc:::tic('geographic outliers detection')
-  print ('geographic outliers detection started')
+  message ('geographic outliers detection started')
   Analysis.5 <- geoOutliers(df=dat,
                             xf=x.field,
                             yf=y.field,
@@ -600,7 +600,7 @@ occurrenceTests <- function (
  
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc:::tic('Environmental outliers')
-  print ('Environmental outliers analysis started...')
+  message ('Environmental outliers analysis started...')
   Analysis.6 <- envOutliers (.r.env=r.env,
                              df= dat, xf=x.field,
                              yf =y.field,
@@ -614,7 +614,7 @@ occurrenceTests <- function (
   
   ### ELEMENT 8: Coordinate accuracy
   tictoc:::tic('geoEnvironmental accuracy')
-  print ('geoEnvironmental accuracy analysis started...')
+  message ('geoEnvironmental accuracy analysis started...')
   
 
   Analysis.7 <- geoEnvAccuracy(df=dat,
@@ -662,7 +662,7 @@ occurrenceTests <- function (
   ### STEP 10: WRITE THE OUTPUTS
   ########################################################################
   tictoc:::tic('Preparing and Writing outputs')
-  print('Preparing and Writing outputs started ...')
+  message('Preparing and Writing outputs started ...')
   #reorder data as original
   full.qaqc = full.qaqc[order (full.qaqc$roworder),]
   full.qaqc= full.qaqc[,! names (full.qaqc)== 'roworder']
