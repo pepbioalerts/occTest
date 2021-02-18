@@ -19,12 +19,7 @@
 
 defaultSettings <- function (x){
   
-
-  
-  
   defaultSettings = list (
-    
-    
     
     #grading Settings
     gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
@@ -51,7 +46,6 @@ defaultSettings <- function (x){
                           a.field = NULL, #coordinate uncertainty in meters
                           ds.field = NULL #dataset field identifier
     )
-    
     ,                     
     #analysis settings
     analysisSettings =list (

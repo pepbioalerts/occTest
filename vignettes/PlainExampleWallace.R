@@ -1,18 +1,18 @@
 #load data
-occ.data = readRDS (system.file('ext/Martesmartes.rds',package = 'occTest'))
+library(spocc)
+#df <- occ(query = 'Martes martes')
+df=readRDS(system.file('ext/pine_marten.RDS',package='occTest'))
+occ.data <-occ2df(df)
 
 #(down)load needed environmental data
 environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 
 #start testing  occurrences
-outMartesMartes = occurrenceTests (sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+library(occTest)
+outMartesMartes = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 
 #run wrapper function (test + filter together)
-
-#only original columns returned
-outMartesMartes2 = occSimpFilter (spOcc = occ.data,env = environmentRaster,filterCols = T)
-#all columns returned
-outMartesMartes3 = occSimpFilter (spOcc = occ.data,env = environmentRaster,filterCols = F)
+outMartesMartes2 = occSimpFilter(spOcc = occ.data,env = environmentRaster)
 
 #for wallace you may check occSimpFilter and implement it in two steps
 # in occSimpFilter the names of the columns have defaults, and you can change them for x, y, data, isocountry.
