@@ -31,7 +31,8 @@ Imports:
     rnaturalearth,
     svMisc,
     spocc,
-    tidyverse
+    tidyverse,
+    GNRS
 Suggests:
     speciesgeocodeR,
     testthat,

@@ -25,7 +25,7 @@ mySettings$tableSettings$t.field <- 'date'
 
 
 #classify occurrences
-library(occProfileR)
+library(occTest)
 
 out = occurrenceTests(sp.name='Martes martes',
                          sp.table = occ.data,

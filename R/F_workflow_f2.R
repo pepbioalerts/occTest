@@ -120,7 +120,7 @@ occurrenceTests <- function (
   #load writeOutSettings
   if (is.null(writeoutSettings)) { writeoutSettings = defaultSettings$writeoutSettings}
   output.dir = writeoutSettings$output.dir
-  if (is.null(output.dir)) {output.dir = getwd() ; message('Output directory set to your current working directory')}
+  if (is.null(output.dir)) {output.dir = tempdir() ; message('Output directory not specified. Set to a temporary directory')}
   writeAllOutput = writeoutSettings$writeAllOutput
   write.simple.output =  writeoutSettings$write.simple.output
   write.full.output = writeoutSettings$write.full.output
@@ -661,24 +661,25 @@ occurrenceTests <- function (
     if (class(written)=='try-error') try (file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
   
-  #short qaqc
-  idCols1 = which (names (full.qaqc)== x.field )
-  idCols2 = which (names (full.qaqc)== y.field )
-  idCols3 = grep (pattern = '_test',names(full.qaqc))
-  idCols4 = grep (pattern = '_score',names(full.qaqc))
-  short.qaqc = full.qaqc[,c(idCols1,idCols2,idCols3,idCols4)]
-  
-  if (write.simple.output==T) {
-    sp2 = occTest:::.join.spname (sp)
-    newdir = paste0(output.dir,'/',sp2)
-    dir.create (newdir,recursive = T,showWarnings = F)
-    write.csv (short.qaqc,
-               paste0(newdir,'/',output.base.filename,'_',sp,
-                      '_short.csv'),row.names = F)
-  }
+  # #short qaqc
+  # idCols1 = which (names (full.qaqc)== x.field )
+  # idCols2 = which (names (full.qaqc)== y.field )
+  # idCols3 = grep (pattern = '_test',names(full.qaqc))
+  # idCols4 = grep (pattern = '_score',names(full.qaqc))
+  # short.qaqc = full.qaqc[,c(idCols1,idCols2,idCols3,idCols4)]
+  # 
+  # if (write.simple.output==T) {
+  #   sp2 = occTest:::.join.spname (sp)
+  #   newdir = paste0(output.dir,'/',sp2)
+  #   dir.create (newdir,recursive = T,showWarnings = F)
+  #   write.csv (short.qaqc,
+  #              paste0(newdir,'/',output.base.filename,'_',sp,
+  #                     '_short.csv'),row.names = F)
+  # }
   tictoc:::toc()
   
-  output.function <- list (occTest_full=full.qaqc, occTest_short=short.qaqc)
+  #output.function <- list (occTest_full=full.qaqc, occTest_short=short.qaqc)
+  output.function <- full.qaqc
   tictoc:::toc()
   
   return (output.function)

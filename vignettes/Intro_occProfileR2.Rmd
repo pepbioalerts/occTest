@@ -1,5 +1,5 @@
 ---
-title: "Classifying Occurrence Data with *occProfileR*"
+title: "Classifying Occurrence Data with *occTest*"
 author: "Pep Serra-Diaz, Cory Merow"
 date: "`r Sys.Date()`"
 output: 
@@ -8,7 +8,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Profiling Occurrence Data with occProfileR}
+  %\VignetteIndexEntry{Profiling Occurrence Data with occTest}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,15 +18,15 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
-# What does occProfileR do?
+# What does occTest do?
 
-*occProfileR* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modelling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and profiles the occurrences according to several checks on the coordinates and environmental layers. 
+*occTest* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modelling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and profiles the occurrences according to several checks on the coordinates and environmental layers. 
 
 Profiling should not be understood as data cleaning, but rather as the application of several tests that enable the user to characterize an occurrence record. Such profiling should enable the user to make choose the best analysis with the data at hand and understand the limits of the data. This is differs from the more classical approach of data selection, cleaning or scrubbing, but it is obviously a critical step prior to cleaning data for a given analysis. 
 
 The packages is based on a combination of new created functions by J.M. Serra-Diaz, C.Merow and B.Maitner, and a wrapper of functions from packages biogeo (Patterson et al. ) and CoordinateCleaner(Zizka et al. ).
 
-![](occProfileR.png) 
+![](occTest.png) 
 
 
 ## Workflow overview and data needed
@@ -45,7 +45,6 @@ The species occurrence data.frame contains the presence records in latitude-long
 The environment raster is a rasterStack object that contains the climate variables intended for use in an SDM or another analysis relating species occurrence and climate. 
 
 ```{r}
-
 #load data
 library(spocc)
 df <- occ(query = 'Martes martes')
@@ -60,9 +59,8 @@ library (raster)
 environmentRaster = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences
-library(occProfileR)
-outMartesMartes = occProfileR::occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
-
+library(occTest)
+outMartesMartes = occTest::occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 ```
 
 ## *occurrenceProfile* output
@@ -246,7 +244,7 @@ out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = en
 ```
 
 
-## The occProfileR workflow step by step
+## The occTest workflow step by step
 
 ### Step 0: Initial checks
 
@@ -306,7 +304,7 @@ Perform several tests to flag environmental and geographical issues of the recor
 | envOutliers    | is record an environmental outlier? |
 | geoEnvAccuracy    | tests whether the coordinates are precise and whether they may compromise the accuracy of environmnetal data? |  
 
-Each of these functions aims at identifying different potential errors of occurrence records. However, different methods have been implemented to identify them. In occProfileR we implement an ensemble testing. That is, the default is to test different methods for each of the functions and output a score that average the results. For instance, detecting geographical outliers can be performed using different methods: by using distances between points, by using coordinate distributions, by using alpha hull geometries. occurrenceProfile tests all of them and outputs 1 or 0 for each method, and a total score ranging from 0 to 1 for geographical outlier detection. The user may, however, specify which tests to perform although our default and recommendation is to use them all (method='all' in all functions above). 
+Each of these functions aims at identifying different potential errors of occurrence records. However, different methods have been implemented to identify them. In occTest we implement an ensemble testing. That is, the default is to test different methods for each of the functions and output a score that average the results. For instance, detecting geographical outliers can be performed using different methods: by using distances between points, by using coordinate distributions, by using alpha hull geometries. occurrenceProfile tests all of them and outputs 1 or 0 for each method, and a total score ranging from 0 to 1 for geographical outlier detection. The user may, however, specify which tests to perform although our default and recommendation is to use them all (method='all' in all functions above). 
 
 | Function name    | methods                                               
 | -------------    |:---------------------------------------------------:|
@@ -356,7 +354,7 @@ In this last step, we write the desired outputs.
 
 ```{r}
 #load packages
-library(occProfileR)
+library(occTest)
 library(spocc)
 
 
@@ -372,7 +370,7 @@ library (raster)
 rrr = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences but we will ask to resolve native and invasive countries (this obviously takes longer)
-library(occProfileR)
+library(occTest)
 outDougFir = occurrenceClassify(sp.name='Pseudotsuga menziesii', 
                                 sp.table = occ.data,
                                 r.env = rrr,
@@ -398,7 +396,7 @@ table (outDougFir$occ_full_profile$quality.grade)
 
 ```{r,fig.width=6,fig.height=4}
 #load packages
-library(occProfileR)
+library(occTest)
 library(ggplot2)
 library(raster)
 library(knitr)
@@ -406,16 +404,16 @@ library(rgdal)
 
 #load data
 occ.species.nogeoscrub.f = system.file('ext/SampleData/Sp3Occurrence_v4.csv'
-                                     ,package='occProfileR')
+                                     ,package='occTest')
 occ.species.nogeoscrub <-  read.table (file = occ.species.nogeoscrub.f,header = T,sep = ',',as.is = T)
 
 
 #load the reaster of the environmental variables
-ras.env.f = system.file('ext/AllEnv.tif',package='occProfileR')
+ras.env.f = system.file('ext/AllEnv.tif',package='occTest')
 ras.env = raster::stack(ras.env.f)
 
 #load a high resolution raster of elevations
-ras.dem.f = system.file('ext/DEM.tif',package='occProfileR')
+ras.dem.f = system.file('ext/DEM.tif',package='occTest')
 ras.dem = raster(ras.dem.f)
 
 
@@ -435,7 +433,7 @@ The table data shows:
 We will incorporate this information into the workflow. To do so we need to modify the defaultSettings relatedo to table
 
 ```{r}
-mySettings <- occProfileR::defaultSettings()
+mySettings <- occTest::defaultSettings()
 mySettings$tableSettings$x.field <- 'MAPX'
 mySettings$tableSettings$y.field <- 'MAPY'
 mySettings$tableSettings$t.field <- 'DATE'
@@ -450,7 +448,7 @@ We have a more detailed raster of human influence than that of the report. In ou
 
 ```{r}
 #load your own human influence map
-ras.humaninfluence.f = system.file('ext/HII.tif',package='occProfileR')
+ras.humaninfluence.f = system.file('ext/HII.tif',package='occTest')
 ras.humaninfluence = raster(ras.humaninfluence.f)
 
 #add it to the settings
@@ -464,7 +462,7 @@ mySettings$analysisSettings$humanAnalysis$methodHyperHumanDetection <-ras.humani
 We also have a more detailed data on country borders 
 ```{r}
 #load detailed country borders and shorelines
-countries.pol.f = system.file('ext/CountryLevel',package='occProfileR')
+countries.pol.f = system.file('ext/CountryLevel',package='occTest')
 countries.pol = readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
 names (countries.pol)
 

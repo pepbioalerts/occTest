@@ -1,6 +1,6 @@
-#' @title load default settings for occProfileR
+#' @title load default settings for occTest
 #'
-#' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occProfileR
+#' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
 #' @return list of lists with all different parameters to use in occProfile function
 #' @keywords user
@@ -19,7 +19,7 @@
 
 defaultSettings <- function (x){
   
-  require (rnaturalearth)
+
   
   
   defaultSettings = list (
@@ -76,7 +76,7 @@ defaultSettings <- function (x){
       humanAnalysis= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occProfileR'))
+                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occTest'))
       )
       ,
       landUseAnalysis= list (doLandUse=T,

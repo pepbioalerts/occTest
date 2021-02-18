@@ -2,15 +2,15 @@
 
 #load necessary data
 occ.species.nogeoscrub = system.file('ext/SampleData/Sp3Occurrence_v3.csv'
-                                     ,package='occProfileR')
+                                     ,package='occTest')
 occ.species.nogeoscrub <-  read.csv (occ.species.nogeoscrub)
-ras.env = system.file('ext/AllEnv.tif',package='occProfileR')
+ras.env = system.file('ext/AllEnv.tif',package='occTest')
 ras.env = raster (ras.env)
-ras.dem = system.file('ext/DEM.tif',package='occProfileR')
+ras.dem = system.file('ext/DEM.tif',package='occTest')
 ras.dem = raster (ras.dem)
-ras.humaninfluence = system.file('ext/HII.tif',package='occProfileR')
+ras.humaninfluence = system.file('ext/HII.tif',package='occTest')
 ras.humaninfluence = raster(ras.humaninfluence)
-countryshapefile.dir =  system.file('ext/CountryLevel',package='occProfileR')
+countryshapefile.dir =  system.file('ext/CountryLevel',package='occTest')
 countries.pol <- rgdal::readOGR(dsn =countryshapefile.dir,
                                 layer = 'Countries_SPDF_MED')
 occ.sp <- occ.species.nogeoscrub[,c('MAPX','MAPY')]

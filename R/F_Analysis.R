@@ -475,7 +475,7 @@ centroidDetection <- function (df=dat,
   if (any(method %in% c('BIEN','all'))){
     
     #load centroid data
-    centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occProfileR')
+    centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occTest')
     centroid_data =  read.csv (centroid_data)
     
     #reformat dataframe of occurrences to be the same as in centroid Maitner methods
@@ -786,17 +786,16 @@ humanDetection <- function (df=dat,
 
 
 
-  #start uban areas
-
+  #start urban areas
   if (any (method %in% c('urban','all')))  {
 
     #check ref exists
-    newoutdir = paste0(output.dir,'/spatialData')
+    newoutdir = paste0(tempdir(),'/spatialData')
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
     if (alreadyDownloaded) myRef = rgdal:::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
     if (!alreadyDownloaded) myRef= NULL 
     
-    cc_urb_test = occTest:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
+    cc_urb_test = occTest:::cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_value <- cc_urb_test
     out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 

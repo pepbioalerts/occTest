@@ -20,7 +20,7 @@
 #' }
 
 
-ne_download_occProfileR = function (scale = 110, type = "countries", 
+ne_download_occTest = function (scale = 110, type = "countries", 
                                     category = c("cultural", "physical", "raster"), 
                                     destdir = tempdir(), 
                                     load = TRUE, 
@@ -53,7 +53,7 @@ ne_download_occProfileR = function (scale = 110, type = "countries",
 
 
 
-#' @title Flag values in urban areas (based on coordinate cleaner but modified for occProfileR to deliver it quitely)
+#' @title Flag values in urban areas (based on coordinate cleaner but modified for occTest to deliver it quitely)
 #'
 #' @description flags values for urban areas
 #' @details
@@ -75,7 +75,7 @@ ne_download_occProfileR = function (scale = 110, type = "countries",
 #' example<-"goes here"
 #' }
 #' 
-cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
+cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                         ref = NULL, value = "clean", verbose = F,outdir=output.dir) 
 {
   match.arg(value, choices = c("clean", "flagged"))
@@ -84,7 +84,7 @@ cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallati
   }
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
-    ref <- try(suppressWarnings(occTest:::ne_download_occProfileR(scale = "medium", 
+    ref <- try(suppressWarnings(occTest:::ne_download_occTest(scale = "medium", 
                                                  type = "urban_areas")), silent = TRUE)
     if (class(ref) == "try-error") {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
@@ -96,9 +96,9 @@ cc_urb_occProfileR <-  function (x, lon = "decimallongitude", lat = "decimallati
     }
     sp::proj4string(ref) <- ""
     newoutdir = paste0(outdir,'/spatialData')
-    dir.create(newoutdir,showWarnings = F,recursive = T)
-    rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile")
-    
+     dir.create(newoutdir,showWarnings = F,recursive = T)
+     rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile")
+     
   }
   else {
     if (!any(is(ref) == "Spatial")) {

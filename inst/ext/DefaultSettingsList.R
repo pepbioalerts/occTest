@@ -56,7 +56,7 @@ analysisSettings =list (
   humanAnalysis= list (doHumanDetection=T,
                        methodHumanDetection='all',
                        th.human.influence = 45,
-                       ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occProfileR'))
+                       ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occTest'))
                        )
   ,
   institutionAnalysis = list (doInstitutionLocality=T,

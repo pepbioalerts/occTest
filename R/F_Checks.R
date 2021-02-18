@@ -145,7 +145,7 @@
   equal <- reqNames[sapply(reqNames, FUN = function(x) x %in%
                                      names(dat))]
   
-  if (length(equal)>1) {warning(paste("Table fields: ",equal,"already existed in your table, not overwritten by fieldchecks.",'\n',"check consistency of the field meanings in your table with occProfileR"))}
+  if (length(equal)>1) {warning(paste("Table fields: ",equal,"already existed in your table, not overwritten by fieldchecks.",'\n',"check consistency of the field meanings in your table with occTest"))}
   missingNames <- reqNames[!sapply(reqNames, FUN = function(x) x %in%
                                      names(dat))]
   newdf = lapply(missingNames, function(n) {data.frame (a=rep(NA,length.out=nrow(dat)))})
