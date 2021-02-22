@@ -108,10 +108,10 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
     #ref <- reproj(ref)
   }
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-  dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = CRS(wgs84))
+  dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = sp::CRS(wgs84))
   limits <- raster::extent(dat) + 1
   ref <- raster::crop(ref, limits)
-  proj4string(ref) <- wgs84
+  sp::proj4string(ref) <- wgs84
   if (is.null(ref)) {
     out <- rep(TRUE, nrow(x))
   }

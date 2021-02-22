@@ -94,40 +94,40 @@ occurrenceTests = function(
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
   points.proj4string = analysisSettings$geoSettings$points.proj4string
   
-  countries.shapefile = analysisSettings$rangeAnalysis$countries.shapefile
-  countryfield.shapefile = analysisSettings$rangeAnalysis$countryfield.shapefile
-  doRangeAnalysis = analysisSettings$rangeAnalysis$doRangeAnalysis
-  excludeUnknownRanges = analysisSettings$rangeAnalysis$excludeUnknownRanges
-  excludeNotmatchCountry = analysisSettings$rangeAnalysis$excludeNotmatchCountry
-  doCountryRecordAnalysis = analysisSettings$rangeAnalysis$doCountryRecordAnalysis
+  countries.shapefile = analysisSettings$countryStatusRange$countries.shapefile
+  countryfield.shapefile = analysisSettings$countryStatusRange$countryfield.shapefile
+  doRangeAnalysis = analysisSettings$countryStatusRange$doRangeAnalysis
+  excludeUnknownRanges = analysisSettings$countryStatusRange$excludeUnknownRanges
+  excludeNotmatchCountry = analysisSettings$countryStatusRange$excludeNotmatchCountry
+  doCountryRecordAnalysis = analysisSettings$countryStatusRange$doCountryRecordAnalysis
   
-  doCentroidDetection = analysisSettings$centroidAnalysis$doCentroidDetection
-  methodCentroidDetection = analysisSettings$centroidAnalysis$methodCentroidDetection
+  doCentroidDetection = analysisSettings$centroidDetection$doCentroidDetection
+  methodCentroidDetection = analysisSettings$centroidDetection$methodCentroidDetection
   
-  doHumanDetection = analysisSettings$humanAnalysis$doHumanDetection
-  methodHumanDetection = analysisSettings$humanAnalysis$methodHumanDetection
-  th.human.influence = analysisSettings$humanAnalysis$th.human.influence
-  ras.hii = analysisSettings$humanAnalysis$ras.hii
+  doHumanDetection = analysisSettings$humanDetection$doHumanDetection
+  methodHumanDetection = analysisSettings$humanDetection$methodHumanDetection
+  th.human.influence = analysisSettings$humanDetection$th.human.influence
+  ras.hii = analysisSettings$humanDetection$ras.hii
   
-  doLandUseSelect = analysisSettings$landUseAnalysis$doLandUse
-  methodLandUseSelect = analysisSettings$landUseAnalysis$methodLandUse
-  landUseCodes = analysisSettings$landUseAnalysis$landUseCodes
-  ras.landUse = analysisSettings$landUseAnalysis$ras.landUse
+  doLandUseSelect = analysisSettings$landUseType$doLandUse
+  methodLandUseSelect = analysisSettings$landUseType$methodLandUse
+  landUseCodes = analysisSettings$landUseType$landUseCodes
+  ras.landUse = analysisSettings$landUseType$ras.landUse
 
-  doInstitutionLocality = analysisSettings$institutionAnalysis$doInstitutionLocality
-  methodInstitutionLocality = analysisSettings$institutionAnalysis$methodInstitutionLocality
+  doInstitutionLocality = analysisSettings$institutionLocality$doInstitutionLocality
+  methodInstitutionLocality = analysisSettings$institutionLocality$methodInstitutionLocality
   
-  doGeoOutliers = analysisSettings$geooutliersAnalysis$doGeoOutliers
-  methodGeoOutliers = analysisSettings$geooutliersAnalysis$methodGeoOutliers
-  alpha.parameter = analysisSettings$geooutliersAnalysis$alpha.parameter
+  doGeoOutliers = analysisSettings$geoOutliers$doGeoOutliers
+  methodGeoOutliers = analysisSettings$geoOutliers$methodGeoOutliers
+  alpha.parameter = analysisSettings$geoOutliers$alpha.parameter
   
-  doEnvOutliers = analysisSettings$envoutliersAnalysis$doEnvOutliers
-  methodEnvOutliers = analysisSettings$envoutliersAnalysis$methodEnvOutliers
-  th.perc.outenv= analysisSettings$envoutliersAnalysis$th.perc.outenv
+  doEnvOutliers = analysisSettings$envOutliers$doEnvOutliers
+  methodEnvOutliers = analysisSettings$envOutliers$methodEnvOutliers
+  th.perc.outenv= analysisSettings$envOutliers$th.perc.outenv
   
-  methodGeoEnvAccuracy=analysisSettings$accuracyAnalysis$methodGeoEnvAccuracy
-  do.geoEnvAccuracy=analysisSettings$accuracyAnalysis$do.geoEnvAccuracy
-  elev.quality.threshold=analysisSettings$accuracyAnalysis$elev.quality.threshold
+  methodGeoEnvAccuracy=analysisSettings$geoenvLowAccuracy$methodGeoEnvAccuracy
+  doGeoEnvAccuracy=analysisSettings$geoenvLowAccuracy$doGeoEnvAccuracy
+  elev.quality.threshold=analysisSettings$geoenvLowAccuracy$elev.quality.threshold
   
   #load gradingSettings
   # if(is.null(gradingSettings)){ gradingSettings = defaultSettings$gradingSettings}
@@ -613,7 +613,7 @@ occurrenceTests = function(
                               r.env = r.env,
                               ef= e.field,
                               raster.elevation = r.dem,
-                              do = do.geoEnvAccuracy,
+                              do = doGeoEnvAccuracy,
                               method = methodGeoEnvAccuracy,
                               doParallel=doParallel,
                               mc.cores=mc.cores)

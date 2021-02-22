@@ -29,7 +29,7 @@ occurrenceTests(
 
 \item{sp.table}{data.frame. Object with the coordinate data.}
 
-\item{r.env}{raster or rasterStack. Environmental data (e.g. typically climatic).}
+\item{r.env}{raster or rasterStack. Environmental data(e.g. typically climatic).}
 
 \item{tableSettings}{list. Elements corresponding to different settings of the input occurrence table.}
 
@@ -52,6 +52,6 @@ occurrence.profiler returns occurrence points withou the recommended metadata an
 }
 \examples{
 \dontrun{
-example<-"goes here"
+example="goes here"
 }
 }

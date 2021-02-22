@@ -752,7 +752,7 @@ humanDetection <- function (df=dat,
 
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
-  coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
 
   #start human influence index test
   if (any (method %in% c('hii','all'))) {
@@ -760,11 +760,11 @@ humanDetection <- function (df=dat,
     class(ras.hii)=='RasterLayer'
 
     #accomodate projections
-    if (is.null (.points.proj4string)){proj4string(data.sp.pres) <- projection(ras.hii); warning ('ASSUMING Points and HumanRaster data have the same projection')}
-    if (!is.null (.points.proj4string)) {proj4string(data.sp.pres) <- .points.proj4string}
-    if (proj4string(data.sp.pres) != projection (ras.hii)){
-      if (is.na (projection (ras.hii)) ) {proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
-      if (!is.na (projection (ras.hii)) ) {data.sp.pres <- spTransform(data.sp.pres,CRSobj =projection(ras.hii) )}
+    if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.hii); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+    if (sp::proj4string(data.sp.pres) != raster::projection (ras.hii)){
+      if (is.na (raster::projection (ras.hii)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+      if (!is.na (raster::projection (ras.hii)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.hii) )}
     }
 
     hii.sp.pres <-raster::extract(ras.hii, y = data.sp.pres, cellnumbers=F, df=T)
@@ -1472,9 +1472,9 @@ geoEnvAccuracy  <- function (df,
     if (!is.null(tf)){
       vecTime = df[,tf]
       dfEmptyVals = data.frame (na=is.na(vecTime),
-                                null=is.null(vecTime),
-                                isEmpty = (vecTime==''),
-                                isEmptySpace = vecTime== '  ')
+                                #null=is.null(as.character(vecTime)==NULL),
+                                isEmpty = (as.character(vecTime)==''),
+                                isEmptySpace = (as.character(vecTime)== '  '))
       
       vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==T)})
       out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
@@ -1733,8 +1733,8 @@ centroid_assessment<-function(occurrences,centroid_data){
   #   
   # }
   
-  temp_points<-SpatialPoints(coords = occurrences[c("longitude","latitude")],proj4string = CRS("+init=epsg:4326"))
-  temp_points<-spTransform(x = temp_points,CRSobj = CRS(projargs = unique(as.character(centroid_data$projection))) )
+  temp_points<-sp::SpatialPoints(coords = occurrences[c("longitude","latitude")],proj4string = sp::CRS("+init=epsg:4326"))
+  temp_points<-sp::spTransform(x = temp_points,CRSobj = sp::CRS(projargs = unique(as.character(centroid_data$projection))) )
   
   
   occurrences$latitude <- temp_points@coords[,'latitude']
@@ -1762,7 +1762,7 @@ centroid_assessment<-function(occurrences,centroid_data){
     if(nrow(centroid_i)>0){
       
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       
       country_data_i<-occurrences[which(occurrences$country==country_i),]
@@ -1770,11 +1770,11 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data<-matrix(nrow = nrow(country_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      country_pts_i<-SpatialPointsDataFrame(coords = country_data_i[c("longitude","latitude")],data = as.data.frame(country_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      country_pts_i<-sp::SpatialPointsDataFrame(coords = country_data_i[c("longitude","latitude")],data = as.data.frame(country_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1782,7 +1782,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1819,17 +1819,17 @@ centroid_assessment<-function(occurrences,centroid_data){
     
     if(nrow(centroid_i)>0){
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       state_data_i<-occurrences[which(occurrences$country==state_i$country & occurrences$state_province==state_i$state_province),]
       
       new_data<-matrix(nrow = nrow(state_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      state_pts_i<-SpatialPointsDataFrame(coords = state_data_i[c("longitude","latitude")],data = as.data.frame(state_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      state_pts_i<-sp::SpatialPointsDataFrame(coords = state_data_i[c("longitude","latitude")],data = as.data.frame(state_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1837,7 +1837,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1876,17 +1876,17 @@ centroid_assessment<-function(occurrences,centroid_data){
     if(nrow(centroid_i)>0){
       
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       county_data_i<-occurrences[which(occurrences$country==county_i$country & occurrences$state_province==county_i$state_province & occurrences$county==county_i$county),]
       
       new_data<-matrix(nrow = nrow(county_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      county_pts_i<-SpatialPointsDataFrame(coords = county_data_i[c("longitude","latitude")],data = as.data.frame(county_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      county_pts_i<-sp::SpatialPointsDataFrame(coords = county_data_i[c("longitude","latitude")],data = as.data.frame(county_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1894,7 +1894,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data_absolute)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1967,17 +1967,17 @@ landUseSelect <- function (df=dat,
   
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
-  coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
   
   #start with land use raster
   if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
     
     #accommodate projections
-    if (is.null (.points.proj4string)){proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
-    if (!is.null (.points.proj4string)) {proj4string(data.sp.pres) <- .points.proj4string}
-    if (proj4string(data.sp.pres) != projection (ras.landUse)){
-      if (is.na (projection (ras.landUse)) ) {proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
-      if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
+    if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+    if (sp::proj4string(data.sp.pres) != projection (ras.landUse)){
+      if (is.na (projection (ras.landUse)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+      if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
     }
     
     lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)

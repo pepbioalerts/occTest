@@ -54,7 +54,7 @@ defaultSettings <- function (x){
         points.proj4string=sp:::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
       )
       ,
-      rangeAnalysis = list (
+      countryStatusRange = list (
         countries.shapefile=rnaturalearth::ne_countries(),
         countryfield.shapefile = 'iso_a3',
         doRangeAnalysis=T,
@@ -63,42 +63,42 @@ defaultSettings <- function (x){
         doCountryRecordAnalysis=T
       )
       ,
-      centroidAnalysis = list (doCentroidDetection=T,
+      centroidDetection = list (doCentroidDetection=T,
                                methodCentroidDetection='all'
       )
       ,
-      humanAnalysis= list (doHumanDetection=T,
+      humanDetection= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
                            ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occTest'))
       )
       ,
-      landUseAnalysis= list (doLandUse=T,
+      landUseType   = list (doLandUse=T,
                              methodLandUse='in',
                              landUseCodes = NULL,
                              ras.landUse=NULL #we need a default here to be downloaded
       )
       ,
-      institutionAnalysis = list (doInstitutionLocality=T,
+      institutionLocality = list (doInstitutionLocality=T,
                                   methodInstitutionLocality='all'
       )
       ,
       
-      geooutliersAnalysis = list (
+      geoOutliers = list (
         doGeoOutliers=T,
         methodGeoOutliers='all',
         alpha.parameter = 2
       )
       ,
       
-      envoutliersAnalysis = list (
+      envOutliers = list (
         doEnvOutliers=T,
         methodEnvOutliers='all',
         th.perc.outenv =  0.2
       )
       ,
-      accuracyAnalysis = list (methodGeoEnvAccuracy='all',
-                               do.geoEnvAccuracy=T,
+      geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
+                               doGeoEnvAccuracy=T,
                                elev.quality.threshold = 100
       )
       
@@ -114,3 +114,185 @@ defaultSettings <- function (x){
   
   
 }
+
+
+
+#' @title show the conventions on names for column names
+#'
+#' @description prints a table with the column names
+#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
+#' @return prints a dataframe
+#' @keywords user
+#'
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export
+
+showTableNames <- function (){
+  tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
+  DT::datatable(tabNames)
+}
+
+
+#' @title set table names internally
+#'
+#' @description
+#' @details 
+#' @return list
+#' @keywords user
+#'
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export
+
+setTableNames <- function (x.field = NULL,
+                           y.field = NULL,
+                           t.field = NULL,
+                           l.field = NULL,
+                           c.field = NULL,
+                           e.field = NULL,
+                           a.field = NULL,
+                           ds.field= NULL,
+                           taxonobservation.id= NULL){
+  targetList = defaultSettings()
+  targetList = targetList$tableSettings
+  ids = names (targetList)
+  for (i in ids){
+    if (!is.null(get(i))) targetList[[i]] <- get (i)
+  }
+  
+  return (targetList)
+}
+
+
+#' @title set the important parameters
+#'
+#' @description
+#' @details 
+#' @return list
+#' @keywords user
+#'
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export
+
+setTests <- function (countryStatusRange = T,
+                      centroidDetection = T,
+                      humanDetection = T,
+                      landUseType = T,
+                      institutionLocality =T,
+                      geoOutliers = T,
+                      envOutliers = T,
+                      geoenvLowAccuracy = T) {
+  
+  myTestDoParams= ls()
+  targetList = defaultSettings()
+  targetList = targetList$analysisSettings
+  
+
+  for (i in myTestDoParams){
+    a = targetList[[i]]
+    a[[grep(names(a),pattern = '^do')]] <-  get(i)
+    targetList[[i]] = a
+  }
+  
+  return (targetList)
+}
+
+
+#' @title set the important parameters
+#'
+#' @description
+#' @details 
+#' @return list
+#' @keywords user
+#'
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export
+
+setTestBlocks      <- function (geo = T,
+                                lu = T,
+                                env = T,
+                                time = T){
+  
+  geo = T; lu = T; env = T; time = T
+  
+  objName = ls()
+  paramsDF = list ()
+  for (i in 1:length(objName)){
+    paramsDF[[i]] = data.frame (testBlock = objName[i] ,activate = get(objName[i]))
+  }
+  
+  paramsDF = do.call(rbind,paramsDF)
+  allMetadata = readRDS(system.file('ext/fieldmetadata.rds',package='occTest'))
+  newSettings = dplyr::left_join(allMetadata,paramsDF)
+  
+  newParamsList = setTests(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
+                           centroidDetection = unique (newSettings$activate [which (newSettings$testType == 'centroidDetection')]),
+                           humanDetection = unique (newSettings$activate [which (newSettings$testType == 'humanDetection')]),
+                           landUseType = unique (newSettings$activate [which (newSettings$testType == 'landUseType')]),
+                           institutionLocality = unique (newSettings$activate [which (newSettings$testType == 'institutionLocality')]),
+                           geoOutliers = unique (newSettings$activate [which (newSettings$testType == 'geoOutliers')]),
+                           envOutliers = unique (newSettings$activate [which (newSettings$testType == 'envOutliers')]),
+                           geoenvLowAccuracy = unique (newSettings$activate [which (newSettings$testType == 'geoenvLowAccuracy')]))
+
+  
+    
+  return (newParamsList)
+}
+
+
+#' @title show implemented tests and types of tests 
+#'
+#' @description prints a table with the column names
+#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
+#' @return prints a dataframe
+#' @keywords user
+#'
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export
+
+showTests<- function (){
+  tabNames=readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
+  DT::datatable(tabNames)
+}
+
+
+

@@ -1,32 +1,58 @@
+###################################
+# SIMPLE EXAMPLE
+###################################
+
 #load data
-library(spocc)
-#df <- occ(query = 'Martes martes')
+library (spocc)
 df=readRDS(system.file('ext/pine_marten.RDS',package='occTest'))
-occ.data <-occ2df(df)
+occ.data <-spocc::occ2df(df)
 
 #(down)load needed environmental data
-environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
+environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = '~/RS/')#tempdir()
 
-#start testing  occurrences
+#STEP 1 TABLE FORMATING 
 library(occTest)
-tableSettings=occTest::defaultSettings()$tableSettings
-tableSettings$x.field='longitude'
-tableSettings$y.field='latitude'
-outMartesMartes = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,
-                                  r.env = environmentRaster,
-                                  tableSettings = tableSettings)
-out2=occFilter(df = outMartesMartes,level = 1,errorAcceptance = 'majority')
+# you can adapt the format names (adapt data frame): start formatting to the names in occTest
+showTableNames ()
+
+#in this example we only have three fields
+occ.data.Newnames = occ.data
+names (occ.data.Newnames)[2] <- 'decimalLongitude'
+names (occ.data.Newnames)[3] <- 'decimalLatitude'
+names (occ.data.Newnames)[4] <- 'eventDate'
+
+#alternatively you can modify the settings to conform the names to your format
+#for that, however you need to change the default parameters
+#you can use showTableNames() to look at what do the parameters mean
+names (occ.data)
+showTableNames ()
+myTableNames = setTableNames(x.field='longitude',y.field='latitude',t.field = 'date')
+
+#STEP 2 SELECT ANALYSIS
+#you can activate or deactivate certain analysis by modifying the analysis parameters
+#see list of tests:
+showTests ()
+
+#using the setTests function you can deactivate certain types of tests
+mySelectedAnalysis  = setTests(centroidDetection = F)
+
+#using the setTestBlocks function you can deactivate certain blocks (e.g. a kind of test types)
+mySelectedAnalysis2 = setTestBlocks(time = F)
+
+#STEP 3 RUN TESTS
+try2 = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.env = environmentRaster,
+                       tableSettings = myTableNames , #default parameters of column names changed
+                       analysisSettings = mySelectedAnalysis2 #default parameters of the analysis changed
+)
 
 
-#run wrapper function (test + filter together)
-# CM: this one won't work with the demo unless you match the occ.data colnames to the standardized colnames of occTest
-#outMartesMartes2 = occSimpFilter(spOcc = occ.data,env = environmentRaster)
+#STEP 4 SCRUB (FILTER) OCCURRENCES
+occ.martes.filtered = occFilter(try2,level = 2,errorAcceptance = 'strict')
 
-#for wallace you may check occSimpFilter and implement it in two steps
-# in occSimpFilter the names of the columns have defaults, and you can change them for x, y, data, isocountry.
-# the date methods, however, have not yet been implemented fully nor the land use
-# the parameter classification can also be a Wallace tick box where the user specifies a how strict they want to be
-# as with everything this implementation is very very LIGTH, the more we populate the function with column names of things the more we can do about it. 
 
+#ADDITIONAL THINGS: Analyze the outputs / report
+
+
+#ADDITIONAL THINGS: MAP the outputs 
 
 
