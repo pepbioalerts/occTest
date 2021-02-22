@@ -34,7 +34,7 @@ myTableNames = setTableNames(x.field='longitude',y.field='latitude',t.field = 'd
 showTests ()
 
 #using the setTests function you can deactivate certain types of tests
-mySelectedAnalysis  = setTests(centroidDetection = F)
+mySelectedAnalysis  = setTestTypes (centroidDetection = F)
 
 #using the setTestBlocks function you can deactivate certain blocks (e.g. a kind of test types)
 mySelectedAnalysis2 = setTestBlocks(time = F)

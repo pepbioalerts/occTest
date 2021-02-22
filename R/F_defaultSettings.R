@@ -197,7 +197,7 @@ setTableNames <- function (x.field = NULL,
 #' }
 #' @export
 
-setTests <- function (countryStatusRange = T,
+setTestTypes <- function (countryStatusRange = T,
                       centroidDetection = T,
                       humanDetection = T,
                       landUseType = T,
