@@ -10,7 +10,7 @@ occ.data <-spocc::occ2df(df)
 #(down)load needed environmental data
 environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = '~/RS/')#tempdir()
 
-#STEP 1 TABLE FORMATING 
+### STEP 1 TABLE FORMATING 
 library(occTest)
 # you can adapt the format names (adapt data frame): start formatting to the names in occTest
 showTableNames ()
@@ -28,29 +28,40 @@ names (occ.data)
 showTableNames ()
 myTableNames = setTableNames(x.field='longitude',y.field='latitude',t.field = 'date')
 
-#STEP 2 SELECT ANALYSIS
+### STEP 2 SELECT ANALYSIS
 #you can activate or deactivate certain analysis by modifying the analysis parameters
 #see list of tests:
 showTests ()
 
 #using the setTests function you can deactivate certain types of tests
-mySelectedAnalysis  = setTestTypes (centroidDetection = F)
+mySelectedAnalysis  = setTestTypes (centroidDetection = F,geoenvLowAccuracy = F)
 
 #using the setTestBlocks function you can deactivate certain blocks (e.g. a kind of test types)
 mySelectedAnalysis2 = setTestBlocks(time = F)
 
-#STEP 3 RUN TESTS
-try2 = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.env = environmentRaster,
-                       tableSettings = myTableNames , #default parameters of column names changed
-                       analysisSettings = mySelectedAnalysis2 #default parameters of the analysis changed
-)
+### STEP 3 RUN TESTS
+martesTests = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.env = environmentRaster,
+                       #default parameters of column names changed
+                       tableSettings = myTableNames , 
+                       #default parameters of the analysis changed
+                       analysisSettings = mySelectedAnalysis 
+                       )
 
 
 #STEP 4 SCRUB (FILTER) OCCURRENCES
-occ.martes.filtered = occFilter(try2,level = 2,errorAcceptance = 'strict')
+occMartesFiltered = occFilter(df = martesTests,
+                              by = 'testBlock',# no need this is default other option is testTypes
+                              errorAcceptance = 'strict')
+
+#the output table filtered
+occMartesFiltered$fitleredDataset
+
+#the output scores for all records (except for those automatically filtered because of coordIssues)
+occMartesFiltered$summaryStats
 
 
 #ADDITIONAL THINGS: Analyze the outputs / report
+# PEP: this should be based on Martes Tests, because they contain all initial records.
 
 
 #ADDITIONAL THINGS: MAP the outputs 

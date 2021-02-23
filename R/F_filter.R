@@ -53,28 +53,33 @@ buildCustomThresholds <- function (df,level){
 #' @export
 
 occFilter <- function (df,
-                       level=1,
+                       by='testBlock', #other option is testType
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL) {
 
+   #load pipes (need to change)
+   usethis::use_pipe()
+   library (magrittr)
+
   #load column metadata
-   colMetaData = read.csv  (system.file('ext/fieldMetadata.csv',package='occTest'))
+   #colMetaData = read.csv  (system.file('ext/fieldMetadata.csv',package='occTest'))
+   colMetaData = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
    colMetaData = dplyr::as_tibble(colMetaData)
    
    targetLevel = colMetaData %>% 
-     dplyr::filter (categ1 != 'filter') %>%
-     dplyr::select( c(level+1))
+     dplyr::filter (mode != 'filter') %>%
+     dplyr::select(by)
    
    basecateg = colMetaData %>% 
-     dplyr::filter (categ1 != 'filter') %>%
-     dplyr::select('categ2')
+     dplyr::filter (mode != 'filter') %>%
+     dplyr::select('testType')
    
    myCategories = dplyr::bind_cols(targetLevel,basecateg) %>% unique
    names (myCategories) = c('targetLevel','baseLevel')
    
    uniqueTargetLevels = unique (myCategories$targetLevel)
    
-   #select target columns 
+   #select target rows (not the ones with coord issues) 
    dfFiltered  = dplyr::as_tibble(df) %>%
      dplyr::filter (Exclude ==0 ) 
    
@@ -99,7 +104,7 @@ occFilter <- function (df,
    
   #rules of selection 
   if (is.null(errorThreshold)){
-    if (errorAcceptance == 'stringent') {errorThreshold =0.2}
+    if (errorAcceptance == 'strict') {errorThreshold =0.2}
     if (errorAcceptance == 'relaxed')   {errorThreshold =0.7}
     if (errorAcceptance == 'majority')  {errorThreshold =0.5}
   }

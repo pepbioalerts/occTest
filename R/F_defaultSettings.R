@@ -244,7 +244,8 @@ setTestBlocks      <- function (geo = T,
                                 env = T,
                                 time = T){
   
-  geo = T; lu = T; env = T; time = T
+  #for testing
+  #geo = T; lu = T; env = T; time = T
   
   objName = ls()
   paramsDF = list ()
@@ -254,9 +255,9 @@ setTestBlocks      <- function (geo = T,
   
   paramsDF = do.call(rbind,paramsDF)
   allMetadata = readRDS(system.file('ext/fieldmetadata.rds',package='occTest'))
-  newSettings = dplyr::left_join(allMetadata,paramsDF)
+  newSettings = dplyr::left_join(allMetadata,paramsDF,by='testBlock')
   
-  newParamsList = setTests(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
+  newParamsList = setTestTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
                            centroidDetection = unique (newSettings$activate [which (newSettings$testType == 'centroidDetection')]),
                            humanDetection = unique (newSettings$activate [which (newSettings$testType == 'humanDetection')]),
                            landUseType = unique (newSettings$activate [which (newSettings$testType == 'landUseType')]),

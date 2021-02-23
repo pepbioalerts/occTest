@@ -4,7 +4,12 @@
 \alias{occFilter}
 \title{Filter occurrence records}
 \usage{
-occFilter(df, level = 1, errorAcceptance = "relaxed", errorThreshold = NULL)
+occFilter(
+  df,
+  by = "testBlock",
+  errorAcceptance = "relaxed",
+  errorThreshold = NULL
+)
 }
 \arguments{
 \item{df}{data.frame outputed from occurrenceClassify}

@@ -33,7 +33,8 @@ Imports:
     spocc,
     tidyverse,
     rnaturalearthdata,
-    GNRS
+    GNRS,
+    magrittr
 Suggests:
     speciesgeocodeR,
     testthat,
