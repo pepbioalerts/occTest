@@ -51,7 +51,7 @@ martesTests = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.en
 #STEP 4 SCRUB (FILTER) OCCURRENCES
 occMartesFiltered = occFilter(df = martesTests,
                               by = 'testBlock',# no need this is default other option is testTypes
-                              errorAcceptance = 'strict')
+                              errorAcceptance = 'relaxed')
 
 #the output table filtered
 occMartesFiltered$fitleredDataset
@@ -59,11 +59,5 @@ occMartesFiltered$fitleredDataset
 #the output scores for all records (except for those automatically filtered because of coordIssues)
 occMartesFiltered$summaryStats
 
-
-#ADDITIONAL THINGS: Analyze the outputs / report
-# PEP: this should be based on Martes Tests, because they contain all initial records.
-
-
-#ADDITIONAL THINGS: MAP the outputs 
 
 

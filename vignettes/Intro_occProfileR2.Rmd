@@ -51,8 +51,8 @@ df <- occ(query = 'Martes martes')
 occ.data <-occ2df(df)
 
 #we change the names here but we could just change it in the tableSettings
-names (occ.data)[2] <- 'x'
-names (occ.data)[3] <- 'y'
+names (occ.data)[2] <- 'decimalLongitude'
+names (occ.data)[3] <- 'decimalLatitude'
 
 #load needed environmental data
 library (raster)
@@ -60,7 +60,7 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences
 library(occTest)
-outMartesMartes = occTest::occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+outMartesMartes = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 ```
 
 ## *occurrenceProfile* output
@@ -237,7 +237,7 @@ mySettings <- defaultSettings()
 #change the attribute of interest (in this case setting an analysis off)
 mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
 #add your settings to the function
-out = occurrenceClassify(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+out = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
                          analysisSettings = mySettings$analysisSettings)
 
 

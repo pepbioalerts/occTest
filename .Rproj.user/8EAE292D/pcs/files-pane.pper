@@ -2,6 +2,10 @@
     "path": "~/Github/occClassifyR/inst/ext",
     "sortOrder": [
         {
+            "columnIndex": 3,
+            "ascending": false
+        },
+        {
             "columnIndex": 4,
             "ascending": false
         },

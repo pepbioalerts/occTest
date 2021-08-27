@@ -72,7 +72,7 @@ occFilter <- function (df,
    
    basecateg = colMetaData %>% 
      dplyr::filter (mode != 'filter') %>%
-     dplyr::select('testType')
+     dplyr::select('method')
    
    myCategories = dplyr::bind_cols(targetLevel,basecateg) %>% unique
    names (myCategories) = c('targetLevel','baseLevel')
@@ -87,10 +87,10 @@ occFilter <- function (df,
    dfScores = lapply (uniqueTargetLevels, function (categ){
      baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = baseLevel)
      
-     dfSelec = dfFiltered %>% 
-       dplyr::select(starts_with(baseCategSelec)) %>% 
-       dplyr::select(ends_with('_test'))
-       
+     idCols = grep (pattern = paste0(baseCategSelec,collapse = '|'), names(dfFiltered),value = T)
+     idCols = grep (pattern ='_test', idCols,value = T)
+     
+     dfSelec = dfFiltered [,idCols]
        
       dfScore= data.frame  (score= .gimme.score (dfSelec),
                rateTestPerformed = apply (dfSelec,MARGIN = 1,function  (x) sum (!is.na(x))/length(x)),
@@ -99,7 +99,6 @@ occFilter <- function (df,
        dfScore
    })
   dfScores = dplyr::bind_cols(dfScores)
-   
   dfScoreVals = dfScores %>% dplyr::select(ends_with('_score')) 
    
   #rules of selection 
@@ -110,6 +109,6 @@ occFilter <- function (df,
   }
   toss = apply (dfScoreVals,1,function (x) {any (x >= errorThreshold)})
   #output
-  list (fitleredDataset = dfFiltered[!toss,],
+  list (fitleredDataset = dfFiltered[which(toss)*(-1),],
         summaryStats = dfScores)
 }

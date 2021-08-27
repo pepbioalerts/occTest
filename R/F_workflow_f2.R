@@ -38,6 +38,7 @@ occurrenceTests = function(
   verbose = F,
   doParallel=F,
   mc.cores=2){
+
   
   #  for testing
   # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
@@ -59,7 +60,7 @@ occurrenceTests = function(
   ########################################################################
   ### STEP 0: Load settings and study native and invasive countries
   ########################################################################
-  defaultSettings = occTest::defaultSettings()
+  defaultSettings = occTest::minimalSettings()
   #load table settings(old stuff, we  could attache the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
 
@@ -205,7 +206,7 @@ occurrenceTests = function(
   ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range 
   ########################################################################
   
-  #whatever the want we are going to set it to False
+  #whatever the want we are going to set it to False fron now
   interactiveMode= F
   resolveNativeCtry = F
   resolveAlienCtry = F
@@ -246,7 +247,7 @@ occurrenceTests = function(
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues statrted...')
-  
+
   if(verbose){message("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
   
   Analysis.H = filterMissing(df = dat,xf = x.field,yf = y.field)
@@ -466,7 +467,6 @@ occurrenceTests = function(
   
   ##########################################################################
   ### STEP 6: Filter Quality F Country selection
-  
   #set timer
   tictoc:::tic('Resolving countryStatusRange Analysis')
   message('Resolving countryStatusRange Analysis started...')

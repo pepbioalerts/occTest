@@ -309,7 +309,6 @@ countryStatusRangeAnalysis=function(df=dat,
   if (is.null (.ntv.ctry)  ) {if(verbose) print ('INFO: Species with no associated country. We assume all locations are native range')}
   if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysisis of invasive ranges not perfomred')}
   if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of coutnry recorded vs. coordinates not performed')}
-
   xydat <- df[,c(xf,yf)]
 
   #check country of coordinates
@@ -1253,7 +1252,7 @@ envOutliers  <- function (.r.env=r.env,
     for (i in ids){
       de = dat.environment[i,]
       layersWithNA = which (is.na(de))
-      out$envOutliers_missingEnv_comment[i] <- paste ("layers with NA:",names (de)[layersWithNA])
+      out$envOutliers_missingEnv_comment[i] <- paste ("layers with NA:",paste(names (de)[layersWithNA],collapse =','))
     }
   }
   
@@ -1452,7 +1451,7 @@ geoEnvAccuracy  <- function (df,
       }
       #determining elevation test
       if (class(raster.elevation) == "RasterLayer" ) {
-        elev.xy <- extract (raster.elevation, df[,c(xf,yf)])
+        elev.xy <- raster::extract (raster.elevation, df[,c(xf,yf)])
         elev.difference <- abs (df[,ef] - elev.xy)
         out$geoenvLowAccuracy_elevDiff_value <- elev.difference
         out$geoenvLowAccuracy_elevDiff_test <- as.logical (ifelse (elev.difference >= elev.threshold, 1, 0))

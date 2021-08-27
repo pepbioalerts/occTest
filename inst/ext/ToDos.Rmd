@@ -5,20 +5,7 @@ output: html_document
 
 ## List of things to be incorporated/revised
 
-x. DELAYED :Match record time to hii layer (so that it is less than 100 years)
-x. develop the time analysis (check lubridate and dataPreparation packages for ideas)
-x. check the LAND USE analysis
-x. de / verbose the workflow
-x. Consistency of warning /messages and print prompts/verbose.
-x. shrink the code (particularly make the .status.tracker function to work in 1 line)
-x. add warning if country code is in two letters instead of three (potentially make that bypass internal)
-x. default graphs 
-
-## list of done things
-- DONE add automatically load countryloadpol  ==> line   if (is.null(countries.shapefile)) in F_workflow
-- implement BIEN method(e.g. Maitner method) in centroidDetection
-- WE PROVIDE NOW SUMMARY STATS OF TESTS :add a field on the short profiling that indicates what tests failed
-
+1. Better explain the native and invasive status range management in occTest. It is a bit confusing now.
 
 
 
