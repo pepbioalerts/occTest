@@ -49,10 +49,13 @@ martesTests = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.en
 
 
 #STEP 4 SCRUB (FILTER) OCCURRENCES
-occMartesFiltered = occFilter(df = martesTests,
+occMartesFiltered = occTest::occFilter(df = martesTests,
                               by = 'testBlock',# no need this is default other option is testTypes
                               errorAcceptance = 'relaxed')
 
+occMartesFiltered = occTest::occFilter(df = martesTests,
+                                       by = 'testBlock',# no need this is default other option is testTypes
+                                       errorAcceptance = 'stringent')
 #the output table filtered
 occMartesFiltered$fitleredDataset
 

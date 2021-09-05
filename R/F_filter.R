@@ -57,7 +57,7 @@ occFilter <- function (df,
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL) {
 
-   #load pipes (need to change)
+   #load pipes (need to change, you do not call libraries in fucntions)
    usethis::use_pipe()
    library (magrittr)
 
@@ -94,7 +94,7 @@ occFilter <- function (df,
        
       dfScore= data.frame  (score= .gimme.score (dfSelec),
                rateTestPerformed = apply (dfSelec,MARGIN = 1,function  (x) sum (!is.na(x))/length(x)),
-               NtestsPerformed =  apply (dfSelec,MARGIN = 1,function  (x) (sum (!is.na(x)))))
+               NtestsPerformed =   apply (dfSelec,MARGIN = 1, function  (x) (sum (!is.na(x)))))
        names (dfScore) = paste0(categ,'_',names(dfScore))
        dfScore
    })
@@ -103,12 +103,25 @@ occFilter <- function (df,
    
   #rules of selection 
   if (is.null(errorThreshold)){
-    if (errorAcceptance == 'strict') {errorThreshold =0.2}
-    if (errorAcceptance == 'relaxed')   {errorThreshold =0.7}
+    if (errorAcceptance == 'strict')    {errorThreshold =0.2}
     if (errorAcceptance == 'majority')  {errorThreshold =0.5}
+    if (errorAcceptance == 'relaxed')   {errorThreshold =0.7}
   }
-  toss = apply (dfScoreVals,1,function (x) {any (x >= errorThreshold)})
+  #select those rows with error rate above threshold, and ignore if output is NA (that means effectively it is a F)
+  toss = apply (dfScoreVals,1,function (x) {
+     a = any (x >= errorThreshold)
+     if (is.na(a)) a <- F
+     a
+  })
+  
   #output
+  if (all(toss==F)) {
+     out  = list (fitleredDataset = dfFiltered,
+           summaryStats = dfScores)
+     return (out)
+  } 
+  
   list (fitleredDataset = dfFiltered[which(toss)*(-1),],
         summaryStats = dfScores)
+
 }
