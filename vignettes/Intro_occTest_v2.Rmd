@@ -220,8 +220,7 @@ outDougFir = occurrenceTests(sp.name='Pseudotsuga menziesii',
 
 
 #check SHORT outputs
-knitr::kable (outDougFir)
-
+knitr::kable (head(outDougFir))
 ```
 
 
@@ -263,7 +262,7 @@ outDougFirSelec[['fitleredDataset']]
 The output statisics allow you to inspect, for different groupingTestLevels the [groupLeve]_score (the average across specific tests), [groupLevel]_rateTestPerformed (e.g. 0.14 means you performed 14% of the available tests for a given groupLevel) and  [groupLevel]__rateTesttPerformed_NtestPeformed (e.g. the total number of tests perfomed).
 
 ```{r}
-outDougFirSelec[['summaryStats']]
+head(outDougFirSelec[['summaryStats']])
 ```
 
 check how the groupings changed with different levels and different threshold acceptance levels 
@@ -285,14 +284,16 @@ The sample  is a Mediterranean species present in France, Catalonia, Spain and A
 We will now fully use the information on that table to perform as many tests as possible. 
 
 
-```{r,fig.width=6,fig.height=4}
+```{r,fig.width=6,fig.height=4,echo=FALSE}
 #load packages
 library(occTest)
 library(ggplot2)
 library(raster)
 library(knitr)
 library(rgdal)
+```
 
+```{r,fig.width=6,fig.height=4}
 #load data
 spMed = system.file('ext/SampleData/Sp3Occurrence_v4.csv',package='occTest')
 occ.species.nogeoscrub <-  read.table (file = spMed,header = T,sep = ',',as.is = T)
