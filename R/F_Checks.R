@@ -83,10 +83,10 @@
 
   #check misspecification
   if (! ef %in% nd )  {stop("elevation field specified not in the occurrence dataframe provided")}
-  if (! cf %in% nd )  {stop("contryRecorded field specified not in the occurrence dataframe provided")}
+  if (! cf %in% nd )  {stop("countryRecorded field specified not in the occurrence dataframe provided")}
   if (! lf %in% nd )  {stop("locality field specified not in the occurrence dataframe provided")}
   if (! tf %in% nd )  {stop("time field specified not in the occurrence dataframe provided")}
-  if (! idf %in% nd )  {stop("ObservatinID field specified not in the occurrence dataframe provided")}
+  if (! idf %in% nd )  {stop("ObservationID field specified not in the occurrence dataframe provided")}
   
   return (dat)
 
