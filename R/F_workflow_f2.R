@@ -246,7 +246,7 @@ occurrenceTests = function(
   ########################################################################
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
-  message('Filter major coordinate Issues statrted...')
+  message('Filter major coordinate Issues started...')
 
   if(verbose){message("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
   
