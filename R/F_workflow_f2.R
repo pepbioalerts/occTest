@@ -470,7 +470,7 @@ occurrenceTests = function(
   #set timer
   tictoc:::tic('Resolving countryStatusRange Analysis')
   message('Resolving countryStatusRange Analysis started...')
-  if(verbose) message("**** RESOLVING QUALITY FILTER F: CountryStatus ranege analysis(invasive?native?unkonwn?)****") 
+  if(verbose) message("**** RESOLVING QUALITY FILTER F: CountryStatus range analysis(invasive?native?unkonwn?)****") 
   if(verbose & excludeUnknownRanges) message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')
   if(verbose & excludeNotmatchCountry) message('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')
   Analysis.F=countryStatusRangeAnalysis(df=dat,
