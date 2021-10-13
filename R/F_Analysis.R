@@ -307,8 +307,8 @@ countryStatusRangeAnalysis=function(df=dat,
 
   #initial user information printing
   if (is.null (.ntv.ctry)  ) {if(verbose) print ('INFO: Species with no associated country. We assume all locations are native range')}
-  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysisis of invasive ranges not perfomred')}
-  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of coutnry recorded vs. coordinates not performed')}
+  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysis of invasive ranges not performed')}
+  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of country recorded vs. coordinates not performed')}
   xydat <- df[,c(xf,yf)]
 
   #check country of coordinates
