@@ -36,7 +36,7 @@ defaultSettings <- function (x){
       output.base.filename="occTest")
     ,
     #tableSettings
-    tableSettings = list (taxonobservation.id = 'taxonID',
+    tableSettings = list (taxonobservation.id = 'taxonobservationID',
                           x.field = 'decimalLongitude',
                           y.field = 'decimalLatitude',
                           t.field = 'eventDate', #time field (date)  
@@ -335,7 +335,7 @@ minimalSettings <- function (x){
       output.base.filename="occTest")
     ,
     #tableSettings
-    tableSettings = list (taxonobservation.id = 'taxonID',
+    tableSettings = list (taxonobservation.id = 'taxonobservationID',
                           x.field = 'decimalLongitude',
                           y.field = 'decimalLatitude',
                           t.field = 'eventDate', #time field (date)  

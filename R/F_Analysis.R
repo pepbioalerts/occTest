@@ -121,7 +121,7 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' @title SeaLand reassignement
 #' @descriptions Reassign coastal coordinates as needed
 #' @details (function inspiered in nearestcell in biogeo bu modified)
-#' @param dat Data.frame of species occurrences and a field named taxonobservationID
+#' @param dat Data.frame of species occurrences 
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
 #' @param rst An optional raster grid
@@ -143,12 +143,14 @@ nearestcell3 <- function (dat,
                           xf=x.field,
                           yf=y.field,
                           verbose=F) {
-
+  
+  #browser()
+  dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
   fx <- which(dat$Exclude == 0)
   x1 <- biogeo::coord2numeric(dat[,xf][fx])
   y1 <- biogeo::coord2numeric(dat[,yf][fx])
-  datid <- dat$taxonobservationID[fx]
+  datid <- dat$irow[fx]
   dd <- data.frame(x1, y1)
   ce0 <- raster::cellFromXY(rst, dd)
   vals <- raster::extract(rst, dd)
@@ -180,6 +182,7 @@ nearestcell3 <- function (dat,
     ff  <- which(!is.na(ce1))
     ce3 <- ce1[ff]
     dd2 <- dd[ff, ]
+    #to eliminiate
     id2 <- id[ff]
     bb  <- {}
     
@@ -188,6 +191,7 @@ nearestcell3 <- function (dat,
       a <- raster::adjacent(rst, ce3[i], directions = 8, pairs = FALSE,
                     target = NULL, sorted = FALSE, include = FALSE, id = FALSE)
       idx <- id2[i]
+      # idx <- ce3[i] 
       b <- data.frame(i, a, id2 = idx)
       bb <- rbind(bb, b)
     }
@@ -217,7 +221,7 @@ nearestcell3 <- function (dat,
       mod <- format(Sys.time(), "%d-%m-%Y %H:%M:%S")
       dat$Modified <- as.character(dat$Modified)
       for (i in 1:nrow(near)) {
-        f <- which(dat$taxonobservationID == near$id2[i])
+        f <- which(dat$irow == near$id2[i])
         dat$x_original[f] <- dat[,xf][f]
         dat$y_original[f] <- dat[,yf][f]
         dat[,xf][f] <- near$x[i]
@@ -229,6 +233,9 @@ nearestcell3 <- function (dat,
       }
       moved <- data.frame(ID = near$id2, x = near$x, y = near$y)
       names(moved) <- c('ID',xf,yf)
+      #remove irow column
+      columnOut= which (names(dat)=='irow')* (-1)
+      dat <- dat[,columnOut]
       datx <- list(dat = dat, moved = moved)
       return(datx)
     }

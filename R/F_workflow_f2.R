@@ -39,7 +39,7 @@ occurrenceTests = function(
   doParallel=F,
   mc.cores=2){
 
-  
+  #browser()
   #  for testing
   # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
   #set timer
@@ -530,7 +530,9 @@ occurrenceTests = function(
                                  xf = x.field,
                                  yf = y.field,
                                  cf = c.field,
-                                 idf = taxonobservation.id,
+                                 #to be changed according to definition of taxonobseration id
+                                 #idf = taxonobservation.id,
+                                 idf = NULL,
                                  .ntv.ctry = ntv.ctry,
                                  .inv.ctry = inv.ctry,
                                  .points.proj4string =
