@@ -39,7 +39,7 @@ buildCustomThresholds <- function (df,level){
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @param df data.frame outputed from occurrenceClassify
-#' @param level numeric. Level of application of the filtering process. 1 is the coarsest 3 is the minimum
+#' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )
 #' @param threshold  character. Phylosophy for filtering based on threshold. Option are majority, relaxed, stringent 
 #' @param customThresholds data.frame. Specify for each dimension of flags the specific threshold to use. It overides the parameters in thresholds. We recomend building that table based on the functio buildCustomThresholds.
 #' @note
@@ -103,6 +103,7 @@ occFilter <- function (df,
    
   #rules of selection 
   if (is.null(errorThreshold)){
+    if (! errorAcceptance %in% c('strict','majority','relaxed')) stop (paste0('errorAcceptance',errorAcceptance,' type not known'))
     if (errorAcceptance == 'strict')    {errorThreshold =0.2}
     if (errorAcceptance == 'majority')  {errorThreshold =0.5}
     if (errorAcceptance == 'relaxed')   {errorThreshold =0.7}

@@ -14,7 +14,7 @@ occFilter(
 \arguments{
 \item{df}{data.frame outputed from occurrenceClassify}
 
-\item{level}{numeric. Level of application of the filtering process. 1 is the coarsest 3 is the minimum}
+\item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )}
 
 \item{threshold}{character. Phylosophy for filtering based on threshold. Option are majority, relaxed, stringent}
 
