@@ -45,9 +45,7 @@ occurrenceTests = function(
   #set timer
   tictoc:::tic()
   
-  ########################################################################
-  ### STEP 00: Initial checks
-  ########################################################################
+  ### STEP 00: Initial checks ====
   #set timer
   tictoc:::tic('Initial checks and formatting')
   message('Initial checks and formatting started...')
@@ -57,9 +55,7 @@ occurrenceTests = function(
   if(! pingr:::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
   
   
-  ########################################################################
-  ### STEP 0: Load settings and study native and invasive countries
-  ########################################################################
+  ### STEP 0: Load settings and study native and invasive countries ====
   defaultSettings = occTest::minimalSettings()
   #load table settings(old stuff, we  could attache the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
@@ -146,10 +142,8 @@ occurrenceTests = function(
   write.full.output = writeoutSettings$write.full.output
   output.base.filename = writeoutSettings$output.base.filename
   
-  ########################################################################
-  ### STEP 1a: Data formatting and compatibility for biogeo and initial checks
-  ########################################################################
-  
+  ### STEP 1a: Data formatting and compatibility for biogeo and initial checks =====
+
   #add fields necesary for initial table
   sp = occTest:::.join.spname(sp.name)
   sp.table$Species = sp
@@ -201,12 +195,9 @@ occurrenceTests = function(
   
   tictoc:::toc()
   
-  ########################################################################
+  ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
   #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
-  ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range 
-  ########################################################################
-  
-  #whatever the want we are going to set it to False fron now
+  #whatever the want we are going to set it to False from now
   interactiveMode= F
   resolveNativeCtry = F
   resolveAlienCtry = F
@@ -241,9 +232,7 @@ occurrenceTests = function(
   }
   #tictoc:::toc()
   
-  ########################################################################
-  ### STEP 2: Quality H Filter : Identify records wo spatial info
-  ########################################################################
+  ### STEP 2: Quality H Filter : Identify records wo spatial info =====
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues started...')
@@ -371,9 +360,7 @@ occurrenceTests = function(
   
   if(is.list(status.out)){return(status.out)}
   tictoc:::toc()
-  #######################################################################
-  ### STEP 4: Filter Quality G : Identify duplicate records(in geographic space)to prevent pseudoreplicaton
-  #######################################################################
+  ### STEP 4: Filter Quality G : Identify duplicate records(in geographic space)to prevent pseudoreplicaton ===== 
   #set timer
   tictoc:::tic('Filter duplicates')
   message('Filter duplicates started')
@@ -408,9 +395,8 @@ occurrenceTests = function(
   if( is.list (status.out)){return(status.out)}
   
   tictoc:::toc()
-  ############################################################################
-  ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES -- and potential for Quality G again(duplicates)
-  ############################################################################
+  ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES  =====
+  #-- and potential for Quality G again(duplicates)
   #set timer
   tictoc:::tic('Resolving coastal reassignment')
   message('Resolving coastal reassignment started...')
@@ -465,8 +451,7 @@ occurrenceTests = function(
   if( is.list(status.out)){return(status.out)}
   tictoc:::toc()
   
-  ##########################################################################
-  ### STEP 6: Filter Quality F Country selection
+  ### STEP 6: Filter Quality F Country selection ======
   #set timer
   tictoc:::tic('Resolving countryStatusRange Analysis')
   message('Resolving countryStatusRange Analysis started...')
@@ -507,9 +492,7 @@ occurrenceTests = function(
   
   if( is.list (status.out)){return(status.out)}
   tictoc:::toc()
-  ############################################################################
-  ### STEP 7:  Quality A-E Environmental and Geographical outliers  - analysis chunk
-  ############################################################################
+  ### STEP 7:  Quality A-E Environmental and Geographical outliers  - analysis chunk =====
   #set timer
   tictoc:::tic('Total Geographic and Range Analysis:')
   message('Total Geographic and Range Analysis started....')
@@ -636,10 +619,7 @@ occurrenceTests = function(
   #timer for the analytic processes
   tictoc:::toc()
 
-  #############################################################################
-  ### STEP 9: BUILD FULL dataframe
-  ############################################################################
-  
+  ### STEP 9: BUILD FULL dataframe ====
   #load previous filtered objects
   previousFiltered = grep(pattern = 'dat.Q.',ls(),value = T)
   full.qaqc = cbind(dat, df.qualityAssessment)
@@ -650,9 +630,7 @@ occurrenceTests = function(
     
   }
   
-  ########################################################################
-  ### STEP 10: WRITE THE OUTPUTS
-  ########################################################################
+  ### STEP 10: WRITE THE OUTPUTS =====
   tictoc:::tic('Preparing and Writing outputs')
   message('Preparing and Writing outputs started ...')
   #reorder data as original
