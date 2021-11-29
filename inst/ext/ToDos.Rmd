@@ -4,8 +4,14 @@ output: html_document
 ---
 
 ## List of things to be incorporated/revised
-
+0. Check output row index default. Why?
 1. Better explain the native and invasive status range management in occTest. It is a bit confusing now.
+2. Check sensitivity of each test
+3. Filter directly those that have missingEnv_value ? Right now they belong a to a test block envOutliers
+3. Mapping
+4. Report on the filteing
+5. Add dynamic alphaHull identification.
+
 
 
 

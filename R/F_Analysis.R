@@ -981,18 +981,16 @@ geoOutliers         <- function (df=dat,
   xydat <- df[,c(xf,yf)]
 
   if (any (method %in% c('alphaHull','all'))){
- 
-
-
-
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      ah.2alpha <- alphahull::ahull (x = xydat[,xf], y= xydat[,yf], alpha=.alpha.parameter)
-
-      points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
-      points.outside.alphahull <- points.outside.alphahull * 1
+      ## old method -- deprecated due to issues of in a hull
+      # ah.2alpha <- alphahull::ahull (x = xydat[,xf], y= xydat[,yf], alpha=.alpha.parameter)
+      # points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
       #ahshape <- occTest:::.ah2sp(ah.2alpha)
+      
+      points.outside.alphahull <- try (getPointsOutAlphaHull (xydat,alpha = .alpha.parameter), silent=T)
+      if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
 
@@ -1002,8 +1000,6 @@ geoOutliers         <- function (df=dat,
       out.comments <- paste0('N<=5. Analysis not run')
     }
     
-    
-
     #write results into the results dataframe
     out$geoOutliers_alphaHull_value <- points.outside.alphahull
     out$geoOutliers_alphaHull_test <- as.logical (points.outside.alphahull)
@@ -1122,7 +1118,6 @@ geoOutliers         <- function (df=dat,
     }
   }
   
-
   if (any (method %in% c('median','all'))){
 
     cc_med_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
