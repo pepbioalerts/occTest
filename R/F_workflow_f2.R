@@ -19,6 +19,7 @@
 #' @export
 occurrenceTests = function(
   sp.name,
+  habitat=NULL,
   sp.table,
   r.env,
   
@@ -39,7 +40,6 @@ occurrenceTests = function(
   doParallel=F,
   mc.cores=2){
 
-  #browser()
   #  for testing
   # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
   #set timer
@@ -59,10 +59,9 @@ occurrenceTests = function(
   defaultSettings = occTest::minimalSettings()
   #load table settings(old stuff, we  could attache the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
-
+  
   x.field             = tableSettings$x.field
   y.field             = tableSettings$y.field
-  
   if (! all(c(x.field,y.field)%in%  names(sp.table))){stop('No coordinate fields specified')}
   
   taxonobservation.id = tableSettings$taxonobservation.id
@@ -86,6 +85,9 @@ occurrenceTests = function(
   ds.field            =  tableSettings$ds.field
   if(! ds.field %in% names(sp.table))   ds.field = NULL
 
+  ds.field            =  tableSettings$ds.field
+  if(! ds.field %in% names(sp.table))   ds.field = NULL
+  
   #load analysisSettings
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
@@ -132,7 +134,7 @@ occurrenceTests = function(
   # grading.test.type = gradingSettings$grading.test.type
   # qualifiers = gradingSettings$qualifiers
   # qualifier.label.scoping = gradingSettings$qualifier.label.scoping
-  # 
+  
   #load writeOutSettings
   if(is.null(writeoutSettings)) writeoutSettings = defaultSettings$writeoutSettings
   output.dir = writeoutSettings$output.dir
@@ -247,7 +249,7 @@ occurrenceTests = function(
   if(as.character(points.proj4string)%in% 
       c('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0',"+proj=longlat +datum=WGS84 +no_defs")){
     
-    
+  
     coordIssues_invalidCoord_value =! CoordinateCleaner::cc_val(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
     dat$coordIssues_invalidCoord_value = coordIssues_invalidCoord_value
     coordIssues_invalidCoord_test = as.logical(coordIssues_invalidCoord_value)
@@ -266,7 +268,7 @@ occurrenceTests = function(
                                                       obf = output.base.filename,
                                                       sp=sp)
     
-    #zero zero long lant
+    #zero zero long lat
     coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
     dat$coordIssues_zeroCoord_value = coordIssues_zeroCoord_value
     coordIssues_zeroCoord_test = as.logical(coordIssues_zeroCoord_value)
@@ -306,6 +308,7 @@ occurrenceTests = function(
                                                       obf = output.base.filename,
                                                       sp=sp)
   }
+  
   
   
   #indicate issues of georeference and put them aside
@@ -435,6 +438,14 @@ occurrenceTests = function(
     rm(dat.Q.G.second.time)
     
   }
+  ### filter those that are still in the sea/land (depending on habitatType)
+  Analysis.LandSea = occTest::landSeaFilter(df = dat, xf= x.field, y= y.field, 
+                         geom = NULL,
+                         habType = habitat,verbose=verbose) 
+  
+  
+  dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)
+  dat = Analysis.LandSea$continue
   
   #check outputs and escape if need be //
   status.out = occTest:::.status.tracker.and.escaping(
@@ -492,7 +503,7 @@ occurrenceTests = function(
   
   if( is.list (status.out)){return(status.out)}
   tictoc:::toc()
-  ### STEP 7:  Quality A-E Environmental and Geographical outliers  - analysis chunk =====
+  ### STEP 7: Quality A-E Environmental and Geographical outliers  - analysis chunk =====
   #set timer
   tictoc:::tic('Total Geographic and Range Analysis:')
   message('Total Geographic and Range Analysis started....')

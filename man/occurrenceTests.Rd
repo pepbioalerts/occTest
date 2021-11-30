@@ -6,6 +6,7 @@
 \usage{
 occurrenceTests(
   sp.name,
+  habitat = NULL,
   sp.table,
   r.env,
   tableSettings = NULL,
