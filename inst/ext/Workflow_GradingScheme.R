@@ -30,14 +30,14 @@
 #   )
 # 
 # 
-# grading.scheme.vNOX <- occProfileR:::.make.qgrading.system(
+# grading.scheme.vNOX <- occTest:::.make.qgrading.system(
 #                                             codes = codes.list.NOX,
 #                                             conditionals.codes =
 #                                               conditionals.codes.list.NOX,
 #                                             descriptors.codes =
 #                                               descriptors.codes.list.NOX)
 # ### label the different occurrences
-# dat.qgraded <- occProfileR:::.qgrade.data.frame(df = df.qualityAssessment,
+# dat.qgraded <- occTest:::.qgrade.data.frame(df = df.qualityAssessment,
 #                                   grading.scheme = grading.scheme.vNOX)
 # ### add lables to the data
 # 

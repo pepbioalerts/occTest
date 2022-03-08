@@ -1,27 +1,27 @@
 #### load some needed packages and functions
-library (occProfileR)
+library (occTest)
 library(raster)
 library (sf)
 
 #load data
 occ.species.nogeoscrub = system.file('ext/SampleData/Sp3Occurrence_v4.csv'
-                                     ,package='occProfileR')
+                                     ,package='occTest')
 occ.species.nogeoscrub <-  read.table (file = occ.species.nogeoscrub,header = T,sep = ',',as.is = T)
 
 
 countries.pol
 
-countries.pol = system.file('ext/CountryLevel',package='occProfileR')
-countries.pol = readOGR(dsn = '/Users/pepserra/Documents/RS/occProfileR/Rpackage/inst/ext/CountryLevel',layer='Countries_SPDF_MED')
+countries.pol = system.file('ext/CountryLevel',package='occTest')
+countries.pol = readOGR(dsn = '/Users/pepserra/Documents/RS/occTest/Rpackage/inst/ext/CountryLevel',layer='Countries_SPDF_MED')
 
 
-ras.env = system.file('ext/AllEnv.tif',package='occProfileR')
+ras.env = system.file('ext/AllEnv.tif',package='occTest')
 ras.env = raster::stack (ras.env)
 
-ras.dem = system.file('ext/DEM.tif',package='occProfileR')
+ras.dem = system.file('ext/DEM.tif',package='occTest')
 ras.dem = raster (ras.dem)
 
-ras.humaninfluence = system.file('ext/HII.tif',package='occProfileR')
+ras.humaninfluence = system.file('ext/HII.tif',package='occTest')
 ras.humaninfluence = raster(ras.humaninfluence)
 
 
@@ -102,7 +102,7 @@ ggplot (aes(x=quality.grade,fill=quality.grade),data = dat.to.plot)+
 #### EXAMPLE 2: RUN FUNCTION ADDING THE INFORMATION IN THE DATABASE ON ELEVATION, TIME, AND LOCALITY
 
 occ.profiled.2=occurrenceProfile(output.dir =
-                                   "/Users/pepserra/Documents/RS/occProfileR_sampleData/",
+                                   "/Users/pepserra/Documents/RS/occTest_sampleData/",
                                  sp.table = occ.species.nogeoscrub,
                                  sp.name = "My species",
                                  r.env = ras.env,
@@ -155,7 +155,7 @@ ggplot (aes(x=quality.grade,fill=quality.grade),data = dat.to.plot)+geom_bar() +
 #the grading system will hugely downgrade any recored with a wrong or ABSENT country of reference name.
 #we recommend only to enable this feature if all the countries of the records are provided, as any NA will be considred as a 'very low quality' record
 
-occ.profiled.3    <- occurrenceProfile  (output.dir ="/Users/pepserra/Documents/RS/occProfileR_sampleData/",
+occ.profiled.3    <- occurrenceProfile  (output.dir ="/Users/pepserra/Documents/RS/occTest_sampleData/",
                                          sp.table = occ.species.nogeoscrub,
                                          sp.name = "My species",
                                          r.env = ras.env,
@@ -179,7 +179,7 @@ ggplot (aes(x=quality.grade,fill=quality.grade),data = full.qaqc)+geom_bar() +gg
 
 #### EXAMPLE 4: RUN FUNCTION without information on native range
 #setting to NULL the ntv.ctry will make the grading system shift, as now everything is considered native range
-occ.profiled.4    <- occurrenceProfile   (output.dir = "/Users/pepserra/Documents/RS/occProfileR_sampleData/",
+occ.profiled.4    <- occurrenceProfile   (output.dir = "/Users/pepserra/Documents/RS/occTest_sampleData/",
                                          sp.table = occ.species.nogeoscrub,
                                          sp.name = "My species",
                                          r.env = ras.env,
@@ -214,7 +214,7 @@ plyr::join (ex2,ex4)
 
 #setting to NULL THE ntv.ctry will make the grading system to classify potential ranges
 #it can thus affect outlier detection, as those records are not part of the outlier detection.
-occ.profiled.5    <- occurrenceProfile (output.dir = "/Users/pepserra/Documents/RS/occProfileR_sampleData/",
+occ.profiled.5    <- occurrenceProfile (output.dir = "/Users/pepserra/Documents/RS/occTest_sampleData/",
                                          sp.table = occ.species.nogeoscrub,
                                          sp.name = "My species",
                                          r.env = ras.env,

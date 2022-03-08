@@ -27,7 +27,11 @@ example<-"goes here"
 
 }
 \author{
+<<<<<<< HEAD
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+=======
+Brian Maitner
+>>>>>>> 5e4e062df6954368ce7919fa66946aef731d6618
 }
 \concept{}
 \keyword{internal}

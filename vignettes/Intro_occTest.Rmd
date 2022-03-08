@@ -1,0 +1,365 @@
+---
+title: "Classifying Occurrence Data with *occTest*"
+author: "Pep Serra-Diaz, Cory Merow"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Classifying Occurrence Data with *occTest*}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+# What does occTest do?
+
+*occTest* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modelling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and chracterizes the occurrences according to several checks on the coordinates and environmental layers. 
+
+Classifying occurrences should not be understood as data cleaning, but rather as the application of several tests that enable the user to characterize an occurrence record. Such profiling should enable the user choose the best analysis with the data at hand and understand the limits of the data. This is differs from the more classical approach of data selection, cleaning or scrubbing, but it is obviously a critical step prior to cleaning data for a given analysis. You can of course use *occTest* for data cleaning/scrubbing/filtering too, and there are specific fucntions for that
+
+The packages is based on a combination of new created functions by J.M. Serra-Diaz, C.Merow and B.Maitner, and a wrapper of functions from packages biogeo (Patterson et al. ) and CoordinateCleaner(Zizka et al. ) among others.
+
+
+## Workflow overview and data needed
+
+The main function, that implements the workflow is called *occurrenceTests*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers, etc.) using multiple tests in each analysis in order to assess potential errors, and how these may affect the model.  
+
+
+The workflow NEEDS a MINIMUM of THREE parameters: 
+
+1. Species name (sp.name; character)
+
+2. Species occurrence dataset (sp.table; data.frame) 
+The species occurrence data.frame contains the presence records in latitude-longitude WGS84 geographic coordinate system, with column name 'x' for longitude and column name 'y' for latitude (NOTE: these column names can be flexible and user defined, see below, but 'x' and 'y' are the defaults) 
+
+3. Environmental raster (r.env; rasterStack), with quantitiative continuous variables such as a climate.
+The environment raster is a rasterStack object that contains the climate variables intended for use in an SDM or another analysis relating species occurrence and climate. 
+
+```{r}
+#load data
+library(spocc)
+df <- occ(query = 'Martes martes')
+occ.data <-occ2df(df)
+
+#we change the names here but we could just change it in the tableSettings (we could see that later)
+names (occ.data)[2] <- 'decimalLongitude'
+names (occ.data)[3] <- 'decimalLatitude'
+
+#load needed environmental data
+library (raster)
+environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
+
+#classify occurrences
+library(occTest)
+outMartesMartes = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+
+```
+
+## *occurrenceTests* output
+
+The outputs of occurrenceTests is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests (e.g. scores, see below).
+
+
+```{r}
+#check the output
+class(outMartesMartes)
+names (outMartesMartes)
+head(outMartesMartes)
+```
+
+### Inspect the results 
+
+The outputs of the different tests are available to users in the output table. Users will thus be able to classify or scrub the occurrences the way they want to. The names of the columns show this rationale:
+
+[AnalysisType]_[SpecificTest]_value: numeric or logical. Shows the quantitative result of the test (sometimes the same as in the result of the _test)
+
+[AnalysisType]_[SpecificTest]_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record.
+
+[AnalysisType]_[SpecificTest]_comment: character. Shows some comments related to the specific test.
+
+[AnalysisType]_score: numeric. Averages the results of different tests performed. It informs, for a given set of tests what is the percentatge of test that flagged the record.
+
+
+Examples: 
+*institutionLocality_fromBotanicLocalityName_test* is a test (1/0) that tries to identify records located in biodiversity institutions, with the specific method of interpreting locality names using a set of keywords.
+*institutionLocality_score* summarizes all the test to identify records located in biodiversity institutions an outputs a value from 0 to 1. A value of 0.5 would indicate that half of the methods used indicate that is an institution locality. 
+
+Here  is the metadata to characterize the different tests and the hierarchy grouping blocks (e.g. analysis type) 
+```{r,echo=F}
+colMetadata = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
+knitr::kable (colMetadata)
+```
+
+## Customizing your analysis
+
+Many specifications may be set to profile occurrences, although not all will be useful in all cases. We guide you here to set specific parameters to your analysis.
+
+All the settings are accessible and can be modified. The settings for *occTest* are organized in a list of four tables
+
+1. tableSettings   :  providing the specifics of your input data table of occurrence records
+2. analysisSetting :  providing the specifics of each test
+3. gradingSetting  :  providing the specifics of how you want to classify your data
+4. writeoutSettings:  providing the specifics of which and where the outputs should be stored
+
+### tableSettings: when you have more than xy in your table
+Some occurrence data has more than x and y coordinates. If that is the case you can provide important information. The parameter *tableSettings* consists of a list with the following elements that should be identified. Note that even if you want to change only one value of the default you need to provide a full list, with each named elements.
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+taxonobservation.id | Name of the colum in the species table for the observation ID | character
+x.field             | Name of the colum in the species table for the longitude | character
+y.field             | Name of the colum in the species table for the latitude | character
+t.field            | Name of the colum in the species table for the observation date | character
+l.field             | Name of the colum in the species table for the locality name | character
+c.field            | Name of the colum in the species table for the REPORTED COUNTRY  | character
+e.field             | Name of the colum in the species table for the REPORTED ELEVATION (in meters) | character
+a.field              | Name of the colum in the species table for the accuracy (in meters) of the coordinates  | character
+ds.field          | Name of the colum in the species table for the source of the data  | character
+
+
+### analysisSettings: when you want to select or change the analysis
+Do you want to set up different implementations of the analysis? Set up your own parameters. The parameter *analysisSettings* consists of a list with the following elements that should be identified. Note that even if you want to change only one value of the default you need to provide the full list, with each named elements.
+
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$geoSettings\$coordinate.decimal.precision | decimal precision of the coordintes | numeric
+\$geoSettings\$points.proj4string | Projection to use | Proj4 character. CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+\$rangeAnalysis\$countryfield.shapefile | spatialPolygonsDataFrame with the countries and their associated names or ISO3 codes in the dataframe | spatialPolygonsDataFrame. Defaults to rnaturalearth::ne_countries()
+\$rangeAnalysis\$doRangeAnalysis | whether the user wants to do perform the analysis of comparing coordinates countries to reported native or invasive countries | logical. Dafaults to T 
+\$rangeAnalysis\$excludeUnknownRanges | keep the analysis for occurrences out of the known native or alien countries? | logical. Defaults to F
+\$rangeAnalysis\$doCountryRecordAnalysis | whether the user wants to do perform the analysis of comparing reported countries to reported native or invasive countries | logical. Dafaults to T 
+\$rangeAnalysis\$excludeNotmatchCountry keep the analysis for occurrences when the reported country is different than the native or alien countries? | logical. Defaults to F
+\$centroidAnalysis\$doCentroidDetection | whether the user wants to do perform the analysis of centroid detection | logical. Dafaults to T 
+\$centroidAnalysis\$methodCentroidDetection | methods to use to detect centroids. Implemented are: 'BIEN','speciesGeoCodeR','CoordinateCleaner', 'all' | character. Dafaults to 'all' 
+\$humanAnalysis\$doHyperHumanDetection | whether the user wants to do perform the analysis of human influence | logical. Dafaults to T
+\$humanAnalysis\$methodHyperHumanDetection | what methods to use to detect high human influence Implemented are: 'hii','urban', 'all' | character. Dafaults to 'all' 
+\$humanAnalysis\$th.human.influence | when methods are 'all' or 'hii' what is the threshold value for human influence | numeric. Dafaults to 40  
+\$humanAnalysis\$ras.hii | raster of the human influence index | raster. Defaults to SEDAC human infuence index | raster
+\$institutionAnalysis\$doInstitutionLocality | whether the user wants to do perform the analysis of records potentialy in biodiversity institutions | logical. Dafaults to T 
+\$institutionAnalysis\$methodInstitutionLocality | methods to use to detect records  in biodiversity institutions Implemented are: 'fromBotanicLocalityName','fromCoordinates', 'all' | character. Defaults to 'all'  
+\$geooutliersAnalysis\$doGeoOutliers | whether the user wants to do perform the analysis of geographical outliers  | logical. Dafaults to T 
+\$geooutliersAnalysis\$methodGeoOutliers | methods to use to geographic outliers. Implemented are: 'alphaHull','distance','median','quantSamplingCorrected','grubbs, 'all' | character. Defaults to 'all'  
+\$geooutliersAnalysis\$alpha.parameter | alpha parameter desired for method 'alphaHull' | numeric. Defaults to 2
+\$envoutliersAnalysis\$doEnvOutliers | whether the user wants to perform the analysis of environmental outliers | logical. Dafaults to T 
+\$envoutliersAnalysis\$methodEnvOutliers | methods to use to environmental outliers. Implemented are: 'bxp','grubbs', 'all' | character. Defaults to 'all'  
+\$envoutliersAnalysis\$th.perc.outenv | for method 'bxp' what is the percentage of variables found as an outlier to define it as an outlier | Numeric. Defaults to 0.2
+\$accuracyAnalysis\$do.geoEnvAccuracy | whether the user wants to perform the accuracy analysis | logical. Dafaults to T 
+\$accuracyAnalysis\$methodGeoEnvAccuracy | methods to use for the accuracy analysis. Implemented are: 'envDeviation','percDiffCell', 'elevDiff','lattice','rasterCell','all'| character. Defaults to 'all'  
+\$accuracyAnalysis\$elev.quality.threshold | for elevDiff method, threshold of the difference between reported and inferred elevation | numeric. Defaults to 100
+
+### filterSettings: when you want to provide which criteria to use to filter your occurrence records. 
+The user candi
+
+### classificationSettings: when you want to provide your scheme for labeling your occurrence records
+The user can decide different ways to implement the grading system through different parameters in the list *calassificationSettings*
+
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$grading.test.type | How to consider the consensus when several methods implemented differ? Options implemented are: 'majority','strict' 'relaxed. For instance, 'strict' will flag a record as a geographic outlier if there is at least a method flagging it. 'majority' when the majority of methods agree and 'relaxed' when more than 70% of the methods agree. | charcter. Defaults to 'majority'   
+\$qualifiers | should qualifiers be implemented | Logical. Defaults to T                       
+\$qualifier.label.scoping | over which grades should qualifiers be implemented |character. Defaults to c('A','B','C','D','E') (all labels applied by default)
+
+### writeoutSettings: do you want to write the outputs?
+
+The user can specify if outputs are to be written.
+
+| Named element in list    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+\$output.dir | Name of the output directory | character.Defaults to NULL
+\$writeAllOutput | should all outptus be written | logical. Defaults to F 
+\$write.simple.output | should simple output table be written | logical. Defaults to F 
+\$write.simple.output | should full output table be written | logical. Defaults to F 
+\$output.base.filename | what is the suffix of the output table filename? | character. Deafaults to 'QAQC'
+
+### an example of how to modify settings
+
+We do not want to do the accuracy analysis in the workflow because we believe our data is accurate enough and/or we do not have enough information
+
+```{r}
+#load minimal settings
+mySettings <- minimalSettings()
+#change the attribute of interest (in this case setting an analysis off)
+mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
+#add your settings to the function
+out = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+                         analysisSettings = mySettings$analysisSettings)
+```
+
+
+# Example 1: The hands-off analysis (default)
+
+We can perform a quick test with all defaults. This has a minimal number of inputs and therefore a lot of the tests cannot be performed (note the large amount of NAs in the outputs. These minimal inputs are the data.frame of species occurrence and environmental variables.
+
+```{r}
+#load packages
+library(occTest)
+library(spocc)
+
+df <- occ(query = 'Pseudotsuga menziesii')
+occ.data <-occ2df(df)
+
+#we change the names here but we could just change it in the tableSettings
+names (occ.data)[2] <- 'decimalLongitude'
+names (occ.data)[3] <- 'decimalLatitude'
+
+#load needed environmental data
+library (raster)
+renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
+
+#test occurrence
+library(occTest)
+outDougFir = occurrenceTests(sp.name='Pseudotsuga menziesii', 
+                                sp.table = occ.data,
+                                r.env = renv,ntv.ctry = c('CAN','USA'))
+
+
+#check SHORT outputs
+head (outDougFir)
+
+```
+
+
+Then we can use *occFilter* to filter the data according to different acceptance levels of rates. The result is a list where the first element fitleredDataset corresponds to the filtered occurrence records and the second element summaryStats provides the summary statistics of the number of tests performed.
+
+The function run with two dedicated options: level and errorAcceptance. Level corresponds to a numeric value (default 1) that uses a group level of tests (see above, for instance geo tests, environment tests) and averages across tests. errorAcceptance corresponds to what level of error you accept. T
+
+
+| parameter    | Description     | Value  |
+| ----------   |:------------------------------:| -------:|
+df | data frame output of occurrenceClassify | data.frame
+level | numeric. The hierachy you use to group and summarize the different tests performed | numeric. 1 or 2
+errorAcceptance | majority (error accepted up to 50% of the tests), relaxed (70%), stringent (20%), custom . Level of error you accept in the groupings| character. Deffault is majority
+errorThreshold  | if errorAcceptance set to custom. The threshold of error accepted by group.  | double. 0 to 1
+
+
+```{r}
+outDougFirSelec = occFilter(df = outDougFir,errorAcceptance = 'relaxed') 
+names (outDougFirSelec)
+outDougFirSelec[['fitleredDataset']]
+```
+
+The output statisics allow you to inspect, for different groupingTestLevels the [groupLeve]_score (the average across specific tests), [groupLevel]_rateTestPerformed (e.g. 0.14 means you performed 14% of the available tests for a given groupLevel) and  [groupLevel]__rateTesttPerformed_NtestPeformed (e.g. the total number of tests perfomed).
+
+```{r}
+outDougFirSelec[['summaryStats']]
+```
+
+check how the groupings changed with different levels and different threshold acceptance levels 
+
+```{r}
+outDougFirSelec2 = occFilter (df = outDougFir, errorAcceptance = 'stringent')
+nrow (outDougFirSelec2 [['fitleredDataset']] )
+nrow (outDougFirSelec[['fitleredDataset']])
+```
+
+
+# Example 2: Making the function turn with more detailed data (and more options)
+
+We will apply *occurrenceTests* to a dataset that has more fields and for that we need to specify them.
+
+The sample  is a Mediterranean species present in France, Catalonia, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc...  
+
+We will now fully use the information on that table to perform as many tests as possible. 
+
+
+```{r,fig.width=6,fig.height=4}
+#load packages
+library(occTest)
+library(ggplot2)
+library(raster)
+library(knitr)
+library(rgdal)
+
+#load data
+spMed = system.file('ext/SampleData/Sp3Occurrence_v4.csv',package='occTest')
+occ.species.nogeoscrub <-  read.table (file = spMed,header = T,sep = ',',as.is = T)
+
+#load the raster of the environmental variables
+ras.env.f = system.file('ext/AllEnv.tif',package='occTest')
+ras.env = raster::stack(ras.env.f)
+
+######## CHECK THE INPUT DATA TABLE
+str (occ.species.nogeoscrub)
+```
+
+The table data shows:
+- Longitude and latitude are named as MAPX and MAPY (MAPX, MAPY)
+- There is a recorded name of a country in the table (COUNTRYRECORD)
+- Locality name field (LOCALITYNAME)
+- Uncertainty field value (UNCERTEINTY_X_M, UNCERTAINTY_Y_M)
+- Date field (DATE)
+
+We will incorporate this information into the workflow. To do so we need to modify the minimalSettings relatedo to table
+
+```{r}
+mySettings <- occTest::minimalSettings()
+mySettings$tableSettings$x.field <- 'MAPX'
+mySettings$tableSettings$y.field <- 'MAPY'
+mySettings$tableSettings$t.field <- 'DATE'
+mySettings$tableSettings$l.field <- 'LOCALITYNAME'
+mySettings$tableSettings$c.field <- 'COUNTRYRECORD'
+mySettings$tableSettings$e.field <- 'ELEVATION'
+mySettings$tableSettings$a.field <- c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M')
+```
+
+
+We have a more detailed raster of elevation that will allow us to know whether the elevation recorded in our dataset is different from that inferred from the terrain model used to build the climate variables  
+
+```{r}
+#load a high resolution raster of elevations
+ras.dem.f = system.file('ext/DEM.tif',package='occTest')
+ras.dem = raster(ras.dem.f)
+```
+
+We have a more detailed raster of human influence than that of the report. In our of map high human influence is considered when a record is in a cell above 50. Let's modify our settings 
+
+```{r}
+#load your own human influence map
+ras.humaninfluence.f = system.file('ext/HII.tif',package='occTest')
+ras.humaninfluence = raster(ras.humaninfluence.f)
+
+#add it to the settings
+mySettings$analysisSettings$humanAnalysis$th.human.influence <-50
+mySettings$analysisSettings$humanAnalysis$methodHyperHumanDetection <-ras.humaninfluence
+
+#plot it
+#plot(ras.humaninfluence)
+```
+
+We also have a more detailed data on country borders 
+```{r}
+#load detailed country borders and shorelines
+countries.pol.f = system.file('ext/CountryLevel',package='occTest')
+countries.pol = readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
+names (countries.pol)
+
+#add it to the settings
+mySettings$analysisSettings$rangeAnalysis$countries.shapefile <-countries.pol 
+mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO' 
+```
+
+We also know that the species is native to Spain ('ESP') and considered invasive in France ('FRA') so we will also specify it, and flag anything that is not in these countries
+```{r}
+out <- occurrenceTests   (sp.name = 'My species',
+                          sp.table = occ.species.nogeoscrub,
+                          r.env =ras.env,
+                          tableSettings = mySettings$tableSettings, 
+                          analysisSettings =mySettings$analysisSettings,
+                          r.dem =   ras.dem,
+                          ntv.ctry = 'ESP',
+                          inv.ctry = 'FRA',
+                          verbose = T)
+
+
+```
+

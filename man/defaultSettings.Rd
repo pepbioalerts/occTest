@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{defaultSettings}
 \alias{defaultSettings}
-\title{load default settings for occProfileR}
+\title{load default settings for occTest}
 \usage{
 defaultSettings(x)
 }
@@ -10,7 +10,7 @@ defaultSettings(x)
 list of lists with all different parameters to use in occProfile function
 }
 \description{
-Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occProfileR
+Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
 }
 \details{
 it can be use internally or it can be used by a user to subsequently modify parameters

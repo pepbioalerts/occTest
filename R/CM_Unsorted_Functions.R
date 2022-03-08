@@ -153,10 +153,10 @@ findSpatialOutliers=function(myPres,
 #'
 # @examples
 # myPres=read.csv(system.file('ext/SampleData/Sp3Occurrence_v3.csv',
-#  package='occProfileR'))[,c(2,3)]
+#  package='occTest'))[,c(2,3)]
 #  myPres=myPres[complete.cases(myPres),]
 #  coordinates(myPres)=c(1,2)
-# myEnv=raster::stack(system.file('ext/AllEnv.tif',package='occProfileR'))
+# myEnv=raster::stack(system.file('ext/AllEnv.tif',package='occTest'))
 #  envOut=findEnvOutliers(myPres=myPres,env=myEnv,pval=1e-5)
 #'
 #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
