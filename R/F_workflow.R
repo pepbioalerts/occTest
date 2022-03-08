@@ -38,7 +38,7 @@ occurrenceClassify <- function (
   verbose = F,
   doParallel=F,
   mc.cores=2){
-  #browser()
+  browser()
   
   #set timer
   tictoc:::tic()
@@ -51,7 +51,7 @@ occurrenceClassify <- function (
   
   if (missing (sp.table)) {stop('missing sp.table')}
   if (missing (r.env)) {stop('missing r.env')}
-  if (! pingr:::is_online()) { stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')}
+  if (! curl::has_internet()) { stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')}
   
   
   ########################################################################

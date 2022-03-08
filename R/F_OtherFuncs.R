@@ -253,3 +253,19 @@ hijack <- function (FUN, ...) {
   }))
   .FUN
 }
+
+
+###### ========================================
+#' separate species name 
+#' @param x species name join as a string separated by "_" 
+#' @return a species name where genus and species are separated by a space 
+#' @note #Internal function 
+#' @examples \dontrun{
+#' }
+#' 
+#' 
+splitSpname = function (x){
+  a = strsplit(x,'_')[[1]]
+  paste(a,collapse = ' ')
+  
+  }

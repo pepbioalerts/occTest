@@ -21,7 +21,7 @@ defaultSettings <- function (x){
   
   require (rnaturalearth)
   
-  
+  browser()
   defaultSettings = list (
     
     
@@ -76,7 +76,7 @@ defaultSettings <- function (x){
       humanAnalysis= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occProfileR'))
+                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occClassifyR'))
       )
       ,
       institutionAnalysis = list (doInstitutionLocality=T,
