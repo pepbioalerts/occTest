@@ -1409,18 +1409,10 @@ geoEnvAccuracy  <- function (df,
   if (!do) {return (out)}
   
   #check if need parallel
-<<<<<<< HEAD
-  os = occProfileR:::get_os()
-  if (doParallel==T & os=='mac') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='linux') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='windows') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='win') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
-=======
   os = occTest:::get_os()
   if (doParallel==T & os=='mac') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
   if (doParallel==T & os=='linux') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
   if (doParallel==T & os=='windows') {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
->>>>>>> 5e4e062df6954368ce7919fa66946aef731d6618
   if (doParallel==F) {mymclapply <- lapply}
   
   #start method lattice
