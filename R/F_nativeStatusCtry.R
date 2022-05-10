@@ -35,7 +35,7 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   try (gisdInvasive <- originr::gisd(x = spName,messages = verbose), silent=T)
   
   #CHECK BIEN NRS (contains both invasive and native )
-  ctryFromCoords =  occProfileR:::.coords2country (xydat)
+  ctryFromCoords =  occTest:::.coords2country (xydat)
   ctryFromCoords =  unique (ctryFromCoords)
   ctry4GNRS = countrycode:::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
   #we apply over bcause GNRS only accepts one query at at ime
@@ -100,8 +100,8 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
 
 
   #convert country names to iso3 country codes
-  ntvCtryResolved <- occProfileR:::ctryToIso3(ntvCtryResolved)
-  invCtryResolved <- occProfileR:::ctryToIso3(invCtryResolved)
+  ntvCtryResolved <- occTest:::ctryToIso3(ntvCtryResolved)
+  invCtryResolved <- occTest:::ctryToIso3(invCtryResolved)
   if (any(ntvCtryResolved %in% invCtryResolved)) {
     # print (paste ('Species is considered native and invasive in',paste(ntvCtryResolved[ntvCtryResolved %in% invCtryResolved],collapse = ','),sep = ': ' ) )
     # print ('We will consider it only as in the native range')

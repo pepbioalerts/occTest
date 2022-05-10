@@ -1,0 +1,687 @@
+###### ========================================
+
+#'Validates and clean occurrence data
+#'
+#'occurrence.profiler returns occurrence points withou the recommended metadata and attribution information.
+#' @param sp.table data.frame. Object with the coordinate data.
+#' @param sp.name character. Name of the species.
+#' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
+#' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
+#' @param gradingSettings list. Elements corresponding to different settings of the analysis functions . 
+#' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
+#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic).
+#' @param r.dem raster. Elevation data (in meters).
+#' @return a list of two. First element is a dataframe with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
+#' @note #There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
+#' @examples \dontrun{
+#' example="goes here"
+#' }
+#' @export
+occurrenceTests = function(
+  sp.name,
+  habitat=NULL,
+  sp.table,
+  r.env,
+  
+  tableSettings=NULL,
+  analysisSettings=NULL,
+  gradingSettings=NULL,
+  writeoutSettings=NULL,
+  
+  r.dem=NULL,
+  ntv.ctry=NULL,
+  inv.ctry=NULL,
+  resolveAlienCtry=F,
+  resolveNativeCtry=F,
+  
+  interactiveMode=F,
+  outPath=NULL,
+  verbose = F,
+  doParallel=F,
+  mc.cores=2){
+
+  #  for testing
+  # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
+  #set timer
+  tictoc:::tic()
+  
+  ### STEP 00: Initial checks ====
+  #set timer
+  tictoc:::tic('Initial checks and formatting')
+  message('Initial checks and formatting started...')
+  
+  if(missing(sp.table)) stop('missing sp.table')
+  if(missing(r.env)) stop('missing r.env')
+  if(! pingr:::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
+  
+  
+  ### STEP 0: Load settings and study native and invasive countries ====
+  defaultSettings = occTest::minimalSettings()
+  #load table settings(old stuff, we  could attache the different labels)
+  if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
+  
+  x.field             = tableSettings$x.field
+  y.field             = tableSettings$y.field
+  if (! all(c(x.field,y.field)%in%  names(sp.table))){stop('No coordinate fields specified')}
+  
+  taxonobservation.id = tableSettings$taxonobservation.id
+  if(! taxonobservation.id %in% names(sp.table))   taxonobservation.id = NULL
+  
+  t.field             = tableSettings$t.field
+  if(! t.field %in% names(sp.table))   t.field = NULL
+  
+  l.field             = tableSettings$l.field  
+  if(! l.field %in% names(sp.table))   l.field = NULL
+  
+  c.field             = tableSettings$c.field
+  if(! c.field %in% names(sp.table))   c.field = NULL
+  
+  e.field             = tableSettings$e.field
+  if(! e.field %in% names(sp.table))   e.field = NULL
+  
+  a.field             = tableSettings$a.field
+  if(! a.field %in% names(sp.table))   a.field = NULL
+  
+  ds.field            =  tableSettings$ds.field
+  if(! ds.field %in% names(sp.table))   ds.field = NULL
+
+  ds.field            =  tableSettings$ds.field
+  if(! ds.field %in% names(sp.table))   ds.field = NULL
+  
+  #load analysisSettings
+  if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
+  coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
+  points.proj4string = analysisSettings$geoSettings$points.proj4string
+  
+  countries.shapefile = analysisSettings$countryStatusRange$countries.shapefile
+  countryfield.shapefile = analysisSettings$countryStatusRange$countryfield.shapefile
+  doRangeAnalysis = analysisSettings$countryStatusRange$doRangeAnalysis
+  excludeUnknownRanges = analysisSettings$countryStatusRange$excludeUnknownRanges
+  excludeNotmatchCountry = analysisSettings$countryStatusRange$excludeNotmatchCountry
+  doCountryRecordAnalysis = analysisSettings$countryStatusRange$doCountryRecordAnalysis
+  
+  doCentroidDetection = analysisSettings$centroidDetection$doCentroidDetection
+  methodCentroidDetection = analysisSettings$centroidDetection$methodCentroidDetection
+  
+  doHumanDetection = analysisSettings$humanDetection$doHumanDetection
+  methodHumanDetection = analysisSettings$humanDetection$methodHumanDetection
+  th.human.influence = analysisSettings$humanDetection$th.human.influence
+  ras.hii = analysisSettings$humanDetection$ras.hii
+  
+  doLandUseSelect = analysisSettings$landUseType$doLandUse
+  methodLandUseSelect = analysisSettings$landUseType$methodLandUse
+  landUseCodes = analysisSettings$landUseType$landUseCodes
+  ras.landUse = analysisSettings$landUseType$ras.landUse
+
+  doInstitutionLocality = analysisSettings$institutionLocality$doInstitutionLocality
+  methodInstitutionLocality = analysisSettings$institutionLocality$methodInstitutionLocality
+  
+  doGeoOutliers = analysisSettings$geoOutliers$doGeoOutliers
+  methodGeoOutliers = analysisSettings$geoOutliers$methodGeoOutliers
+  alpha.parameter = analysisSettings$geoOutliers$alpha.parameter
+  
+  doEnvOutliers = analysisSettings$envOutliers$doEnvOutliers
+  methodEnvOutliers = analysisSettings$envOutliers$methodEnvOutliers
+  th.perc.outenv= analysisSettings$envOutliers$th.perc.outenv
+  
+  methodGeoEnvAccuracy=analysisSettings$geoenvLowAccuracy$methodGeoEnvAccuracy
+  doGeoEnvAccuracy=analysisSettings$geoenvLowAccuracy$doGeoEnvAccuracy
+  elev.quality.threshold=analysisSettings$geoenvLowAccuracy$elev.quality.threshold
+  
+  #load gradingSettings
+  # if(is.null(gradingSettings)){ gradingSettings = defaultSettings$gradingSettings}
+  # 
+  # grading.test.type = gradingSettings$grading.test.type
+  # qualifiers = gradingSettings$qualifiers
+  # qualifier.label.scoping = gradingSettings$qualifier.label.scoping
+  
+  #load writeOutSettings
+  if(is.null(writeoutSettings)) writeoutSettings = defaultSettings$writeoutSettings
+  output.dir = writeoutSettings$output.dir
+  if(is.null(output.dir)) output.dir = tempdir(); message('Output directory not specified. Set to a temporary directory')
+  writeAllOutput = writeoutSettings$writeAllOutput
+  write.simple.output =  writeoutSettings$write.simple.output
+  write.full.output = writeoutSettings$write.full.output
+  output.base.filename = writeoutSettings$output.base.filename
+  
+  ### STEP 1a: Data formatting and compatibility for biogeo and initial checks =====
+
+  #add fields necesary for initial table
+  sp = occTest:::.join.spname(sp.name)
+  sp.table$Species = sp
+  
+  sp.table2 = occTest:::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
+                                     ef = e.field,tf = t.field,lf = l.field,
+                                     cf = c.field,          
+                                     idf = taxonobservation.id)
+  
+  dat = occTest:::.addmainfields2(sp.table2,species = 'Species')
+  dat$comments = rep('', nrow(dat))
+  
+  #check data structure
+  ck  = occTest:::.checkdatastr2(dat,xf = x.field,yf=y.field)
+  if(sum(ck$Present)!=10){stop("Error: required table fields could not be created")}
+  
+  #For development:
+  #placeholder to convert other kind of coordinate data to numerical latlong
+  #or whatever decided projection we want to work on
+  
+  #CHECK 4
+  #ensure that all the geospatial data inputs are is in the same coordinate system
+  potential.geosp.objects = list(countries.shapefile,
+                                  r.env,
+                                  r.dem,
+                                  ras.hii,
+                                  points.proj4string)
+  x = sapply(potential.geosp.objects, is.null)
+  actual.input.geosp.objects = potential.geosp.objects[-x]
+  actual.input.geosp.objects = occTest:::.subsetlist.nonNULL(actual.input.geosp.objects)
+  
+  #the development should be in the direction of automatically check and transform
+  #occTest:::.check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
+  #lapply(actual.input.geosp.objects, function(x)raster:::projection(x))
+  
+  
+  #CHECK 5
+  #get into precision of decimals
+  for(i in c(x.field, y.field)){
+    dat[,i] = round(dat[,i], digits=coordinate.decimal.precision)
+  }
+  
+  #CHECK 6
+  #need tweaking: this will only happen if the data is in geographic coordinates, because the unites will be in minutes
+  #res is is in minutes...therefore(30 arcsec = 0.5 min)
+  #if this is a projected data, we need to redo stuff and also tweak funcitons in biogeo
+  #maybe add a warning or something in check geospatial data? idk
+  res.in.minutes = res(r.env[[1]])[1] * 60
+  
+  tictoc:::toc()
+  
+  ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
+  #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
+  #whatever the want we are going to set it to False from now
+  interactiveMode= F
+  resolveNativeCtry = F
+  resolveAlienCtry = F
+  #set timer
+  #tictoc:::tic('Resolve native and invasive countries')
+  
+  #automatically resolve invasive and native countries for target species(not implemented yet)
+  
+  if(interactiveMode & is.null(ntv.ctry)){
+    resolveNativeCtry = if(interactive()) askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+  }
+  if(interactiveMode & is.null(inv.ctry)){
+    resolveAlienCtry = if(interactive()) askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+  }
+  if(any(resolveNativeCtry,resolveAlienCtry)){
+    if(verbose){message("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
+    
+    xydatTemporary = dat[,c(x.field,y.field)]
+    xydatTemporary = xydatTemporary[complete.cases(xydatTemporary),]
+    
+    
+    checkCountries = occTest:::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+    if(resolveNativeCtry){
+      ntv.ctry = c(ntv.ctry,checkCountries$ntvCtry)
+      ntv.ctry = unique(ntv.ctry)
+    }
+    if(resolveAlienCtry){
+      inv.ctry = c(inv.ctry,checkCountries$invCtry)
+      inv.ctry = unique(inv.ctry)
+    }
+    
+  }
+  #tictoc:::toc()
+  
+  ### STEP 2: Quality H Filter : Identify records wo spatial info =====
+  #set timer
+  tictoc:::tic('Filter major coordinate Issues')
+  message('Filter major coordinate Issues started...')
+
+  if(verbose){message("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
+  
+  Analysis.H = filterMissing(df = dat,xf = x.field,yf = y.field)
+  dat.Q.H = Analysis.H$stay
+  dat = Analysis.H$continue
+  
+  #valid coordinates in geographic projections and zero zero issues anc decimal conversion issues
+  if(as.character(points.proj4string)%in% 
+      c('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0',"+proj=longlat +datum=WGS84 +no_defs")){
+    
+  
+    coordIssues_invalidCoord_value =! CoordinateCleaner::cc_val(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
+    dat$coordIssues_invalidCoord_value = coordIssues_invalidCoord_value
+    coordIssues_invalidCoord_test = as.logical(coordIssues_invalidCoord_value)
+    dat$coordIssues_invalidCoord_test = coordIssues_invalidCoord_test
+    
+    dat.Q.H1 = dat[coordIssues_invalidCoord_test,]
+    dat = dat[!coordIssues_invalidCoord_test,]
+    
+    
+    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+                                                      wfo = write.full.output,
+                                                      wso = write.simple.output,
+                                                      xf = x.field,
+                                                      yf=y.field,
+                                                      od = output.dir,
+                                                      obf = output.base.filename,
+                                                      sp=sp)
+    
+    #zero zero long lat
+    coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
+    dat$coordIssues_zeroCoord_value = coordIssues_zeroCoord_value
+    coordIssues_zeroCoord_test = as.logical(coordIssues_zeroCoord_value)
+    dat$coordIssues_zeroCoord_test = coordIssues_zeroCoord_test
+    dat.Q.H2 = dat[coordIssues_zeroCoord_test,]
+    dat = dat[!coordIssues_zeroCoord_test,]
+    
+    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+                                                      wfo = write.full.output,
+                                                      wso = write.simple.output,
+                                                      xf = x.field,
+                                                      yf=y.field,
+                                                      od = output.dir,
+                                                      obf = output.base.filename,
+                                                      sp=sp)
+    #error conversion of decimals 
+    dat.tmp = dat 
+    if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
+      dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
+      ds.field = 'MyInventedCommonDataset'}
+    coordIssues_coordConv_value = ! CoordinateCleaner::cd_ddmm(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F)
+    dat$coordIssues_coordConv_value = coordIssues_coordConv_value
+    coordIssues_coordConv_test = as.logical(coordIssues_coordConv_value)
+    dat$coordIssues_coordConv_test = coordIssues_coordConv_test
+    
+    dat.Q.H3 = dat[coordIssues_coordConv_test,]
+    dat = dat[!coordIssues_coordConv_test,]
+    if(ds.field == 'MyInventedCommonDataset')ds.field = NULL
+    rm(dat.tmp)
+    
+    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+                                                      wfo = write.full.output,
+                                                      wso = write.simple.output,
+                                                      xf = x.field,
+                                                      yf=y.field,
+                                                      od = output.dir,
+                                                      obf = output.base.filename,
+                                                      sp=sp)
+  }
+  
+  
+  
+  #indicate issues of georeference and put them aside
+  obj.issues = c('dat.Q.H','dat.Q.H1','dat.Q.H2','dat.Q.H3')
+  obj.exist = sapply(obj.issues ,FUN = function(x)exists(x))
+  obj.issues = obj.issues[obj.exist]
+  if(any(obj.issues %in% c('dat.Q.H1','dat.Q.H2','dat.Q.H3'))){
+    if(length(obj.issues)>0){
+      dat.excl.H = lapply(obj.issues, function(x){
+        
+        if(nrow(get(x))> 0 ){
+          a = get(x)
+          #a$quality.grade = 'H'
+          a$Exclude = 1 
+          if(x == 'dat.Q.H')
+            a$Reason = "No coordinates"
+          if(x == 'dat.Q.H1')
+            a$Reason = "No valid coords"
+          if(x == 'dat.Q.H2')
+            a$Reason = "LonLat 0 0"
+          if(x == 'dat.Q.H3')
+            a$Reason = "Coord decimal conversion error"
+          return(a)
+          
+        } else { return(NULL)}
+        
+      })
+      dat.excl.H = dplyr::bind_rows(dat.excl.H)
+    }
+    if(exists('dat.excl.H')){
+      if(!is.null(get('dat.excl.H'))){
+        if(nrow(dat.excl.H)>0){
+          dat.Q.H = dat.excl.H
+          rm(dat.excl.H)} else {rm(dat.excl.H)}
+    }
+    if(exists('dat.Q.H1')){rm(dat.Q.H1)} 
+    if(exists('dat.Q.H2')){rm(dat.Q.H2)} 
+    if(exists('dat.Q.H3')){rm(dat.Q.H3)} 
+    
+    }
+    }
+  
+  #check outputs and escape ifneedbe //
+  status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+                                                    wfo = write.full.output,
+                                                    wso = write.simple.output,
+                                                    xf = x.field,
+                                                    yf=y.field,
+                                                    od = output.dir,
+                                                    obf = output.base.filename,
+                                                    sp=sp)
+  
+  if(is.list(status.out)){return(status.out)}
+  tictoc:::toc()
+  ### STEP 4: Filter Quality G : Identify duplicate records(in geographic space)to prevent pseudoreplicaton ===== 
+  #set timer
+  tictoc:::tic('Filter duplicates')
+  message('Filter duplicates started')
+  if(verbose){message("**** RESOLVING: duplicates ****")}
+  
+  #indicate duplicates with exact coordinates
+  Analysis.G = duplicatesexcludeAnalysis(df = dat,
+                                         xf = x.field,
+                                         yf = y.field,
+                                         resolution.in.minutes=res.in.minutes,
+                                         raster.grid = r.env[[1]])
+  
+  #here we merge together the two kind of duplicates, but maybe we would like to keep the relative duplicates for other purposes
+  dat.Q.G = dplyr::bind_rows(Analysis.G$Dups.Grid, Analysis.G$Dups.Exact)
+  if(nrow(dat.Q.G)== 0 ){rm(dat.Q.G)}
+  #if (exists('dat.Q.G')){ dat.Q.G$quality.grade = 'G'}
+  
+  dat = Analysis.G$continue
+  
+  #check outputs and escape ifneedbe //
+  status.out=occTest:::.status.tracker.and.escaping(
+    dataset.to.continue = dat,
+    wfo = write.full.output,
+    wso = write.simple.output,
+    xf = x.field,
+    yf=y.field,
+    od = output.dir,
+    obf = output.base.filename,
+    sp=sp)
+  
+  
+  if( is.list (status.out)){return(status.out)}
+  
+  tictoc:::toc()
+  ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES  =====
+  #-- and potential for Quality G again(duplicates)
+  #set timer
+  tictoc:::tic('Resolving coastal reassignment')
+  message('Resolving coastal reassignment started...')
+  if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
+  #analysis of nearest cell next to the sea
+  dat = nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  
+  #check results and recheck dups ifneedbe
+  if(class(dat)== 'list'){
+    dat = dat[[1]]
+    moved.points = dat[['moved']]
+    if(!is.null(output.dir)){
+      sp.name2= occTest:::.join.spname(sp.name)
+      odir = paste0(output.dir,'/',sp.name2)
+      dir.create(odir,showWarnings = F,recursive = T)
+      write.csv( moved.points,
+                 paste0(odir,'/',sp.name2,'_coastal_Reassignment.csv'))
+    }
+    
+    
+    
+    ### RECHECK POTENTIAL DUPLICATES AGAIN AFTER REASSIGNATION
+    Analysis.G.second.time=duplicatesexcludeAnalysis(df = dat,
+                                                     xf = x.field,
+                                                     yf = y.field,
+                                                     resolution.in.minutes =
+                                                       res.in.minutes)
+    dat.Q.G.second.time = rbind(Analysis.G.second.time$Dups.Grid,
+                                  Analysis.G.second.time$Dups.Exact)
+    if (nrow(dat.Q.G.second.time)!=  0){
+      #dat.Q.G.second.time$quality.grade = 'G'
+      dat.Q.G = rbind(dat.Q.G,dat.Q.G.second.time)
+      dat = Analysis.G.second.time$continue
+    }
+    
+    rm(dat.Q.G.second.time)
+    
+  }
+  ### filter those that are still in the sea/land (depending on habitatType)
+  Analysis.LandSea = occTest::landSeaFilter(df = dat, xf= x.field, y= y.field, 
+                         geom = NULL,
+                         habType = habitat,verbose=verbose) 
+  
+  
+  dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)
+  dat = Analysis.LandSea$continue
+  
+  #check outputs and escape if need be //
+  status.out = occTest:::.status.tracker.and.escaping(
+    dataset.to.continue = dat,
+    wfo = write.full.output,
+    wso = write.simple.output,
+    xf = x.field,
+    yf=y.field,
+    od = output.dir,
+    obf = output.base.filename,
+    sp=sp)
+  
+  
+  if( is.list(status.out)){return(status.out)}
+  tictoc:::toc()
+  
+  ### STEP 6: Filter Quality F Country selection ======
+  #set timer
+  tictoc:::tic('Resolving countryStatusRange Analysis')
+  message('Resolving countryStatusRange Analysis started...')
+  if(verbose) message("**** RESOLVING QUALITY FILTER F: CountryStatus range analysis(invasive?native?unkonwn?)****") 
+  if(verbose & excludeUnknownRanges) message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')
+  if(verbose & excludeNotmatchCountry) message('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')
+  Analysis.F=countryStatusRangeAnalysis(df=dat,
+                                        xf = x.field,
+                                        yf = y.field,
+                                        .ntv.ctry = ntv.ctry,
+                                        .inv.ctry = inv.ctry,
+                                        .c.field = c.field,
+                                        .countries.shapefile =
+                                          countries.shapefile,
+                                        cfsf = countryfield.shapefile,
+                                        .points.proj4string =
+                                          points.proj4string,
+                                        excludeUnknownRanges = excludeUnknownRanges,
+                                        excludeNotmatchCountry =
+                                          excludeNotmatchCountry,
+                                        doRangeAnalysis = doRangeAnalysis,
+                                        verbose = T)
+  
+  if (nrow(Analysis.F$stay)!= 0 ) dat.Q.F = Analysis.F$stay  #; dat.Q.F$quality.grade = 'F'
+  dat = Analysis.F$continue
+  
+  #check outputs and escape ifneedbe //
+  status.out=occTest:::.status.tracker.and.escaping(
+    dataset.to.continue = dat,
+    wfo = write.full.output,
+    wso = write.simple.output,
+    xf = x.field,
+    yf=y.field,
+    od = output.dir,
+    obf = output.base.filename,
+    sp=sp)
+  
+  
+  if( is.list (status.out)){return(status.out)}
+  tictoc:::toc()
+  ### STEP 7: Quality A-E Environmental and Geographical outliers  - analysis chunk =====
+  #set timer
+  tictoc:::tic('Total Geographic and Range Analysis:')
+  message('Total Geographic and Range Analysis started....')
+  
+  if(verbose){message("**** RESOLIVNG  ****")}
+  
+  #ANALYSIS ELEMENTS
+  #this is important for development, need to specify the number of ELEMENTS of analysis
+  #to sumarize the results later on we will need that number
+  N_analysis = 8
+  
+  ### ELEMENT : CENTROID ISSUE DETECTION
+  tictoc:::tic('Centroid detection')
+  message('Centroid detection started ...')
+
+  Analysis.1 = centroidDetection(.r.env = r.env,
+                                 df = dat,
+                                 xf = x.field,
+                                 yf = y.field,
+                                 cf = c.field,
+                                 #to be changed according to definition of taxonobseration id
+                                 #idf = taxonobservation.id,
+                                 idf = NULL,
+                                 .ntv.ctry = ntv.ctry,
+                                 .inv.ctry = inv.ctry,
+                                 .points.proj4string =
+                                   points.proj4string,
+                                 .countries.shapefile = countries.shapefile,
+                                 cfsf=countryfield.shapefile,
+                                 method = methodCentroidDetection,
+                                 do= doCentroidDetection)
+  tictoc:::toc()
+  
+  ### ELEMENT : HYPER-HUMAN ENVIRONMENT
+  tictoc:::tic('Land Use Land Cover analysis')
+  message('Land Use Land Cover analysis started ...')
+  Analysis.2 = humanDetection (df = dat,
+                               xf = x.field,
+                               yf = y.field,
+                               .points.proj4string =points.proj4string,
+                               ras.hii = ras.hii,
+                               .th.human.influence =th.human.influence,
+                               do = doHumanDetection,output.dir=output.dir)
+  tictoc:::toc()
+  
+  ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
+  tictoc:::tic('Institution locality')
+  message ('Institution locality started ...')
+  Analysis.3 = institutionLocality(df=dat,xf = x.field,yf=y.field,
+                                   lf=l.field,
+                                   do = doInstitutionLocality,
+                                   method = methodInstitutionLocality)
+  
+  tictoc:::toc()
+  
+  ### ELEMENT : land use
+  tictoc:::tic('Records in land use')
+  message ('Records in land use started...')
+  Analysis.4 = landUseSelect(df=dat,xf = x.field,yf=y.field,
+                             .points.proj4string =points.proj4string,
+                             .landUseCodes = landUseCodes,
+                             ras.landUse = ras.landUse,
+                             method = methodLandUseSelect,
+                             do = doLandUseSelect)
+  
+  tictoc:::toc()
+  
+  ### ELEMENT : GEOGRAPHICAL OUTLIER
+  tictoc:::tic('geographic outliers detection')
+  message('geographic outliers detection started')
+  Analysis.5 = geoOutliers(df=dat,
+                           xf=x.field,
+                           yf=y.field,
+                           .alpha.parameter = alpha.parameter,
+                           #do=doGeoOutliers,
+                           method = methodGeoOutliers,
+                           .projString = points.proj4string)
+  tictoc:::toc()
+ 
+  ### ELEMENT 7: ENVIRONMENTAL OUTLIER
+  tictoc:::tic('Environmental outliers')
+  message('Environmental outliers analysis started...')
+  Analysis.6 = envOutliers(.r.env=r.env,
+                             df= dat, xf=x.field,
+                             yf =y.field,
+                             .th.perc.outenv = th.perc.outenv,
+                             .sp.name = sp.name,
+                             .projString = points.proj4string,
+                             method = methodEnvOutliers,
+                             do = doEnvOutliers)
+  tictoc:::toc()
+  
+  ### ELEMENT 8: Coordinate accuracy
+  tictoc:::tic('geoEnvironmental accuracy')
+  message('geoEnvironmental accuracy analysis started...')
+
+  Analysis.7 = geoEnvAccuracy(df=dat,
+                              xf = x.field,
+                              yf = y.field,
+                              af = a.field,
+                              dsf= ds.field,
+                              tf= t.field,
+                              r.env = r.env,
+                              ef= e.field,
+                              raster.elevation = r.dem,
+                              do = doGeoEnvAccuracy,
+                              method = methodGeoEnvAccuracy,
+                              doParallel=doParallel,
+                              mc.cores=mc.cores)
+  tictoc:::toc()
+  
+  ### SUMMARY ANALYSIS RESULTS(NEED TO BE IMPROVED !)
+  list.analysis = list()
+  for(i in 1:N_analysis){
+    if(exists(paste0('Analysis.',i))){
+      list.analysis[[i]] = get(paste0('Analysis.',i))
+    } else {list.analysis[[i]] =  NULL}
+  }
+  
+  df.qualityAssessment = dplyr::bind_cols(list.analysis)
+  row.names(df.qualityAssessment)= NULL
+  
+  
+  #timer for the analytic processes
+  tictoc:::toc()
+
+  ### STEP 9: BUILD FULL dataframe ====
+  #load previous filtered objects
+  previousFiltered = grep(pattern = 'dat.Q.',ls(),value = T)
+  full.qaqc = cbind(dat, df.qualityAssessment)
+  
+  for(o in previousFiltered){
+    rowsToAdd = get(o)
+    if(nrow(rowsToAdd)> 0){full.qaqc = dplyr::bind_rows(full.qaqc, get(o))}
+    
+  }
+  
+  ### STEP 10: WRITE THE OUTPUTS =====
+  tictoc:::tic('Preparing and Writing outputs')
+  message('Preparing and Writing outputs started ...')
+  #reorder data as original
+  full.qaqc = full.qaqc[order(full.qaqc$roworder),]
+  full.qaqc = full.qaqc[,! names(full.qaqc)== 'roworder']
+  
+  #write outputs
+  if(write.full.output==T){
+    sp2 = occTest:::.join.spname(sp)
+    newdir = paste0(output.dir,'/',sp2)
+    dir.create(newdir,recursive = T,showWarnings = F)
+    written = try(write.csv(full.qaqc,  
+                            paste0(newdir,'/',output.base.filename,
+                                   '_',sp,'_long.csv'),
+                            row.names = F),silent = T)
+    if(class(written)=='try-error')save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
+    if(class(written)=='try-error')try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
+  }
+  
+  # #short qaqc
+  # idCols1 = which(names(full.qaqc)== x.field )
+  # idCols2 = which(names(full.qaqc)== y.field )
+  # idCols3 = grep(pattern = '_test',names(full.qaqc))
+  # idCols4 = grep(pattern = '_score',names(full.qaqc))
+  # short.qaqc = full.qaqc[,c(idCols1,idCols2,idCols3,idCols4)]
+  # 
+  # if(write.simple.output==T){
+  #   sp2 = occTest:::.join.spname(sp)
+  #   newdir = paste0(output.dir,'/',sp2)
+  #   dir.create(newdir,recursive = T,showWarnings = F)
+  #   write.csv(short.qaqc,
+  #              paste0(newdir,'/',output.base.filename,'_',sp,
+  #                     '_short.csv'),row.names = F)
+  # }
+  tictoc:::toc()
+  
+  #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
+  output.function = full.qaqc
+  tictoc:::toc()
+  
+  return(output.function)
+}
+

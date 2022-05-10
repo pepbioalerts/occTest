@@ -23,9 +23,13 @@
 #' @export
 
 filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
-
- df.out <- df [!complete.cases  (df[,c(xf,yf)]),]
- df.continue <- df [complete.cases  (df[,c(xf,yf)]),]
+ coordIssues_coordMissing_value = !complete.cases  (df[,c(xf,yf)])
+ df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
+ df$coordIssues_coordMissing_test = as.logical (coordIssues_coordMissing_value)
+ 
+ df.out <- df [coordIssues_coordMissing_value,]
+ df.continue <- df [!coordIssues_coordMissing_value,]
+ 
  return (list (stay=df.out,continue=df.continue))
 
 }
@@ -59,12 +63,14 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 
 
   #exact duplicates
-  exact.dups <- duplicated (x = df[,c(xf,yf)]) *1
+  duplicates_dupExact_value <- duplicated (x = df[,c(xf,yf)]) *1
+  duplicates_dupExact_test <- as.logical (duplicates_dupExact_value)
+  exact.dups = duplicates_dupExact_value
   df$Exclude <- exact.dups
   df$Reason [which (exact.dups==1)] <-'Exact Duplicated coordinates'
+  df$duplicates_dupExact_value = duplicates_dupExact_value
+  df$duplicates_dupExact_test = duplicates_dupExact_test
   df.exact.dups <- df[which(df$Exclude==1),]
-
-
 
   #update df
   df <- df[which(df$Exclude==0),]
@@ -75,7 +81,8 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
     ext <- extent (raster.grid)
     resolution.raster <- res (raster.grid)[1]
     rst <- raster(xmn = ext@xmin, xmx = ext@xmax, ymn = ext@ymin, ymx = ext@ymax,
-                  res = resolution.raster)}
+                  res = resolution.raster)
+    }
 
   if(is.null(raster.grid)) {
     rst <- raster(xmn = -180, xmx = 180, ymn = -90, ymx = 90,
@@ -88,13 +95,12 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
   xy <- data.frame(biogeo::coord2numeric(df[,xf]),
                    biogeo::coord2numeric(df[,yf]))
   cid <- cellFromXY(rst, xy)
-
   dups <- (duplicated(cid)) * 1
+  df$duplicates_dupGrid_value = dups
+  df$duplicates_dupGrid_test = as.logical (dups)
   f1 <- which (dups==1)
   df$Exclude <- dups
-  df$Reason <- as.character(df$Reason)
   df$Reason[f1] <- "Duplicated--GridCell"
-
 
 
   #indicate duplicates by grid cell (these needs updateing for efficiency)
@@ -115,7 +121,7 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' @title SeaLand reassignement
 #' @descriptions Reassign coastal coordinates as needed
 #' @details (function inspiered in nearestcell in biogeo bu modified)
-#' @param dat Data.frame of species occurrences and a field named taxonobservationID
+#' @param dat Data.frame of species occurrences 
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
 #' @param rst An optional raster grid
@@ -137,12 +143,14 @@ nearestcell3 <- function (dat,
                           xf=x.field,
                           yf=y.field,
                           verbose=F) {
-
+  
+  #browser()
+  dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
   fx <- which(dat$Exclude == 0)
   x1 <- biogeo::coord2numeric(dat[,xf][fx])
   y1 <- biogeo::coord2numeric(dat[,yf][fx])
-  datid <- dat$taxonobservationID[fx]
+  datid <- dat$irow[fx]
   dd <- data.frame(x1, y1)
   ce0 <- raster::cellFromXY(rst, dd)
   vals <- raster::extract(rst, dd)
@@ -174,6 +182,7 @@ nearestcell3 <- function (dat,
     ff  <- which(!is.na(ce1))
     ce3 <- ce1[ff]
     dd2 <- dd[ff, ]
+    #to eliminiate
     id2 <- id[ff]
     bb  <- {}
     
@@ -182,6 +191,7 @@ nearestcell3 <- function (dat,
       a <- raster::adjacent(rst, ce3[i], directions = 8, pairs = FALSE,
                     target = NULL, sorted = FALSE, include = FALSE, id = FALSE)
       idx <- id2[i]
+      # idx <- ce3[i] 
       b <- data.frame(i, a, id2 = idx)
       bb <- rbind(bb, b)
     }
@@ -211,7 +221,7 @@ nearestcell3 <- function (dat,
       mod <- format(Sys.time(), "%d-%m-%Y %H:%M:%S")
       dat$Modified <- as.character(dat$Modified)
       for (i in 1:nrow(near)) {
-        f <- which(dat$taxonobservationID == near$id2[i])
+        f <- which(dat$irow == near$id2[i])
         dat$x_original[f] <- dat[,xf][f]
         dat$y_original[f] <- dat[,yf][f]
         dat[,xf][f] <- near$x[i]
@@ -223,6 +233,9 @@ nearestcell3 <- function (dat,
       }
       moved <- data.frame(ID = near$id2, x = near$x, y = near$y)
       names(moved) <- c('ID',xf,yf)
+      #remove irow column
+      columnOut= which (names(dat)=='irow')* (-1)
+      dat <- dat[,columnOut]
       datx <- list(dat = dat, moved = moved)
       return(datx)
     }
@@ -276,10 +289,16 @@ countryStatusRangeAnalysis=function(df=dat,
                                     verbose=F) {
 
   if (!doRangeAnalysis) {
-    df$countryStatusRangeAnalysis_wrongNTV_test   <- NA
-    df$countryStatusRangeAnalysis_wrongCTRY_test  <- NA
-    df$countryStatusRangeAnalysis_wrongINV_test   <- NA
-    df$countryStatusRangeAnalysis_score <-NA
+    df$countryStatusRange_wrongNTV_value   <- NA
+    df$countryStatusRange_wrongNTV_test   <- NA
+    
+    df$countryStatusRange_wrongCTRY_value  <- NA
+    df$countryStatusRange_wrongCTRY_test  <- NA
+    
+    df$countryStatusRange_wrongINV_value <- NA
+    df$countryStatusRange_wrongINV_test  <- NA
+    
+    df$countryStatusRange_score <-NA
 
     stay = df[-1*1:nrow(df),]
     out <- list (stay=stay,continue = df)
@@ -295,9 +314,8 @@ countryStatusRangeAnalysis=function(df=dat,
 
   #initial user information printing
   if (is.null (.ntv.ctry)  ) {if(verbose) print ('INFO: Species with no associated country. We assume all locations are native range')}
-  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysisis of invasive ranges not perfomred')}
-  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of coutnry recorded vs. coordinates not performed')}
-
+  if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysis of invasive ranges not performed')}
+  if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of country recorded vs. coordinates not performed')}
   xydat <- df[,c(xf,yf)]
 
   #check country of coordinates
@@ -315,7 +333,7 @@ countryStatusRangeAnalysis=function(df=dat,
 
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occProfileR:::.coords2country (xydat)
+      country_ext <- occTest:::.coords2country (xydat)
     }
 
   #inform for whether reported and country in coordinates (extracted country) differ 
@@ -328,12 +346,12 @@ countryStatusRangeAnalysis=function(df=dat,
 
     #check if ISO3 format in country reported [FUTURE: use GNRS to automatically correct]
     ctry.reported = as.character (df[,.c.field])
-    if (any (nchar (ctry.reported)!=3)) {
+    if (any (nchar (ctry.reported)!=3,na.rm=T) | all (is.na(ctry.reported)) ) {
       warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
       wrong.ctry.reported <- rep (NA,length(country_ext))
     }
     
-    if (all(nchar (ctry.reported)==3)) {
+    if (all(nchar (ctry.reported)==3,na.rm=T)) {
       #match reported country with extracted country
       wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
     }
@@ -357,9 +375,13 @@ countryStatusRangeAnalysis=function(df=dat,
   if (!is.null (.inv.ctry))  {wrong.inv.ctry.xy <- (! country_ext %in% .inv.ctry) * 1}
 
   #add to df
-  df$countryStatusRangeAnalysis_wrongNTV_test   <- wrong.ntv.ctry.xy
-  df$countryStatusRangeAnalysis_wrongCTRY_test <- wrong.ctry.reported
-  df$countryStatusRangeAnalysis_wrongINV_test   <- wrong.inv.ctry.xy
+  df$countryStatusRange_wrongNTV_value   <- wrong.ntv.ctry.xy
+  df$countryStatusRange_wrongNTV_test   <- as.logical (wrong.ntv.ctry.xy)
+  df$countryStatusRange_wrongCTRY_value  <- wrong.ctry.reported
+  df$countryStatusRange_wrongCTRY_test  <- as.logical (wrong.ctry.reported)
+  df$countryStatusRange_wrongINV_value   <- wrong.inv.ctry.xy
+  df$countryStatusRange_wrongINV_test   <- as.logical (wrong.inv.ctry.xy)
+  
 
   #Exclusion from subsequent analysis for wrong native and invasive ranges
   #  (depending how much data has been provided)
@@ -388,7 +410,7 @@ countryStatusRangeAnalysis=function(df=dat,
   }
 
   #output
-  df$countryStatusRangeAnalysis_score = occProfileR:::.gimme.score (df)
+  df$countryStatusRange_score = occTest:::.gimme.score (df)
   out <- list (stay = df[which(df$Exclude==1),], continue = df[which(df$Exclude!=1),])
   return (out)
 
@@ -441,10 +463,10 @@ centroidDetection <- function (df=dat,
 
 
   #table of outputs
-  out = data.frame (centroidDetection_BIEN_test=NA,
+  out = data.frame (centroidDetection_BIEN_value=NA,
+                    centroidDetection_BIEN_test=NA,
                     centroidDetection_BIEN_comments =NA,
-                    centroidDetection_speciesGeoCodeR_test=NA,
-                    centroidDetection_speciesGeoCodeR_comments=NA,
+                    centroidDetection_CoordinateCleaner_value=NA,
                     centroidDetection_CoordinateCleaner_test=NA,
                     centroidDetection_CoordinateCleaner_comment=NA,
                     centroidDetection_score=NA
@@ -459,7 +481,7 @@ centroidDetection <- function (df=dat,
   if (any(method %in% c('BIEN','all'))){
     
     #load centroid data
-    centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occProfileR')
+    centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occTest')
     centroid_data =  read.csv (centroid_data)
     
     #reformat dataframe of occurrences to be the same as in centroid Maitner methods
@@ -494,26 +516,29 @@ centroidDetection <- function (df=dat,
     
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occProfileR:::.coords2country (xydat)
+      country_ext <- occTest:::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
     browser()
     cleaned_countries<-GNRS:::GNRS_super_simple(country = country_ext)
     matchedCtry <- cleaned_countries$match_status=='full match'
     cleaned_countries <- cleaned_countries [matchedCtry,]
-    
+    maxValLoop = nrow(cleaned_countries)
     for(i in 1:nrow(cleaned_countries)){
+      svMisc::progress(i,max.value = maxValLoop)
       occurrences.df$country <- as.character(occurrences.df$country)
       occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
     }
     
     for(i in 1:nrow(cleaned_countries)){
+      svMisc::progress(i,max.value = maxValLoop)
       occurrences.df$state_province <- as.character(occurrences.df$state_province)
       occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
                                             occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
     }
     
     for(i in 1:nrow(cleaned_countries)){
+      svMisc::progress(i,max.value = maxValLoop)
       occurrences.df$county <- as.character(occurrences.df$county)
       occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
                                     occurrences.df$state_province ==cleaned_countries$state_province[i]&
@@ -530,17 +555,25 @@ centroidDetection <- function (df=dat,
     k$is_centroid <- apply(X = k,MARGIN =  1,FUN = function(x){
       y<-as.vector(na.omit(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))
       #print(y)
-      if(any(as.numeric(y)<centroid_threshold)){return(1)}else(return(0))
-      
+      logiCentroid = any(as.numeric(y)<centroid_threshold)
+      logiCentroid
+    })
+    k$is_centroid_val <- apply(X = k,MARGIN =  1,FUN = function(x){
+
+        #print(x)
+        if(all(is.na(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))){
+          
+          return(NA) 
+          
+        }
+        valOut = as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))[which.min(as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))]
+          valOut
     })
     
-    
     #construct comments
-    k$comments <-
-      
-      apply(X = k,MARGIN = 1,FUN = function(x){
+    k$comments <-apply(X = k,MARGIN = 1,FUN = function(x){
         #print(x)
-        if(x['is_centroid']==1){ineq<-"<"}else{ineq<-">"}
+        if(x['is_centroid']==1){ineq<-"<="}else{ineq<-">"}
         
         if(all(is.na(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))){
           
@@ -558,97 +591,103 @@ centroidDetection <- function (df=dat,
               
         )#paste
         
-      }
-      )#apply
+      } )#apply
     
     
     colnames(k)[which(colnames(k)=="is_centroid")]<-"centroidDetection_BIEN_test"
     colnames(k)[which(colnames(k)=="comments" )]<-"centroidDetection_BIEN_comments"
-    
-    out$centroidDetection_BIEN_test <- k$centroidDetection_BIEN_test
-    out$centroidDetection_BIEN_comments <- k$centroidDetection_BIEN_comments
+    out$centroidDetection_BIEN_value <- k$is_centroid_val
+    out$centroidDetection_BIEN_test <- as.logical(k$is_centroid)
+    out$centroidDetection_BIEN_comments <- k$comments
     
     
   }
+  
+  
   #Method SpeciesGeoCodeR
-  if (any(method %in% c('speciesGeoCodeR','all'))){
-    if(!"speciesgeocodeR" %in% rownames(installed.packages())){
-      message('You must first install the speciesGeoCodeR package. It does not yet work with R3.6 so you have to get it from https://github.com/azizka/speciesgeocodeR/' )
-      return()
-    }
-    #load country reference
-    #require (speciesgeocodeR)
-    #data('countryref')
-    countryref <- CoordinateCleaner::countryref
-    #get target centroids countries and their captials
-    country.names <- countryref$iso3
-
-    #chunk if we were to match the countries provided by the user
-    #country.names <- c(.ntv.ctry,.inv.ctry)
-     #if (is.null(country.names)) {}
-
-    centroid.ctry <- countryref [which (countryref$iso3 %in% country.names),c('centroid.lon','centroid.lat')]
-    names (centroid.ctry) <- c('lon','lat')
-    centroid.ctry.cap <-countryref [which (countryref$iso3 %in% country.names),c('capital.lon','capital.lat')]
-    names (centroid.ctry.cap) <- c('lon','lat')
-    centroids <- rbind (centroid.ctry,centroid.ctry.cap)
-    centroids <- centroids [complete.cases(centroids),]
-
-    #way out if no countires
-    if (nrow (centroids) == 0 ) {
-      if(verbose) print (paste ('No centroids found for', country.names))
-      centroidDetection_speciesGeoCodeR_test <- 0
-      centroidDetection_speciesGeoCodeR_comments <- 'No country nor capital centroid found'
-      }
-
-    #if we found them
-    if  (nrow (centroids) >0 ) {
-      #get raster cells in centroids
-      cc <- centroids
-      sp::coordinates (cc) <- ~lon+lat
-      sp::proj4string(cc) <- .points.proj4string
-
-      #deal with projections
-      if (sp::proj4string(cc)  != raster::projection (.r.env)){
-        if (is.na(projection(.r.env)) ) {
-          sp::proj4string(cc) <- raster::projection(.r.env)
-          warning ('ASSUMING Centroids and Environmental data have the
-                   same projection')}
-        if (!is.na(projection(.r.env)) ) {
-          cc <- sp::spTransform(cc,CRSobj =projection(.r.env) )}
-      }
-
-      #get raster cells in centroids
-      focal.cell.ids <- raster::cellFromXY (.r.env, cc)
-      focal.cells.ids <- focal.cell.ids[is.na(focal.cell.ids)]
-      neig.cells <- 8 #we could choose other
-      adj.cells  <- raster::adjacent (.r.env,cells = focal.cell.ids, directions = neig.cells, include = F, id=F)
-      cell.ids <- unique (as.vector(adj.cells))
-      cell.ids <- cell.ids[!is.na(cell.ids)]
-      if (length(cell.ids) == 0) cell.ids = 0
-
-      #get species presence
-      data.sp.pres <- as.data.frame (df[,c(xf,yf)])
-      sp:::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
-
-      #accomodate projections
-      if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- raster::projection(.r.env); warning ('ASSUMING Centroids and Environmental data have the same projection')}
-      if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
-      if (sp::proj4string(data.sp.pres) != raster::projection (.r.env)){
-        if (is.na(raster::projection(.r.env))) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Centroids and Environmental data have the same projection')}
-        if (!is.na (raster::projection (.r.env)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =raster::projection(.r.env) )}
-      }
-
-      #get species presence cells
-      cell.ids.sp <- raster::cellFromXY (.r.env, data.sp.pres)
-
-      #species presence in centroids or neighbors?
-      sp.in.centroid <- cell.ids.sp %in% cell.ids * 1
-
-      out$centroidDetection_speciesGeoCodeR_test <- sp.in.centroid
-      out$centroidDetection_speciesGeoCodeR_comments <- NA
-    }
-  }
+  # if (any(method %in% c('speciesGeoCodeR','all'))){
+  #   if(!"speciesgeocodeR" %in% rownames(installed.packages())){
+  #     if (verbose) message('speciesGeoCodeR package not installed. Check https://github.com/azizka/speciesgeocodeR/' )
+  #     out$centroidDetection_speciesGeoCodeR_test <- NA
+  #     out$centroidDetection_speciesGeoCodeR_comments <- NA
+  #   } else {
+  #     
+  #     #load country reference
+  #     #require (speciesgeocodeR)
+  #     #data('countryref')
+  #     countryref <- CoordinateCleaner::countryref
+  #     #get target centroids countries and their captials
+  #     country.names <- countryref$iso3
+  #     
+  #     #chunk if we were to match the countries provided by the user
+  #     #country.names <- c(.ntv.ctry,.inv.ctry)
+  #     #if (is.null(country.names)) {}
+  #     
+  #     centroid.ctry <- countryref [which (countryref$iso3 %in% country.names),c('centroid.lon','centroid.lat')]
+  #     names (centroid.ctry) <- c('lon','lat')
+  #     centroid.ctry.cap <-countryref [which (countryref$iso3 %in% country.names),c('capital.lon','capital.lat')]
+  #     names (centroid.ctry.cap) <- c('lon','lat')
+  #     centroids <- rbind (centroid.ctry,centroid.ctry.cap)
+  #     centroids <- centroids [complete.cases(centroids),]
+  #     
+  #     #way out if no countires
+  #     if (nrow (centroids) == 0 ) {
+  #       if(verbose) print (paste ('No centroids found for', country.names))
+  #       centroidDetection_speciesGeoCodeR_test <- 0
+  #       centroidDetection_speciesGeoCodeR_comments <- 'No country nor capital centroid found'
+  #     }
+  #     
+  #     #if we found them
+  #     if  (nrow (centroids) >0 ) {
+  #       #get raster cells in centroids
+  #       cc <- centroids
+  #       sp::coordinates (cc) <- ~lon+lat
+  #       sp::proj4string(cc) <- .points.proj4string
+  #       
+  #       #deal with projections
+  #       if (sp::proj4string(cc)  != raster::projection (.r.env)){
+  #         if (is.na(projection(.r.env)) ) {
+  #           sp::proj4string(cc) <- raster::projection(.r.env)
+  #           warning ('ASSUMING Centroids and Environmental data have the
+  #                  same projection')}
+  #         if (!is.na(projection(.r.env)) ) {
+  #           cc <- sp::spTransform(cc,CRSobj =projection(.r.env) )}
+  #       }
+  #       
+  #       #get raster cells in centroids
+  #       focal.cell.ids <- raster::cellFromXY (.r.env, cc)
+  #       focal.cells.ids <- focal.cell.ids[is.na(focal.cell.ids)]
+  #       neig.cells <- 8 #we could choose other
+  #       adj.cells  <- raster::adjacent (.r.env,cells = focal.cell.ids, directions = neig.cells, include = F, id=F)
+  #       cell.ids <- unique (as.vector(adj.cells))
+  #       cell.ids <- cell.ids[!is.na(cell.ids)]
+  #       if (length(cell.ids) == 0) cell.ids = 0
+  #       
+  #       #get species presence
+  #       data.sp.pres <- as.data.frame (df[,c(xf,yf)])
+  #       sp:::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  #       
+  #       #accomodate projections
+  #       if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- raster::projection(.r.env); warning ('ASSUMING Centroids and Environmental data have the same projection')}
+  #       if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+  #       if (sp::proj4string(data.sp.pres) != raster::projection (.r.env)){
+  #         if (is.na(raster::projection(.r.env))) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Centroids and Environmental data have the same projection')}
+  #         if (!is.na (raster::projection (.r.env)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =raster::projection(.r.env) )}
+  #       }
+  #       
+  #       #get species presence cells
+  #       cell.ids.sp <- raster::cellFromXY (.r.env, data.sp.pres)
+  #       
+  #       #species presence in centroids or neighbors?
+  #       sp.in.centroid <- cell.ids.sp %in% cell.ids * 1
+  #       
+  #       out$centroidDetection_speciesGeoCodeR_test <- sp.in.centroid
+  #       out$centroidDetection_speciesGeoCodeR_comments <- NA
+  #     }
+  #     
+  #   }
+  #   
+  # }
   #Method CoordinateCleaner
   if (any(method %in% c('CoordinateCleaner','all'))){
 
@@ -656,11 +695,15 @@ centroidDetection <- function (df=dat,
     cc_cap_test = (!cc_cap_test) *1
     cc_cen_test <- CoordinateCleaner::cc_cen (x = df, lon =xf,lat=yf ,value='flagged', verbose = F)
     cc_cen_test <- (!cc_cen_test) * 1
-    out$centroidDetection_CoordinateCleaner_test = ifelse ((cc_cap_test==1 | cc_cen_test==1),1,0)
+    out$centroidDetection_CoordinateCleaner_value =  cc_cen_test+cc_cen_test
+    out$centroidDetection_CoordinateCleaner_test = ifelse ((cc_cap_test==1 | cc_cen_test==1),T,F)
+    out$centroidDetection_CoordinateCleaner_comment = ''
+    out$centroidDetection_CoordinateCleaner_comment [cc_cap_test==1] = 'capital centroid'
+    out$centroidDetection_CoordinateCleaner_comment [cc_cen_test==1] = 'ctry/prov centroid'
 
   }
 
-  out$centroidDetection_score = occProfileR:::.gimme.score (x = out)
+  out$centroidDetection_score = occTest:::.gimme.score (x = out)
   return (out)
 
 }
@@ -698,8 +741,10 @@ humanDetection <- function (df=dat,
                                   .th.human.influence =th.human.influence,
                                   do=T, verbose=F,output.dir=output.dir){
 
-  out <- data.frame (HumanDetection_HumanInfluence_test=NA,
+  out <- data.frame (HumanDetection_HumanInfluence_value=NA,
+                     HumanDetection_HumanInfluence_test=NA,
                      HumanDetection_HumanInfluence_comments= NA,
+                     HumanDetection_UrbanAreas_value=NA,
                      HumanDetection_UrbanAreas_test=NA,
                      HumanDetection_UrbanAreas_comments=NA,
                      HumanDetection_score=NA
@@ -713,7 +758,7 @@ humanDetection <- function (df=dat,
 
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
-  coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
 
   #start human influence index test
   if (any (method %in% c('hii','all'))) {
@@ -721,11 +766,11 @@ humanDetection <- function (df=dat,
     class(ras.hii)=='RasterLayer'
 
     #accomodate projections
-    if (is.null (.points.proj4string)){proj4string(data.sp.pres) <- projection(ras.hii); warning ('ASSUMING Points and HumanRaster data have the same projection')}
-    if (!is.null (.points.proj4string)) {proj4string(data.sp.pres) <- .points.proj4string}
-    if (proj4string(data.sp.pres) != projection (ras.hii)){
-      if (is.na (projection (ras.hii)) ) {proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
-      if (!is.na (projection (ras.hii)) ) {data.sp.pres <- spTransform(data.sp.pres,CRSobj =projection(ras.hii) )}
+    if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.hii); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+    if (sp::proj4string(data.sp.pres) != raster::projection (ras.hii)){
+      if (is.na (raster::projection (ras.hii)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+      if (!is.na (raster::projection (ras.hii)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.hii) )}
     }
 
     hii.sp.pres <-raster::extract(ras.hii, y = data.sp.pres, cellnumbers=F, df=T)
@@ -734,9 +779,12 @@ humanDetection <- function (df=dat,
       output.comments <- rep (NA,length =nrow (xydat))
       output.comments [row.id.hii.NA] <- paste0('No human filter available for this record;' )
     }
+    
+    hii.sp.value = hii.sp.pres[,2]
 
-    hii.sp.pres <-( hii.sp.pres[,2]>=.th.human.influence)*1
+    hii.sp.pres <-( hii.sp.value >= .th.human.influence)
 
+    out$HumanDetection_HumanInfluence_value=hii.sp.value
     out$HumanDetection_HumanInfluence_test=hii.sp.pres
     out$HumanDetection_HumanInfluence_comments= paste('Threshold influence=',.th.human.influence)
 
@@ -744,24 +792,24 @@ humanDetection <- function (df=dat,
 
 
 
-  #start uban areas
-
+  #start urban areas
   if (any (method %in% c('urban','all')))  {
 
     #check ref exists
-    newoutdir = paste0(output.dir,'/spatialData')
+    newoutdir = paste0(tempdir(),'/spatialData')
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
     if (alreadyDownloaded) myRef = rgdal:::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
     if (!alreadyDownloaded) myRef= NULL 
     
-    cc_urb_test = occProfileR:::cc_urb_occProfileR(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
+    cc_urb_test = occTest:::cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
-    out$HumanDetection_UrbanAreas_test <- cc_urb_test
+    out$HumanDetection_UrbanAreas_value <- cc_urb_test
+    out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
     out$HumanDetection_UrbanAreas_comments <- c('Urban areas from rnaturalearth')
   }
   
   #compute score
-  out$HumanDetection_score <- occProfileR:::.gimme.score (out)
+  out$HumanDetection_score <- occTest:::.gimme.score (out)
 
 
   return (out)
@@ -795,9 +843,12 @@ institutionLocality <- function (df=dat,
                                  do=T, verbose=F
                                  ){
 
+
   #output table
-  out = data.frame (institutionLocality_fromBotanicLocalityName_test=NA,
+  out = data.frame (institutionLocality_fromBotanicLocalityName_value=NA,
+                    institutionLocality_fromBotanicLocalityName_test=NA,
                     institutionLocality_fromBotanicLocalityName_comments=NA,
+                    institutionLocality_fromCoordinates_value=NA,
                     institutionLocality_fromCoordinates_test=NA,
                     institutionLocality_fromCoordinates_comments=NA,
                     institutionLocality_score=NA
@@ -806,40 +857,43 @@ institutionLocality <- function (df=dat,
   row.names (out) <- NULL
 
   if (!do) {return (out)}
-
+  
+  #method fromBotanicLocalityName
   if (any (method %in% c('fromBotanicLocalityName','all'))) {
 
     #if no locality data is provided
     if(is.null (lf)) {
       if(verbose) print ('No locality in input data')
-      return (out)
     }
 
-
-    #if locality data is not provided
-    loc=df[,lf]
-    potential.names <- c('botanic', 'botanische', 'botanico', 'jardin', 'garden', 'botanical')
-    localities <- as.character (loc)
-    bot.garden <-sapply (localities, function (x) {
-
-      if (is.na(x)){return (0)}
-      if (x==''){return (0)}
-
-      m <- tolower(.multiple.strsplit(x,multiple.splits = c(' ',',',';',':','/','\\\\','[.]')))
-      potential.bot.garden <- sum ((m %in% potential.names) *1)
-      potential.bot.garden <- ifelse(potential.bot.garden>0, 1, 0)
-      return (potential.bot.garden)
-
-    })
-    bot.garden <- as.numeric (bot.garden)
-
-
-    out$institutionLocality_fromBotanicLocalityName_test = bot.garden
-    out$institutionLocality_fromBotanicLocalityName_comments = 'likely botanical garden'
-
+    if(!is.null (lf)) {
+      #if locality data is  provided
+      loc=df[,lf]
+      potential.names <- c('botanic', 'botanische', 'botanico', 'jardin', 'garden', 'botanical')
+      localities <- as.character (loc)
+      bot.garden <-sapply (localities, function (x) {
+        
+        if (is.na(x)){return (0)}
+        if (x==''){return (0)}
+        
+        m <- tolower(.multiple.strsplit(x,multiple.splits = c(' ',',',';',':','/','\\\\','[.]')))
+        potential.bot.garden <- sum ((m %in% potential.names) *1)
+        potential.bot.garden <- ifelse(potential.bot.garden>0, 1, 0)
+        return (potential.bot.garden)
+        
+      })
+      bot.garden <- as.numeric (bot.garden)
+      
+      out$institutionLocality_fromBotanicLocalityName_value = bot.garden
+      out$institutionLocality_fromBotanicLocalityName_test = as.logical (bot.garden)
+      out$institutionLocality_fromBotanicLocalityName_comments = 'likely botanical garden'
+      
+    }
+    
 
   }
-
+  
+  #method from Coordinates
   if (any (method %in% c('fromCoordinates','all'))) {
     cc_inst_test = CoordinateCleaner::cc_inst(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
     cc_inst_test <- (!  cc_inst_test) * 1
@@ -848,13 +902,14 @@ institutionLocality <- function (df=dat,
 
     cc_gbif_comments = ifelse(cc_gbif_test==1,'GBIFheadquarters',NA)
     cc_inst_comments = ifelse(cc_inst_test==1,'BiodivInst',NA)
-
-    out$institutionLocality_fromCoordinates_test = ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0)
-    out$institutionLocality_fromCoordinates_comments = occProfileR:::.paste3(cc_gbif_comments,cc_inst_comments)
+    
+    out$institutionLocality_fromCoordinates_value = ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0)
+    out$institutionLocality_fromCoordinates_test = as.logical (ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0))
+    out$institutionLocality_fromCoordinates_comments = occTest:::.paste3(cc_gbif_comments,cc_inst_comments)
 
   }
 
-  out$institutionLocality_score <- occProfileR:::.gimme.score (out)
+  out$institutionLocality_score <- occTest:::.gimme.score (out)
 
   return (out)
 
@@ -893,14 +948,23 @@ geoOutliers         <- function (df=dat,
   
 
   #build dataframe of all potential results
-  out = data.frame (geoOutliers_alphaHull_test=NA,
+  out = data.frame (geoOutliers_alphaHull_value=NA,
+                    geoOutliers_alphaHull_test=NA,
                     geoOutliers_alphaHull_comments = NA,
+                    
+                    geoOutliers_distance_value=NA,
                     geoOutliers_distance_test=NA,
                     geoOutliers_distance_comments = NA,
+                    
+                    geoOutliers_median_value=NA,
                     geoOutliers_median_test=NA,
                     geoOutliers_median_comments=NA,
+                    
+                    geoOutliers_quantileSamplingCorr_value=NA,
                     geoOutliers_quantileSamplingCorr_test=NA,
                     geoOutliers_quantileSamplingCorr_comments=NA,
+                    
+                    geoOutliers_Grubbs_value=NA,
                     geoOutliers_Grubbs_test=NA,
                     geoOutliers_Grubbs_comments=NA,
                     geoOutliers_score=NA
@@ -917,18 +981,16 @@ geoOutliers         <- function (df=dat,
   xydat <- df[,c(xf,yf)]
 
   if (any (method %in% c('alphaHull','all'))){
- 
-
-
-
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      ah.2alpha <- alphahull::ahull (x = xydat[,xf], y= xydat[,yf], alpha=.alpha.parameter)
-
-      points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
-      points.outside.alphahull <- points.outside.alphahull * 1
-      #ahshape <- occProfileR:::.ah2sp(ah.2alpha)
+      ## old method -- deprecated due to issues of in a hull
+      # ah.2alpha <- alphahull::ahull (x = xydat[,xf], y= xydat[,yf], alpha=.alpha.parameter)
+      # points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
+      #ahshape <- occTest:::.ah2sp(ah.2alpha)
+      
+      points.outside.alphahull <- try (getPointsOutAlphaHull (xydat,alpha = .alpha.parameter), silent=T)
+      if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
 
@@ -937,9 +999,10 @@ geoOutliers         <- function (df=dat,
       points.outside.alphahull <- rep (NA, nrow(df) )
       out.comments <- paste0('N<=5. Analysis not run')
     }
-
+    
     #write results into the results dataframe
-    out$geoOutliers_alphaHull_test <- points.outside.alphahull
+    out$geoOutliers_alphaHull_value <- points.outside.alphahull
+    out$geoOutliers_alphaHull_test <- as.logical (points.outside.alphahull)
     out$geoOutliers_alphaHull_comments <- out.comments
 
     ### NOT IMPLEMENTED YET
@@ -1043,25 +1106,28 @@ geoOutliers         <- function (df=dat,
     #create fake species list for Coordinate cleaner
     
     df$species <- 'MyFakeSp'
-    cc_dist_test = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
-    cc_dist_test <- (!  cc_dist_test) * 1
+    cc_dist_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
+    cc_dist_test <- (!  cc_dist_test) 
+    out$geoOutliers_distance_value  = cc_dist_test * 1
     out$geoOutliers_distance_test  = cc_dist_test
     out$geoOutliers_distance_comments = rep(paste('dist.threshold=',.distance.parameter,'m'),times=nrow(out))
     if (nrow (df)<7) {
+      out$geoOutliers_distance_value = rep(NA,times=nrow(out))
       out$geoOutliers_distance_test = rep(NA,times=nrow(out))
       out$geoOutliers_distance_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
     }
   }
   
-
   if (any (method %in% c('median','all'))){
 
-    cc_med_test = occProfileR::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
+    cc_med_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
     cc_med_test <- (!  cc_med_test) * 1
-    out$geoOutliers_median_test  = cc_med_test
+    out$geoOutliers_median_value = cc_med_test
+    out$geoOutliers_median_test  = as.logical(cc_med_test)
     out$geoOutliers_median_comments = rep(paste('medDeviation=', .medianDeviation.parameter),times=nrow(out))
 
     if (nrow (df)<7) {
+      out$geoOutliers_median_value = rep(NA,times=nrow(out))
       out$geoOutliers_median_test = rep(NA,times=nrow(out))
       out$geoOutliers_median_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
     }
@@ -1070,16 +1136,17 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('quantSamplingCorrected','all'))){
 
 
-    cc_qsc_tst = occProfileR:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
+    cc_qsc_tst = occTest:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
                                             verbose=F)
     cc_qsc_tst <- (!  cc_qsc_tst) * 1
-
-
-    out$geoOutliers_quantileSamplingCorr_test = cc_qsc_tst
+    
+    out$geoOutliers_quantileSamplingCorr_value = cc_qsc_tst
+    out$geoOutliers_quantileSamplingCorr_test = as.logical(cc_qsc_tst)
     out$geoOutliers_quantileSamplingCorr_comments = rep(paste('IQRmultiplier=', .medianDeviation.parameter,';SamplIntensityThres=',.samplingIntensThreshold.parameter),times=nrow(out))
     if (nrow (df)<7) {
+      out$geoOutliers_quantileSamplingCorr_value = rep(NA,times=nrow(out))
       out$geoOutliers_quantileSamplingCorr_test = rep(NA,times=nrow(out))
       out$geoOutliers_quantileSamplingCorr_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
       }
@@ -1090,13 +1157,14 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('grubbs','all'))) {
     spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
     if (length (spdf)<=5) {
+      out$geoOutliers_Grubbs_value = rep(NA,times=nrow(out))
       out$geoOutliers_Grubbs_test = rep(NA,times=nrow(out))
       out$geoOutliers_Grubbs_comments = rep(paste('N<5. Analysis not run'),times=nrow(out))
       }
     
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
-      grubbs.outl = try(occProfileR:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
+      grubbs.outl = try(occTest:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
       
       if (class(grubbs.outl)=='try-error') {
         grubbs_tst = rep(NA,times=nrow(out)) 
@@ -1108,14 +1176,15 @@ geoOutliers         <- function (df=dat,
         grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
       }
       
-      out$geoOutliers_Grubbs_test = grubbs_tst
+      out$geoOutliers_Grubbs_value = grubbs_tst
+      out$geoOutliers_Grubbs_test = as.logical(grubbs_tst)
       out$geoOutliers_Grubbs_comments = grubbs_comment
     }
       
     }
     
 
-  out$geoOutliers_score <- occProfileR:::.gimme.score (out)
+  out$geoOutliers_score <- occTest:::.gimme.score (out)
 
   return (out)
 }
@@ -1155,9 +1224,12 @@ envOutliers  <- function (.r.env=r.env,
                           do=T, verbose=F){
 
   #output results
-  out = data.frame (envOutliers_missingEnv_test = NA,
+  out = data.frame (envOutliers_missingEnv_value = NA,
+                    envOutliers_missingEnv_test = NA,
+                    envOutliers_bxp_value = NA,
                     envOutliers_bxp_test = NA,
                     envOutliers_bxp_comments = NA,
+                    envOutliers_Grubbs_value=NA,
                     envOutliers_Grubbs_test=NA,
                     envOutliers_Grubbs_comments=NA,
                     envOutliers_score=NA
@@ -1171,9 +1243,21 @@ envOutliers  <- function (.r.env=r.env,
   xydat <- df[,c(xf,yf)]
 
   dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
-  missingEnvironment <- (!complete.cases(dat.environment))*1
-  out$envOutliers_missingEnv_score <- missingEnvironment
-
+  
+  missingEnvironment <- (!complete.cases(dat.environment))
+  out$envOutliers_missingEnv_value <- missingEnvironment * 1
+  out$envOutliers_missingEnv_test <- missingEnvironment
+  out$envOutliers_missingEnv_comment <- ''
+  
+  if (any (missingEnvironment)){
+    ids = which (missingEnvironment==T)
+    for (i in ids){
+      de = dat.environment[i,]
+      layersWithNA = which (is.na(de))
+      out$envOutliers_missingEnv_comment[i] <- paste ("layers with NA:",paste(names (de)[layersWithNA],collapse =','))
+    }
+  }
+  
   if (any (method %in% c('bxp','all'))) {
 
     outlier.method.biogeo = '-bxp'
@@ -1211,28 +1295,30 @@ envOutliers  <- function (.r.env=r.env,
     outlier.env <- (outlier.level >= .th.perc.outenv)*1
     comments.outlier.env <- paste (paste("Outlier",outlier.method.biogeo,".level="), outlier.level)
 
-    out$envOutliers_bxp_test = outlier.env
+    out$envOutliers_bxp_value = outlier.env
+    out$envOutliers_bxp_test = as.logical(outlier.env)
     out$envOutliers_bxp_comments = comments.outlier.env
 
   }
 
   if (any (method %in% c('grubbs','all')))  {
-    #browser()
 
     #spdf = sp::SpatialPointsDataFrame(data = dat.environment[,-1],coords = df[,c(xf,yf)] ,proj4string =.projString )
 
     env.grubbs_tst = rep(0,times=nrow(out))
-    env.grubbs.outl = occProfileR::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
+    env.grubbs.outl = occTest::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
     env.grubbs_tst [env.grubbs.outl] = 1
     env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
-
-    out$envOutliers_Grubbs_test = env.grubbs_tst
+    
+    
+    out$envOutliers_Grubbs_value = env.grubbs_tst
+    out$envOutliers_Grubbs_test = as.logical(env.grubbs_tst)
     out$envOutliers_Grubbs_comments = env.grubbs_comment
 
   }
 
 
-  out$envOutliers_score <- occProfileR:::.gimme.score (out)
+  out$envOutliers_score <- occTest:::.gimme.score (out)
   return (out)
 }
 
@@ -1262,7 +1348,7 @@ envOutliers  <- function (.r.env=r.env,
 #' @export
 
 geoEnvAccuracy  <- function (df,
-                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,
+                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,tf=t.field,
                              
                              method='all',
                              
@@ -1286,14 +1372,35 @@ geoEnvAccuracy  <- function (df,
   
   
   #output results
-  out = data.frame (geoenvLowAccuracy_lattice_test = NA,
+  out = data.frame (geoenvLowAccuracy_lattice_value = NA,
+                    geoenvLowAccuracy_lattice_test = NA,
                     geoenvLowAccuracy_lattice_comments = NA,
+                    
+                    geoenvLowAccuracy_percDiffCell_value = NA,
                     geoenvLowAccuracy_percDiffCell_test = NA,
                     geoenvLowAccuracy_percDiffCell_comments = NA,
+                    
+                    geoenvLowAccuracy_envDiff_value =NA,
                     geoenvLowAccuracy_envDiff_test =NA,
                     geoenvLowAccuracy_envDiff_comments =NA,
+                    
+                    geoenvLowAccuracy_elevDiff_value =NA,
                     geoenvLowAccuracy_elevDiff_test =NA,
                     geoenvLowAccuracy_elevDiff_comments =NA,
+                    
+                    geoenvLowAccuracy_noDate_value =NA,
+                    geoenvLowAccuracy_noDate_test =NA,
+                    geoenvLowAccuracy_noDate_comments =NA,
+                    
+                    geoenvLowAccuracy_noDateFormatKnown_value =NA,
+                    geoenvLowAccuracy_noDateFormatKnown_test =NA,
+                    geoenvLowAccuracy_noDateFormatKnown_comments =NA,
+                    
+                    geoenvLowAccuracy_outDateRange_value =NA,
+                    geoenvLowAccuracy_outDateRange_test =NA,
+                    geoenvLowAccuracy_outDateRange_comments =NA,
+                    
+                    
                     
                     geoenvLowAccuracy_score=NA
   )[1:nrow (df),]
@@ -1302,11 +1409,10 @@ geoEnvAccuracy  <- function (df,
   if (!do) {return (out)}
   
   #check if need parallel
-  os = occProfileR:::get_os()
-  if (doParallel==T & os=='mac') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='linux') {mymclapply <- occProfileR:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='windows') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='win') {mymclapply <- occProfileR:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  os = occTest:::get_os()
+  if (doParallel==T & os=='mac') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='linux') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & os=='windows') {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
   
   #start method lattice
@@ -1325,16 +1431,14 @@ geoEnvAccuracy  <- function (df,
     
     
     cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
-    out$geoenvLowAccuracy_lattice_test = (!cd_round_test) * 1
+    out$geoenvLowAccuracy_lattice_value = (!cd_round_test) * 1
+    out$geoenvLowAccuracy_lattice_test = (!cd_round_test)
     out$geoenvLowAccuracy_lattice_comments = ('Based on default values of CoordinateCleaner::cd_round')
   }
   
   #start methods requiring elevation
   #method elevation
   if (any(method %in% c('elevDiff','all'))) {
-    
-    #check and provide elevation
-    if (is.null (ef) ) { out$elevDiff_test <- rep (NA,nrow(df))}
     
     if (!is.null(ef)){
       
@@ -1347,19 +1451,89 @@ geoEnvAccuracy  <- function (df,
         raster.elevation = try  (expr = {.getSRTM (xydat=df,download=T, verbose=F)},silent = T)
         
       }
-      
       #determining elevation test
       if (class(raster.elevation) == "RasterLayer" ) {
-        elev.xy <- extract (raster.elevation, df[,c(xf,yf)])
+        elev.xy <- raster::extract (raster.elevation, df[,c(xf,yf)])
         elev.difference <- abs (df[,ef] - elev.xy)
-        out$elevDiff_test <- ifelse (elev.difference >= elev.threshold, 1, 0)
-        out$elevDiff_comments <- paste ('Elev difference:', elev.difference)
+        out$geoenvLowAccuracy_elevDiff_value <- elev.difference
+        out$geoenvLowAccuracy_elevDiff_test <- as.logical (ifelse (elev.difference >= elev.threshold, 1, 0))
+        out$geoenvLowAccuracy_elevDiff_comments <- paste ('Elev difference:', elev.difference)
       }
       #skipping elevation test
       if (class(raster.elevation) != "RasterLayer" ) {
         if(verbose) warning ("raster.elevation is not a raster; skipping elevDiff method")
-        out$elevDiff_test <- (rep (NA,nrow(df)))
       }
+    }
+    
+  }
+  
+  
+  #has time stamp? 
+  if (any(method %in% c('noDate','all'))) {
+    if (!is.null(tf)){
+      vecTime = df[,tf]
+      dfEmptyVals = data.frame (na=is.na(vecTime),
+                                #null=is.null(as.character(vecTime)==NULL),
+                                isEmpty = (as.character(vecTime)==''),
+                                isEmptySpace = (as.character(vecTime)== '  '))
+      
+      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==T)})
+      out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #has format stamp? 
+  if (any(method %in% c('noDateFormatKnown','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method noDateFormatKnown under development. Sorry')
+      # vecTime = df[,tf]
+      # 
+      # dfVectime = data.frame(vecTime[1])
+      # 
+      # a = identify_dates(dfVectime)
+      # dfVectime = data.table::as.data.table(dfVectime)
+      # k = find_and_transform_dates(dfVectime)
+      # 
+      # 
+      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #has format stamp? 
+  if (any(method %in% c('noDateFormatKnown','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method noDateFormatKnown under development. Sorry')
+      # vecTime = df[,tf]
+      # 
+      # dfVectime = data.frame(vecTime[1])
+      # 
+      # a = identify_dates(dfVectime)
+      # dfVectime = data.table::as.data.table(dfVectime)
+      # k = find_and_transform_dates(dfVectime)
+      # 
+      # 
+      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+    
+  }
+  
+  #is within time range ?
+  
+  if (any(method %in% c('outDateRange','all'))) {
+    if (!is.null(tf)){
+      
+      warning ('method outDateRange under development. Sorry')
+
     }
     
   }
@@ -1368,14 +1542,14 @@ geoEnvAccuracy  <- function (df,
   #Need coordinate uncertainty analysis ?
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
-    out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
     return (out)}
   
   #Need coordinate uncertainty analysis ?
   if (is.null(af)) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
-    out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
     return (out)
   }
   
@@ -1410,15 +1584,14 @@ geoEnvAccuracy  <- function (df,
     as.vector (out.bearing)
   })
   
-  
-  
   #start method percentage of Different cells around uncertainty
   if (any(method %in% c('percDiffCell','all'))){
     perc.diff <- sapply (1:nrow(xydat), function (i){
       pdiff <- mean ((cellIds.directions[[i]]==xydat$occCellids[i]) * 1, na.rm = T)
       pdiff
     })
-    out$geoenvLowAccuracy_percDiffCell_test = (perc.diff>accept.threshold.cell)*1
+    out$geoenvLowAccuracy_percDiffCell_value = (perc.diff)
+    out$geoenvLowAccuracy_percDiffCell_test = (perc.diff>accept.threshold.cell)
     out$geoenvLowAccuracy_percDiffCell_comments = paste('Nbufferlocations=',bearing.classes*distance.classes)
   }
   #start method percentage of environmental differences around uncertainty
@@ -1479,13 +1652,16 @@ geoEnvAccuracy  <- function (df,
     })
     
     env.test = do.call (rbind, env.test)
-    out$geoenvLowAccuracy_envDiff_test = (env.test$all > accept.threshold.env)*1
+    out$geoenvLowAccuracy_envDiff_value = env.test$all
+    out$geoenvLowAccuracy_envDiff_test = (env.test$all > accept.threshold.env)
     out$geoenvLowAccuracy_envDiff_comments = paste('envQuantiles=',paste(env.quantiles,collapse = ','),';PercOutVariablesTh=',accept.threshold.env)
     
   }
   
+
+  
   #write final score
-  out$geoenvLowAccuracy_score <-occProfileR:::.gimme.score (out)
+  out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
   return (out)
 }
 
@@ -1528,7 +1704,7 @@ geoEnvAccuracy  <- function (df,
 #' @param 
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author Brian Maitner
 #' @note
 #' @seealso
 #' @references
@@ -1545,24 +1721,21 @@ centroid_assessment<-function(occurrences,centroid_data){
   occurrences$county<-as.character(occurrences$county)
   occurrences$state_province<-as.character(occurrences$state_province)
   occurrences$country<-as.character(occurrences$country)
-  
   #message("This function assumes that occurrences are in wgs84 format, and then converts to whatever projection is used in the centroid data.  Only one projection at a time may be used in the centroid data, but multiple centroids per political division are fine.")
   
+  ### NOT ACTIVATED BECAUSE WE HAVE DONE THIS BEFORE
   #deal with nonsense points by dropping those lines
+  # if(length(  which(occurrences$latitude>90 | occurrences$latitude< -90) )>0  ){
+  #   occurrences<-occurrences[-which(occurrences$latitude>90 | occurrences$latitude< -90),]}
+  # if(length(  which(occurrences$longitude>180 | occurrences$longitude< -180) )>0){
+  #   occurrences<-occurrences[-which(occurrences$longitude>180 | occurrences$longitude< -180),]}
+  # if(any(is.na(occurrences$latitude) | (is.na(occurrences$longitude)))){
+  #   occurrences<-occurrences[-which(is.na(occurrences$latitude) | (is.na(occurrences$longitude))),]  
+  #   
+  # }
   
-  if(length(  which(occurrences$latitude>90 | occurrences$latitude< -90) )>0  ){
-    occurrences<-occurrences[-which(occurrences$latitude>90 | occurrences$latitude< -90),]}
-  
-  if(length(  which(occurrences$longitude>180 | occurrences$longitude< -180) )>0){
-    occurrences<-occurrences[-which(occurrences$longitude>180 | occurrences$longitude< -180),]}
-  
-  if(any(is.na(occurrences$latitude) | (is.na(occurrences$longitude)))){
-    occurrences<-occurrences[-which(is.na(occurrences$latitude) | (is.na(occurrences$longitude))),]  
-    
-  }
-  
-  temp_points<-SpatialPoints(coords = occurrences[c("longitude","latitude")],proj4string = CRS("+init=epsg:4326"))
-  temp_points<-spTransform(x = temp_points,CRSobj = CRS(projargs = unique(as.character(centroid_data$projection))) )
+  temp_points<-sp::SpatialPoints(coords = occurrences[c("longitude","latitude")],proj4string = sp::CRS("+init=epsg:4326"))
+  temp_points<-sp::spTransform(x = temp_points,CRSobj = sp::CRS(projargs = unique(as.character(centroid_data$projection))) )
   
   
   occurrences$latitude <- temp_points@coords[,'latitude']
@@ -1590,7 +1763,7 @@ centroid_assessment<-function(occurrences,centroid_data){
     if(nrow(centroid_i)>0){
       
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       
       country_data_i<-occurrences[which(occurrences$country==country_i),]
@@ -1598,11 +1771,11 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data<-matrix(nrow = nrow(country_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      country_pts_i<-SpatialPointsDataFrame(coords = country_data_i[c("longitude","latitude")],data = as.data.frame(country_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      country_pts_i<-sp::SpatialPointsDataFrame(coords = country_data_i[c("longitude","latitude")],data = as.data.frame(country_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1610,7 +1783,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = country_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1647,17 +1820,17 @@ centroid_assessment<-function(occurrences,centroid_data){
     
     if(nrow(centroid_i)>0){
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       state_data_i<-occurrences[which(occurrences$country==state_i$country & occurrences$state_province==state_i$state_province),]
       
       new_data<-matrix(nrow = nrow(state_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      state_pts_i<-SpatialPointsDataFrame(coords = state_data_i[c("longitude","latitude")],data = as.data.frame(state_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      state_pts_i<-sp::SpatialPointsDataFrame(coords = state_data_i[c("longitude","latitude")],data = as.data.frame(state_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1665,7 +1838,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = state_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1704,17 +1877,17 @@ centroid_assessment<-function(occurrences,centroid_data){
     if(nrow(centroid_i)>0){
       
       
-      centroid_pt_i<-SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      centroid_pt_i<-sp::SpatialPoints(coords = centroid_i[c("centroid_lon","centroid_lat")],proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       county_data_i<-occurrences[which(occurrences$country==county_i$country & occurrences$state_province==county_i$state_province & occurrences$county==county_i$county),]
       
       new_data<-matrix(nrow = nrow(county_data_i),ncol = nrow(centroid_i))
       new_data<-as.data.frame(new_data)
       
-      county_pts_i<-SpatialPointsDataFrame(coords = county_data_i[c("longitude","latitude")],data = as.data.frame(county_data_i$taxonobservation_id),proj4string = CRS(projargs = unique(as.character(centroid_i$projection))))
+      county_pts_i<-sp::SpatialPointsDataFrame(coords = county_data_i[c("longitude","latitude")],data = as.data.frame(county_data_i$taxonobservation_id),proj4string = sp::CRS(projargs = unique(as.character(centroid_i$projection))))
       
       for(p in 1:nrow(centroid_i)){
         
-        new_data[,p]<- spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
+        new_data[,p]<- sp::spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) / as.numeric(centroid_i$max_uncertainty[p] )
         
       }
       
@@ -1722,7 +1895,7 @@ centroid_assessment<-function(occurrences,centroid_data){
       new_data_absolute<-as.data.frame(new_data_absolute)
       for(p in 1:nrow(centroid_i)){
         
-        new_data_absolute[,p]<-spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) 
+        new_data_absolute[,p]<-sp::spDistsN1(pts = county_pts_i,pt = centroid_pt_i[p]) 
         
       }
       
@@ -1752,4 +1925,83 @@ centroid_assessment<-function(occurrences,centroid_data){
   return(output)
   
 }
+
+
+
+#' @title Selection of records within a land use selectino
+#'
+#' @descriptions Selection of records within a land use selection
+#' @details
+#' @param 
+#' @return data.frame
+#' @keywords internal
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+# #' @export
+
+landUseSelect <- function (df=dat,
+                            xf=x.field,
+                            yf=y.field,
+                            method='in', #out would be the other one
+                            .points.proj4string=points.proj4string,
+                             ras.landUse=ras.landUse,
+                           .landUseCodes = landUseCodes,
+                            do=T, verbose=F,output.dir=output.dir){
+  
+
+  out <- data.frame (landUse_wrongLU_value=NA,
+                     landUse_wrongLU_test=NA,
+                     landUse_wrongLU_comments= NA)[1:nrow (df),]
+  row.names(out) <- NULL
+  
+  if (!do) {return (out)}
+  
+  #start human influence analysis
+  xydat <- df[,c(xf,yf)]
+  
+  #get species presence
+  data.sp.pres <- as.data.frame (xydat)
+  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  
+  #start with land use raster
+  if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
+    
+    #accommodate projections
+    if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+    if (sp::proj4string(data.sp.pres) != projection (ras.landUse)){
+      if (is.na (projection (ras.landUse)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+      if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
+    }
+    
+    lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)
+    row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
+    if (length (row.id.lu.NA) != 0) {
+      output.comments <- rep (NA,length =nrow (xydat))
+      output.comments [row.id.lu.NA] <- paste0('No land cover available for this record;' )
+    }
+    
+    lu.sp.value = lu.sp.pres[,2]
+    
+    if (method %in% c('in','all'))   {lu.sp.pres <- ( lu.sp.value %in% .landUseCodes)}
+    if (method %in% c('out'))        {lu.sp.pres <- (!lu.sp.value %in% .landUseCodes)}
+    
+    out$landUse_wrongLU_value= !lu.sp.pres * 1
+    out$landUse_wrongLU_test= !lu.sp.pres
+    out$landUse_wrongLU_comments= paste(method,.landUseCodes)
+    
+     #compute score
+     out$landUse_score <- occTest:::.gimme.score (out)
+  
+  
+  return (out)
+}
+
 

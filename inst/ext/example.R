@@ -21,7 +21,7 @@ rm(wrld_simpl)
 #Why does code need iso code?
 
 #Need to replace this with a link or something that avoids requiring a file
-raster.humaninfluence <- raster ("C:/Users/Brian/Desktop/test_junk/OccProfileR/Environment/HII/hii_wgs84_MED.tif")
+raster.humaninfluence <- raster ("C:/Users/Brian/Desktop/test_junk/occTest/Environment/HII/hii_wgs84_MED.tif")
 
 
 source("GeoEnvironmentalProfileR/R/F_Analysis.R")

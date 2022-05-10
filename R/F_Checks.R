@@ -83,10 +83,10 @@
 
   #check misspecification
   if (! ef %in% nd )  {stop("elevation field specified not in the occurrence dataframe provided")}
-  if (! cf %in% nd )  {stop("contryRecorded field specified not in the occurrence dataframe provided")}
+  if (! cf %in% nd )  {stop("countryRecorded field specified not in the occurrence dataframe provided")}
   if (! lf %in% nd )  {stop("locality field specified not in the occurrence dataframe provided")}
   if (! tf %in% nd )  {stop("time field specified not in the occurrence dataframe provided")}
-  if (! idf %in% nd )  {stop("ObservatinID field specified not in the occurrence dataframe provided")}
+  if (! idf %in% nd )  {stop("ObservationID field specified not in the occurrence dataframe provided")}
   
   return (dat)
 
@@ -145,7 +145,7 @@
   equal <- reqNames[sapply(reqNames, FUN = function(x) x %in%
                                      names(dat))]
   
-  if (length(equal)>1) {warning(paste("Table fields: ",equal,"already existed in your table, not overwritten by fieldchecks.",'\n',"check consistency of the field meanings in your table with occProfileR"))}
+  if (length(equal)>1) {warning(paste("Table fields: ",equal,"already existed in your table, not overwritten by fieldchecks.",'\n',"check consistency of the field meanings in your table with occTest"))}
   missingNames <- reqNames[!sapply(reqNames, FUN = function(x) x %in%
                                      names(dat))]
   newdf = lapply(missingNames, function(n) {data.frame (a=rep(NA,length.out=nrow(dat)))})

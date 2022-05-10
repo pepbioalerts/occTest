@@ -9,6 +9,9 @@ library (parallel)
 library (profvis)
 library (parallelsugar)
 
+user = Sys.info()['user']
+
+
 #use the downloaded data from GBIF 
 #occGBIF = fread('/Users/pserra/RS/cleanOccAnalysis/GBIFdownolad/OccPyreneesArea.csv')
 
@@ -36,7 +39,7 @@ env = raster::stack (x = lf)
 elev = raster::raster('D:/quercus/BD_SIG/climat/monde/Chelsa_1979_2013/dem/mn30.tif')
 
 #mySettings
-mySettings <- occProfileR::defaultSettings()
+mySettings <- occTest::defaultSettings()
 mySettings$tableSettings$x.field <- 'longitude'
 mySettings$tableSettings$y.field <- 'latitude'
 mySettings$tableSettings$t.field <- 'date_collected'
@@ -72,8 +75,15 @@ out = foreach::foreach(spModel = spPyrNotDone,.options.snow=opts, .errorhandling
     #need to go from 2-digit to three digit for occ profiler
     occRGBIF$data$countryCode3c = countrycode::countrycode (occRGBIF$data$countryCode,origin ='iso2c',destination = 'iso3c')
     #write inputs 
-    jspModel = occProfileR:::.join.spname(spModel)
-    pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
+
+    if (user=='serradiaz'){
+      jspModel = occProfileR:::.join.spname(spModel)
+      pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
+      }
+    if (user=='pserra'){
+      pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
+      jspModel = occTest:::.join.spname(spModel)
+    }
     dir.create (pathInputs,showWarnings = T,recursive = T)
     save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
     save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))  }
@@ -104,12 +114,16 @@ lapply (1:length(spPyrNotDoneRGBIF), function (i){
   #need to go from 2-digit to three digit for occ profiler
   occBIEN$country = countrycode::countrycode (occBIEN$country ,origin ='country.name',destination = 'iso3c')
   #write inputs 
-  jspModel = occProfileR:::.join.spname(spModel)
-  pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
+  if (user=='serradiaz'){
+    jspModel = occProfileR:::.join.spname(spModel)
+    pathInputs = paste0('D:/Write/Pep/PyrSDM/OccData/',jspModel)
+  }
+  if (user=='serradiaz'){
+    jspModel = occTest:::.join.spname(spModel)
+    pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',jspModel)
+  }  
   dir.create (pathInputs,showWarnings = F,recursive = T)
   save(occBIEN,file = paste0(pathInputs,'/', jspModel,'_BIEN.RData'))
-  
-  
 })
 
 #recheck folder names
@@ -153,7 +167,22 @@ spLarge = as.character (NoccSp[which(NoccSp$Nocc>200),'spName'])
 out = lapply (spLarge[2:6], function (spModel){
   try({
     
+    print(which (spPyr == spModel) )
     
+    occRGBIF = occ_data(scientificName = spModel,limit = 10000)
+    #need to go from 2-digit to three digit for occ profiler
+    occRGBIF$data$countryCode3c = countrycode::countrycode (occRGBIF$data$countryCode,origin ='iso2c',destination = 'iso3c')
+    #get the citations for the species
+    cit = gbif_citation(occRGBIF)
+    #write inputs 
+    pathInputs = paste0('/Users/pserra/RS/cleanOccAnalysis/QAQCinputs/',spModel)
+    jspModel = occTest:::.join.spname(spModel)
+    dir.create (pathInputs,showWarnings = F,recursive = T)
+    save(occRGBIF,file = paste0(pathInputs,'/', jspModel,'.RData'))
+    save(cit,file = paste0(pathInputs,'/', jspModel,'_citations.RData'))
+    
+    if (nrow (occRGBIF$data) <200) {return(spModel)}
+
     #LOAD THE DATA 
     pathInputs = "D:/Write/Pep/PyrSDM/OccData"
     allfiles = list.files(path = paste0(pathInputs,'/',spModel) ,full.names = T)
@@ -165,7 +194,7 @@ out = lapply (spLarge[2:6], function (spModel){
 
     
     #build the Settings for QAQC
-    rgbifSettings <- occProfileR:::defaultSettings()
+    rgbifSettings <- occTest:::defaultSettings()
     rgbifSettings$tableSettings$x.field <- 'decimalLongitude'
     rgbifSettings$tableSettings$y.field <- 'decimalLatitude'
     rgbifSettings$tableSettings$t.field <- 'eventDate'

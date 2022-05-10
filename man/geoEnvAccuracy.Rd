@@ -11,6 +11,7 @@ geoEnvAccuracy(
   af = a.field,
   dsf = ds.field,
   ef = e.field,
+  tf = t.field,
   method = "all",
   r.env,
   accept.threshold.cell = 0.5,

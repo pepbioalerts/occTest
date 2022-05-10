@@ -197,13 +197,14 @@
   
   if (length(columns.for.scoring)>1) {
     score <- rowMeans (x [,columns.for.scoring], na.rm = T)
+    
   }
   if (length(columns.for.scoring)==1){
     score<- x[,columns.for.scoring]
   }
   
   if (length(columns.for.scoring)==0){
-    stop("Issue: seems that no output of the analysis exists for centroidDetection")
+    stop("Issue: seems that no output columns *_test exist")
   }
   
   score
@@ -232,6 +233,39 @@ get_os <- function() {
     stop("Unknown OS")
   }
 }
+
+#### safekeeper for key date functions from dataPrepareation package
+.find_and_transform_dates <- function (data_set, cols = "auto", formats = NULL, n_test = 30, 
+          ambiguities = "IGNORE", verbose = TRUE) {
+  function_name <- "find_and_transform_dates"
+  data_set <- check_and_return_datatable(data_set)
+  is.verbose(verbose)
+  is_ambiguities(ambiguities, function_name)
+  cols <- real_cols(data_set = data_set, cols = cols, function_name = function_name)
+  start_time <- proc.time()
+  formats_found <- identify_dates(data_set, cols = cols, formats = formats, 
+                                  n_test = n_test, ambiguities = ambiguities, verbose = verbose)
+  if (verbose) {
+    printl(function_name, ": It took me ", round((proc.time() - 
+                                                    start_time)[[3]], 2), "s to identify formats")
+  }
+  if (length(formats_found) < 1) {
+    if (verbose) {
+      printl(function_name, ": There are no dates to transform.\n                   (If i missed something please provide the date format in inputs or\n                   consider using set_col_as_date to transform it).")
+    }
+    return(data_set)
+  }
+  start_time <- proc.time()
+  data_set <- set_col_as_date(data_set, format = formats_found, 
+                              verbose = FALSE)
+  if (verbose) {
+    printl(function_name, ": It took me ", round((proc.time() - 
+                                                    start_time)[[3]], 2), "s to transform ", length(formats_found), 
+           " columns to a Date format.")
+  }
+  return(data_set)
+}
+
 
 ###### ========================================
 #' Hijacking functions to change default parameters

@@ -1,5 +1,5 @@
 #you should probably change this to your local directory
-myDir='/Users/ctg/Dropbox/Projects/R_Packages/occProfileR/OccProfileRData'
+myDir='/Users/ctg/Dropbox/Projects/R_Packages/occTest/occTestData'
 
 #### load needed data to run the function
 #occ.species.nogeoscurb=read.csv(paste0(myDir,'/Example1/Pinus_halepensis_aggregated_PO_NOGeoScrub.csv'))

@@ -1,4 +1,4 @@
-Package: occProfileR
+Package: occTest
 Title: Characterizing Species Occurrence Data Quality
 Version: 0.1
 Author: Pep Serra Diaz, Cory Merow, Brian Maitner
@@ -8,7 +8,7 @@ Depends: R (>= 3.4.3)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Imports:
     raster,
@@ -23,7 +23,18 @@ Imports:
     stats,
     utils,
     outliers,
-    CoordinateCleaner
+    CoordinateCleaner,
+    plyr,
+    tictoc,
+    rgbif,
+    countrycode,
+    rnaturalearth,
+    svMisc,
+    spocc,
+    tidyverse,
+    rnaturalearthdata,
+    GNRS,
+    magrittr
 Suggests:
     speciesgeocodeR,
     testthat,
