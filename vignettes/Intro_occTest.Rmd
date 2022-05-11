@@ -29,7 +29,7 @@ The packages is based on a combination of new created functions by J.M. Serra-Di
 
 ## Workflow overview and data needed
 
-The main function, that implements the workflow is called *occurrenceTests*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers, etc.) using multiple tests in each analysis in order to assess potential errors, and how these may affect the model.  
+The main function, that implements the workflow is called *occTest*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). The filtering procedure flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see biogeo package for potential solutions). The analysis procedure undertakes several analysis (e.g. geographical outliers, environmental outliers, etc.) using multiple tests in each analysis in order to assess potential errors, and how these may affect the model.  
 
 
 The workflow NEEDS a MINIMUM of THREE parameters: 
@@ -58,13 +58,13 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = te
 
 #classify occurrences
 library(occTest)
-outMartesMartes = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+outMartesMartes = occTest::occTest(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 
 ```
 
-## *occurrenceTests* output
+## *occTest* output
 
-The outputs of occurrenceTests is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests (e.g. scores, see below).
+The outputs of occTest is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests (e.g. scores, see below).
 
 
 ```{r}
@@ -191,7 +191,7 @@ mySettings <- minimalSettings()
 #change the attribute of interest (in this case setting an analysis off)
 mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
 #add your settings to the function
-out = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+out = occTest::occTest(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
                          analysisSettings = mySettings$analysisSettings)
 ```
 
@@ -218,7 +218,7 @@ renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 
 #test occurrence
 library(occTest)
-outDougFir = occurrenceTests(sp.name='Pseudotsuga menziesii', 
+outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
                                 sp.table = occ.data,
                                 r.env = renv,ntv.ctry = c('CAN','USA'))
 
@@ -265,7 +265,7 @@ nrow (outDougFirSelec[['fitleredDataset']])
 
 # Example 2: Making the function turn with more detailed data (and more options)
 
-We will apply *occurrenceTests* to a dataset that has more fields and for that we need to specify them.
+We will apply *occTest* to a dataset that has more fields and for that we need to specify them.
 
 The sample  is a Mediterranean species present in France, Catalonia, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc...  
 
@@ -350,7 +350,7 @@ mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO'
 
 We also know that the species is native to Spain ('ESP') and considered invasive in France ('FRA') so we will also specify it, and flag anything that is not in these countries
 ```{r}
-out <- occurrenceTests   (sp.name = 'My species',
+out <- occTest   (sp.name = 'My species',
                           sp.table = occ.species.nogeoscrub,
                           r.env =ras.env,
                           tableSettings = mySettings$tableSettings, 

@@ -16,7 +16,7 @@ mySettings = occTest::minimalSettings()
 names (occCsv)
 mySettings$tableSettings$x.field ='Longitude'
 mySettings$tableSettings$y.field ='Latitude'
-magu = occTest::occurrenceTests(sp.name='Matayba guianensis', sp.table = occCsv,r.env = env,
+magu = occTest::occTest(sp.name='Matayba guianensis', sp.table = occCsv,r.env = env,
                                 tableSettings = mySettings$tableSettings,
                                 analysisSettings = mySettings$analysisSettings)
 

@@ -519,7 +519,6 @@ centroidDetection <- function (df=dat,
       country_ext <- occTest:::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    browser()
     cleaned_countries<-GNRS:::GNRS_super_simple(country = country_ext)
     matchedCtry <- cleaned_countries$match_status=='full match'
     cleaned_countries <- cleaned_countries [matchedCtry,]

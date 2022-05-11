@@ -2,7 +2,7 @@
 % Please edit documentation in R/CM_Unsorted_Functions.R
 \name{presPercentile}
 \alias{presPercentile}
-\title{omit outlying pres}
+\title{Identify percentile of presences}
 \usage{
 presPercentile(
   xy,

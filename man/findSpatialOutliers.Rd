@@ -2,11 +2,17 @@
 % Please edit documentation in R/CM_Unsorted_Functions.R
 \name{findSpatialOutliers}
 \alias{findSpatialOutliers}
-\title{omit outlying pres}
+\title{Find outlying occurrence data in geographical space}
 \usage{
 findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T, verbose = T)
 }
 \arguments{
+\item{pvalSet}{numeric. p value set to identify outliers}
+
+\item{checkPairs}{logical.}
+
+\item{verbose}{logical. print messages}
+
 \item{x}{raster* object}
 
 \item{...}{additional functions to be passed to \code{\link[raster]{writeRaster}}}

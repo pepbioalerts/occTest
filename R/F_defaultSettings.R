@@ -318,7 +318,6 @@ showTests<- function (){
 
 
 minimalSettings <- function (x){
-  
   defaultSettings = list (
     
     #grading Settings
@@ -370,7 +369,7 @@ minimalSettings <- function (x){
       humanDetection= list (doHumanDetection=T,
                             methodHumanDetection='all',
                             th.human.influence = 45,
-                            ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v2.tif',package='occTest'))
+                            ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v5.tif',package='occTest'))
       )
       ,
       landUseType   = list (doLandUse=T,

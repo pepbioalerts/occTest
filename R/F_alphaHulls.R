@@ -104,9 +104,21 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 
 
 
-### OTHER FUNCTIONS
+### OTHER FUNCTIONS  ======
 
-# Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
+### Convert Alpha Hull object into a shapefile 
+##' Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
+##' @param x an alpha hull object
+##' @param increment numeric. Increments
+##' @param rnd numeric. Decimal rounding
+##' @param proj4string crs object with the spatial projectoinsprojection
+##' @param tol numeric. tolerance
+##' @return a sp polygon object
+##' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+##' @seealso Alpha hulls are created with \code{\link{ahull}}.
+##' @examples
+##' 
+
 ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),tol=1e-4) {
   if (!inherits(x, "ahull")) {
     stop("x needs to be an ahull class object")
@@ -241,8 +253,22 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
 }
 
 
+### Check polygong geometry
+# #taken from the maptools package and from P Title in rangeBuilder
+##' @param obj an alpha hull object
+##' @param properly logic. 
+##' @param force logic.
+##' @param useSTRtree logic. 
+##' @param proj4string crs object with the spatial projectoinsprojection
+##' @param tol numeric. tolerance
+##' @return a sp polygon object
+##' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+##' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
+##' see maptools and RangeBuilder package 
 
-#taken from the maptools package and from P Title in rangeBuilder
+
+##' @examples
+##
 checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
   if (!is(obj, "Polygons")) 
     stop("not a Polygons object")

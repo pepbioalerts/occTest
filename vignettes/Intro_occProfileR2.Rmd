@@ -60,7 +60,7 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10)
 
 #classify occurrences
 library(occTest)
-outMartesMartes = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+outMartesMartes = occTest::occTest(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
 ```
 
 ## *occurrenceProfile* output
@@ -237,7 +237,7 @@ mySettings <- defaultSettings()
 #change the attribute of interest (in this case setting an analysis off)
 mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
 #add your settings to the function
-out = occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+out = occTest(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
                          analysisSettings = mySettings$analysisSettings)
 
 

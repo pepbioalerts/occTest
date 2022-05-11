@@ -58,8 +58,8 @@ occFilter <- function (df,
                        errorThreshold = NULL) {
 
    #load pipes (need to change, you do not call libraries in fucntions)
-   usethis::use_pipe()
-   library (magrittr)
+   # usethis::use_pipe()
+   # library (magrittr)
 
   #load column metadata
    #colMetaData = read.csv  (system.file('ext/fieldMetadata.csv',package='occTest'))
@@ -123,6 +123,7 @@ occFilter <- function (df,
   } 
   
   list (fitleredDataset = dfFiltered[which(toss)*(-1),],
-        summaryStats = dfScores)
+        summaryStats = dfScores,
+        rule = c(errorAcceptance,errorThreshold))
 
 }

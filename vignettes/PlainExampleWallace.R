@@ -40,7 +40,7 @@ mySelectedAnalysis  = setTestTypes (centroidDetection = F,geoenvLowAccuracy = F)
 mySelectedAnalysis2 = setTestBlocks(time = F)
 
 ### STEP 3 RUN TESTS
-martesTests = occurrenceTests(sp.name = "Martes_martes",sp.table = occ.data,r.env = environmentRaster,
+martesTests = occTest(sp.name = "Martes_martes",sp.table = occ.data,r.env = environmentRaster,
                        #default parameters of column names changed
                        tableSettings = myTableNames , 
                        #default parameters of the analysis changed

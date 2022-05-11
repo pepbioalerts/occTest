@@ -29,7 +29,7 @@ The packages is based on a combination of new created functions by J.M. Serra-Di
 
 ## Workflow overview and data needed
 
-The main function, that implements the workflow is called *occurrenceTests*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). 
+The main function, that implements the workflow is called *occTest*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). 
 
 The filtering step flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see *biogeo* package for potential solutions), for instance locations in the sea for terrestrial species or the absence of coordinates (NA) in the record. The analysis step applies in order to assess potential errors, and how these may affect the model. These multiple tests are grouped in test blocks. These identify the nature of the error: geography, land use, environment, time and allow for a quick assessment of the dataset. 
 
@@ -59,13 +59,15 @@ environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = te
 
 #test occurrences
 library(occTest)
-outMartesMartes = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster)
+outMartesMartes = occTest::occTest(sp.name='Martes martes', 
+                                           sp.table = occ.data,
+                                           r.env = environmentRaster)
 
 ```
 
-## *occurrenceTests* output
+## *occTest* output
 
-The outputs of occurrenceTests is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests.
+The outputs of occTest is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests.
 
 
 ```{r}
@@ -188,7 +190,7 @@ mySettings <- minimalSettings()
 #change the attribute of interest (in this case setting an analysis off)
 mySettings$analysisSettings$accuracyAnalysis$do.geoEnvAccuracy = F
 #add your settings to the function
-out = occTest::occurrenceTests(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
+out = occTest::occTest(sp.name='Martes martes', sp.table = occ.data,r.env = environmentRaster, 
                          analysisSettings = mySettings$analysisSettings,verbose = F)
 ```
 
@@ -214,12 +216,12 @@ renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 
 #test occurrence
 library(occTest)
-outDougFir = occurrenceTests(sp.name='Pseudotsuga menziesii', 
+outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
                                 sp.table = occ.data,
                                 r.env = renv)
 
 
-#check SHORT outputs
+#check outputs
 knitr::kable (head(outDougFir))
 ```
 
@@ -227,7 +229,7 @@ knitr::kable (head(outDougFir))
 Then we can use *occFilter* to filter the data according to different acceptance levels of issues in each record. You can have three broad thresholds for filtering data: relaxed (accept up 70% of tests showing issues), stringent (20%) or majority (50%). These percentages are applied to groups of tests depending on their nature (testBlocks or testTypes). For instance, a relaxed approach to filtering will filter a record if for a given test groups (e.g. environmental data tests, geographic tests, human detection tests) more than 70% of the tests fail.
 
 ```{r}
-showTests ()
+occTest::showTests ()
 ```
 
 
@@ -238,8 +240,8 @@ The result is a list where the first element fitleredDataset corresponds to the 
 outDougFirSelec = occFilter(df = outDougFir,errorAcceptance = 'relaxed') 
 
 #show filtered dataset
-nrow (outDougFirSelec[["fitleredDataset"]])
 nrow (outDougFir)
+nrow (outDougFirSelec[["fitleredDataset"]])
 ```
 
 Show summary values of tests, grouped by 
@@ -255,7 +257,6 @@ The function also allows to set your own acceptance threshold level, and change 
 ```{r}
 outDougFirSelec = occFilter(df = outDougFir,errorAcceptance = 'relaxed') 
 names (outDougFirSelec)
-
 outDougFirSelec[['fitleredDataset']]
 ```
 
@@ -268,7 +269,7 @@ head(outDougFirSelec[['summaryStats']])
 check how the groupings changed with different levels and different threshold acceptance levels 
 
 ```{r}
-outDougFirSelecStringent = occFilter (df = outDougFir, errorAcceptance = 'stringent')
+outDougFirSelecStringent = occFilter (df = outDougFir, errorAcceptance = 'strict')
 outDougFirSelecMajority = occFilter (df = outDougFir, errorAcceptance = 'majority')
 nrow (outDougFirSelecStringent [['fitleredDataset']] )
 nrow (outDougFirSelecMajority [['fitleredDataset']] )
@@ -277,7 +278,7 @@ nrow (outDougFirSelec[['fitleredDataset']])
 
 # Example 2: Making the function turn with more detailed data (and more options)
 
-We will apply *occurrenceTests* to a dataset that has more information like the locality names, or the accuracy of the coordinates. For that we need to specify that firest before running the function.
+We will apply *occTest* to a dataset that has more information like the locality names, or the accuracy of the coordinates. For that we need to specify that firest before running the function.
 
 The sample  is a Mediterranean species present in France, Catalonia, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc...  
 
@@ -341,30 +342,25 @@ We have a more detailed raster of human influence than that of the report. In ou
 #load your own human influence map
 ras.humaninfluence.f = system.file('ext/HII.tif',package='occTest')
 ras.humaninfluence = raster(ras.humaninfluence.f)
-
-#add it to the settings
-mySettings$analysisSettings$humanAnalysis$th.human.influence <-50
+#specify in the settings the raster to use for human influence
 mySettings$analysisSettings$humanAnalysis$methodHyperHumanDetection <-ras.humaninfluence
-
-#plot it
-#plot(ras.humaninfluence)
+#specify in the settings the theshold for to identify high influence records
+mySettings$analysisSettings$humanAnalysis$th.human.influence <-50
 ```
-
 We also have a more detailed data on country borders 
 ```{r}
 #load detailed country borders and shorelines
 countries.pol.f = system.file('ext/CountryLevel',package='occTest')
-countries.pol = readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
-names (countries.pol)
-
-#add it to the settings
+countries.pol = rgdal::readOGR(dsn = countries.pol.f,layer='Countries_SPDF_MED')
+#specify in the settings the spatial object for countries
 mySettings$analysisSettings$rangeAnalysis$countries.shapefile <-countries.pol 
+#specify in the settings the column name indicating the ISO 3 digit code in the spatial object
 mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO' 
 ```
 
 We also know that the species is native to Spain ('ESP') and considered invasive in France ('FRA') so we will also specify it, and flag anything that is not in these countries
 ```{r}
-out <- occurrenceTests   (sp.name = 'My species',
+out <- occTest   (sp.name = 'My species',
                           sp.table = occ.species.nogeoscrub,
                           r.env =ras.env,
                           tableSettings = mySettings$tableSettings, 
@@ -381,7 +377,7 @@ Let's filter the results with a rule based on majority and grouped based on
 
 
 ```{r}
-outFiltered = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testBlock' ) 
-outFiltered = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testType' ) 
+outFiltered_byBlock  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testBlock' ) 
+outFiltered_byTestType  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testType' ) 
 ```
 

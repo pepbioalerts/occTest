@@ -26,11 +26,11 @@ landSeaFilter             =function(df,
 
   
   # df=dat; xf=x.field; yf=y.field; .ntv.ctry=ntv.ctry;
+  #load high-res land masses
+  land = readRDS (system.file('ext/land/allLand10.rds',package='occTest'))
   #select coordinates and load sf points
   xydat <- df[,c(xf,yf)]
   pts = sf::st_as_sf(xydat,coords=c(1,2),crs=crs(land))
-  #load high-res land masses
-  land = readRDS (system.file('ext/land/allLand10.rds',package='occTest'))
   #intersect
   intersectMatrix <- sf::st_intersects(x = pts, y = land,sparse = T)
   intersectMatrix <- Matrix::as.matrix(intersectMatrix)

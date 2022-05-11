@@ -2,7 +2,7 @@
 #======================================================================
 #======================================================================
 
-#' omit outlying pres
+#' Identify percentile of presences
 #'
 #' @param x  raster* object
 #' @param ... additional functions to be passed to \code{\link[raster]{writeRaster}}
@@ -69,10 +69,14 @@ presPercentile=function (xy,
 }
 
 
-#' omit outlying pres
+#' Find outlying occurrence data in geographical space
 #'
 #' @param x  raster* object
 #' @param ... additional functions to be passed to \code{\link[raster]{writeRaster}}
+#' @param pvalSet numeric. p value set to identify outliers
+#' @param checkPairs logical.  
+#' @param verbose logical. print messages
+#' 
 #' @description  Divide raster by the sum of all cells.
 #' @export
 #' @import raster

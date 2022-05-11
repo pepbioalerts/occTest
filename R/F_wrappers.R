@@ -34,7 +34,7 @@ occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
   
   #run test functions 
   #output is a list of 2 data.frames (the full and  the short, we continue with the full, see below)
-  output =  occurrenceTests(sp.name = speciesName,
+  output =  occTest(sp.name = speciesName,
                             sp.table = spOcc, 
                             r.env = env,
                             tableSettings =mySettings$tableSettings)

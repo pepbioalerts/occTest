@@ -1,23 +1,47 @@
 ###### ========================================
 
-#'Validates and clean occurrence data
+#'Occurrence tests
 #'
-#'occurrence.profiler returns occurrence points withou the recommended metadata and attribution information.
-#' @param sp.table data.frame. Object with the coordinate data.
+#'Perform tests for data quality in species occurrence  using several methods
 #' @param sp.name character. Name of the species.
+#' @param habitat NULL
+#' @param sp.table data.frame. Object with the coordinate data.
+#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic).
+#' 
 #' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
 #' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param gradingSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
-#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic).
+
 #' @param r.dem raster. Elevation data (in meters).
-#' @return a list of two. First element is a dataframe with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
-#' @note #There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
+#' @param ntv.ctry character. vector with ISO3 code of the countries where species is considered native
+#' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
+#' @param resolveAlienCtry logical. To automatically try to detect  countries for which species is considered native
+#' @param resolveNativeCtry logical. To automatically try to detect  countries for which species is considered alien
+#' @return data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score) 
+#' @note 
+#' The output dataframe allows users to classify or scrub the occurrences the way they want to. \cr
+#' The names of the columns in the output object have the following naming convention: \cr
+#' $AnalysisType$_$SpecificTest$_value: numeric or logical. Shows the quantitative result of the test (sometimes the same as in the result of the _test) \cr
+#' $AnalysisType$_$SpecificTest$_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record. \cr
+#' $AnalysisType$_$SpecificTest$_comment: character. Shows some comments related to the specific test.\cr
+#' Examples: HumanDetection_HumanInfluence_value gives you the score of current human influence in the record HumanDetection_HumanInfluence_test gives you whether we consider the former value an error/bias (T) or not (F) HumanDetection_HumanInfluence_comment gives you a commen that give further detail on the analysis. In this case that the threshold of 45 was used for the test. HumanDetection_score summarizes all the other HumanDetection tests and outputs a value from 0 to 1. A value of 0.5 would indicate that half of the tests used indicate that is an a Human signal in the record.
 #' @examples \dontrun{
-#' example="goes here"
+#' library(occTest)
+#' library(spocc)
+#' df <- occ(query = 'Pseudotsuga menziesii')
+#' occ.data <-occ2df(df)
+#' names (occ.data)[2] <- 'decimalLongitude'
+#' names (occ.data)[3] <- 'decimalLatitude'
+#'library (raster)
+#' renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
+#' library(occTest)
+#' outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
+#                              sp.table = occ.data,
+#                              r.env = renv)
 #' }
 #' @export
-occurrenceTests = function(
+occTest = function(
   sp.name,
   habitat=NULL,
   sp.table,
@@ -626,7 +650,6 @@ occurrenceTests = function(
   df.qualityAssessment = dplyr::bind_cols(list.analysis)
   row.names(df.qualityAssessment)= NULL
   
-  
   #timer for the analytic processes
   tictoc:::toc()
 
@@ -634,7 +657,6 @@ occurrenceTests = function(
   #load previous filtered objects
   previousFiltered = grep(pattern = 'dat.Q.',ls(),value = T)
   full.qaqc = cbind(dat, df.qualityAssessment)
-  
   for(o in previousFiltered){
     rowsToAdd = get(o)
     if(nrow(rowsToAdd)> 0){full.qaqc = dplyr::bind_rows(full.qaqc, get(o))}
@@ -661,21 +683,6 @@ occurrenceTests = function(
     if(class(written)=='try-error')try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
   
-  # #short qaqc
-  # idCols1 = which(names(full.qaqc)== x.field )
-  # idCols2 = which(names(full.qaqc)== y.field )
-  # idCols3 = grep(pattern = '_test',names(full.qaqc))
-  # idCols4 = grep(pattern = '_score',names(full.qaqc))
-  # short.qaqc = full.qaqc[,c(idCols1,idCols2,idCols3,idCols4)]
-  # 
-  # if(write.simple.output==T){
-  #   sp2 = occTest:::.join.spname(sp)
-  #   newdir = paste0(output.dir,'/',sp2)
-  #   dir.create(newdir,recursive = T,showWarnings = F)
-  #   write.csv(short.qaqc,
-  #              paste0(newdir,'/',output.base.filename,'_',sp,
-  #                     '_short.csv'),row.names = F)
-  # }
   tictoc:::toc()
   
   #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
