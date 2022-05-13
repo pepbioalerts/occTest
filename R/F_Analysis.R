@@ -1,16 +1,13 @@
 #### FUNCTIONS FOR ANALYZING DATA IN THE WORKFLOW
 
 #' @title Check for missing coordinates
-#'
 #' @description checks for missing coordinates in the occurrence dataframe
 #' @details
-#'
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
-#' @return list with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
+#' @param df dat.frame of species occurrences
+#' @param xf character. The field in the dataframe containing the x cordinates
+#' @param yf character. The field in the dataframe containing the y cordinates
+#' @return List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 #' @keywords internal
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -26,18 +23,14 @@ filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
  coordIssues_coordMissing_value = !complete.cases  (df[,c(xf,yf)])
  df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
  df$coordIssues_coordMissing_test = as.logical (coordIssues_coordMissing_value)
- 
  df.out <- df [coordIssues_coordMissing_value,]
  df.continue <- df [!coordIssues_coordMissing_value,]
- 
  return (list (stay=df.out,continue=df.continue))
-
 }
 
 #' @title Duplicated records
 #' @descriptions checks for duplicated coordinates in the occurrence dataframe
-#' @details (inspired by biogeo duplicatesexclude function)
-#'
+#' @details it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
@@ -50,18 +43,14 @@ filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
 #' @seealso
 #' @references
 #' @aliases
-#' @family
+#' @family Analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
 #' @export
-
-
 duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
                                         resolution.in.minutes=res.in.minutes,
                                         raster.grid=NULL, verbose=F){
-
-
   #exact duplicates
   duplicates_dupExact_value <- duplicated (x = df[,c(xf,yf)]) *1
   duplicates_dupExact_test <- as.logical (duplicates_dupExact_value)
@@ -71,11 +60,8 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
   df$duplicates_dupExact_value = duplicates_dupExact_value
   df$duplicates_dupExact_test = duplicates_dupExact_test
   df.exact.dups <- df[which(df$Exclude==1),]
-
   #update df
   df <- df[which(df$Exclude==0),]
-
-
   #build the grid for the duplicates
   if(!is.null(raster.grid)){
     ext <- extent (raster.grid)
@@ -83,7 +69,6 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
     rst <- raster(xmn = ext@xmin, xmx = ext@xmax, ymn = ext@ymin, ymx = ext@ymax,
                   res = resolution.raster)
     }
-
   if(is.null(raster.grid)) {
     rst <- raster(xmn = -180, xmx = 180, ymn = -90, ymx = 90,
                   res = resolution.in.minutes/60)
@@ -102,49 +87,39 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
   df$Exclude <- dups
   df$Reason[f1] <- "Duplicated--GridCell"
 
-
   #indicate duplicates by grid cell (these needs updateing for efficiency)
   df.grid.dups <- df[which(df$Exclude==1),]
-
 
   #update df
   df <- df[which(df$Exclude==0),]
 
-
   #return
   return (list (Dups.Exact=df.exact.dups, Dups.Grid= df.grid.dups, continue = df))
-
 }
 
-
-
 #' @title SeaLand reassignement
-#' @descriptions Reassign coastal coordinates as needed
-#' @details (function inspiered in nearestcell in biogeo bu modified)
+#' @descriptions Reassign coastal coordinates as needed to be in 
+#' @details (function inspiered in nearestcell in biogeo but modified 
 #' @param dat Data.frame of species occurrences 
+#' @param rst raster class object.
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
-#' @param rst An optional raster grid
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author modified from Biogeo package
 #' @note
 #' @seealso
 #' @references
 #' @aliases
-#' @family
+#' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-#' @export
-
 nearestcell3 <- function (dat,
                           rst,
                           xf=x.field,
                           yf=y.field,
                           verbose=F) {
-  
-  #browser()
   dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
   fx <- which(dat$Exclude == 0)
@@ -154,39 +129,27 @@ nearestcell3 <- function (dat,
   dd <- data.frame(x1, y1)
   ce0 <- raster::cellFromXY(rst, dd)
   vals <- raster::extract(rst, dd)
-
   #if the input raster is a dataframe
   if (class(vals)=='matrix'){
     vals <- apply(vals,1,FUN = sum)
     f <- which(is.na(vals))
-
   } else {
     f <- which(is.na(vals))
   }
-
-
-
-
   if (length(f) == 0){ if(verbose) print ("There are no missing values") ; return (dat)}
-
   if (length (f) != 0){
     id  <- datid[f]
     ce1 <- cellFromXY(rst, dd[f, ])
-
     if (any (is.na(ce1))) {
-
       if (length(ce1) == 1) {if(verbose) print("Coordinates in sea are out of environmental extent"); return(dat)}
       if(verbose) print("Some coordinates out of raster extent")
     }
-
     ff  <- which(!is.na(ce1))
     ce3 <- ce1[ff]
     dd2 <- dd[ff, ]
     #to eliminiate
     id2 <- id[ff]
     bb  <- {}
-    
-
     for (i in 1:length(ce3)) {
       a <- raster::adjacent(rst, ce3[i], directions = 8, pairs = FALSE,
                     target = NULL, sorted = FALSE, include = FALSE, id = FALSE)
@@ -217,7 +180,6 @@ nearestcell3 <- function (dat,
         nr <- nce[fm, ]
         near <- rbind(near, nr)
       }
-
       mod <- format(Sys.time(), "%d-%m-%Y %H:%M:%S")
       dat$Modified <- as.character(dat$Modified)
       for (i in 1:nrow(near)) {
@@ -238,29 +200,29 @@ nearestcell3 <- function (dat,
       dat <- dat[,columnOut]
       datx <- list(dat = dat, moved = moved)
       return(datx)
-    }
-
-
-    else {
-      warning("There are no records close enough to the nearest land/sea cells"); return(dat)
+    } else {
+      warning("There are no records close enough to the nearest land/sea cells") 
+      return(dat)
     }
   }
 }
 
-
 #' @title Range analysis
-#'
-#' @description Range analysis of species records based on invsive and native country
-#' @details
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
-#' @param .ntv.ctry Native country in ISO3
-#' @param .inv.ctry Invasive country in ISO3
-#' @param .c.field  Country field in the species dataframe
-#' @param .points.proj4string Proj4string for dataframe
-#' @param .countries.shapefile spatialPolygonDataFrame indicating countries
-#' @param cfsf field of the country spatialPolygonDataFrame indicaing the country in ISO3
+#' @description Identify and filter species records based on countries where species is considered native or alien.
+#' @details It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
+#' @param df data.frame of species occurrences
+#' @param xf character. The field in the data.frame containing the x coordinates
+#' @param yf character. The field in the data.frame containing the y coordinates
+#' @param .ntv.ctry character. Native country in ISO3 coding
+#' @param .inv.ctry character. Invasive country in ISO3 coding
+#' @param .c.field character. Country field in the species data.frame (df)
+#' @param .points.proj4string Proj4string for the occurrence data
+#' @param .countries.shapefile spatialPolygonDataFrame of political divisions
+#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.
+#' @param excludeUnknownRanges logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE
+#' @param excludeNotmatchCountry Should records be if the reported country is different than the locatoin country? . Default FALSE
+#' @param doRangeAnalysis logical. Should range analysis be performed?
+#' @param verbose logical. Print messages?
 #' @return list
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -268,12 +230,11 @@ nearestcell3 <- function (dat,
 #' @seealso
 #' @references
 #' @aliases
-#' @family
+#' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
 #' @export
-
 countryStatusRangeAnalysis=function(df=dat,
                                     xf=x.field,
                                     yf=y.field,
@@ -291,51 +252,36 @@ countryStatusRangeAnalysis=function(df=dat,
   if (!doRangeAnalysis) {
     df$countryStatusRange_wrongNTV_value   <- NA
     df$countryStatusRange_wrongNTV_test   <- NA
-    
     df$countryStatusRange_wrongCTRY_value  <- NA
     df$countryStatusRange_wrongCTRY_test  <- NA
-    
     df$countryStatusRange_wrongINV_value <- NA
     df$countryStatusRange_wrongINV_test  <- NA
-    
     df$countryStatusRange_score <-NA
-
     stay = df[-1*1:nrow(df),]
     out <- list (stay=stay,continue = df)
     return (out)
-
   }
-
-
-  # df=dat; xf=x.field; yf=y.field; .ntv.ctry=ntv.ctry;
-  # .inv.ctry=inv.ctry;.c.field=c.field;.points.proj4string=points.proj4string;
-  # .countries.shapefile=countries.shapefile;cfsf = countryfield.shapefile;exclude.unknown.ranges = F;
-  # exclude.wrong.country.recorded = F; doRangeAnalysis=T; verbose=F
-
   #initial user information printing
   if (is.null (.ntv.ctry)  ) {if(verbose) print ('INFO: Species with no associated country. We assume all locations are native range')}
   if (is.null (.inv.ctry)  ) {if(verbose) print ('INFO: No invasive country provided. Analysis of invasive ranges not performed')}
   if (is.null (.c.field)   ) {if(verbose) print ('INFO: No info on table of country of registration. Analysis of country recorded vs. coordinates not performed')}
   xydat <- df[,c(xf,yf)]
-
   #check country of coordinates
-    #extract countries of the points with a given shapefile
+    #extract countries of the points with a given spdf object
     if (!is.null(.countries.shapefile)){
-
-      if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
+      if (is.null(.points.proj4string)) {
+        .points.proj4string <- .countries.shapefile@proj4string
+      if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))
+      }
       sp.xydat <- sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
       overlay.sp.xydat <- sp:::over(sp.xydat, .countries.shapefile)
       fieldname  <- match(cfsf, names(overlay.sp.xydat))
       country_ext <- overlay.sp.xydat[, fieldname]
-
-
     }
-
-    #extract countries of the points with when a country shapefile is not provided
+    #extract countries of the points with when a country spdf is not provided
     if (is.null(.countries.shapefile)){
       country_ext <- occTest:::.coords2country (xydat)
     }
-
   #inform for whether reported and country in coordinates (extracted country) differ 
   if (is.null (.c.field)) {
     if(verbose) print ("No country reported in occurrence database")
@@ -350,15 +296,13 @@ countryStatusRangeAnalysis=function(df=dat,
       warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
       wrong.ctry.reported <- rep (NA,length(country_ext))
     }
-    
     if (all(nchar (ctry.reported)==3,na.rm=T)) {
       #match reported country with extracted country
       wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
     }
 
   }
-
-  #inform for which extracted countries are not in the native range
+  #inform for which locations are not in the native range
   if(is.null (.ntv.ctry)) {
     if(verbose) print ('No info of native country. Assuming all records are native')
     wrong.ntv.ctry.xy <- rep (NA,length(country_ext))
@@ -367,7 +311,7 @@ countryStatusRangeAnalysis=function(df=dat,
     wrong.ntv.ctry.xy <- (! country_ext %in% .ntv.ctry) * 1
     }
 
-  #inform for which extracted countries are not in the invasive range
+  #inform for which locations are not in the invasive range
   if (is.null (.inv.ctry))   {
     if(verbose) print ('No info of invasive countries')
     wrong.inv.ctry.xy <- rep (NA,length(country_ext))
@@ -382,7 +326,6 @@ countryStatusRangeAnalysis=function(df=dat,
   df$countryStatusRange_wrongINV_value   <- wrong.inv.ctry.xy
   df$countryStatusRange_wrongINV_test   <- as.logical (wrong.inv.ctry.xy)
   
-
   #Exclusion from subsequent analysis for wrong native and invasive ranges
   #  (depending how much data has been provided)
   if (excludeUnknownRanges == T & !is.null(.ntv.ctry)  & !is.null(.inv.ctry) ){
@@ -398,41 +341,44 @@ countryStatusRangeAnalysis=function(df=dat,
 
   # Exclusion based on wrong country reported
   if  (excludeNotmatchCountry == T & !is.null (.c.field)) {
-
     exclusion.based.on.wrong <- df$Exclude  + (10*wrong.ctry.reported)
     only.wrong.reported.range <- which (exclusion.based.on.wrong == 10 )
     wrong.reported.range.and.informedrange <- which (exclusion.based.on.wrong == 11 )
-
     df$Reason [only.wrong.reported.range]  <- "Incongruence reported country and coordinates"
     df$Exclude [only.wrong.reported.range] <- 1
     df$Reason [wrong.reported.range.and.informedrange] <-"XY in not in invasive or native ranges;Incongruence reported country and coordinates"
-
   }
 
   #output
   df$countryStatusRange_score = occTest:::.gimme.score (df)
   out <- list (stay = df[which(df$Exclude==1),], continue = df[which(df$Exclude!=1),])
   return (out)
-
 }
 
-
 #' @title Centroid detection function
-#'
-#' @descriptions Detect centroids in occurrences dataframe
+#' @description Identify occurrence records located near centroids. 
 #' @details
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
-#' @param .ntv.ctry Native country in ISO3
-#' @param .inv.ctry Invasive country in ISO3
-#' @param .points.proj4string Proj4string argument
-#' @param .r.env R env
-#' @return list
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
+#' @param .c.field character. Country field in the species data.frame (df)
+#' @param .ntv.ctry character. ISO3 country codes where species are considered native
+#' @param idf character. Column with the taxon observation ID.
+#' @param .inv.ctry character. ISO3 country codes where species are considered alien
+#' @param .points.proj4string Proj4string argument. Coordinate reference system
+#' @param .r.env raster. Raster of environmental variables considered in the analysis
+#' @param .countries.shapefile spatialPolygonDataFrame of political divisions
+#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.
+#' @param method charcter. Vector with the methods to detect centroids
+#' @param do logical. Should range analysis be performed?
+#' @param verbose logical. Print messages?
+#' @return data.frame
 #' @keywords internal
+#' @details Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
+#' , and method 'CoordinateCleaner' implementing methods used in coordinateCleaner packge. 
 #' @author B Maitner, JM Serra-Diaz, C Merow
 #' @note
-#' @seealso
+#' @seealso coordinateCleaner package
 #' @references
 #' @aliases
 #' @family
@@ -454,14 +400,6 @@ centroidDetection <- function (df=dat,
                                 cfsf = countryfield.shapefile,
                                  method='all',
                                  do = T, verbose=F){
-
-  # df=dat;xf=x.field;yf=y.field;cf =c.field;
-  # .ntv.ctry=ntv.ctry; .inv.ctry=inv.ctry;
-  # .points.proj4string=points.proj4string
-  # .r.env=r.env;method='all';do = T
-
-
-
   #table of outputs
   out = data.frame (centroidDetection_BIEN_value=NA,
                     centroidDetection_BIEN_test=NA,
@@ -601,92 +539,6 @@ centroidDetection <- function (df=dat,
     
     
   }
-  
-  
-  #Method SpeciesGeoCodeR
-  # if (any(method %in% c('speciesGeoCodeR','all'))){
-  #   if(!"speciesgeocodeR" %in% rownames(installed.packages())){
-  #     if (verbose) message('speciesGeoCodeR package not installed. Check https://github.com/azizka/speciesgeocodeR/' )
-  #     out$centroidDetection_speciesGeoCodeR_test <- NA
-  #     out$centroidDetection_speciesGeoCodeR_comments <- NA
-  #   } else {
-  #     
-  #     #load country reference
-  #     #require (speciesgeocodeR)
-  #     #data('countryref')
-  #     countryref <- CoordinateCleaner::countryref
-  #     #get target centroids countries and their captials
-  #     country.names <- countryref$iso3
-  #     
-  #     #chunk if we were to match the countries provided by the user
-  #     #country.names <- c(.ntv.ctry,.inv.ctry)
-  #     #if (is.null(country.names)) {}
-  #     
-  #     centroid.ctry <- countryref [which (countryref$iso3 %in% country.names),c('centroid.lon','centroid.lat')]
-  #     names (centroid.ctry) <- c('lon','lat')
-  #     centroid.ctry.cap <-countryref [which (countryref$iso3 %in% country.names),c('capital.lon','capital.lat')]
-  #     names (centroid.ctry.cap) <- c('lon','lat')
-  #     centroids <- rbind (centroid.ctry,centroid.ctry.cap)
-  #     centroids <- centroids [complete.cases(centroids),]
-  #     
-  #     #way out if no countires
-  #     if (nrow (centroids) == 0 ) {
-  #       if(verbose) print (paste ('No centroids found for', country.names))
-  #       centroidDetection_speciesGeoCodeR_test <- 0
-  #       centroidDetection_speciesGeoCodeR_comments <- 'No country nor capital centroid found'
-  #     }
-  #     
-  #     #if we found them
-  #     if  (nrow (centroids) >0 ) {
-  #       #get raster cells in centroids
-  #       cc <- centroids
-  #       sp::coordinates (cc) <- ~lon+lat
-  #       sp::proj4string(cc) <- .points.proj4string
-  #       
-  #       #deal with projections
-  #       if (sp::proj4string(cc)  != raster::projection (.r.env)){
-  #         if (is.na(projection(.r.env)) ) {
-  #           sp::proj4string(cc) <- raster::projection(.r.env)
-  #           warning ('ASSUMING Centroids and Environmental data have the
-  #                  same projection')}
-  #         if (!is.na(projection(.r.env)) ) {
-  #           cc <- sp::spTransform(cc,CRSobj =projection(.r.env) )}
-  #       }
-  #       
-  #       #get raster cells in centroids
-  #       focal.cell.ids <- raster::cellFromXY (.r.env, cc)
-  #       focal.cells.ids <- focal.cell.ids[is.na(focal.cell.ids)]
-  #       neig.cells <- 8 #we could choose other
-  #       adj.cells  <- raster::adjacent (.r.env,cells = focal.cell.ids, directions = neig.cells, include = F, id=F)
-  #       cell.ids <- unique (as.vector(adj.cells))
-  #       cell.ids <- cell.ids[!is.na(cell.ids)]
-  #       if (length(cell.ids) == 0) cell.ids = 0
-  #       
-  #       #get species presence
-  #       data.sp.pres <- as.data.frame (df[,c(xf,yf)])
-  #       sp:::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
-  #       
-  #       #accomodate projections
-  #       if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- raster::projection(.r.env); warning ('ASSUMING Centroids and Environmental data have the same projection')}
-  #       if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
-  #       if (sp::proj4string(data.sp.pres) != raster::projection (.r.env)){
-  #         if (is.na(raster::projection(.r.env))) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Centroids and Environmental data have the same projection')}
-  #         if (!is.na (raster::projection (.r.env)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =raster::projection(.r.env) )}
-  #       }
-  #       
-  #       #get species presence cells
-  #       cell.ids.sp <- raster::cellFromXY (.r.env, data.sp.pres)
-  #       
-  #       #species presence in centroids or neighbors?
-  #       sp.in.centroid <- cell.ids.sp %in% cell.ids * 1
-  #       
-  #       out$centroidDetection_speciesGeoCodeR_test <- sp.in.centroid
-  #       out$centroidDetection_speciesGeoCodeR_comments <- NA
-  #     }
-  #     
-  #   }
-  #   
-  # }
   #Method CoordinateCleaner
   if (any(method %in% c('CoordinateCleaner','all'))){
 
@@ -701,31 +553,36 @@ centroidDetection <- function (df=dat,
     out$centroidDetection_CoordinateCleaner_comment [cc_cen_test==1] = 'ctry/prov centroid'
 
   }
-
   out$centroidDetection_score = occTest:::.gimme.score (x = out)
   return (out)
 
 }
 
-
 #' @title HYPER HUMAN ENVIRONMENT FUNCTION
-#'
 #' @description Detect occurrences in heavily human-impacted environments
-#' @details
+#' @details It uses several methods to detect records in high human influence records.\cr
+#' Current implemented methods are:
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
 #' @param .points.proj4string proj4string argument for dataframe
 #' @param ras.hii Raster of human influence index
 #' @param .th.human.influence threshold of human influence index
-#' @return list
+#' @param method='all',
+#' @param .points.proj4string=points.proj4string,
+#' @param ras.hii 
+#' @param .th.human.influence 
+#' @param do logical. Should range analysis be performed?
+#' @param verbose logical. Print messages?
+#' @param output.dir character. Output directory 
+#' @return data.frame
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
-#' @seealso
+#' @seealso cc_urb in CoordinateCleaner package.
 #' @references
 #' @aliases
-#' @family
+#' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -789,8 +646,6 @@ humanDetection <- function (df=dat,
 
   }
 
-
-
   #start urban areas
   if (any (method %in% c('urban','all')))  {
 
@@ -816,7 +671,6 @@ humanDetection <- function (df=dat,
 
 
 #' @title POTENTIAL BOTANIC GARDEN LOCALITY FROM NAME
-#'
 #' @description Detect occurrences potentially in botanical gardens via locality name
 #' @details
 #' @param df Data.frame of species occurrences
@@ -916,7 +770,6 @@ institutionLocality <- function (df=dat,
 
 
 #' @title ALPHA HULL OUTLIERS
-#'
 #' @descripion Detect geographical outliers using alphahulls
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates

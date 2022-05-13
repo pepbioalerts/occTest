@@ -429,7 +429,7 @@ occTest = function(
   message('Resolving coastal reassignment started...')
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
-  dat = nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  dat = occTest:::nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
   if(class(dat)== 'list'){

@@ -372,9 +372,7 @@ out <- occTest   (sp.name = 'My species',
 
 
 ```
-
-Let's filter the results with a rule based on majority and grouped based on 
-
+Now, flter the results with a rule based on majority and grouped based on 
 
 ```{r}
 outFiltered_byBlock  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testBlock' ) 

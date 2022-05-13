@@ -254,19 +254,15 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
 
 
 ### Check polygong geometry
-# #taken from the maptools package and from P Title in rangeBuilder
+# inspired provided by  maptools package and from P Title in rangeBuilder
 ##' @param obj an alpha hull object
 ##' @param properly logic. 
 ##' @param force logic.
 ##' @param useSTRtree logic. 
-##' @param proj4string crs object with the spatial projectoinsprojection
-##' @param tol numeric. tolerance
 ##' @return a sp polygon object
 ##' @author Pascal Title (original version), JM Serra-Diaz (modifications)
 ##' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
 ##' see maptools and RangeBuilder package 
-
-
 ##' @examples
 ##
 checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
