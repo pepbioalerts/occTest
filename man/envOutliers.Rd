@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Analysis.R
 \name{envOutliers}
 \alias{envOutliers}
-\title{ENVIRORNMENTAL OUTLIERS (using both jacknife and boxplot)}
+\title{Detect environmental outliers}
 \usage{
 envOutliers(
   .r.env = r.env,
@@ -36,7 +36,7 @@ envOutliers(
 list
 }
 \description{
-Detect environmental outliers using jacknife and boxplot
+Detect environmental outliers using different methods
 }
 \note{
 

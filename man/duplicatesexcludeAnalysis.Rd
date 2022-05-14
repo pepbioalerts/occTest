@@ -31,7 +31,7 @@ list of three components: Dups.Exact = exact duplicate records, Dups.Grid= dupli
 Duplicated records
 }
 \details{
-(inspired by biogeo duplicatesexclude function)
+it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 }
 \note{
 
@@ -50,5 +50,5 @@ example<-"goes here"
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
+\concept{Analysis}
 \keyword{internal}

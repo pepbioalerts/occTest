@@ -2,29 +2,46 @@
 % Please edit documentation in R/F_Analysis.R
 \name{institutionLocality}
 \alias{institutionLocality}
-\title{POTENTIAL BOTANIC GARDEN LOCALITY FROM NAME}
+\title{Detect botanic garden}
 \usage{
 institutionLocality(
   df = dat,
   xf = x.field,
   yf = y.field,
-  .points.proj4string = points.proj4string,
   lf = l.field,
   method = "all",
+  .points.proj4string = points.proj4string,
   do = T,
   verbose = F
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{data.frame of species occurrences}
 
-\item{lf}{The locality field in the dataframe, df.}
+\item{xf}{character. column name in df containing the x coordinates}
+
+\item{yf}{character. column name in df containing the y coordinates}
+
+\item{lf}{The locality field in df.}
+
+\item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+
+\item{.points.proj4string}{proj4string argument for df}
+
+\item{do}{logical. Should range analysis be performed?}
+
+\item{verbose}{logical. Print messages?}
 }
 \value{
-list
+data.frame
 }
 \description{
-Detect occurrences potentially in botanical gardens via locality name
+Detect occurrences potentially in biodiversity institutons using different methods
+}
+\details{
+current implemented methods are : \cr
+"fromCoordinates" (use information on localities of institutions, from CoordinateCleaner package) \cr
+"fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
 }
 \note{
 
@@ -38,10 +55,9 @@ example<-"goes here"
 
 }
 \seealso{
-
+CoordinateCleaner package
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \concept{}
-\keyword{internal}

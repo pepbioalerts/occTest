@@ -21,29 +21,40 @@ countryStatusRangeAnalysis(
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{data.frame of species occurrences}
 
-\item{xf}{the field in the dataframe containing the x cordinates}
+\item{xf}{character. The field in the data.frame containing the x coordinates}
 
-\item{yf}{the field in the dataframe containing the y cordinates}
+\item{yf}{character. The field in the data.frame containing the y coordinates}
 
-\item{.ntv.ctry}{Native country in ISO3}
+\item{.ntv.ctry}{character. Native country in ISO3 coding}
 
-\item{.inv.ctry}{Invasive country in ISO3}
+\item{.inv.ctry}{character. Invasive country in ISO3 coding}
 
-\item{.c.field}{Country field in the species dataframe}
+\item{.c.field}{character. Country field in the species data.frame (df)}
 
-\item{.points.proj4string}{Proj4string for dataframe}
+\item{.points.proj4string}{Proj4string for the occurrence data}
 
-\item{.countries.shapefile}{spatialPolygonDataFrame indicating countries}
+\item{.countries.shapefile}{spatialPolygonDataFrame of political divisions}
 
-\item{cfsf}{field of the country spatialPolygonDataFrame indicaing the country in ISO3}
+\item{cfsf}{character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.}
+
+\item{excludeUnknownRanges}{logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE}
+
+\item{excludeNotmatchCountry}{Should records be if the reported country is different than the locatoin country? . Default FALSE}
+
+\item{doRangeAnalysis}{logical. Should range analysis be performed?}
+
+\item{verbose}{logical. Print messages?}
 }
 \value{
 list
 }
 \description{
-Range analysis of species records based on invsive and native country
+Identify and filter species records based on countries where species is considered native or alien.
+}
+\details{
+It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
 }
 \note{
 
@@ -58,9 +69,13 @@ example<-"goes here"
 }
 \seealso{
 
+
+Other analysis: 
+\code{\link{humanDetection}()},
+\code{\link{nearestcell3}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
+\concept{analysis}
 \keyword{internal}

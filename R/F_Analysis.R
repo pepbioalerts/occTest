@@ -561,17 +561,19 @@ centroidDetection <- function (df=dat,
 #' @title HYPER HUMAN ENVIRONMENT FUNCTION
 #' @description Detect occurrences in heavily human-impacted environments
 #' @details It uses several methods to detect records in high human influence records.\cr
-#' Current implemented methods are:
+#' Current implemented methods are: \cr
+#' 'hii' using a raster and a threhold of human influence
+#' 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package. 
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
-#' @param .points.proj4string proj4string argument for dataframe
 #' @param ras.hii Raster of human influence index
 #' @param .th.human.influence threshold of human influence index
-#' @param method='all',
-#' @param .points.proj4string=points.proj4string,
-#' @param ras.hii 
-#' @param .th.human.influence 
+#' @param method character. Indicate which tests to use. Default 'all'. See Details
+#' @param .points.proj4string character. Points coordinate projection.
+#' @param ras.hii raster. Raster map of human influence index use
+#' @param .th.human.influence numeric. Threhold to identify places of high human influence
+#' @param .points.proj4string proj4string argument for df
 #' @param do logical. Should range analysis be performed?
 #' @param verbose logical. Print messages?
 #' @param output.dir character. Output directory 
@@ -589,13 +591,13 @@ centroidDetection <- function (df=dat,
 #' @export
 
 humanDetection <- function (df=dat,
-                                  xf=x.field,
-                                  yf=y.field,
-                                 method='all',
-                                  .points.proj4string=points.proj4string,
-                                  ras.hii=ras.hii,
-                                  .th.human.influence =th.human.influence,
-                                  do=T, verbose=F,output.dir=output.dir){
+                            xf=x.field,
+                            yf=y.field,
+                            method='all',
+                            ras.hii=ras.hii,
+                            .th.human.influence =th.human.influence,
+                            .points.proj4string=points.proj4string,
+                            do=T, verbose=F,output.dir=output.dir){
 
   out <- data.frame (HumanDetection_HumanInfluence_value=NA,
                      HumanDetection_HumanInfluence_test=NA,
@@ -670,16 +672,26 @@ humanDetection <- function (df=dat,
 }
 
 
-#' @title POTENTIAL BOTANIC GARDEN LOCALITY FROM NAME
-#' @description Detect occurrences potentially in botanical gardens via locality name
+#' @title Detect botanic garden 
+#' @description Detect occurrences potentially in biodiversity institutons using different methods
 #' @details
 #' @param df Data.frame of species occurrences
-#' @param lf The locality field in the dataframe, df.
-#' @return list
-#' @keywords internal
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
+#' @param lf The locality field in df.
+#' @param method charcter. Vector of methods to be used. See details. Default 'all'
+#' @param .points.proj4string proj4string argument for df
+#' @param do logical. Should range analysis be performed?
+#' @param verbose logical. Print messages?
+#' @return data.frame
+#' @details current implemented methods are : \cr
+#' "fromCoordinates" (use information on localities of institutions, from CoordinateCleaner package) \cr
+#' "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
+#' @keywords 
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
-#' @seealso
+#' @seealso CoordinateCleaner package
 #' @references
 #' @aliases
 #' @family
@@ -690,9 +702,9 @@ humanDetection <- function (df=dat,
 institutionLocality <- function (df=dat,
                                  xf=x.field,
                                  yf=y.field,
-                                 .points.proj4string=points.proj4string,
                                  lf=l.field,
                                  method='all',
+                                 .points.proj4string=points.proj4string,
                                  do=T, verbose=F
                                  ){
 
@@ -769,17 +781,29 @@ institutionLocality <- function (df=dat,
 }
 
 
-#' @title ALPHA HULL OUTLIERS
-#' @descripion Detect geographical outliers using alphahulls
+#' @title Detect geographic outliers
+#' @descripion Detect geographical outliers using several tests
 #' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
+#' @param xf the field in the dataframe containing the x coordinates
+#' @param yf the field in the dataframe containing the y coordinates
 #' @param .alpha.parameter parameter setting for alphahull
-#' @return list
+#' @param .distance.parameter numeric. Maximum distance allowed. Default to 1000
+#' @param .medianDeviation.parameter  numeric. Deviation parameter to . Default to 0.1
+#' @param method charcter. Vector of methods to be used. See details. Default 'all'
+#' @param .projString proj4string character. Indicate coordinate reference system
+#' @param do logical. Should tests be performed? Default T
+#' @param verbose logical. Print messages? Default F
+#' @details Methods implented are 'alphaHull', detecting species outside an alphaHull level (default 2), \cr
+#' 'alphaHull' \cr
+#' 'distance' corresponds to 'distance' method in  CoordinateCleaner::cc_outl(method='distance'). See ?CoordinateCleaner::cc_outl \cr
+#' 'median' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='mad'). See ?CoordinateCleaner::cc_outl \cr
+#' 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
+#' 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
+#' @return data.frame
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
-#' @seealso
+#' @seealso getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
 #' @references
 #' @aliases
 #' @family
@@ -787,6 +811,7 @@ institutionLocality <- function (df=dat,
 #' example<-"goes here"
 #' }
 #' @export
+
 geoOutliers         <- function (df=dat,
                                 xf=x.field,
                                 yf=y.field,
@@ -794,8 +819,8 @@ geoOutliers         <- function (df=dat,
                                 .distance.parameter=1000,
                                 .medianDeviation.parameter=5,
                                 .samplingIntensThreshold.parameter=0.1,
-                                .projString = points.| envOutliers    | 'bxp'  |  proj4string,
                                 method = 'all',
+                                .projString   = points.proj4string,
                                 do=T, verbose=F){
   
 
@@ -841,7 +866,7 @@ geoOutliers         <- function (df=dat,
       # points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
       #ahshape <- occTest:::.ah2sp(ah.2alpha)
       
-      points.outside.alphahull <- try (getPointsOutAlphaHull (xydat,alpha = .alpha.parameter), silent=T)
+      points.outside.alphahull <- try (occTest:::getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
@@ -956,7 +981,6 @@ geoOutliers         <- function (df=dat,
 
   if (any (method %in% c('distance','all'))){
     #create fake species list for Coordinate cleaner
-    
     df$species <- 'MyFakeSp'
     cc_dist_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
     cc_dist_test <- (!  cc_dist_test) 
@@ -1042,22 +1066,27 @@ geoOutliers         <- function (df=dat,
 }
 
 
-#Fut Develop: Potentially, we could use bicolim, my little playing around has found that it acutally takes some time to do the biclim algorithm rather than rev.jacknife
-#' @title ENVIRORNMENTAL OUTLIERS (using both jacknife and boxplot)
-#'
-#' @description Detect environmental outliers using jacknife and boxplot
+#' @title Detect environmental outliers
+#' @description Detect environmental outliers using different methods
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
-#' @param .r.env R enviroment
-#' @param .th.perc.outenv Something
+#' @param .r.env raster. Raster with environmental data
+#' @param .th.perc.outenv numeric. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.
 #' @param .sp.name Species name
-#' @param outlier.method  Method to use for detecting outliers.  Defaults to 'all'
-#' @return list
+#' @param method charcter. Vector of methods to be used. See details. Default 'all'
+#' @param .projString proj4string character. Indicate coordinate reference system
+#' @param do logical. Should tests be performed? Default T
+#' @param verbose logical. Print messages? Default F
+#' @return data.frame
+#' @details Implemented methods are :\cr
+#' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier \cr
+#' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
+#' Regardless of the method, the funcition already tests for missing evironmental variables and it outputs the result in the output data.frame
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
-#' @seealso
+#' @seealso findEnvOutliers
 #' @references
 #' @aliases
 #' @family
@@ -1065,10 +1094,11 @@ geoOutliers         <- function (df=dat,
 #' example<-"goes here"
 #' }
 #' @export
-envOutliers  <- function (.r.env=r.env,
+envOutliers  <- function (
                           df= dat,
                           xf=x.field,
                           yf =y.field,
+                          .r.env=r.env,
                           .th.perc.outenv = th.perc.outenv,
                           .sp.name = sp.name,
                           method='all',
@@ -1175,10 +1205,7 @@ envOutliers  <- function (.r.env=r.env,
 }
 
 
-
-
 #' @title Coordinate accuracy
-#'
 #' @description Detect environmental outliers using jacknife and boxplot
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates

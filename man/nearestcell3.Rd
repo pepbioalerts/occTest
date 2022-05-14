@@ -9,7 +9,7 @@ nearestcell3(dat, rst, xf = x.field, yf = y.field, verbose = F)
 \arguments{
 \item{dat}{Data.frame of species occurrences}
 
-\item{rst}{An optional raster grid}
+\item{rst}{raster class object.}
 
 \item{xf}{the field in the dataframe containing the x cordinates}
 
@@ -22,7 +22,7 @@ list
 SeaLand reassignement
 }
 \details{
-(function inspiered in nearestcell in biogeo bu modified)
+(function inspiered in nearestcell in biogeo but modified
 }
 \note{
 
@@ -37,9 +37,13 @@ example<-"goes here"
 }
 \seealso{
 
+
+Other analysis: 
+\code{\link{countryStatusRangeAnalysis}()},
+\code{\link{humanDetection}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+modified from Biogeo package
 }
-\concept{}
+\concept{analysis}
 \keyword{internal}

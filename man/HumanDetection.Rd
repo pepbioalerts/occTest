@@ -9,9 +9,9 @@ humanDetection(
   xf = x.field,
   yf = y.field,
   method = "all",
-  .points.proj4string = points.proj4string,
   ras.hii = ras.hii,
   .th.human.influence = th.human.influence,
+  .points.proj4string = points.proj4string,
   do = T,
   verbose = F,
   output.dir = output.dir
@@ -24,17 +24,31 @@ humanDetection(
 
 \item{yf}{the field in the dataframe containing the y cordinates}
 
-\item{.points.proj4string}{proj4string argument for dataframe}
+\item{method}{character. Indicate which tests to use. Default 'all'. See Details}
 
-\item{ras.hii}{Raster of human influence index}
+\item{ras.hii}{raster. Raster map of human influence index use}
 
-\item{.th.human.influence}{threshold of human influence index}
+\item{.th.human.influence}{numeric. Threhold to identify places of high human influence}
+
+\item{.points.proj4string}{proj4string argument for df}
+
+\item{do}{logical. Should range analysis be performed?}
+
+\item{verbose}{logical. Print messages?}
+
+\item{output.dir}{character. Output directory}
 }
 \value{
-list
+data.frame
 }
 \description{
 Detect occurrences in heavily human-impacted environments
+}
+\details{
+It uses several methods to detect records in high human influence records.\cr
+Current implemented methods are: \cr
+'hii' using a raster and a threhold of human influence
+'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package.
 }
 \note{
 
@@ -48,10 +62,14 @@ example<-"goes here"
 
 }
 \seealso{
+cc_urb in CoordinateCleaner package.
 
+Other analysis: 
+\code{\link{countryStatusRangeAnalysis}()},
+\code{\link{nearestcell3}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
+\concept{analysis}
 \keyword{internal}
