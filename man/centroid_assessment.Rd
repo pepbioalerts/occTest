@@ -6,8 +6,13 @@
 \usage{
 centroid_assessment(occurrences, centroid_data)
 }
+\arguments{
+\item{occurrences}{data.frame with occurrence data}
+
+\item{centroid_data}{data.frame with centroid coordinates for differenet administrative entities.}
+}
 \value{
-list
+data.frame
 }
 \description{
 Centroid assessment using BIEN methods

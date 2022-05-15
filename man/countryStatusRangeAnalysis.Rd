@@ -71,6 +71,7 @@ example<-"goes here"
 
 
 Other analysis: 
+\code{\link{geoEnvAccuracy}()},
 \code{\link{humanDetection}()},
 \code{\link{nearestcell3}()}
 }

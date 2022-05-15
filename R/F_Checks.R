@@ -1,7 +1,8 @@
-#'Checks on the projection of the spatial data
-#'
-#'Verify that all data are in the same projection
+# .check.geospatial.dat ====
+#' @title Checks on the projection of the spatial data
+#' @description Verify that all data are in the same projection
 #' @param list.geospatial.objects A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'
+#' @param verbose logical. Print messages?
 #' @return None. Used to generate warning messages.
 #' @family checks
 #' @examples \dontrun{
@@ -41,24 +42,23 @@
 }
 
 
-#checking main fields (inspired in addmainfields from biogeo). I put the number two because it consitutes a version 2 of the functions in biogeo
-
-#'Checking main fields
-#'
-#'Verify that all main data fields are correctly populated.
+# .checkfields ====
+#' @title Checking main fields
+#' @descriptoin Verify that all main data fields are correctly populated.
+#' @details  checking main fields (inspired in addmainfields from biogeo). I put the number two because it consitutes a version 2 of the functions in biogeo
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
 #' @param ef character. Name of the field where the elevation of data collection is stored in the original dataset. Default is e.field.
 #' @param tf character. Name of the field where the date of data collection is stored in the original dataset. Default is t.field.
 #' @param lf character. Name of the field where the toponim/location of data collection is stored in the original dataset. Default is l.field.
-#' @param cf character. Name of the field where the registred country of data collection is stored in the original dataset. Default is c.field.
+#' @param cf character. Name of the field where the registered country of data collection is stored in the original dataset. Default is c.field.
 #' @param idf character. Name of the field of the id of the observation
+#' @param verbose logical. Print messages?
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
 #' @examples \dontrun{
 #' @export
-#' checkfields()
 #' }
 .checkfields <- function (dat,
                          xf=x.field,
@@ -93,12 +93,14 @@
 }
 
 
-#'checking main fields
-#'
-#'Verify that all main data fields are correctly populated.
+# .checkdatastr2 ====
+#' @title Check data structure
+#' @description Verify that all main data fields are correctly structured
+#' @details Inspired by bioegeo functions
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
+#' @param verbose logical. Print messages?
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
 #' @note Inspired in addmainfields from biogeo
@@ -120,12 +122,14 @@
 }
 
 
-#'checking main fields
-#'
-#'Verify that all main data fields are correctly populated.
+# .addmainfields2 ====
+
+#' @titel Add main fields 
+#' @description Incorporate fields in the initial data frame
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param species character. Name of the species
-#' @return Original dataframe, dat.  Used primarily to generate warning messages.
+#' @param verbose logical. Print messages?
+#' @return Original dataframe, dat. 
 #' @family checks
 #' @examples \dontrun{
 #' Example<-"goes here"
@@ -158,32 +162,9 @@
   return(z)
 }
 
-
-
-#'checking main fields
-#'
-#'Check for missing fields.
-#' @param dat A dataframe containing occurrence data for checking.
-#' @param fields character. Fields to check
-#' @return Original dataframe, dat.  Used primarily to generate warning messages.
-#' @family checks
-#' @examples \dontrun{
-#' Example<-"goes here"
-#' }
-# fieldsMissing2 <- function (dat, fields) {
-#   ck <- checkDataStr2(dat,xf = x.field, yf = y.field)
-#   if (any(ck$Present == FALSE) == TRUE) {
-#     fa <- ck[ck$Present == FALSE, 1]
-#     fd <- as.character(fa)
-#     msg <- paste(fd, collapse = ", ")
-#     stop(paste("Fields missing: ", msg))
-#   }
-# }
-
-
-#'STATUS TRACKER AND WRITE OUTPUT
-#'
-#'Track status and write useful output
+# .status.tracker.and.escaping  ====
+#' @title Workflow status tracker
+#' @description Track status and write useful output
 #' @param dataset.to.continue A dataframe containing occurrence data for checking.
 #' @param wfo write full output
 #' @param wso write simple output
@@ -192,6 +173,7 @@
 #' @param od The output directory to use
 #' @param obf Output base filename
 #' @param sp character. Name of the species
+#' @param verbose logical. Print messages?
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
 #' @examples \dontrun{

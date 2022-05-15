@@ -12,18 +12,18 @@ geoOutliers(
   .distance.parameter = 1000,
   .medianDeviation.parameter = 5,
   .samplingIntensThreshold.parameter = 0.1,
-  .projString = points.proj4string,
   method = "all",
+  .projString = points.proj4string,
   do = T,
   verbose = F
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{data.frame of species occurrences}
 
-\item{xf}{the field in the dataframe containing the x coordinates}
+\item{xf}{character. column name in df containing the x coordinates}
 
-\item{yf}{the field in the dataframe containing the y coordinates}
+\item{yf}{character. column name in df containing the y coordinates}
 
 \item{.alpha.parameter}{parameter setting for alphahull}
 
@@ -31,9 +31,9 @@ geoOutliers(
 
 \item{.medianDeviation.parameter}{numeric. Deviation parameter to . Default to 0.1}
 
-\item{.projString}{proj4string character. Indicate coordinate reference system}
-
 \item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+
+\item{.projString}{proj4string character. Indicate coordinate reference system}
 
 \item{do}{logical. Should tests be performed? Default T}
 
@@ -68,7 +68,7 @@ example<-"goes here"
 getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com)
 }
 \concept{}
 \keyword{internal}

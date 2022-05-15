@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{showTests}
 \alias{showTests}
-\title{show implemented tests and types of tests}
+\title{Show implemented tests and types of tests}
 \usage{
 showTests()
 }

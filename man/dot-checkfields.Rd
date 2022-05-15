@@ -29,15 +29,20 @@
 
 \item{lf}{character. Name of the field where the toponim/location of data collection is stored in the original dataset. Default is l.field.}
 
-\item{cf}{character. Name of the field where the registred country of data collection is stored in the original dataset. Default is c.field.}
+\item{cf}{character. Name of the field where the registered country of data collection is stored in the original dataset. Default is c.field.}
 
 \item{idf}{character. Name of the field of the id of the observation}
+
+\item{verbose}{logical. Print messages?}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.
 }
 \description{
-Verify that all main data fields are correctly populated.
+Checking main fields
+}
+\details{
+checking main fields (inspired in addmainfields from biogeo). I put the number two because it consitutes a version 2 of the functions in biogeo
 }
 \seealso{
 Other checks: 

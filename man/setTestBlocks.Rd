@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{setTestBlocks}
 \alias{setTestBlocks}
-\title{set the important parameters}
+\title{Set the tests to run}
 \usage{
 setTestBlocks(geo = T, lu = T, env = T, time = T)
 }
@@ -10,7 +10,10 @@ setTestBlocks(geo = T, lu = T, env = T, time = T)
 list
 }
 \description{
-set the important parameters
+function used to select which groups of tests you want in occTest workflow
+}
+\details{
+See occTest::showTests for further information on tests used in the packages
 }
 \note{
 

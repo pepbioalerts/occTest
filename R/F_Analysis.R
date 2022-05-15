@@ -675,7 +675,6 @@ humanDetection <- function (df=dat,
 #' @title Detect botanic garden 
 #' @description Detect occurrences potentially in biodiversity institutons using different methods
 #' @details
-#' @param df Data.frame of species occurrences
 #' @param df data.frame of species occurrences
 #' @param xf character. column name in df containing the x coordinates
 #' @param yf character. column name in df containing the y coordinates
@@ -783,9 +782,9 @@ institutionLocality <- function (df=dat,
 
 #' @title Detect geographic outliers
 #' @descripion Detect geographical outliers using several tests
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x coordinates
-#' @param yf the field in the dataframe containing the y coordinates
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
 #' @param .alpha.parameter parameter setting for alphahull
 #' @param .distance.parameter numeric. Maximum distance allowed. Default to 1000
 #' @param .medianDeviation.parameter  numeric. Deviation parameter to . Default to 0.1
@@ -801,7 +800,7 @@ institutionLocality <- function (df=dat,
 #' 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
 #' @return data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com)
 #' @note
 #' @seealso getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
 #' @references
@@ -1068,9 +1067,9 @@ geoOutliers         <- function (df=dat,
 
 #' @title Detect environmental outliers
 #' @description Detect environmental outliers using different methods
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
 #' @param .r.env raster. Raster with environmental data
 #' @param .th.perc.outenv numeric. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.
 #' @param .sp.name Species name
@@ -1084,7 +1083,7 @@ geoOutliers         <- function (df=dat,
 #' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 #' Regardless of the method, the funcition already tests for missing evironmental variables and it outputs the result in the output data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com)
 #' @note
 #' @seealso findEnvOutliers
 #' @references
@@ -1206,28 +1205,52 @@ envOutliers  <- function (
 
 
 #' @title Coordinate accuracy
-#' @description Detect environmental outliers using jacknife and boxplot
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
-#' @param af the field where the geographic uncertainty is (in the same )
-#' @param .r.env R enviroment
-#' @param accept.threshold acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept
-#' @return
-#' @keywords Analysis
+#' @description Detect records with low accuracy in space and time 
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
+#' @param af character. column name in df containing the coordinate uncertainty value (in the same)
+#' @param dsf character. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)
+#' @param ef character. column name in df containing the registered elevation for the record. 
+#' @param tf character. column name in df containing the dataset with the date/time where the species is recorded
+#' @param method character. Vector of methods to be used. See details. Default 'all'
+#' @param .r.env raster. Raster with environmental data
+#' @param accept.threshold.cell numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5
+#' @param accept.threshold.env numeric. Default 0.5
+#' @param bearing.classes numeric. Default to 10.
+#' @param env.quantiles numeric. Default to c(0.3,0.7)
+#' @param elev.threshold numeric. Default to 100
+#' @param raster.elevation numeric. Default to 100
+#' @param do logical. Should tests be performed? Default T
+#' @param verbose logical. Print messages? Default F
+#' @param doParallel logical. Should computation use parallel functions? Default F
+#' @param mc.cores numeric. How many cores to use? (used when doParallel = T). Default 2 
+#' @return data.frame
+#' @keywords Analysis 
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @details Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
+#' Current implmented methods are:
+#' 'lattice' : tests for lattice arrangement in occurrence datasets. Borrowed from CoordinateCleaner::cd_round. \cr
+#' 'elevDiff' : assess the elevation difference between a given raster (or automatically downloaded fro SRTM), and the elevation recorded. If differences >elev.threshold then the record is considered as a low accuracy threshold\cr
+#' 'noDate' : assess whether there is a date or timestamp information in the record. \cr 
+#' 'noDateFormatKnown' : assess whether the information in the timestamp agrees with different formatting of Dates. \cr 
+#' 'outDateRange' : (not implemented) assess whether the record is within a user specified time frame. \cr 
+#' 'percDiffCell' : assess whether the record may be falling in a different raster cell given an information of coordinate accuracy. \cr 
+#' 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr 
 #' @note
-#' @seealso
+#' @seealso CoordinateCleaner::cd_round
 #' @references
 #' @aliases
-#' @family
+#' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
 #' @export
 
 geoEnvAccuracy  <- function (df,
-                             xf=x.field,yf=y.field,af=a.field,dsf=ds.field,ef =e.field,tf=t.field,
+                             xf=x.field,
+                             yf=y.field,
+                             af=a.field,dsf=ds.field,ef =e.field,tf=t.field,
                              
                              method='all',
                              
@@ -1295,7 +1318,6 @@ geoEnvAccuracy  <- function (df,
   if (doParallel==F) {mymclapply <- lapply}
   
   #start method lattice
-  
   if (any(method %in% c('lattice','all'))){
     
     if(!is.null(dsf)) {
@@ -1345,7 +1367,6 @@ geoEnvAccuracy  <- function (df,
     }
     
   }
-  
   
   #has time stamp? 
   if (any(method %in% c('noDate','all'))) {
@@ -1407,7 +1428,6 @@ geoEnvAccuracy  <- function (df,
   }
   
   #is within time range ?
-  
   if (any(method %in% c('outDateRange','all'))) {
     if (!is.null(tf)){
       
@@ -1416,7 +1436,6 @@ geoEnvAccuracy  <- function (df,
     }
     
   }
-  
   
   #Need coordinate uncertainty analysis ?
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
@@ -1537,22 +1556,28 @@ geoEnvAccuracy  <- function (df,
     
   }
   
-
-  
   #write final score
   out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
   return (out)
 }
 
 
-#'QUALITY GRADINGS
+
+#' @title Selection of records within a specified land use 
 #'
-#'Assess record quality
-#' @param df Data.frame of species occurrences
-#' @param qfield Field to add quality information in, default is "quality.comment"
-#' @param new.comment New comment
-#' @param separation.charachter Character to separate comments (?)
-#' @return list
+#' @descriptions Selection of records within a specified land use 
+#' @details
+#' @param df data.frame of species occurrences
+#' @param xf character. column name in df containing the x coordinates
+#' @param yf character. column name in df containing the y coordinates
+#' @param method character. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)
+#' @param .points.proj4string proj4string character. Indicate coordinate reference system
+#' @param ras.landUse raster. Land use raster with integer codes for land use classes.
+#' @param .landUseCodes numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')
+#' @param do logical. Should range analysis be performed?
+#' @param verbose logical. Print messages?
+#' @param output.dir character. Output directory
+#' @return data.frame
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
@@ -1563,15 +1588,64 @@ geoEnvAccuracy  <- function (df,
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-#'
-#'
-.add.to.qfield <- function (x,qfield='quality.comment',new.comment,separation.charachter=';'){
-  stopifnot(is.data.frame(x))
-  stopifnot(nrow(x) ==1)
+#' @export
 
-
-  if(is.na (x[1,qfield])) {x[1,qfield] <- new.comment} else {x[1,qfield] <- paste (x[1,qfield],new.comment,collapse = separation.charachter)}
-
+landUseSelect <- function (df=dat,
+                           xf=x.field,
+                           yf=y.field,
+                           method='in', #out would be the other one
+                           .points.proj4string=points.proj4string,
+                           ras.landUse=ras.landUse,
+                           .landUseCodes = landUseCodes,
+                           do=T, verbose=F,output.dir=output.dir){
+  
+  
+  out <- data.frame (landUse_wrongLU_value=NA,
+                     landUse_wrongLU_test=NA,
+                     landUse_wrongLU_comments= NA)[1:nrow (df),]
+  row.names(out) <- NULL
+  
+  if (!do) {return (out)}
+  
+  #start human influence analysis
+  xydat <- df[,c(xf,yf)]
+  
+  #get species presence
+  data.sp.pres <- as.data.frame (xydat)
+  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  
+  #start with land use raster
+  if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
+  
+  #accommodate projections
+  if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
+  if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
+  if (sp::proj4string(data.sp.pres) != projection (ras.landUse)){
+    if (is.na (projection (ras.landUse)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
+    if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
+  }
+  
+  lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)
+  row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
+  if (length (row.id.lu.NA) != 0) {
+    output.comments <- rep (NA,length =nrow (xydat))
+    output.comments [row.id.lu.NA] <- paste0('No land cover available for this record;' )
+  }
+  
+  lu.sp.value = lu.sp.pres[,2]
+  
+  if (method %in% c('in','all'))   {lu.sp.pres <- ( lu.sp.value %in% .landUseCodes)}
+  if (method %in% c('out'))        {lu.sp.pres <- (!lu.sp.value %in% .landUseCodes)}
+  
+  out$landUse_wrongLU_value= !lu.sp.pres * 1
+  out$landUse_wrongLU_test= !lu.sp.pres
+  out$landUse_wrongLU_comments= paste(method,.landUseCodes)
+  
+  #compute score
+  out$landUse_score <- occTest:::.gimme.score (out)
+  
+  
+  return (out)
 }
 
 
@@ -1580,8 +1654,9 @@ geoEnvAccuracy  <- function (df,
 #'
 #' @descriptions Detect centroids in occurrences dataframe using BIEN methods
 #' @details
-#' @param 
-#' @return list
+#' @param occurrences data.frame with occurrence data
+#' @param centroid_data data.frame with centroid coordinates for differenet administrative entities. 
+#' @return data.frame
 #' @keywords internal
 #' @author Brian Maitner
 #' @note
@@ -1592,8 +1667,6 @@ geoEnvAccuracy  <- function (df,
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-# #' @export
-
 
 centroid_assessment<-function(occurrences,centroid_data){
   
@@ -1806,81 +1879,5 @@ centroid_assessment<-function(occurrences,centroid_data){
 }
 
 
-
-#' @title Selection of records within a land use selectino
-#'
-#' @descriptions Selection of records within a land use selection
-#' @details
-#' @param 
-#' @return data.frame
-#' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
-# #' @export
-
-landUseSelect <- function (df=dat,
-                            xf=x.field,
-                            yf=y.field,
-                            method='in', #out would be the other one
-                            .points.proj4string=points.proj4string,
-                             ras.landUse=ras.landUse,
-                           .landUseCodes = landUseCodes,
-                            do=T, verbose=F,output.dir=output.dir){
-  
-
-  out <- data.frame (landUse_wrongLU_value=NA,
-                     landUse_wrongLU_test=NA,
-                     landUse_wrongLU_comments= NA)[1:nrow (df),]
-  row.names(out) <- NULL
-  
-  if (!do) {return (out)}
-  
-  #start human influence analysis
-  xydat <- df[,c(xf,yf)]
-  
-  #get species presence
-  data.sp.pres <- as.data.frame (xydat)
-  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
-  
-  #start with land use raster
-  if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
-    
-    #accommodate projections
-    if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
-    if (!is.null (.points.proj4string)) {sp::proj4string(data.sp.pres) <- .points.proj4string}
-    if (sp::proj4string(data.sp.pres) != projection (ras.landUse)){
-      if (is.na (projection (ras.landUse)) ) {sp::proj4string(data.sp.pres) <- NA ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
-      if (!is.na (projection (ras.landUse)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =projection(ras.landUse) )}
-    }
-    
-    lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)
-    row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
-    if (length (row.id.lu.NA) != 0) {
-      output.comments <- rep (NA,length =nrow (xydat))
-      output.comments [row.id.lu.NA] <- paste0('No land cover available for this record;' )
-    }
-    
-    lu.sp.value = lu.sp.pres[,2]
-    
-    if (method %in% c('in','all'))   {lu.sp.pres <- ( lu.sp.value %in% .landUseCodes)}
-    if (method %in% c('out'))        {lu.sp.pres <- (!lu.sp.value %in% .landUseCodes)}
-    
-    out$landUse_wrongLU_value= !lu.sp.pres * 1
-    out$landUse_wrongLU_test= !lu.sp.pres
-    out$landUse_wrongLU_comments= paste(method,.landUseCodes)
-    
-     #compute score
-     out$landUse_score <- occTest:::.gimme.score (out)
-  
-  
-  return (out)
-}
 
 

@@ -66,6 +66,7 @@ cc_urb in CoordinateCleaner package.
 
 Other analysis: 
 \code{\link{countryStatusRangeAnalysis}()},
+\code{\link{geoEnvAccuracy}()},
 \code{\link{nearestcell3}()}
 }
 \author{

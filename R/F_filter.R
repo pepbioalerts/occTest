@@ -1,49 +1,18 @@
-####### FILTERING OCCURRENCE 
-
-
-
-#' @title Build tables of user specified filters 
-#' @descriptions This function is used to build a table of customThresholds specified by the user to be used in occFilter
-#' @details
-#' @param 
-#' @return data.frame
-#' @keywords filter
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @param df data.frame outputed from occurrenceClassify
-#' @param level numeric Level of application of the filtering process.
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
-# #' @export
-
-buildCustomThresholds <- function (df,level){
-  
-  #not implemented
-  
-
-  
-  
-}
-
-
-#' @title Filter occurrence records
+# occFilter ====
+#' @title Filter occurrence records from occTest outputs
 #' @descriptions Select occurrence records based on aggregated values of different tests
 #' @details
 #' @param 
 #' @return list of 2 data.frames
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @param df data.frame outputed from occurrenceClassify
+#' @param df data.frame. Output of  occTest
 #' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )
-#' @param threshold  character. Phylosophy for filtering based on threshold. Option are majority, relaxed, stringent 
-#' @param customThresholds data.frame. Specify for each dimension of flags the specific threshold to use. It overides the parameters in thresholds. We recomend building that table based on the functio buildCustomThresholds.
+#' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, stringent. Default are 'relaxed'
+#' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
+#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
 #' @note
-#' @seealso
+#' @seealso showTests
 #' @references
 #' @aliases
 #' @family
@@ -57,12 +26,11 @@ occFilter <- function (df,
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL) {
 
-   #load pipes (need to change, you do not call libraries in fucntions)
-   # usethis::use_pipe()
-   # library (magrittr)
+  #load pipes (need to change, you do not call libraries in functions)
+  # usethis::use_pipe()
+  # library (magrittr)
 
   #load column metadata
-   #colMetaData = read.csv  (system.file('ext/fieldMetadata.csv',package='occTest'))
    colMetaData = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
    colMetaData = dplyr::as_tibble(colMetaData)
    
@@ -127,3 +95,4 @@ occFilter <- function (df,
         rule = c(errorAcceptance,errorThreshold))
 
 }
+

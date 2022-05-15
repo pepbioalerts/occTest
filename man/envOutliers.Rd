@@ -5,10 +5,10 @@
 \title{Detect environmental outliers}
 \usage{
 envOutliers(
-  .r.env = r.env,
   df = dat,
   xf = x.field,
   yf = y.field,
+  .r.env = r.env,
   .th.perc.outenv = th.perc.outenv,
   .sp.name = sp.name,
   method = "all",
@@ -18,25 +18,37 @@ envOutliers(
 )
 }
 \arguments{
-\item{.r.env}{R enviroment}
+\item{df}{data.frame of species occurrences}
 
-\item{df}{Data.frame of species occurrences}
+\item{xf}{character. column name in df containing the x coordinates}
 
-\item{xf}{the field in the dataframe containing the x cordinates}
+\item{yf}{character. column name in df containing the y coordinates}
 
-\item{yf}{the field in the dataframe containing the y cordinates}
+\item{.r.env}{raster. Raster with environmental data}
 
-\item{.th.perc.outenv}{Something}
+\item{.th.perc.outenv}{numeric. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.}
 
 \item{.sp.name}{Species name}
 
-\item{outlier.method}{Method to use for detecting outliers.  Defaults to 'all'}
+\item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+
+\item{.projString}{proj4string character. Indicate coordinate reference system}
+
+\item{do}{logical. Should tests be performed? Default T}
+
+\item{verbose}{logical. Print messages? Default F}
 }
 \value{
-list
+data.frame
 }
 \description{
 Detect environmental outliers using different methods
+}
+\details{
+Implemented methods are :\cr
+'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier \cr
+'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
+Regardless of the method, the funcition already tests for missing evironmental variables and it outputs the result in the output data.frame
 }
 \note{
 
@@ -50,10 +62,10 @@ example<-"goes here"
 
 }
 \seealso{
-
+findEnvOutliers
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com)
 }
 \concept{}
 \keyword{internal}

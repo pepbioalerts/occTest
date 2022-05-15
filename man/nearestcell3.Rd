@@ -40,6 +40,7 @@ example<-"goes here"
 
 Other analysis: 
 \code{\link{countryStatusRangeAnalysis}()},
+\code{\link{geoEnvAccuracy}()},
 \code{\link{humanDetection}()}
 }
 \author{

@@ -28,23 +28,60 @@ geoEnvAccuracy(
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{data.frame of species occurrences}
 
-\item{xf}{the field in the dataframe containing the x cordinates}
+\item{xf}{character. column name in df containing the x coordinates}
 
-\item{yf}{the field in the dataframe containing the y cordinates}
+\item{yf}{character. column name in df containing the y coordinates}
 
-\item{af}{the field where the geographic uncertainty is (in the same )}
+\item{af}{character. column name in df containing the coordinate uncertainty value (in the same)}
 
-\item{.r.env}{R enviroment}
+\item{dsf}{character. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)}
 
-\item{accept.threshold}{acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept}
+\item{ef}{character. column name in df containing the registered elevation for the record.}
+
+\item{tf}{character. column name in df containing the dataset with the date/time where the species is recorded}
+
+\item{method}{character. Vector of methods to be used. See details. Default 'all'}
+
+\item{accept.threshold.cell}{numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5}
+
+\item{accept.threshold.env}{numeric. Default 0.5}
+
+\item{bearing.classes}{numeric. Default to 10.}
+
+\item{env.quantiles}{numeric. Default to c(0.3,0.7)}
+
+\item{elev.threshold}{numeric. Default to 100}
+
+\item{raster.elevation}{numeric. Default to 100}
+
+\item{verbose}{logical. Print messages? Default F}
+
+\item{do}{logical. Should tests be performed? Default T}
+
+\item{doParallel}{logical. Should computation use parallel functions? Default F}
+
+\item{mc.cores}{numeric. How many cores to use? (used when doParallel = T). Default 2}
+
+\item{.r.env}{raster. Raster with environmental data}
 }
 \value{
-
+data.frame
 }
 \description{
-Detect environmental outliers using jacknife and boxplot
+Detect records with low accuracy in space and time
+}
+\details{
+Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
+Current implmented methods are:
+'lattice' : tests for lattice arrangement in occurrence datasets. Borrowed from CoordinateCleaner::cd_round. \cr
+'elevDiff' : assess the elevation difference between a given raster (or automatically downloaded fro SRTM), and the elevation recorded. If differences >elev.threshold then the record is considered as a low accuracy threshold\cr
+'noDate' : assess whether there is a date or timestamp information in the record. \cr 
+'noDateFormatKnown' : assess whether the information in the timestamp agrees with different formatting of Dates. \cr 
+'outDateRange' : (not implemented) assess whether the record is within a user specified time frame. \cr 
+'percDiffCell' : assess whether the record may be falling in a different raster cell given an information of coordinate accuracy. \cr 
+'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr
 }
 \note{
 
@@ -58,10 +95,15 @@ example<-"goes here"
 
 }
 \seealso{
+CoordinateCleaner::cd_round
 
+Other analysis: 
+\code{\link{countryStatusRangeAnalysis}()},
+\code{\link{humanDetection}()},
+\code{\link{nearestcell3}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
+\concept{analysis}
 \keyword{Analysis}

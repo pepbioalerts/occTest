@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_filter.R
 \name{occFilter}
 \alias{occFilter}
-\title{Filter occurrence records}
+\title{Filter occurrence records from occTest outputs}
 \usage{
 occFilter(
   df,
@@ -12,19 +12,22 @@ occFilter(
 )
 }
 \arguments{
-\item{df}{data.frame outputed from occurrenceClassify}
+\item{df}{data.frame. Output of  occTest}
 
 \item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )}
 
-\item{threshold}{character. Phylosophy for filtering based on threshold. Option are majority, relaxed, stringent}
+\item{errorAcceptance}{character. Philosophy for filtering based on threshold. Option are majority, relaxed, stringent. Default are 'relaxed'}
 
-\item{customThresholds}{data.frame. Specify for each dimension of flags the specific threshold to use. It overides the parameters in thresholds. We recomend building that table based on the functio buildCustomThresholds.}
+\item{errorThreshold}{double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.}
 }
 \value{
 list of 2 data.frames
 }
 \description{
-Filter occurrence records
+Filter occurrence records from occTest outputs
+}
+\details{
+If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
 }
 \note{
 
@@ -38,7 +41,7 @@ example<-"goes here"
 
 }
 \seealso{
-
+showTests
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
