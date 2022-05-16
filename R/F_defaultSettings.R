@@ -257,7 +257,7 @@ setTestBlocks      <- function (geo = T,
   return (newParamsList)
 }
 
-
+# showTests ====
 #' @title Show implemented tests and types of tests 
 #' @description prints a table with the column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
@@ -282,10 +282,10 @@ showTests<- function (){
 
 
 # minimalSettings ====
-#' @title Load miniaml settings for occTest 
+#' @title Load minimal settings for occTest 
 #' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest. It avoids using  some functions of the pkg under development.
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
-#' @return list of lists with all different parameters to use in occProfile function
+#' @return list of lists with all different parameters to use in occTest function
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note

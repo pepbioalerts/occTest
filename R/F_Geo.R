@@ -1,7 +1,12 @@
-#' Identifies country ISO3 based on locations
-#'
-#' extracts data from database 
+### COLLECTION OF GEOGRAPHIC INFORMATION FUNCTIONS ###
+
+#.coords2country =====
+#' @title Extracts country ISO3 based on locations
 #' @param points A dataframe with x and y coordinates
+#' @param .countries.shapefile SpatialPolygonsDataFrame of world countries and their associated ISO3 codes
+#' @param .points.proj4string Proj4string for the occurrence data
+#' @param ctryNameField character. Column name in .countries shapefile where ISO3 are indicated
+#' @param verbose logical. Print messages?
 #' @return Factor with ISO3 codes for countries 
 #' @family Geo
 #' @examples \dontrun{
@@ -12,7 +17,10 @@
 #   - column 1 contains the longitude in degrees
 #   - column 2 contains the latitude in degrees
 # ,GNRScheck=F (whether we want to implement a gnrs check)
-.coords2country = function(xydat,.countries.shapefile=NULL,.points.proj4string=NULL,ctryNameField=NULL,verbose=F){  
+.coords2country = function(xydat,
+                           .countries.shapefile=NULL,
+                           .points.proj4string=NULL,
+                           ctryNameField=NULL,verbose=F){  
   if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap:::getMap(resolution='high') ;  ctryNameField ='ISO3'}
   if (!class(.countries.shapefile)== 'SpatialPolygonsDataFrame') {stop (".countries shapefile not loaded ")}
   if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
@@ -23,23 +31,20 @@
   }
   
 
-
-
-#' Extracts a dataframe based on dataframe of xy locations
-#'
-#' Based on getData from raster
+#.getSRTM =====
+#' @title Download SRTM elevation raster
 #' @param xydat A dataframe with x and y coordinates
 #' @param download Default to T. Whether the data should be downloaded 
 #' @param path where the downloads should go. Default to the currendt directory
 #' @param verbose if you want to print messages of progress or warnings
-#' @param 
-#' @return Factor with ISO3 codes for countries 
+#' @details Basedd on getData from raster
+#' @return raster
 #' @family Geo
+#' @seealso  raster::getData
 #' @examples \dontrun{
 #'
 #' }
 #' 
-
 .getSRTM = function (xydat,download=T,path=getwd(), verbose=F) {
   #get file names of the tiles in srtm
   file.tiles = sapply ( 1:nrow (xydat), function (i) {
@@ -63,7 +68,7 @@
   })
   file.tiles <- unique (file.tiles)
   
-  #download ouptus
+  #download outputs
   ras.list = lapply (file.tiles, function (f){
     baseurl <- "http://srtm.csi.cgiar.org/wp-content/uploads/files/srtm_5x5/TIFF/"
     zipfilename <- file.path(path, f)

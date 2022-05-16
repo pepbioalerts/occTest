@@ -17,15 +17,15 @@ cc_urb_occTest(
 \arguments{
 \item{x}{Data.frame of species occurrences}
 
-\item{lon}{}
+\item{lon}{character. Column name in x with decimal longitude values}
 
-\item{lat}{}
+\item{lat}{character. Column name in x with decimal latitude values}
 
-\item{ref}{}
+\item{value}{character string. Defining the output value. See value.}
 
-\item{value}{}
+\item{verbose}{logical. If TRUE reports the name of the test and the number of records flagged.}
 
-\item{verbose}{}
+\item{a}{SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download().}
 }
 \value{
 
@@ -43,13 +43,13 @@ example<-"goes here"
 
 }
 \references{
-
+CoordinateCleaner package
 }
 \seealso{
-
+CoordinateCleaner::cc_urb
 }
 \author{
-author of the coordinatecleaner package (Zizka)
+
 }
 \concept{}
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Analysis.R
 \name{institutionLocality}
 \alias{institutionLocality}
-\title{Detect botanic garden}
+\title{Detect biodiversity institutions}
 \usage{
 institutionLocality(
   df = dat,
@@ -36,7 +36,7 @@ institutionLocality(
 data.frame
 }
 \description{
-Detect occurrences potentially in biodiversity institutons using different methods
+Detect occurrences potentially in biodiversity institutions using different methods
 }
 \details{
 current implemented methods are : \cr

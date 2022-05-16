@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Geo.R
 \name{.coords2country}
 \alias{.coords2country}
-\title{Identifies country ISO3 based on locations}
+\title{Extracts country ISO3 based on locations}
 \usage{
 .coords2country(
   xydat,
@@ -13,13 +13,21 @@
 )
 }
 \arguments{
+\item{.countries.shapefile}{SpatialPolygonsDataFrame of world countries and their associated ISO3 codes}
+
+\item{.points.proj4string}{Proj4string for the occurrence data}
+
+\item{ctryNameField}{character. Column name in .countries shapefile where ISO3 are indicated}
+
+\item{verbose}{logical. Print messages?}
+
 \item{points}{A dataframe with x and y coordinates}
 }
 \value{
 Factor with ISO3 codes for countries
 }
 \description{
-extracts data from database
+Extracts country ISO3 based on locations
 }
 \examples{
 \dontrun{

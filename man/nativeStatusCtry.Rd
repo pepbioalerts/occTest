@@ -27,10 +27,10 @@ nativeStatusCtry(
 list with two vectors: ntvCtry and invCtry, showing the countries in ISO3 standard codes
 }
 \description{
-performs several queries to
+performs several queries based on the orignir package to identify native and invasive range status for a given species
 }
 \details{
-right now based on the package originatr. Future implementation may query more databases.
+right now based on the package originr, which queries on Flora Europea, GISD or Native species resolver. Future implementation may query more databases.
 }
 \note{
 
@@ -45,9 +45,12 @@ example<-"goes here"
 }
 \seealso{
 
+
+Other spStatus: 
+\code{\link{ctryToIso3}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
+\concept{spStatus}
 \keyword{internal}
