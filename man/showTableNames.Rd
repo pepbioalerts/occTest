@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{showTableNames}
 \alias{showTableNames}
-\title{show the conventions on names for column names}
+\title{Print naming conventions in occTest}
 \usage{
 showTableNames()
 }
@@ -10,7 +10,7 @@ showTableNames()
 prints a dataframe
 }
 \description{
-prints a table with the column names
+prints a table with the the conventions used for column names
 }
 \details{
 The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions.

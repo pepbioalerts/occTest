@@ -1,10 +1,9 @@
+# defaultSettings ====
 #' @title load default settings for occTest
-#'
 #' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
 #' @return list of lists with all different parameters to use in occProfile function
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -15,8 +14,6 @@
 #' example<-"goes here"
 #' }
 #' @export
-
-
 defaultSettings <- function (x){
   
   require (rnaturalearth)
@@ -116,15 +113,12 @@ defaultSettings <- function (x){
   
 }
 
-
-
-#' @title show the conventions on names for column names
-#'
-#' @description prints a table with the column names
+# showTableNames ====
+#' @title Print naming conventions in occTest
+#' @description prints a table with the the conventions used for column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
 #' @return prints a dataframe
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -135,20 +129,17 @@ defaultSettings <- function (x){
 #' example<-"goes here"
 #' }
 #' @export
-
 showTableNames <- function (){
   tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
   DT::datatable(tabNames)
 }
 
-
+# setTableNames ====
 #' @title set table names internally
-#'
 #' @description
 #' @details 
 #' @return list
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -159,7 +150,6 @@ showTableNames <- function (){
 #' example<-"goes here"
 #' }
 #' @export
-
 setTableNames <- function (x.field = NULL,
                            y.field = NULL,
                            t.field = NULL,
@@ -179,14 +169,12 @@ setTableNames <- function (x.field = NULL,
   return (targetList)
 }
 
-
-#' @title set the important parameters
-#'
-#' @description
-#' @details 
-#' @return list
+# setTestTypes ====
+#' @title Set the tests to run
+#' @description function used to select which types of tests you want in occTest workflow
+#' @details See occTest::showTests for further information on tests used in the packages
+#' @return list with user modified settings
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -197,7 +185,6 @@ setTableNames <- function (x.field = NULL,
 #' example<-"goes here"
 #' }
 #' @export
-
 setTestTypes <- function (countryStatusRange = T,
                       centroidDetection = T,
                       humanDetection = T,
@@ -221,11 +208,10 @@ setTestTypes <- function (countryStatusRange = T,
   return (targetList)
 }
 
-
-#' @title set the important parameters
-#'
-#' @description
-#' @details 
+# setTestBlocks ====
+#' @title Set the tests to run
+#' @description function used to select which groups of tests you want in occTest workflow
+#' @details See occTest::showTests for further information on tests used in the packages
 #' @return list
 #' @keywords user
 #'
@@ -239,7 +225,6 @@ setTestTypes <- function (countryStatusRange = T,
 #' example<-"goes here"
 #' }
 #' @export
-
 setTestBlocks      <- function (geo = T,
                                 lu = T,
                                 env = T,
@@ -273,8 +258,7 @@ setTestBlocks      <- function (geo = T,
 }
 
 
-#' @title show implemented tests and types of tests 
-#'
+#' @title Show implemented tests and types of tests 
 #' @description prints a table with the column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
 #' @return prints a dataframe
@@ -297,14 +281,12 @@ showTests<- function (){
 }
 
 
-
-#' @title load miniaml settings for occTest without some functions of pkgs under development.
-#'
-#' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest. Mainly used for testing the pkg
+# minimalSettings ====
+#' @title Load miniaml settings for occTest 
+#' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest. It avoids using  some functions of the pkg under development.
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
 #' @return list of lists with all different parameters to use in occProfile function
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
@@ -315,7 +297,6 @@ showTests<- function (){
 #' example<-"goes here"
 #' }
 #' @export
-
 
 minimalSettings <- function (x){
   defaultSettings = list (

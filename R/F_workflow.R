@@ -374,7 +374,7 @@ occurrenceClassify_orignial <- function (
   tictoc:::tic('Filter G part 2')
   if (verbose) {print ("**** RESOLIVNG QUALITY FILTER G: sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
-  dat <- nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  dat <- occTest:::nearestcell3 (dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
   if (class (dat) == 'list') {

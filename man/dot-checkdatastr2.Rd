@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Checks.R
 \name{.checkdatastr2}
 \alias{.checkdatastr2}
-\title{checking main fields}
+\title{Check data structure}
 \usage{
 .checkdatastr2(dat, xf = x.field, yf = y.field, verbose = F)
 }
@@ -12,12 +12,17 @@
 \item{xf}{character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field}
 
 \item{yf}{character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field}
+
+\item{verbose}{logical. Print messages?}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.
 }
 \description{
-Verify that all main data fields are correctly populated.
+Verify that all main data fields are correctly structured
+}
+\details{
+Inspired by bioegeo functions
 }
 \note{
 Inspired in addmainfields from biogeo

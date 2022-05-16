@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Analysis.R
 \name{landUseSelect}
 \alias{landUseSelect}
-\title{Selection of records within a land use selectino}
+\title{Selection of records within a specified land use}
 \usage{
 landUseSelect(
   df = dat,
@@ -17,11 +17,32 @@ landUseSelect(
   output.dir = output.dir
 )
 }
+\arguments{
+\item{df}{data.frame of species occurrences}
+
+\item{xf}{character. column name in df containing the x coordinates}
+
+\item{yf}{character. column name in df containing the y coordinates}
+
+\item{method}{character. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)}
+
+\item{.points.proj4string}{proj4string character. Indicate coordinate reference system}
+
+\item{ras.landUse}{raster. Land use raster with integer codes for land use classes.}
+
+\item{.landUseCodes}{numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')}
+
+\item{do}{logical. Should range analysis be performed?}
+
+\item{verbose}{logical. Print messages?}
+
+\item{output.dir}{character. Output directory}
+}
 \value{
 data.frame
 }
 \description{
-Selection of records within a land use selectino
+Selection of records within a specified land use
 }
 \note{
 

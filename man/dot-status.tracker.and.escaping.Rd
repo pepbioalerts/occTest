@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Checks.R
 \name{.status.tracker.and.escaping}
 \alias{.status.tracker.and.escaping}
-\title{checking main fields}
+\title{Workflow status tracker}
 \usage{
 .status.tracker.and.escaping(
   dataset.to.continue = dat,
@@ -33,36 +33,20 @@
 
 \item{sp}{character. Name of the species}
 
-\item{dat}{A dataframe containing occurrence data for checking.}
-
-\item{fields}{character. Fields to check}
+\item{verbose}{logical. Print messages?}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.
-
-Original dataframe, dat.  Used primarily to generate warning messages.
 }
 \description{
-Check for missing fields.
+Track status and write useful output
 }
 \examples{
 \dontrun{
 Example<-"goes here"
 }
-STATUS TRACKER AND WRITE OUTPUT
-
-Track status and write useful output
-\dontrun{
-Example<-"goes here"
-}
 }
 \seealso{
-Other checks: 
-\code{\link{.addmainfields2}()},
-\code{\link{.check.geospatial.data}()},
-\code{\link{.checkdatastr2}()},
-\code{\link{.checkfields}()}
-
 Other checks: 
 \code{\link{.addmainfields2}()},
 \code{\link{.check.geospatial.data}()},

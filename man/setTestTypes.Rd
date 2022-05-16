@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{setTestTypes}
 \alias{setTestTypes}
-\title{set the important parameters}
+\title{Set the tests to run}
 \usage{
 setTestTypes(
   countryStatusRange = T,
@@ -16,10 +16,13 @@ setTestTypes(
 )
 }
 \value{
-list
+list with user modified settings
 }
 \description{
-set the important parameters
+function used to select which types of tests you want in occTest workflow
+}
+\details{
+See occTest::showTests for further information on tests used in the packages
 }
 \note{
 

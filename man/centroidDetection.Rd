@@ -22,25 +22,43 @@ centroidDetection(
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{data.frame of species occurrences}
 
-\item{xf}{the field in the dataframe containing the x cordinates}
+\item{xf}{character. column name in df containing the x coordinates}
 
-\item{yf}{the field in the dataframe containing the y cordinates}
+\item{yf}{character. column name in df containing the y coordinates}
 
-\item{.ntv.ctry}{Native country in ISO3}
+\item{idf}{character. Column with the taxon observation ID.}
 
-\item{.inv.ctry}{Invasive country in ISO3}
+\item{.ntv.ctry}{character. ISO3 country codes where species are considered native}
 
-\item{.points.proj4string}{Proj4string argument}
+\item{.inv.ctry}{character. ISO3 country codes where species are considered alien}
 
-\item{.r.env}{R env}
+\item{.points.proj4string}{Proj4string argument. Coordinate reference system}
+
+\item{.r.env}{raster. Raster of environmental variables considered in the analysis}
+
+\item{.countries.shapefile}{spatialPolygonDataFrame of political divisions}
+
+\item{cfsf}{character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.}
+
+\item{method}{charcter. Vector with the methods to detect centroids}
+
+\item{do}{logical. Should range analysis be performed?}
+
+\item{verbose}{logical. Print messages?}
+
+\item{.c.field}{character. Country field in the species data.frame (df)}
 }
 \value{
-list
+data.frame
 }
 \description{
-Centroid detection function
+Identify occurrence records located near centroids.
+}
+\details{
+Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
+, and method 'CoordinateCleaner' implementing methods used in coordinateCleaner packge.
 }
 \note{
 
@@ -54,7 +72,7 @@ example<-"goes here"
 
 }
 \seealso{
-
+coordinateCleaner package
 }
 \author{
 B Maitner, JM Serra-Diaz, C Merow

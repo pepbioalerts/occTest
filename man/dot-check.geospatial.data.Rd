@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{list.geospatial.objects}{A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'}
+
+\item{verbose}{logical. Print messages?}
 }
 \value{
 None. Used to generate warning messages.

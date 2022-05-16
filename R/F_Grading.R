@@ -105,4 +105,34 @@
 }
 
 
+#'QUALITY GRADINGS
+#'
+#'Assess record quality
+#' @param df Data.frame of species occurrences
+#' @param qfield Field to add quality information in, default is "quality.comment"
+#' @param new.comment New comment
+#' @param separation.charachter Character to separate comments (?)
+#' @return list
+#' @keywords internal
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#'
+#'
+.add.to.qfield <- function (x,qfield='quality.comment',new.comment,separation.charachter=';'){
+  stopifnot(is.data.frame(x))
+  stopifnot(nrow(x) ==1)
+  
+  
+  if(is.na (x[1,qfield])) {x[1,qfield] <- new.comment} else {x[1,qfield] <- paste (x[1,qfield],new.comment,collapse = separation.charachter)}
+  
+}
+
+
 
