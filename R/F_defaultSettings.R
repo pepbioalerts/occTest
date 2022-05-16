@@ -52,7 +52,7 @@ defaultSettings <- function (x){
       )
       ,
       countryStatusRange = list (
-        countries.shapefile=rnaturalearth::ne_countries(),
+        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
         countryfield.shapefile = 'iso_a3',
         doRangeAnalysis=T,
         excludeUnknownRanges= F,
