@@ -117,12 +117,12 @@ occFilter <- function (df,
   
   #output
   if (all(toss==F)) {
-     out  = list (fitleredDataset = dfFiltered,
+     out  = list (filteredDataset = dfFiltered,
            summaryStats = dfScores)
      return (out)
   } 
   
-  list (fitleredDataset = dfFiltered[which(toss)*(-1),],
+  list (filteredDataset = dfFiltered[which(toss)*(-1),],
         summaryStats = dfScores,
         rule = c(errorAcceptance,errorThreshold))
 
