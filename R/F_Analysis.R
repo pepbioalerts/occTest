@@ -1,5 +1,6 @@
 #### FUNCTIONS FOR ANALYZING DATA IN THE WORKFLOW
 
+# filterMissing ====
 #' @title Check for missing coordinates
 #' @description checks for missing coordinates in the occurrence dataframe
 #' @details
@@ -18,7 +19,6 @@
 #' example<-"goes here"
 #' }
 #' @export
-
 filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
  coordIssues_coordMissing_value = !complete.cases  (df[,c(xf,yf)])
  df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
@@ -28,6 +28,7 @@ filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
  return (list (stay=df.out,continue=df.continue))
 }
 
+# duplicatesexcludeAnalysis ====
 #' @title Duplicated records
 #' @descriptions checks for duplicated coordinates in the occurrence dataframe
 #' @details it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
@@ -96,7 +97,7 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
   #return
   return (list (Dups.Exact=df.exact.dups, Dups.Grid= df.grid.dups, continue = df))
 }
-
+# SeaLand reassignement ====
 #' @title SeaLand reassignement
 #' @descriptions Reassign coastal coordinates as needed to be in 
 #' @details (function inspiered in nearestcell in biogeo but modified 
@@ -206,7 +207,7 @@ nearestcell3 <- function (dat,
     }
   }
 }
-
+# Range analysis ====
 #' @title Range analysis
 #' @description Identify and filter species records based on countries where species is considered native or alien.
 #' @details It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
@@ -355,6 +356,7 @@ countryStatusRangeAnalysis=function(df=dat,
   return (out)
 }
 
+# Range analysis ====
 #' @title Centroid detection function
 #' @description Identify occurrence records located near centroids. 
 #' @details
@@ -558,6 +560,7 @@ centroidDetection <- function (df=dat,
 
 }
 
+# human detection ====
 #' @title HYPER HUMAN ENVIRONMENT FUNCTION
 #' @description Detect occurrences in heavily human-impacted environments
 #' @details It uses several methods to detect records in high human influence records.\cr
@@ -671,9 +674,9 @@ humanDetection <- function (df=dat,
   return (out)
 }
 
-
-#' @title Detect botanic garden 
-#' @description Detect occurrences potentially in biodiversity institutons using different methods
+# Biodiversity institutions ====
+#' @title Detect biodiversity institutions  
+#' @description Detect occurrences potentially in biodiversity institutions using different methods
 #' @details
 #' @param df data.frame of species occurrences
 #' @param xf character. column name in df containing the x coordinates
@@ -778,6 +781,7 @@ institutionLocality <- function (df=dat,
   return (out)
 
 }
+
 
 
 #' @title Detect geographic outliers
@@ -981,7 +985,7 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('distance','all'))){
     #create fake species list for Coordinate cleaner
     df$species <- 'MyFakeSp'
-    cc_dist_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
+    cc_dist_test = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
     cc_dist_test <- (!  cc_dist_test) 
     out$geoOutliers_distance_value  = cc_dist_test * 1
     out$geoOutliers_distance_test  = cc_dist_test
@@ -995,7 +999,7 @@ geoOutliers         <- function (df=dat,
   
   if (any (method %in% c('median','all'))){
 
-    cc_med_test = occTest::Mycc_outl(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
+    cc_med_test = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
     cc_med_test <- (!  cc_med_test) * 1
     out$geoOutliers_median_value = cc_med_test
     out$geoOutliers_median_test  = as.logical(cc_med_test)
@@ -1011,7 +1015,7 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('quantSamplingCorrected','all'))){
 
 
-    cc_qsc_tst = occTest:::Mycc_outl(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
+    cc_qsc_tst = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
                                             verbose=F)

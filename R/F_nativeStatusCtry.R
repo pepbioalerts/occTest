@@ -1,10 +1,9 @@
-#### FUNCTIONS FOR INVASIVE AND NATIVE RANGES AND COUNTRY STATUS
+### Functions related to identifying native or invasive status ###
 
+# nativeStatusCtry ====
 #' @title Check native and alien ranges in countries
-#'
-#' @description performs several queries to 
-#' @details right now based on the package originatr. Future implementation may query more databases.
-#'
+#' @description performs several queries based on the orignir package to identify native and invasive range status for a given species
+#' @details right now based on the package originr, which queries on Flora Europea, GISD or Native species resolver. Future implementation may query more databases.
 #' @param spName character. Species name in the form of Genus species
 #' @param xydat dataframe Species longitude latitude coordinates.
 #' @param resolveNative logical. Should the function attempt to find countries where species are considered native?
@@ -12,19 +11,16 @@
 #' @param verbose logical. Want to print information during the process?
 #' @return list with two vectors: ntvCtry and invCtry, showing the countries in ISO3 standard codes
 #' @keywords internal
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
 #' @references
 #' @aliases
-#' @family
+#' @family spStatus
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
 #' @export
-#' 
-
 nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verbose=T){
 
 
@@ -38,7 +34,7 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   ctryFromCoords =  occTest:::.coords2country (xydat)
   ctryFromCoords =  unique (ctryFromCoords)
   ctry4GNRS = countrycode:::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
-  #we apply over bcause GNRS only accepts one query at at ime
+  #we apply over cuz GNRS only accepts one query at at ime
   listNSR = lapply (ctry4GNRS, function (x,s=spName){
     try (originr::nsr(s,x),silent = T)
   })
@@ -118,27 +114,22 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
 
 
 
-
+# ctryToIso3 ====
 #' @title Convert country names to ISO3 codes
-#'
-#' @description using package countrycode 
-#' @details right now not implemented with fuzzy matching, but is case insensitive.
-#'
+#' @description Froma character it uses different methods to derive country ISO3 digit codes
+#' @details right now not implemented with fuzzy matching, but is case insensitive. Tow methods implemented, 'countrycode' and 'GNRS'
 #' @param x character. country name
-#' @keywords internal
-#'
+#' @param method character. Package name used to derive IS03 codes. Options are 'countrycode' (default) or 'GNRS'.
+#' @keywords spStatus
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @note
 #' @seealso
 #' @references
 #' @aliases
-#' @family
+#' @family spStatus
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-
-
-#### this function does not work properly. RECHECK
 ctryToIso3 <- function (x,method='countrycode'){ 
   
   #initial checks
@@ -149,8 +140,8 @@ ctryToIso3 <- function (x,method='countrycode'){
   if (method=='GNRS' ) {
     #try to correCt for potential bad spelling
     tableTemplate<-GNRS::GNRS_template(nrow = length(x))
-    template$country<- x
-    gnrsResults  = GNRS:::GNRS(political_division_dataframe = template)
+    tableTemplate$country<- x
+    gnrsResults  = GNRS:::GNRS(political_division_dataframe = tableTemplate)
     iso2Ctry <- unlist(gnrsResults$country_iso)
     
     #get iso3 codes
@@ -183,30 +174,3 @@ ctryToIso3 <- function (x,method='countrycode'){
   
 
 }
-  
-# 
-# nsr("Pinus ponderosa", country = "United States")
-# is_native
-# library (countrycode)
-# 
-# countrycode('spain', 'country.name', 'iso3c')
-# 
-# devtools::install_github("ropensci/originr")
-# 
-# 
-# 
-# ### examples start here
-# 
-# spName = 'Ailanthus altissima'
-# 
-# if (interactiveMode & is.null (ntv.range) ){
-#   resolveNative <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
-# }
-# if (interactiveMode & is.null (inv.range) ){
-#   resolveAlien <- if (interactive())  askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
-# }
-# if (resolveAlienNative) {resolveAlien = T ;resolveNative = T }
-# 
-# if (any (resolveAlien, resolveNative)){
-#   
-

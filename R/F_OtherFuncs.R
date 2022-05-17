@@ -2,12 +2,6 @@
 ########################################################################################################################
 
 
-.lazylogic <- function (e,...){
-
-  o <- eval(parse(text=e))
-  ifelse(is.na(o),F,o)
-
-}
 
 
 .subsetlist.nonNULL <- function (x) {base::Filter(Negate(is.null), x)}

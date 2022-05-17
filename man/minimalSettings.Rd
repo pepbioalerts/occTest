@@ -2,12 +2,12 @@
 % Please edit documentation in R/F_defaultSettings.R
 \name{minimalSettings}
 \alias{minimalSettings}
-\title{Load miniaml settings for occTest}
+\title{Load minimal settings for occTest}
 \usage{
 minimalSettings(x)
 }
 \value{
-list of lists with all different parameters to use in occProfile function
+list of lists with all different parameters to use in occTest function
 }
 \description{
 Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest. It avoids using  some functions of the pkg under development.

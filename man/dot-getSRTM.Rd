@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_Geo.R
 \name{.getSRTM}
 \alias{.getSRTM}
-\title{Extracts a dataframe based on dataframe of xy locations}
+\title{Download SRTM elevation raster}
 \usage{
 .getSRTM(xydat, download = T, path = getwd(), verbose = F)
 }
@@ -16,10 +16,13 @@
 \item{verbose}{if you want to print messages of progress or warnings}
 }
 \value{
-Factor with ISO3 codes for countries
+raster
 }
 \description{
-Based on getData from raster
+Download SRTM elevation raster
+}
+\details{
+Basedd on getData from raster
 }
 \examples{
 \dontrun{
@@ -28,6 +31,8 @@ Based on getData from raster
 
 }
 \seealso{
+raster::getData
+
 Other Geo: 
 \code{\link{.coords2country}()}
 }

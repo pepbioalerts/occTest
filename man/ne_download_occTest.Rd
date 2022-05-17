@@ -2,7 +2,7 @@
 % Please edit documentation in R/F_modifiedFunctions.R
 \name{ne_download_occTest}
 \alias{ne_download_occTest}
-\title{Download (QUIETELY!) from neearth data (modified from original package)}
+\title{Download quitely from neearth data (modified from original package)}
 \usage{
 ne_download_occTest(
   scale = 110,
@@ -16,9 +16,9 @@ ne_download_occTest(
 \arguments{
 \item{scale}{Data.frame of species occurrences}
 
-\item{type}{the field in the dataframe containing the x cordinates}
+\item{type}{the field in the dataframe containing the x coordinates}
 
-\item{category}{the field in the dataframe containing the y cordinates}
+\item{category}{the field in the dataframe containing the y coordinates}
 
 \item{load}{Raster of human influence index}
 
@@ -28,7 +28,7 @@ ne_download_occTest(
 spatial object or raster
 }
 \description{
-download from Natural Earth
+download from Natural Earth the country checklist
 }
 \note{
 
@@ -42,10 +42,10 @@ example<-"goes here"
 
 }
 \seealso{
-
+rnaturalearth
 }
 \author{
-author of the package neearth
+
 }
 \concept{}
 \keyword{internal}
