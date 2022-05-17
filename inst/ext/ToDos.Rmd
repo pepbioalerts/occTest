@@ -11,6 +11,7 @@ output: html_document
 3. Mapping
 4. Report on the filteing
 5. Add dynamic alphaHull identification.
+6. check ctryToIso3 function and the native resolver (F_nativeStatusCtry.R)
 
 
 

@@ -8,12 +8,14 @@ ctryToIso3(x, method = "countrycode")
 }
 \arguments{
 \item{x}{character. country name}
+
+\item{method}{character. Package name used to derive IS03 codes. Options are 'countrycode' (default) or 'GNRS'.}
 }
 \description{
-using package countrycode
+Froma character it uses different methods to derive country ISO3 digit codes
 }
 \details{
-right now not implemented with fuzzy matching, but is case insensitive.
+right now not implemented with fuzzy matching, but is case insensitive. Tow methods implemented, 'countrycode' and 'GNRS'
 }
 \note{
 
@@ -28,9 +30,12 @@ example<-"goes here"
 }
 \seealso{
 
+
+Other spStatus: 
+\code{\link{nativeStatusCtry}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
-\keyword{internal}
+\concept{spStatus}
+\keyword{spStatus}
