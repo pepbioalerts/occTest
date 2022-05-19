@@ -4,19 +4,17 @@
 \alias{plot_occFilter}
 \title{Display the filtering process}
 \usage{
-plot_occFilter(occfilter_list, occTest_df, show_plot = T)
+plot_occFilter(occTest_df, occfilter_list, show_plot = T)
 }
 \arguments{
-\item{df}{data.frame outputed from occurrenceClassify}
+\item{occTest_df}{A data.frame returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
 
-\item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )}
+\item{occfilter_list}{A list returned by  {\link[=occFilter]{occTest}}, the result of the filtering  of \code{occTest_df}}
 
-\item{threshold}{character. Phylosophy for filtering based on threshold. Option are majority, relaxed, stringent}
-
-\item{customThresholds}{data.frame. Specify for each dimension of flags the specific threshold to use. It overides the parameters in thresholds. We recomend building that table based on the functio buildCustomThresholds.}
+\item{show_plot}{Logical, should the plots be plotted ?}
 }
 \value{
-list of 2 data.frames
+list of ggplots objects, of varying length, depending on wether the filtering was done by testBlock or testType
 }
 \description{
 Display the filtering process
@@ -33,10 +31,10 @@ example<-"goes here"
 
 }
 \seealso{
-
+{\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+J Borderieux (jeremy.borderieux@agroparistech.fr)
 }
 \concept{}
 \keyword{filter}
