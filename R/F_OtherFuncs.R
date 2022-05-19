@@ -1,12 +1,65 @@
-## other basic functions
-########################################################################################################################
+### Miscellanous functions  basic functions ###
 
 
 
+# .subsetlist.nonNULL ====
+#' @title Subset to non-NULL lists
+#' @description Subset a list removing NULL entries
+#' @details
+#' @param x List
+#' @return list
+#' @keywords internal
+#' @author 
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
 
 .subsetlist.nonNULL <- function (x) {base::Filter(Negate(is.null), x)}
 
 
+
+# .subsetlist.isNA ====
+#' @title Subset to non-NA lists
+#' @description Subset a list removing NA entries
+#' @details
+#' @param x List
+#' @return list
+#' @keywords internal
+#' @author 
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+.subsetlist.isNA <- function (x) {Filter(Negate(is.na), x)}
+
+
+
+
+
+# .join.spname ====
+#' @title Convert to Collated species names
+#' @description It collates species names from format "Species genus" to "Species_genus"
+#' @param x character
+#' @return character
+#' @keywords internal
+#' @author 
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
 .join.spname <- function (x){
   a <- strsplit(x,split=' ')
   a <- unlist (a)
@@ -14,148 +67,24 @@
   return(a)
 }
 
+
+# .multiple.strsplit  ====
+#' @title multiple splitting of strings
+#' @description uses several splitting characters to split a character string.
+#' @param x character.
+#' @param multiple.splits character. Vector with the characters used to recursively split x
+#' @return character
+#' @keywords internal
+#' @author Pep Serra-Diaz
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
 # Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
-########################################################################################################################
-
-.ah2sp <- function(x,
-                  increment=360,
-                  rnd=10,
-                  proj4string=sp:::CRS(as.character(NA)),tol=1e-4) {
-  if (class(x) != "ahull"){
-    stop("x needs to be an ahull class object")
-  }
-  # Extract the edges from the ahull object as a dataframe
-  xdf <- as.data.frame(x$arcs)
-
-  #correct for possible arc order strangeness (Pascal Title addition 29 Nov 2013)
-  k <- 1
-  xdf <- cbind(xdf, flip = rep(FALSE, nrow(xdf)))
-  repeat{
-    if (is.na(xdf[k+1, 'end1'])) {
-      break
-    }
-    #cat(k, '\n')
-    if (xdf[k,'end2'] == xdf[k+1,'end1']) {
-      #cat('case 1\n')
-      k <- k + 1
-    } else if (xdf[k,'end2'] != xdf[k+1,'end1'] & !xdf[k,'end2'] %in% xdf$end1[k+1:nrow(xdf)] & !xdf[k,'end2'] %in% xdf$end2[k+1:nrow(xdf)]) {
-      #cat('case 2\n')
-      k <- k + 1
-    } else if (xdf[k,'end2'] != xdf[k+1,'end1'] & xdf[k,'end2'] %in% xdf$end1[k+1:nrow(xdf)] & !xdf[k,'end2'] %in% xdf$end2[k+1:nrow(xdf)]) {
-      #cat('case 3\n')
-      m <- which(xdf$end1[k+1:nrow(xdf)] == xdf[k,'end2']) + k
-      xdf <- rbind(xdf[1:k,],xdf[m,],xdf[setdiff((k+1):nrow(xdf),m),])
-    } else if (xdf[k,'end2'] != xdf[k+1,'end1'] & !xdf[k,'end2'] %in% xdf$end1[k+1:nrow(xdf)] & xdf[k,'end2'] %in% xdf$end2[k+1:nrow(xdf)]) {
-      #cat('case 4\n')
-      m <- which(xdf$end2[k+1:nrow(xdf)] == xdf[k,'end2']) + k
-      tmp1 <- xdf[m,'end1']
-      tmp2 <- xdf[m,'end2']
-      xdf[m,'end1'] <- tmp2
-      xdf[m,'end2'] <- tmp1
-      xdf[m,'flip'] <- TRUE
-      xdf <- rbind(xdf[1:k,], xdf[m,], xdf[setdiff((k+1):nrow(xdf), m),])
-    } else {
-      k <- k + 1
-    }
-  }
-
-
-  # Remove all cases where the coordinates are all the same
-  xdf <- subset(xdf, xdf$r > 0)
-  res <- NULL
-  if (nrow(xdf) > 0) {
-    # Convert each arc to a line segment
-    linesj <- list()
-    prevx <- NULL
-    prevy <- NULL
-    j <- 1
-    for(i in 1:nrow(xdf)) {
-      rowi <- xdf[i,]
-      v <- c(rowi$v.x, rowi$v.y)
-      theta <- rowi$theta
-      r <- rowi$r
-      cc <- c(rowi$c1, rowi$c2)
-      # Arcs need to be redefined as strings of points. Work out the number of points to allocate in this arc segment.
-      ipoints <- 2 + round(increment * (rowi$theta / 2), 0)
-      # Calculate coordinates from arc() description for ipoints along the arc.
-      angles <- alphahull::anglesArc(v, theta)
-      if (rowi['flip'] == TRUE){ angles <- rev(angles) }
-      seqang <- seq(angles[1], angles[2], length = ipoints)
-      x <- round(cc[1] + r * cos(seqang),rnd)
-      y <- round(cc[2] + r * sin(seqang),rnd)
-      # Check for line segments that should be joined up and combine their coordinates
-      if (is.null(prevx)) {
-        prevx <- x
-        prevy <- y
-        # added numerical precision fix (Pascal Title Dec 9 2013)
-      } else if ((x[1] == round(prevx[length(prevx)],rnd) | abs(x[1] - prevx[length(prevx)]) < tol) && (y[1] == round(prevy[length(prevy)],rnd) | abs(y[1] - prevy[length(prevy)]) < tol)) {
-        if (i == nrow(xdf)){
-          #We have got to the end of the dataset
-          prevx <- append(prevx ,x[2:ipoints])
-          prevy <- append(prevy, y[2:ipoints])
-          prevx[length(prevx)] <- prevx[1]
-          prevy[length(prevy)] <- prevy[1]
-          coordsj <- cbind(prevx,prevy)
-          colnames(coordsj) <- NULL
-          # Build as Line and then Lines class
-          linej <- Line(coordsj)
-          linesj[[j]] <- Lines(linej, ID = as.character(j))
-        } else {
-          prevx <- append(prevx, x[2:ipoints])
-          prevy <- append(prevy, y[2:ipoints])
-        }
-      } else {
-        # We have got to the end of a set of lines, and there are several such sets, so convert the whole of this one to a line segment and reset.
-        prevx[length(prevx)] <- prevx[1]
-        prevy[length(prevy)] <- prevy[1]
-        coordsj <- cbind(prevx,prevy)
-        colnames(coordsj)<-NULL
-        # Build as Line and then Lines class
-        linej <- Line(coordsj)
-        linesj[[j]] <- Lines(linej, ID = as.character(j))
-        j <- j + 1
-        prevx <- NULL
-        prevy <- NULL
-      }
-    }
-
-    #Drop lines that will not produce adequate polygons (Pascal Title addition 9 Dec 2013)
-    badLines <- vector()
-    for (i in 1:length(linesj)){
-      if (nrow(linesj[[i]]@Lines[[1]]@coords) < 4){
-        badLines <- c(badLines,i)
-      }
-    }
-    if (length(badLines) > 0){linesj <- linesj[-badLines]}
-
-    # Promote to SpatialLines
-    lspl <- SpatialLines(linesj)
-    # Convert lines to polygons
-    # Pull out Lines slot and check which lines have start and end points that are the same
-    lns <- methods::slot(lspl, "lines")
-    polys <- sapply(lns, function(x) {
-      crds <- methods::slot(methods::slot(x, "Lines")[[1]], "coords")
-      identical(crds[1, ], crds[nrow(crds), ])
-    })
-    # Select those that do and convert to SpatialPolygons
-    polyssl <- lspl[polys]
-    list_of_Lines <- methods::slot(polyssl, "lines")
-    sppolys <- SpatialPolygons(list(Polygons(lapply(list_of_Lines, function(x) { Polygon(methods::slot(methods::slot(x, "Lines")[[1]], "coords")) }), ID = "1")), proj4string=proj4string)
-    # Create a set of ids in a dataframe, then promote to SpatialPolygonsDataFrame
-    hid <- sapply(methods::slot(sppolys, "polygons"), function(x) methods::slot(x, "ID"))
-    areas <- sapply(methods::slot(sppolys, "polygons"), function(x) methods::slot(x, "area"))
-    df <- data.frame(hid,areas)
-    names(df) <- c("HID","Area")
-    rownames(df) <- df$HID
-    res <- SpatialPolygonsDataFrame(sppolys, data=df)
-    res <- res[which(res@data$Area > 0),]
-  }
-  return(res)
-}
-
-
-# mutliple splitting in strings
-########################################################################################################################
 .multiple.strsplit <- function (x,multiple.splits) {
 
   stopifnot( length(multiple.splits)>1 )
@@ -169,8 +98,21 @@
   return(a)
 }
 
-######obviating NAs in paste
-########################################################################################################################
+# .paste3  ====
+#' @title Paste obviating NAs
+#' @description Removes NAs when pasting character vectors
+#' @param ... character vector
+#' @return character
+#' @keywords internal
+#' @author Pep Serra-Diaz
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' 
 .paste3 <- function(...,sep=", ") {
   L <- list(...)
   L <- lapply(L,function(x) {x[is.na(x)] <- ""; x})
@@ -181,7 +123,21 @@
   ret
 }
 
-### get the scoring outputs from an analysis
+# .gimme.score  ====
+#' @title get the scoring outputs from an analysis
+#' @description compute the scores for each type of test implemented in occTest function
+#' @details This is implemented within the occTest function
+#' @param x data.frame resulting from a series of analysis in occTest
+#' @return character
+#' @keywords internal 
+#' @author Pep Serra-Diaz
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family internal
+#' @examples \dontrun{
+#' example<-"goes here"
 .gimme.score <- function (x){
   if (!is.data.frame(x)) {stop ('input needs to be a dataframe')}
 
@@ -206,7 +162,6 @@
   
 }
 
-###### ========================================
 
 #'Checks the Operative System 
 #'
@@ -216,6 +171,20 @@
 #' example<-"goes here"
 #' }
 
+# get_os  ====
+#' @title Identify type of Operative system
+#' @description The function is used to report the working operative system as a 3-letter character for 'win', and 'mac', 'unix', and 'unknown OS'
+#' @details This is implemented whan parallelizing functions
+#' @return character
+#' @keywords internal 
+#' @author Pep Serra-Diaz
+#' @note
+#' @seealso 
+#' @references
+#' @aliases
+#' @family internal
+#' @examples \dontrun{
+#' example<-"goes here"
 get_os <- function() {
   if (.Platform$OS.type == "windows") { 
     "win"
@@ -228,7 +197,21 @@ get_os <- function() {
   }
 }
 
-#### safekeeper for key date functions from dataPrepareation package
+
+# .find_and_transform_dates  ====
+#' @title Identify and harmonize data formats
+#' @description 
+#' @details 
+#' @return character
+#' @keywords internal 
+#' @author
+#' @note
+#' @seealso dataPreparation::find_and_transform_dates
+#' @references
+#' @aliases
+#' @family internal
+#' @examples \dontrun{
+#' example<-"goes here"
 .find_and_transform_dates <- function (data_set, cols = "auto", formats = NULL, n_test = 30, 
           ambiguities = "IGNORE", verbose = TRUE) {
   function_name <- "find_and_transform_dates"
@@ -260,19 +243,26 @@ get_os <- function() {
   return(data_set)
 }
 
-
-###### ========================================
-#' Hijacking functions to change default parameters
-#'
-#' @return a function 
+# hijack  ====
+#' @title Hijack functions
+#' @description  Hijacking functions to rename them
+#' @details In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
+#' @return character
+#' @keywords internal 
+#' @author
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family internal
+#' @examples \dontrun{
+#' example<-"goes here"
 #' @note #Internal function that I got from stack overflow MrFlick
 #' @examples \dontrun{
 #' .data.frame <- hijack(data.frame, stringsAsFactors = FALSE)
 #' dat <- .data.frame(x1 = 1:3, x2 = c("a", "b", "c"))
 #' str(dat)  # yay! strings are character
 #' }
-#' 
-#' 
 hijack <- function (FUN, ...) {
   .FUN <- FUN
   args <- list(...)
@@ -282,12 +272,12 @@ hijack <- function (FUN, ...) {
   .FUN
 }
 
-
-###### ========================================
-#' separate species name 
+# splitSpname  ====
+#' @title Split joined species name
+#' @description  By default, it converts "Species_genus" format to "Species genus" format
 #' @param x species name join as a string separated by "_" 
 #' @return a species name where genus and species are separated by a space 
-#' @note #Internal function 
+#' @family internal
 #' @examples \dontrun{
 #' }
 #' 
@@ -296,4 +286,33 @@ splitSpname = function (x){
   a = strsplit(x,'_')[[1]]
   paste(a,collapse = ' ')
   
-  }
+}
+
+# rm.all =====
+#' @title Remove all objects
+#' @description  removes all objects in the environment
+#' @param ...  No input parameter needed
+#' @return a clear environment
+#' @family internal
+#' @examples \dontrun{
+#' }
+rm.all <- function () {rm (list =  setdiff(ls(),'rm.all') ) ; gc(verbose = F) }
+
+# lazylogic =====
+#' @title a lazy logic omitting NAs
+#' @description  evaluates a conditional expression where if any element is NA the output is F instead of NA
+#' @param e expression 
+#' @return logic
+#' @family internal
+#' @examples \dontrun{
+#'  k = NA
+#'  k == 1
+#'  lazylogic (k==1)
+#' }
+lazylogic <- function (e){
+  
+  o <- eval(parse(text=e))
+  ifelse(is.na(o),F,o)
+  
+}
+
