@@ -2,9 +2,15 @@
 % Please edit documentation in R/F_alphaHulls.R
 \name{ah2sp}
 \alias{ah2sp}
-\title{Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title}
+\title{Convert Alpha Hull object into a shapefile}
 \usage{
-ah2sp(x, increment = 360, rnd = 10, proj4string = CRS(as.character(NA)))
+ah2sp(
+  x,
+  increment = 360,
+  rnd = 10,
+  proj4string = CRS(as.character(NA)),
+  tol = 1e-04
+)
 }
 \arguments{
 \item{x}{an alpha hull object}
@@ -21,6 +27,9 @@ ah2sp(x, increment = 360, rnd = 10, proj4string = CRS(as.character(NA)))
 a sp polygon object
 }
 \description{
+Convert Alpha Hull object into a shapefile
+}
+\details{
 Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 }
 \examples{
