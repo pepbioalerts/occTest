@@ -5,6 +5,8 @@
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
+#' @param habType character. Define the species habitat. Only "terrestrial" and "sea" implented.
+#' @param verbose logical. Print messages? Default T
 #' @return list
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -21,11 +23,9 @@
 landSeaFilter             =function(df,
                                     xf,
                                     yf,
-                                    geom= NULL,
                                     habType=NULL,verbose=T) {
 
   
-  # df=dat; xf=x.field; yf=y.field; .ntv.ctry=ntv.ctry;
   #load high-res land masses
   land = readRDS (system.file('ext/land/allLand10.rds',package='occTest'))
   #select coordinates and load sf points

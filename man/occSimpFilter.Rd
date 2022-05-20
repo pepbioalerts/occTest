@@ -29,21 +29,26 @@ occSimpFilter(
 
 \item{isoCountry}{name of the field with the values of the reported country of the record. Default NULL}
 
-\item{classification}{character. Indicates the thresholds phylosofphy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'}
+\item{classification}{character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'}
+
+\item{filterCols}{logical. Should only the initial input columns be retained in the output (the filtered dataframe)?}
 
 \item{data}{name of the field with the values of the reported timestamp of the record. Default NULL}
 }
 \value{
-a list of two. First element is a dataframe with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
+a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
 }
 \description{
 Runs tests and validates data
 }
 \note{
-#There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
+There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
 }
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\author{
+Pep Serra-Diaz
 }

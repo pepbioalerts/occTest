@@ -1,4 +1,5 @@
-### Functions slightly modified from other packages for consistency ###
+### Functions slightly modified from other packages for consistency with occTest outputs###
+
 # ne_download_occTest ====
 #' @title Download quitely from neearth data (modified from original package)
 #' @description download from Natural Earth the country checklist

@@ -4,7 +4,7 @@
 \alias{landSeaFilter}
 \title{Filter occurrence by habitat (terrestrial/non-Terrestrial)}
 \usage{
-landSeaFilter(df, xf, yf, geom = NULL, habType = NULL, verbose = T)
+landSeaFilter(df, xf, yf, habType = NULL, verbose = T)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -12,6 +12,10 @@ landSeaFilter(df, xf, yf, geom = NULL, habType = NULL, verbose = T)
 \item{xf}{the field in the dataframe containing the x cordinates}
 
 \item{yf}{the field in the dataframe containing the y cordinates}
+
+\item{habType}{character. Define the species habitat. Only "terrestrial" and "sea" implented.}
+
+\item{verbose}{logical. Print messages? Default T}
 }
 \value{
 list
