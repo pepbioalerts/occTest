@@ -19,6 +19,8 @@ Imports:
     alphahull,
     plyr,
     sp,
+    sf,
+    ggplot2,
     methods,
     stats,
     utils,

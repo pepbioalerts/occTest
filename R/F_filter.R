@@ -7,7 +7,7 @@
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @param df data.frame. Output of  occTest
-#' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )
+#' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, stringent. Default are 'relaxed'
 #' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
 #' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
@@ -85,7 +85,7 @@ occFilter <- function (df,
   
   #output
   if (all(toss==F)) {
-     out  = list (fitleredDataset = dfFiltered,
+     out  = list (filteredDataset = dfFiltered,
            summaryStats = dfScores)
      return (out)
   } 
