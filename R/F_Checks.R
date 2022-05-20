@@ -124,7 +124,7 @@
 
 # .addmainfields2 ====
 
-#' @titel Add main fields 
+#' @title  Add main fields 
 #' @description Incorporate fields in the initial data frame
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param species character. Name of the species

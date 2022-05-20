@@ -864,11 +864,6 @@ geoOutliers         <- function (df=dat,
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      ## old method -- deprecated due to issues of in a hull
-      # ah.2alpha <- alphahull::ahull (x = xydat[,xf], y= xydat[,yf], alpha=.alpha.parameter)
-      # points.outside.alphahull <- !alphahull::inahull(ah.2alpha,as.matrix(xydat))
-      #ahshape <- occTest:::.ah2sp(ah.2alpha)
-      
       points.outside.alphahull <- try (occTest:::getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')

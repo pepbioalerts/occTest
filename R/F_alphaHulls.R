@@ -1,6 +1,8 @@
 ### Alpha Hull Analysis related scripts
 
-##' Generate polygon based on alpha hulls at a given alpha parmeter 
+##' @title Generate Spatial object from Alpha Hull object
+##' @description  Generate polygon based on alpha hulls at a given alpha parmater 
+##' @details 
 ##' Based on rangeBuilder::getDynamicRange without cropping to sea and without increments
 ##' \code{alpha = initialAlpha}, and will then increase \code{alpha} by
 ##' \code{alphaIncrement} until both the \code{fraction} and \code{partCount}
@@ -29,8 +31,6 @@
 ##' @author Pascal Title (original version), JM Serra-Diaz (modifs)
 ##' @seealso Alpha hulls are created with \code{\link{ahull}}.
 ##' @examples
-##' 
-##' 
 ##' @export
 
 getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', 'Latitude'), 
@@ -104,10 +104,9 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 
 
 
-### OTHER FUNCTIONS  ======
-
-### Convert Alpha Hull object into a shapefile 
-##' Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
+### ah2sp  ======
+##' @title Convert Alpha Hull object into a shapefile 
+##' @details Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 ##' @param x an alpha hull object
 ##' @param increment numeric. Increments
 ##' @param rnd numeric. Decimal rounding
@@ -252,9 +251,10 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
   return(res)
 }
 
-
-### Check polygong geometry
-# inspired provided by  maptools package and from P Title in rangeBuilder
+# checkPolygonsGEOS2 ====
+##' @title  Check polygon geometry
+##' @description 
+##' @details inspired provided by  maptools package and from P Title in rangeBuilder
 ##' @param obj an alpha hull object
 ##' @param properly logic. 
 ##' @param force logic.

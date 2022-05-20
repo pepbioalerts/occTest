@@ -2,11 +2,7 @@
 % Please edit documentation in R/F_alphaHulls.R
 \name{getPointsOutAlphaHull}
 \alias{getPointsOutAlphaHull}
-\title{Generate polygon based on alpha hulls at a given alpha parmeter 
-Based on rangeBuilder::getDynamicRange without cropping to sea and without increments
-\code{alpha = initialAlpha}, and will then increase \code{alpha} by
-\code{alphaIncrement} until both the \code{fraction} and \code{partCount}
-conditions are met.}
+\title{Generate Spatial object from Alpha Hull object}
 \usage{
 getPointsOutAlphaHull(
   x,
@@ -39,17 +35,20 @@ a list with 2 elements: \item{hull}{ a SpatialPolygons object }
 convex hull was returned, this will list MCH.  }
 }
 \description{
-If the conditions cannot be satisfied, then a minimum convex hull is
-returned.
+Generate polygon based on alpha hulls at a given alpha parmater
 }
 \details{
+Based on rangeBuilder::getDynamicRange without cropping to sea and without increments
+\code{alpha = initialAlpha}, and will then increase \code{alpha} by
+\code{alphaIncrement} until both the \code{fraction} and \code{partCount}
+conditions are met.
+
+If the conditions cannot be satisfied, then a minimum convex hull is
+returned.
+
 If \code{clipToCoast} is set to "terrestrial" or "aquatic", the resulting
 polygon is clipped to the coastline, using the \code{\link{gshhs}} dataset
 provided with this package.
-}
-\examples{
-
-
 }
 \seealso{
 Alpha hulls are created with \code{\link{ahull}}.

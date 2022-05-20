@@ -14,7 +14,7 @@ occFilter(
 \arguments{
 \item{df}{data.frame. Output of  occTest}
 
-\item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types (testTypes )}
+\item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')}
 
 \item{errorAcceptance}{character. Philosophy for filtering based on threshold. Option are majority, relaxed, stringent. Default are 'relaxed'}
 
