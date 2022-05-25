@@ -16,12 +16,12 @@ plot_occFilter(
 
 \item{occfilter_list}{Optional, a list returned by  {\link[=occFilter]{occTest}}, the result of the filtering by \code{occTest_df}}
 
-\item{tableSettings}{list. Elements corresponding to different settings of the input occurrence table, used to create the \code{occTest_df} object, if null, try to use the default settings}
+\item{tableSettings}{list, Elements corresponding to different settings of the input occurrence table, used to create the \code{occTest_df} object, if null, try to use the default settings}
 
 \item{show_plot}{Logical, should the plots be plotted ?}
 }
 \value{
-list of ggplots objects, of varying length, depending on wether the filtering was done by testBlock or testType
+list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 }
 \description{
 Display the filtering process

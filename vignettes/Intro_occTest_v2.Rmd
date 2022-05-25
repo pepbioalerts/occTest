@@ -55,7 +55,7 @@ names (occ.data)[3] <- 'decimalLatitude'
 library (raster)
 environmentRaster = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 
-#test occurrences
+#test occurrences (with minimum parameters)
 library(occTest)
 outMartesMartes = occTest::occTest(sp.name='Martes martes', 
                                            sp.table = occ.data,
@@ -376,5 +376,13 @@ Now, flter the results with a rule based on majority and grouped based on
 ```{r}
 outFiltered_byBlock  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testBlock' ) 
 outFiltered_byTestType  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testType' ) 
+```
+
+
+# Plotting the results
+```{r}
+occTest::plot_occFilter(occTest_df =out ,
+                        occfilter_list = outFiltered_byTestType,tableSettings =mySettings,
+                        show_plot = T)
 ```
 
