@@ -4,12 +4,19 @@
 \alias{plot_occFilter}
 \title{Display the filtering process}
 \usage{
-plot_occFilter(occTest_df, occfilter_list, show_plot = T)
+plot_occFilter(
+  occTest_df,
+  occfilter_list = NULL,
+  tableSettings = NULL,
+  show_plot = T
+)
 }
 \arguments{
 \item{occTest_df}{A data.frame returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
 
-\item{occfilter_list}{A list returned by  {\link[=occFilter]{occTest}}, the result of the filtering  of \code{occTest_df}}
+\item{occfilter_list}{Optional, a list returned by  {\link[=occFilter]{occTest}}, the result of the filtering by \code{occTest_df}}
+
+\item{tableSettings}{list. Elements corresponding to different settings of the input occurrence table, used to create the \code{occTest_df} object, if null, try to use the default settings}
 
 \item{show_plot}{Logical, should the plots be plotted ?}
 }
@@ -18,6 +25,9 @@ list of ggplots objects, of varying length, depending on wether the filtering wa
 }
 \description{
 Display the filtering process
+}
+\details{
+If \code{occfilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
 }
 \note{
 
