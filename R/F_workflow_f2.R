@@ -463,9 +463,9 @@ occTest = function(
     
   }
   ### filter those that are still in the sea/land (depending on habitatType)
-  Analysis.LandSea = occTest::landSeaFilter(df = dat, xf= x.field, y= y.field, 
-                         geom = NULL,
-                         habType = habitat,verbose=verbose) 
+  Analysis.LandSea = occTest::landSeaFilter(df = dat, 
+                                            xf= x.field, y= y.field, 
+                                            habType = habitat,verbose=verbose) 
   
   
   dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)

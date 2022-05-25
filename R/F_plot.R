@@ -63,7 +63,7 @@ plot_occFilter<-function(occTest_df,occfilter_list,show_plot=T){
   
   list_of_ggplot<-list()
   
-  ## this dataframe contains ecery occurences, useful for the fist map displaying the first filtering
+  ## this dataframe contains every occurences, useful for the fist map displaying the first filtering
   ## we check for missing coordinated also
   full_dataset_sf<-st_as_sf(full_dataset[!full_dataset$coordIssues_coordMissing_value,],coords=c("decimalLongitude","decimalLatitude"),crs=st_crs(4326))
   full_dataset_sf$Reason<-ifelse(is.na(full_dataset_sf$Reason),"Occurences kept for later tests",full_dataset_sf$Reason)

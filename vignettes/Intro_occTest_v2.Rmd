@@ -1,6 +1,6 @@
 ---
 title: "Classifying Occurrence Data with *occTest*"
-author: "Pep Serra-Diaz, Cory Merow"
+author: "Pep Serra-Diaz, Cory Merow, Brian Maitner, Jeremy Borderieux, Arnaud Callebaut"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -20,18 +20,16 @@ knitr::opts_chunk$set(cache = TRUE)
 
 # What does occTest do?
 
-*occTest* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution analysis and modeling. The quality control workflow follows a hierarchical procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and characterizes  occurrences according to several tests using coordinate inforamtion, but also environmental layers and occurrence locality names. 
+*occTest* implements a workflow to integrate, assess and control data quality of species occurrences, and is especially designed species distribution and environmental analysis and modeling. The quality control workflow follows a modular  procedure (Figure 1; see Serra-Diaz et al. 2018 and Figure 1) and performs multiple tests to identify potential errors in occurrence data using geographical and environmental information. As a second step, using the *occFilter* function allows to subset the initial dataset according to some desired accepted level of error on different test types.
 
-Classifying occurrences should not be understood as a mere data cleaning, but rather as the application of several tests that enable the user to characterize an occurrence record. Such profiling should allow the user choose the best analysis with the data at hand and understand the limits of the data. This is differs from the more classical approach of data selection, cleaning or scrubbing, but it is obviously a critical step prior to cleaning data for a given analysis. You can of course use *occTest* for data cleaning/scrubbing/filtering too, and there are specific functions for that
-
-The packages is based on a combination of new created functions by J.M. Serra-Diaz, C.Merow and B.Maitner, and a wrapper of functions from packages biogeo (Patterson et al. ) and CoordinateCleaner(Zizka et al. ) among others.
+The packages is based on a combination of new created functions by J.M. Serra-Diaz, C.Merow and B.Maitner, J. Borderieux and A.Callebaut, and a wrapper of functions from packages biogeo (Patterson et al. 2016) and CoordinateCleaner(Zizka et al. 2019) among others. Tests are organized in a modular fashion  in types of test (testType, e.g. all tests that identify issues in coordinates), and test blocks ('testBlocks', e.g., all tests that should be used for filtering vs. other test that characterize the accuracy).These helps including future tests and at the same time summarize results across different types of tests, and different blocks.
 
 
 ## Workflow overview and data needed
 
 The main function, that implements the workflow is called *occTest*. The workflow is divided in several steps detailed below, but it consist of two main procedures: the filtering procedure and the analysis procedure (Fig.1). 
 
-The filtering step flags occurrences that are not useable for SDMs and a strong correction of the coordinates is needed (see *biogeo* package for potential solutions), for instance locations in the sea for terrestrial species or the absence of coordinates (NA) in the record. The analysis step applies in order to assess potential errors, and how these may affect the model. These multiple tests are grouped in test blocks. These identify the nature of the error: geography, land use, environment, time and allow for a quick assessment of the dataset. 
+The filtering step flags occurrences that are not usable for SDMs and a strong correction of the coordinates is needed (see *biogeo* package for potential solutions), for instance locations in the sea for terrestrial species or the absence of coordinates (NA) in the record. The analysis step applies in order to assess potential errors, and how these may affect the model. These multiple tests are grouped in test blocks. These identify the nature of the error: geography, land use, environment, time and allow for a quick assessment of the dataset. 
 
 The workflow NEEDS a MINIMUM of THREE parameters: 
 
@@ -67,7 +65,7 @@ outMartesMartes = occTest::occTest(sp.name='Martes martes',
 
 ## *occTest* output
 
-The outputs of occTest is a  a dataframe with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests.
+The outputs of occTest is a  a data.frame with coordinates, and a number of additional columns that inform of tests, corrections and summary measures of tests grouped by kinds of tests.
 
 
 ```{r}
@@ -85,13 +83,13 @@ names (outMartesMartes)
 
 The outputs of the different tests are available to users in the output table. Users will thus be able to classify or scrub the occurrences the way they want to. The names of the columns show this rationale:
 
-[AnalysisType]_[SpecificTest]_value: numeric or logical. Shows the quantitative result of the test (sometimes the same as in the result of the _test)
+[testType]_[testName]_value: numeric or logical. Shows the quantitative result of the test (sometimes the same as in the result of the _test)
 
-[AnalysisType]_[SpecificTest]_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record.
+[testType]_[testName]_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record.
 
-[AnalysisType]_[SpecificTest]_comment: character. Shows some comments related to the specific test.
+[testType]_[testName]_comment: character. Shows some comments related to the specific test.
 
-[AnalysisType]_score: numeric. Averages the results of different tests performed. It informs, for a given set of tests what is the percentatge of test that flagged the record.
+[testType]_score: numeric. Averages the results of different tests performed. It informs, for a given set of tests what is the percentatge of test that flagged the record.
 
 
 Examples: 
@@ -105,7 +103,7 @@ outMartesMartes[1:10,46:52]
 ```
 
 
-Here  is the metadata to characterize the different tests and the hierarchy grouping blocks (e.g. analysis type) 
+Here  is the metadata to characterize the different tests and the hierarchy grouping blocks : testTypes and TestBlocks
 ```{r,echo=F}
 colMetadata = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
 knitr::kable (colMetadata)
@@ -113,9 +111,11 @@ knitr::kable (colMetadata)
 
 ## Customizing your analysis
 
-Many specifications may be set to the different tests, although not all will be useful in all cases. Bear in mind that a lot of tests are available, but performing more tests means more time, and also implies you have more information. We guide you here to set specific parameters to your analysis.
+Many specifications may be set to the different tests, although not all will be useful in all cases. Bear in mind that a lot of tests are available, but performing more tests means more time, and also implies you need to provide more information or parameters. The version currently implemented is that of minimalSettings().
 
-All the settings are accessible and can be modified. The settings for *occTest* are organized in a list of four tables.
+
+
+We guide you here to set specific parameters to your analysis. All the settings are accessible and can be modified. The settings for *occTest* are organized in a list of four tables.
 
 1. tableSettings   :  providing the specifics of your input data table of occurrence records
 2. analysisSetting :  providing the specifics of each test
@@ -182,7 +182,7 @@ The user can specify if outputs are to be written.
 
 ### an example of how to retrieve and modify settings
 
-We do not want to do the accuracy analysis in the workflow because we believe our data is accurate enough and/or we do not have enough information
+In this example we are going to turn off tests related to geoenvironmental accuracy analysis because our data has not enough information on coordinate uncertainty. [NOTE: even under such cirumstances where you do not have that data,the result of the test would be NA and would not affect the result]
 
 ```{r}
 #load minimal settings
@@ -196,7 +196,7 @@ out = occTest::occTest(sp.name='Martes martes', sp.table = occ.data,r.env = envi
 
 # Example 1: The hands-off analysis (default). Classifying and filtering
 
-We can perform a quick test with all defaults. This has a minimal number of inputs and therefore a lot of the tests cannot be performed (note the large amount of NAs in the outputs. These minimal inputs are the data.frame of species occurrence and environmental variables.
+We can perform a quick test with all defaults. This has a minimal number of inputs and therefore a lot of the tests cannot be performed (note the large amount of NAs in the outputs. These minimal inputs are the data.frame of species occurrence and environmental variables. Parmeter settings are minimal, and can be displayed using the minimalSettings() function
 
 ```{r}
 #load packages
@@ -218,7 +218,7 @@ renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 library(occTest)
 outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
                                 sp.table = occ.data,
-                                r.env = renv)
+                                r.env = renv,verbose = F)
 
 
 #check outputs
@@ -231,7 +231,6 @@ Then we can use *occFilter* to filter the data according to different acceptance
 ```{r}
 occTest::showTests ()
 ```
-
 
 The result is a list where the first element fitleredDataset corresponds to the filtered occurrence records and the second element summaryStats provides the summary statistics of the number of tests performed.
 
@@ -278,9 +277,9 @@ nrow (outDougFirSelec[['fitleredDataset']])
 
 # Example 2: Making the function turn with more detailed data (and more options)
 
-We will apply *occTest* to a dataset that has more information like the locality names, or the accuracy of the coordinates. For that we need to specify that firest before running the function.
+We will apply *occTest* to a dataset that has more information like the locality names, or the accuracy of the coordinates. For that we need to specify that  before running the function.
 
-The sample  is a Mediterranean species present in France, Catalonia, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc...  
+The example  is a Mediterranean species present in France, Catalonia, Spain and Andorra. But the information of the species is however variable. Some records have the date collected, other records have data on the elevation, others have information on the locality, etc...  
 
 We will now fully use the information on that table to perform as many tests as possible. 
 
@@ -359,7 +358,7 @@ mySettings$analysisSettings$rangeAnalysis$countryfield.shapefile <- 'ISO'
 ```
 
 We also know that the species is native to Spain ('ESP') and considered invasive in France ('FRA') so we will also specify it, and flag anything that is not in these countries
-```{r}
+```{r,warning = FALSE}
 out <- occTest   (sp.name = 'My species',
                           sp.table = occ.species.nogeoscrub,
                           r.env =ras.env,

@@ -41,7 +41,7 @@ occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
   #select records
   #ouput 2 is a list of 2 data.frames one with the filtered data after all tests, the other one with
   # the statistics of the scores by each of the domains used
-  output2 = occFilter(df = output$occTest_full,level = 1,errorAcceptance = classification)
+  output2 = occTest::occFilter(df = output$occTest_full,level = 1,errorAcceptance = classification)
 
   
   #to consider, maybe you do not want to drag all the columns for Wallace or any other thing, right
