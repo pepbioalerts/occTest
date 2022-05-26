@@ -240,7 +240,7 @@ outDougFirSelec = occFilter(df = outDougFir,errorAcceptance = 'relaxed')
 
 #show filtered dataset
 nrow (outDougFir)
-nrow (outDougFirSelec[["fitleredDataset"]])
+nrow (outDougFirSelec[["filteredDataset"]])
 ```
 
 Show summary values of tests, grouped by 
@@ -256,7 +256,7 @@ The function also allows to set your own acceptance threshold level, and change 
 ```{r}
 outDougFirSelec = occFilter(df = outDougFir,errorAcceptance = 'relaxed') 
 names (outDougFirSelec)
-outDougFirSelec[['fitleredDataset']]
+outDougFirSelec[['filteredDataset']]
 ```
 
 The output statisics allow you to inspect, for different groupingTestLevels the [groupLeve]_score (the average across specific tests), [groupLevel]_rateTestPerformed (e.g. 0.14 means you performed 14% of the available tests for a given groupLevel) and  [groupLevel]__rateTesttPerformed_NtestPeformed (e.g. the total number of tests perfomed).
@@ -270,9 +270,9 @@ check how the groupings changed with different levels and different threshold ac
 ```{r}
 outDougFirSelecStringent = occFilter (df = outDougFir, errorAcceptance = 'strict')
 outDougFirSelecMajority = occFilter (df = outDougFir, errorAcceptance = 'majority')
-nrow (outDougFirSelecStringent [['fitleredDataset']] )
-nrow (outDougFirSelecMajority [['fitleredDataset']] )
-nrow (outDougFirSelec[['fitleredDataset']])
+nrow (outDougFirSelecStringent [['filteredDataset']] )
+nrow (outDougFirSelecMajority [['filteredDataset']] )
+nrow (outDougFirSelec[['filteredDataset']])
 ```
 
 # Example 2: Making the function turn with more detailed data (and more options)
@@ -371,7 +371,7 @@ out <- occTest   (sp.name = 'My species',
 
 
 ```
-Now, flter the results with a rule based on majority and grouped based on 
+Now, filter the results with a rule based on majority and grouped based on 
 
 ```{r}
 outFiltered_byBlock  = occFilter(df = out,errorAcceptance = 'relaxed',by = 'testBlock' ) 
@@ -380,9 +380,10 @@ outFiltered_byTestType  = occFilter(df = out,errorAcceptance = 'relaxed',by = 't
 
 
 # Plotting the results
-```{r}
-occTest::plot_occFilter(occTest_df =out ,
-                        occfilter_list = outFiltered_byTestType,tableSettings =mySettings,
+```{r fig.height = 5.5, fig.width = 7}
+olist_of_plots<-occTest::plot_occFilter(occTest_df =out ,
+                        occfilter_list = outFiltered_byTestType,
+                        tableSettings =mySettings$tableSettings,
                         show_plot = T)
 ```
 

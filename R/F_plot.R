@@ -58,7 +58,7 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
     theme(legend.position = "bottom")+
     coord_sf(xlim=c(exten_of_plot_1[1],exten_of_plot_1[3]),ylim=c(exten_of_plot_1[2],exten_of_plot_1[4]),expand = T)+
     labs(color="Filter reason",title="Coordinates filtering",subtitle =paste0( "Occurences without coordinates = ",n_coords_missing ,"\nOccurences filtered =  ",n_coords_filtered))+
-    scale_shape_manual(breaks = c(TRUE,FALSE),values=c(4,16))+guides(shape = FALSE)+
+    scale_shape_manual(breaks = c(TRUE,FALSE),values=c(4,16))+guides(shape = "none")+
     scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = T))
   
   
@@ -95,29 +95,8 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
   exten_of_plot_2<-st_bbox(filtered_dataset_scores_sf)
   
   
-  list_of_ggplot<-list()
-  
-  ## this dataframe contains every occurences, useful for the fist map displaying the first filtering
-  ## we check for missing coordinated also
-  full_dataset_sf<-st_as_sf(full_dataset[!full_dataset$coordIssues_coordMissing_value,],coords=c("decimalLongitude","decimalLatitude"),crs=st_crs(4326))
-  full_dataset_sf$Reason<-ifelse(is.na(full_dataset_sf$Reason),"Occurences kept for later tests",full_dataset_sf$Reason)
-  exten_of_plot_1<-st_bbox(full_dataset_sf)
-  
-  
   ## This dataframe (transformed to an sf object) contain the filtered occurences, and which tests they passed or not
-  filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c("decimalLongitude","decimalLatitude"),crs=st_crs(4326))
-  
-  
-  ## first plot: filtering by bad coordinates
-  list_of_ggplot[[1]]<-ggplot(full_dataset_sf)+theme_bw()+geom_sf(data=countries_natural_earth,color="grey60",fill="grey98")+
-    geom_sf(aes(color=Reason,shape=Exclude==1),size=0.75,stroke=1.75,alpha=0.65)+
-    theme(legend.position = "bottom")+
-    coord_sf(xlim=c(exten_of_plot_1[1],exten_of_plot_1[3]),ylim=c(exten_of_plot_1[2],exten_of_plot_1[4]),expand = T)+
-    labs(color="Filter reason",title="Coordinates filtering",subtitle =paste0( "Occurences without coordinates = ",n_coords_missing ,"\nOccurences filtered =  ",n_coords_filtered))+
-    scale_shape_manual(breaks = c(TRUE,FALSE),values=c(4,16))+guides(shape = FALSE)+
-    ### warning, all the reason for exclusion are not coded hear JB
-    scale_color_manual(values=c("brown","goldenrod","dodgerblue3","grey45"))+ guides(colour = guide_legend(ncol = 2, byrow = T))
-  
+  filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c(x_field,y_field),crs=st_crs(4326))
   
 
   ## we create this function, it will plot the result of every testBlock or testType passed
@@ -138,7 +117,7 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
       theme(legend.position = "bottom")+
       coord_sf(xlim=c(exten_of_plot_2[1],exten_of_plot_2[3]),ylim=c(exten_of_plot_2[2],exten_of_plot_2[4]),expand = T)+
       labs(color="Filter results",title=title_char,subtitle =ifelse(n_occ_filtered==0,"No occurences filtered by these tests",paste0(n_occ_filtered," occurences removed by these tests")))+
-      scale_shape_manual(breaks = c(TRUE,FALSE),labels=c("Rejected","Passed"),values=c(4,16))+guides(shape = FALSE)+
+      scale_shape_manual(breaks = c(TRUE,FALSE),labels=c("Rejected","Passed"),values=c(4,16))+guides(shape = "none")+
       scale_color_manual(breaks =c("Removed","Removed by another test","Kept occurences"),values=c("brown","goldenrod","grey45") )
     
     return(plot_result)

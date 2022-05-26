@@ -131,7 +131,7 @@ nearestcell3 <- function (dat,
   ce0 <- raster::cellFromXY(rst, dd)
   vals <- raster::extract(rst, dd)
   #if the input raster is a dataframe
-  if (class(vals)=='matrix'){
+  if ('matrix' %in% class(vals)){
     vals <- apply(vals,1,FUN = sum)
     f <- which(is.na(vals))
   } else {
