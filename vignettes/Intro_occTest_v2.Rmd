@@ -382,7 +382,7 @@ outFiltered_byTestType  = occFilter(df = out,errorAcceptance = 'relaxed',by = 't
 # Plotting the results
 ```{r}
 occTest::plot_occFilter(occTest_df =out ,
-                        occfilter_list = outFiltered_byTestType,tableSettings =mySettings,
+                        occfilter_list = outFiltered_byTestType,tableSettings =mySettings$tableSettings,
                         show_plot = T)
 ```
 

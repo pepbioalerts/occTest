@@ -18,6 +18,10 @@
 #' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
 #' @param resolveAlienCtry logical. To automatically try to detect  countries for which species is considered native
 #' @param resolveNativeCtry logical. To automatically try to detect  countries for which species is considered alien
+#' @param interactiveMode logical. Should prompts be ouput for some decisions taken by the workflow? Deafult F,
+#' @param verbose logical. Print workflow information? Default to F
+#' @param doParallel logical. Should some operations be run in parellel when possible? Default to F
+#' @param mc.cores numeric. If doParallel is T, then how many cores to use? Default to 2
 #' @return data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score) 
 #' @note 
 #' The output dataframe allows users to classify or scrub the occurrences the way they want to. \cr
@@ -59,14 +63,10 @@ occTest = function(
   resolveNativeCtry=F,
   
   interactiveMode=F,
-  outPath=NULL,
   verbose = F,
   doParallel=F,
   mc.cores=2){
 
-  #  for testing
-  # tableSettings=NULL;  analysisSettings=NULL;  gradingSettings=NULL;  writeoutSettings=NULL; r.dem=NULL;  ntv.ctry=NULL; inv.ctry=NULL; resolveAlienCtry=F; resolveNativeCtry=F;  interactiveMode=F; outPath=NULL; verbose = F; doParallel=F; mc.cores=2
-  #set timer
   tictoc:::tic()
   
   ### STEP 00: Initial checks ====
@@ -671,7 +671,7 @@ occTest = function(
   full.qaqc = full.qaqc[,! names(full.qaqc)== 'roworder']
   
   #write outputs
-  if(write.full.output==T){
+  if(write.full.output){
     sp2 = occTest:::.join.spname(sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create(newdir,recursive = T,showWarnings = F)

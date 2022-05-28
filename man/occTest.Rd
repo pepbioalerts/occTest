@@ -19,7 +19,6 @@ occTest(
   resolveAlienCtry = F,
   resolveNativeCtry = F,
   interactiveMode = F,
-  outPath = NULL,
   verbose = F,
   doParallel = F,
   mc.cores = 2
@@ -51,6 +50,14 @@ occTest(
 \item{resolveAlienCtry}{logical. To automatically try to detect  countries for which species is considered native}
 
 \item{resolveNativeCtry}{logical. To automatically try to detect  countries for which species is considered alien}
+
+\item{interactiveMode}{logical. Should prompts be ouput for some decisions taken by the workflow? Deafult F,}
+
+\item{verbose}{logical. Print workflow information? Default to F}
+
+\item{doParallel}{logical. Should some operations be run in parellel when possible? Default to F}
+
+\item{mc.cores}{numeric. If doParallel is T, then how many cores to use? Default to 2}
 }
 \value{
 data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score)
