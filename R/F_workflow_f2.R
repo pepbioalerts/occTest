@@ -104,7 +104,7 @@ occTest = function(
   if(! e.field %in% names(sp.table))   e.field = NULL
   
   a.field             = tableSettings$a.field
-  if(! a.field %in% names(sp.table))   a.field = NULL
+  if(any(! a.field %in% names(sp.table)))   a.field = NULL
   
   ds.field            =  tableSettings$ds.field
   if(! ds.field %in% names(sp.table))   ds.field = NULL
