@@ -4,30 +4,36 @@ NULL
 
 #' @title Display the filtering process
 #' @descriptions Display the filtering process 
-#' @details If \code{occfilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
+#' @details If \code{occFilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
 #' @return list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 #' @keywords plot filter
 #' @author J Borderieux (jeremy.borderieux@@agroparistech.fr)
-#' @param occTest_df A data.frame returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame 
-#' @param occfilter_list Optional, a list returned by  {\link[=occFilter]{occTest}}, the result of the filtering by \code{occTest_df}
-#' @param tableSettings  list, Elements corresponding to different settings of the input occurrence table, used to create the \code{occTest_df} object, if null, try to use the default settings
+#' @param x An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame 
+#' @param occFilter_list Optional, an occFilter object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}
 #' @param show_plot  Logical, should the plots be plotted ?
 #' @note
 #' @seealso  {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 #' @references
 #' @aliases
 #' @family
+#' @method plot occTest
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-#' @export
+#' @export 
 
-plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_plot=T){
-  if(is.null(tableSettings))tableSettings<- defaultSettings()$tableSettings
+plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
+  
+  ## get settings
+  Settings<- get_occTest_settings(x)
+  tableSettings<-Settings$tableSettings
+  analysisSettings<-Settings$analysisSettings
   x_field<-tableSettings$x.field
   y_field<-tableSettings$y.field
+  points_CRS<-analysisSettings$geoSettings$points.proj4string
   
-  full_dataset<-occTest_df
+  
+  full_dataset<-x
   
   n_coords_missing<-sum(full_dataset$coordIssues_coordMissing_value)
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
@@ -37,12 +43,14 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
   if("try-error" %in% class(countries_natural_earth))countries_natural_earth<-read_sf(system.file('ext/Country_shp_world',package='occTest'),layer="Pays_WGS84")
   
   
+  if(raster::compareCRS(points_CRS,countries_natural_earth))countries_natural_earth<-st_transform(countries_natural_earth,crs=st_crs(points_CRS))
+  
   ## this dataframe contains ecery occurences, useful for the fist map displaying the first filtering
   ## we check for missing coordinated also
   full_dataset<-full_dataset[!full_dataset$coordIssues_coordMissing_value,]
   full_dataset$Reason<-ifelse(is.na(full_dataset$Reason),"Occurences kept for later tests",full_dataset$Reason)
   
-  full_dataset_sf<-st_as_sf(full_dataset,coords=c(x_field,y_field),crs=st_crs(4326))## automate the crs selection
+  full_dataset_sf<-st_as_sf(full_dataset,coords=c(x_field,y_field),crs=st_crs(points_CRS))
   exten_of_plot_1<-st_bbox(full_dataset_sf)
   
   
@@ -61,15 +69,15 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
     scale_shape_manual(breaks = c(TRUE,FALSE),values=c(4,16))+guides(shape = "none")+
     scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = T))
   
+  if(is.null(occFilter_list)) warning("No occFilter object provided, plotting only the filtering by coordinates")
+  if(!is.null(occFilter_list)){
   
-  if(!is.null(occfilter_list)){
+  filtered_dataset<-occFilter_list$filteredDataset
   
-  filtered_dataset<-occfilter_list$filteredDataset
+  if(nrow(filtered_dataset)==nrow(full_dataset))stop("occFilter filtered 0 occurences")
   
-  if(nrow(filtered_dataset)==nrow(occTest_df))stop("occFilter filtered 0 occurences")
-  
-  summary_stats<-occfilter_list$summaryStats
-  treshold<-as.numeric(occfilter_list$rule[2])
+  summary_stats<-occFilter_list$summaryStats
+  treshold<-as.numeric(occFilter_list$rule[2])
   
   filtered_dataset_scores<-cbind(full_dataset[full_dataset$Exclude==0,c(x_field ,y_field,"Exclude")],summary_stats)#"name"
 
@@ -90,13 +98,9 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
  
 
   ## This dataframe (transformed to an sf object) contain the filtered occurences, and which tests they passed or not
-  filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c(x_field,y_field),crs=st_crs(4326))
+  filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c(x_field,y_field),crs=st_crs(points_CRS))
   # we will zomm in
   exten_of_plot_2<-st_bbox(filtered_dataset_scores_sf)
-  
-  
-  ## This dataframe (transformed to an sf object) contain the filtered occurences, and which tests they passed or not
-  filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c(x_field,y_field),crs=st_crs(4326))
   
 
   ## we create this function, it will plot the result of every testBlock or testType passed
@@ -140,4 +144,33 @@ plot_occFilter<-function(occTest_df,occfilter_list=NULL,tableSettings=NULL,show_
   return(list_of_ggplot)
   
 }
+
+
+
+
+
+#' @title Get the setting used to create a  occTest or occFilter object
+#' @descriptions 
+#' @details
+#' @return list of lists with all different parameters to use in  {\link[=occTest]{occTest}} 
+#' @keywords occTest 
+#' @author J Borderieux (jeremy.borderieux@@agroparistech.fr)
+#' @param x An occTest or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}
+#' @note
+#' @seealso {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @export 
+
+get_occTest_settings<-function(x){
+  if(!"occTest"%in%class(x) & !"occFilter"%in%class(x) ) warning("Not an occTest or an occFilter object, returning NULL instead of the list Settings")
+  if(!"occTest"%in%class(x) & !"occFilter"%in%class(x) ) NULL  else  return(attr(x,"Settings"))
+  
+}
+  
+  
 

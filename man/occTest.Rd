@@ -12,6 +12,7 @@ occTest(
   tableSettings = NULL,
   analysisSettings = NULL,
   writeoutSettings = NULL,
+  return.spatial.data = FALSE,
   r.dem = NULL,
   ntv.ctry = NULL,
   inv.ctry = NULL,
@@ -37,6 +38,8 @@ occTest(
 \item{analysisSettings}{list. Elements corresponding to different settings of the analysis functions .}
 
 \item{writeoutSettings}{list. Elements corresponding to different settings of the analysis functions .}
+
+\item{return.spatial.data}{logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory}
 
 \item{r.dem}{raster. Elevation data (in meters).}
 

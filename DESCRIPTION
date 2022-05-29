@@ -36,7 +36,8 @@ Imports:
     tidyverse,
     rnaturalearthdata,
     GNRS,
-    magrittr
+    magrittr,
+    pingr
 Suggests:
     speciesgeocodeR,
     testthat,

@@ -12,7 +12,7 @@
 #' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param gradingSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
-
+#' @param return.spatial.data logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory
 #' @param r.dem raster. Elevation data (in meters).
 #' @param ntv.ctry character. vector with ISO3 code of the countries where species is considered native
 #' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
@@ -54,6 +54,7 @@ occTest = function(
   tableSettings=NULL,
   analysisSettings=NULL,
   writeoutSettings=NULL,
+  return.spatial.data=FALSE,
   
   r.dem=NULL,
   ntv.ctry=NULL,
@@ -531,7 +532,7 @@ occTest = function(
   tictoc:::tic('Total Geographic and Range Analysis:')
   message('Total Geographic and Range Analysis started....')
   
-  if(verbose){message("**** RESOLIVNG  ****")}
+  if(verbose){message("**** RESOLVING  ****")}
   
   #ANALYSIS ELEMENTS
   #this is important for development, need to specify the number of ELEMENTS of analysis
@@ -687,6 +688,19 @@ occTest = function(
   #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
   output.function = full.qaqc
   tictoc:::toc()
+  
+  attr(output.function,"class")<-c("occTest",class(output.function))
+ 
+  if(!return.spatial.data){
+    analysisSettings$countryStatusRange$countries.shapefile<-NULL
+    analysisSettings$humanDetection$ras.hii<-NULL
+    analysisSettings$humanAnalysis$methodHyperHumanDetection<-NULL
+    analysisSettings$rangeAnalysis$countries.shapefile<-NULL
+  }
+  
+  
+  attr(output.function,"Settings")<-list(tableSettings=tableSettings,analysisSettings=analysisSettings,writeoutSettings=writeoutSettings)
+
   
   return(output.function)
 }
