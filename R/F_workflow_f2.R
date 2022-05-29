@@ -53,7 +53,6 @@ occTest = function(
   
   tableSettings=NULL,
   analysisSettings=NULL,
-  gradingSettings=NULL,
   writeoutSettings=NULL,
   
   r.dem=NULL,
