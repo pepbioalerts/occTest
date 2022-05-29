@@ -87,12 +87,18 @@ occFilter <- function (df,
   if (all(toss==F)) {
      out  = list (filteredDataset = dfFiltered,
            summaryStats = dfScores)
+     attr(out,"class")<-c("occFilter",class(out))
+     attr(out,"Settings")<-get_occTest_settings(df)
+     
      return (out)
   } 
   
-  list (filteredDataset = dfFiltered[which(toss)*(-1),],
+ out = list (filteredDataset = dfFiltered[which(toss)*(-1),],
         summaryStats = dfScores,
         rule = c(errorAcceptance,errorThreshold))
-
+ attr(out,"class")<-c("occFilter",class(out))
+ attr(out,"Settings")<-get_occTest_settings(df)
+ return(out)
+ 
 }
 
