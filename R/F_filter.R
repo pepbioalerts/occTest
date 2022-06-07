@@ -86,7 +86,8 @@ occFilter <- function (df,
   #output
   if (all(toss==F)) {
      out  = list (filteredDataset = dfFiltered,
-           summaryStats = dfScores)
+           summaryStats = dfScores,
+           rule = c(errorAcceptance,errorThreshold))
      attr(out,"class")<-c("occFilter",class(out))
      attr(out,"Settings")<-get_occTest_settings(df)
      
