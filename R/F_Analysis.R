@@ -1451,7 +1451,7 @@ geoEnvAccuracy  <- function (df,
   }
   
   #start methods requiring coordinate uncertainty
-  if(length(af)>1) {df$new_accuracy = max(df[,af],na.rm=T); af = 'new_accuracy'}
+  if(length(af)>1) {df$new_accuracy = pmax(df[,af[1]],df[,af[2]],na.rm=T); af = 'new_accuracy'}
   xydat = df[,c(xf,yf,af)]
   xydat$occCellids = cellFromXY(r.env,as.data.frame (df[,c(xf,yf)]))
   #get cell IDs of buffer points
