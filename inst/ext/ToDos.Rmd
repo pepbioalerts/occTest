@@ -12,6 +12,7 @@ output: html_document
 4. Report on the filteing
 5. Add dynamic alphaHull identification.
 6. check ctryToIso3 function and the native resolver (F_nativeStatusCtry.R)
+7. outputs when exiting should always be the same 
 
 
 

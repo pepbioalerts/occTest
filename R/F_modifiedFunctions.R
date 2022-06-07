@@ -97,7 +97,7 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
     sp::proj4string(ref) <- ""
     newoutdir = paste0(outdir,'/spatialData')
      dir.create(newoutdir,showWarnings = F,recursive = T)
-     rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile")
+     rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=T)
      
   }
   else {
@@ -110,8 +110,8 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = sp::CRS(wgs84))
   limits <- raster::extent(dat) + 1
-  ref <- raster::crop(ref, limits)
   sp::proj4string(ref) <- wgs84
+  ref <- raster::crop(ref, limits)
   if (is.null(ref)) {
     out <- rep(TRUE, nrow(x))
   }
@@ -171,7 +171,7 @@ cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
   }
   if (any(test >= 10000) | thinning) {
     warning("Using raster approximation.")
-    ras <- ras_create(x = x, lat = lat, lon = lon, thinning_res = thinning_res)
+    ras <- CoordinateCleaner:::ras_create(x = x, lat = lat, lon = lon, thinning_res = thinning_res)
   }
   flags <- lapply(splist, function(k) {
     if (nrow(k) <= 10000 & !thinning) {
@@ -180,13 +180,13 @@ cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
     }
     else {
       if (thinning) {
-        dist_obj <- ras_dist(x = k, lat = lat, lon = lon, 
+        dist_obj <- CoordinateCleaner:::ras_dist(x = k, lat = lat, lon = lon, 
                              ras = ras, weights = FALSE)
         pts <- dist_obj$pts
         dist <- dist_obj$dist
       }
       else {
-        dist_obj <- ras_dist(x = k, lat = lat, lon = lon, 
+        dist_obj <- CoordinateCleaner:::ras_dist(x = k, lat = lat, lon = lon, 
                              ras = ras, weights = TRUE)
         pts <- dist_obj$pts
         dist <- dist_obj$dist
@@ -307,3 +307,587 @@ cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
          ids = return(flags))
 }
 
+
+# cc_round_occTest ====
+#' @title Flag records with regular pattern interval
+#' @description own version of coordinate cleaner cc_round
+#' @details
+#' @keywords internal
+#' @author JM Serra-Diaz (adapted from CoordinateCleaner)
+#' @note
+#' @seealso
+#' @references
+#' @aliases
+#' @family
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
+                           ds = "dataset", T1 = 7, reg_out_thresh = 2, reg_dist_min = 0.1, 
+                           reg_dist_max = 2, min_unique_ds_size = 4, graphs = F, 
+                           test = "both", value = "flagged", verbose = TRUE) 
+{
+  window_size <- 10
+  detection_rounding <- 2
+  detection_threshold <- 6
+  digit_round <- 0
+  nc <- 3000
+  rarefy <- FALSE
+  match.arg(value, choices = c("flagged", "clean", "dataset","flagged2"))
+  if (verbose) {
+    message("Testing for rasterized collection")
+  }
+  if (length(unique(x[[ds]])) > 1) {
+    dat <- split(x, f = x[[ds]])
+    out <- lapply(dat, function(k) {
+
+
+      tester <- k[complete.cases(k[, c(lon, lat)]), ]
+      if (nrow(tester[!duplicated(tester[, c(lon, lat)]), 
+      ]) < min_unique_ds_size) {
+        warning(paste0 (unique(k[[ds]])," :Dataset smaller than minimum test size"))
+        # out <- data.frame(dataset = unique(x[[ds]]), 
+        #                   n.outliers = NA, n.regular.outliers = NA, 
+        #                   regular.distance = NA, summary = NA)
+        out <- data.frame(dataset = unique(k[[ds]]),
+                          n.outliers = NA, n.regular.outliers = NA,
+                          regular.distance = NA, summary = NA)
+
+      }
+      else {
+        if (test == "lon") {
+          gvec <- try(CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+                           nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
+          if (class(gvec) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl <- try(CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+                               detection_rounding = detection_rounding, 
+                               detection_threshold = detection_threshold, 
+                               graphs = graphs),silent=T)
+          
+          if (class(n_outl) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl$flag <- !all(n_outl$n.outliers > 0, 
+                              n_outl$regular.distance >= reg_dist_min, 
+                              n_outl$regular.distance <= reg_dist_max, 
+                              n_outl$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl$flag, 
+                        sep = " - "))
+          }
+          n_outl <- data.frame(unique(k[[ds]]), n_outl)
+          names(n_outl) <- c("dataset", "lon.n.outliers", 
+                             "lon.n.regular.distance", "lon.regular.distance", 
+                             "summary")
+        }
+        if (test == "lat") {
+          gvec <- try({CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+                           nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
+                      silent=T)
+          
+          if (class(gvec) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl <- try({CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+                               detection_rounding = detection_rounding, 
+                               detection_threshold = detection_threshold, 
+                               graphs = graphs)},silent = T)
+          
+          if (class(n_outl) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl$flag <- !all(n_outl$n.outliers > 0, 
+                              n_outl$regular.distance >= reg_dist_min, 
+                              n_outl$regular.distance <= reg_dist_max, 
+                              n_outl$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl$flag, 
+                        sep = " - "))
+          }
+          n_outl <- data.frame(unique(k[[ds]]), n_outl)
+          names(n_outl) <- c("dataset", "lat.n.outliers", 
+                             "lat.n.regular.distance", "lat.regular.distance", 
+                             "summary")
+        }
+        
+        if (test== 'both') {
+          gvec1 <- try(CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+                                                   nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
+          if (class(gvec1) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl_lon <- try(CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+                                                       detection_rounding = detection_rounding, 
+                                                       detection_threshold = detection_threshold, 
+                                                       graphs = graphs),silent=T)
+          
+          if (class(n_outl_lon) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl_lon$flag <- !all(n_outl_lon$n.outliers > 0, 
+                                  n_outl_lon$regular.distance >= reg_dist_min, 
+                                  n_outl_lon$regular.distance <= reg_dist_max, 
+                                  n_outl_lon$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl_lon$flag, 
+                        sep = " - "))
+          }
+          
+          #latitude
+          gvec2 <- try({CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+                                                    nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
+                      silent=T)
+          
+          if (class(gvec2) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl_lat <- try({CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+                                                        detection_rounding = detection_rounding, 
+                                                        detection_threshold = detection_threshold, 
+                                                        graphs = graphs)},silent = T)
+          
+          if (class(n_outl_lat) %in% c('error','try-error')) {
+            out <- data.frame(dataset = unique(k[[ds]]),
+                              n.outliers = NA, n.regular.outliers = NA,
+                              regular.distance = NA, summary = NA)
+            return (out)
+          }
+          
+          n_outl_lat$flag <- !all(n_outl_lat$n.outliers > 0, 
+                                  n_outl_lat$regular.distance >= reg_dist_min, 
+                                  n_outl_lat$regular.distance <= reg_dist_max, 
+                                  n_outl_lat$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl_lat$flag, 
+                        sep = " - "))
+          }
+          
+          n_outl <- cbind(unique(k[[ds]]), n_outl_lon, 
+                          n_outl_lat)
+          names(n_outl) <- c("dataset", "lon.n.outliers", 
+                             "lon.n.regular.outliers", "lon.regular.distance", 
+                             "lon.flag", "lat.n.outliers", "lat.n.regular.outliers", 
+                             "lat.regular.distance", "lat.flag")
+          n_outl$summary <- n_outl$lon.flag | n_outl$lat.flag
+        }
+        if (test == "bothOld") {
+          gvec1 <- CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+                            nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))
+          n_outl_lon <- CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+                                   detection_rounding = detection_rounding, 
+                                   detection_threshold = detection_threshold, 
+                                   graphs = graphs)
+          n_outl_lon$flag <- !all(n_outl_lon$n.outliers > 
+                                    0, n_outl_lon$regular.distance >= reg_dist_min, 
+                                  n_outl_lon$regular.distance <= reg_dist_max, 
+                                  n_outl_lon$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl_lon$flag, 
+                        sep = " - "))
+          }
+          gvec2 <- CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+                            nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))
+          n_outl_lat <- CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+                                   detection_rounding = detection_rounding, 
+                                   detection_threshold = detection_threshold, 
+                                   graphs = graphs)
+          n_outl_lat$flag <- !all(n_outl_lat$n.outliers > 
+                                    0, n_outl_lat$regular.distance >= reg_dist_min, 
+                                  n_outl_lat$regular.distance <= reg_dist_max, 
+                                  n_outl_lat$n.regular.outliers >= reg_out_thresh)
+          if (graphs) {
+            title(paste(unique(k[[ds]]), n_outl_lat$flag, 
+                        sep = " - "))
+          }
+          n_outl <- cbind(unique(k[[ds]]), n_outl_lon, 
+                          n_outl_lat)
+          names(n_outl) <- c("dataset", "lon.n.outliers", 
+                             "lon.n.regular.outliers", "lon.regular.distance", 
+                             "lon.flag", "lat.n.outliers", "lat.n.regular.outliers", 
+                             "lat.regular.distance", "lat.flag")
+          n_outl$summary <- n_outl$lon.flag | n_outl$lat.flag
+        }
+        return(n_outl)
+      }
+    })
+    #out <- do.call("rbind.data.frame", out)
+
+    out <- do.call("bind_rows", out)
+  }
+  else {
+    if (nrow(x[!duplicated(x[, c(lon, lat)]), ]) < min_unique_ds_size) {
+      warning("Dataset smaller than minimum test size")
+      out <- data.frame(dataset = unique(x[[ds]]), n.outliers = NA, 
+                        n.regular.outliers = NA, regular.distance = NA, 
+                        summary = NA)
+    }
+    else {
+      if (test == "lon") {
+        gvec <- try({CoordinateCleaner:::.CalcACT(data = x[[lon]], digit_round = digit_round, 
+                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]]))},silent=T)
+        if (class(gvec) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+        }
+        
+        n_outl <- CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+                             detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
+                             graphs = graphs)
+        
+        if (class(n_outl) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )        
+          }
+        
+        n_outl$flag <- !all(n_outl$n.outliers > 0, n_outl$regular.distance >= 
+                              reg_dist_min, n_outl$regular.distance <= reg_dist_max, 
+                            n_outl$n.regular.outliers >= reg_out_thresh)
+        if (graphs) {
+          title(paste(unique(x[[ds]]), n_outl$flag, 
+                      sep = " - "))
+        }
+        n_outl <- data.frame(unique(x[[ds]]), n_outl)
+        names(n_outl) <- c("dataset", "lon.n.outliers", 
+                           "lon.n.regular.distance", "lon.regular.distance", 
+                           "summary")
+      }
+      if (test == "lat") {
+        gvec <- try (CoordinateCleaner:::.CalcACT(data = x[[lat]], digit_round = digit_round, 
+                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]])),silent=T)
+        if (class(gvec) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+          }
+        n_outl <- try (CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+                             detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
+                             graphs = graphs), silent=T)
+        if (class(n_outl) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )        
+          }
+        
+        n_outl$flag <- !all(n_outl$n.outliers > 0, n_outl$regular.distance >= 
+                              reg_dist_min, n_outl$regular.distance <= reg_dist_max, 
+                            n_outl$n.regular.outliers >= reg_out_thresh)
+        if (graphs) {
+          title(paste(unique(x[[ds]]), n_outl$flag, 
+                      sep = " - "))
+        }
+        n_outl <- data.frame(unique(x[[ds]]), n_outl)
+        names(n_outl) <- c("dataset", "lat.n.outliers", 
+                           "lat.n.regular.distance", "lat.regular.distance", 
+                           "summary")
+      }
+      if (test == "both") {
+        gvec1 <- try(CoordinateCleaner:::.CalcACT(data = x[[lon]], digit_round = digit_round, 
+                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
+        
+        if (class(gvec1) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+          }
+        
+        n_outl_lon <- try (CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+                                 detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
+                                 graphs = graphs), silent=T)
+        if (class(n_outl_lon) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+          }
+        
+        
+        n_outl_lon$flag <- !all(n_outl_lon$n.outliers > 
+                                  0, n_outl_lon$regular.distance >= reg_dist_min, 
+                                n_outl_lon$regular.distance <= reg_dist_max, 
+                                n_outl_lon$n.regular.outliers >= reg_out_thresh)
+        if (graphs) {
+          title(paste(unique(x[[ds]]), n_outl_lon$flag, 
+                      sep = " - "))
+        }
+        gvec2 <- try (CoordinateCleaner:::.CalcACT(data = x[[lat]], digit_round = digit_round, 
+                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
+        if (class(gvec2) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+          }
+        n_outl_lat <- try (CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+                                 detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
+                                 graphs = graphs), silent = T)
+        
+        if (class(n_outl_lat) %in% c('error','try-error')) {
+          out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
+                            n.outliers = rep(NA,length.out=nrow(x)), 
+                            n.regular.outliers = rep(NA,length.out=nrow(x)), 
+                            regular.distance = rep(NA,length.out=nrow(x)), 
+                            summary = rep(NA,length.out=nrow(x)))
+          
+          switch(value, dataset = return(out), clean = return({
+            test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+            ]
+            if (length(test) > 0) {
+              test
+            } else {
+              NULL
+            }
+          }), 
+          flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+          flagged2 = return(out$summary)
+          )
+          }
+        
+        n_outl_lat$flag <- !all(n_outl_lat$n.outliers > 
+                                  0, n_outl_lat$regular.distance >= reg_dist_min, 
+                                n_outl_lat$regular.distance <= reg_dist_max, 
+                                n_outl_lat$n.regular.outliers >= reg_out_thresh)
+        if (graphs) {
+          title(paste(unique(x[[ds]]), n_outl_lat$flag, 
+                      sep = " - "))
+        }
+        n_outl <- data.frame(unique(x[[ds]]), n_outl_lon, 
+                             n_outl_lat)
+        names(n_outl) <- c("dataset", "lon.n.outliers", 
+                           "lon.n.regular.distance", "lon.regular.distance", 
+                           "lon.flag", "lat.n.outliers", "lat.n.regular.distance", 
+                           "lat.regular.distance", "lat.flag")
+        n_outl$summary <- n_outl$lon.flag | n_outl$lat.flag
+      }
+      out <- n_outl
+    }
+  }
+  out2 = merge (x,out[c('dataset','summary')], by.x= ds,by.y='dataset',all.x=T)
+  switch(value, dataset = return(out), clean = return({
+    test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
+    ]
+    if (length(test) > 0) {
+      test
+    } else {
+      NULL
+    }
+  }), 
+  flagged = return(x[[ds]] %in% out[out$summary, "dataset"]),
+  flagged2 = return(out2$summary)
+  )
+}
+
+
+## cd_ddmm ====
+
+cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
+          ds = "dataset", pvalue = 0.025, diff = 1, mat_size = 1000, 
+          min_span = 2, value = "clean", verbose = TRUE, diagnostic = FALSE) 
+{
+  match.arg(value, choices = c("clean", "flagged", "dataset"))
+  if (verbose) {
+    message("Testing for dd.mm to dd.dd conversion errors")
+  }
+  if (sum(!complete.cases(x[, c(lon, lat, ds)])) > 0) {
+    warning(sprintf("ignored %s cases with incomplete data", 
+                    sum(!complete.cases(x))))
+  }
+  dat <- x[complete.cases(x[, c(lon, lat, ds)]), ]
+  if (nrow(dat) == 0) {
+    stop("no complete cases found")
+  }
+  dat$lon.test <- abs(dat[[lon]]) - floor(abs(dat[[lon]]))
+  dat$lat.test <- abs(dat[[lat]]) - floor(abs(dat[[lat]]))
+  test <- split(dat, f = dat[[ds]])
+  out <- lapply(test, function(k) {
+    dat_unique <- k[!duplicated(k[, c(lon, lat, ds)]), ]
+    lon_span <- abs(max(dat_unique[, lon], na.rm = TRUE) - 
+                      min(dat_unique[, lon], na.rm = TRUE))
+    lat_span <- abs(max(dat_unique[, lat], na.rm = TRUE) - 
+                      min(dat_unique[, lat], na.rm = TRUE))
+    if (lon_span >= min_span & lat_span >= min_span) {
+      cl <- ceiling(dat_unique[, c("lon.test", "lat.test")] * 
+                      mat_size)
+      cl$lat.test <- mat_size - cl$lat.test
+      mat <- matrix(ncol = mat_size, nrow = mat_size)
+      mat[cbind(cl$lat.test, cl$lon.test)] <- 1
+      mat[is.na(mat)] <- 0
+      dat_t1 <- mat
+      P_smaller_than_06 <- floor(0.599 * mat_size) * floor(0.599 * 
+                                                             mat_size)/mat_size^2
+      x_ind <- (mat_size - floor(0.599 * mat_size)):mat_size
+      y_ind <- 1:floor(0.599 * mat_size)
+      subt <- dat_t1[x_ind, y_ind]
+      p06 <- sum(subt >= 1)
+      pAll <- sum(dat_t1 >= 1)
+      #print(unique (k[,ds]))
+      if (pAll <1)  {outp <- rep(NA, 3) ; return(outp)}
+      B <- stats::binom.test(p06, pAll, p = P_smaller_than_06, 
+                             alternative = c("greater"))
+      v1 <- B$p.value
+      v2 <- (B$estimate - P_smaller_than_06)/P_smaller_than_06
+      if (v1 < pvalue & v2 > diff) {
+        flag_t1 <- FALSE
+      }
+      else {
+        flag_t1 <- TRUE
+      }
+      outp <- c(round(v1, 4), round(v2, 3), flag_t1)
+      if (diagnostic) {
+        plo <- raster(dat_t1)
+        raster::plot(plo)
+        title(as.logical(flag_t1))
+      }
+    }
+    else {
+      outp <- rep(NA, 3)
+      warning("Geographic span too small, check 'min_span'")
+    }
+    return(outp)
+  })
+  out_ds <- do.call("rbind.data.frame", out)
+  rownames(out_ds) <- names(out)
+  names(out_ds) <- c("binomial.pvalue", "perc.difference", 
+                     "pass")
+  flags <- x[[ds]] %in% c(rownames(out_ds[out_ds$pass == 1, 
+  ]), rownames(out_ds[is.na(out_ds$pass), ]))
+  out_ds$pass <- as.logical(out_ds$pass)
+  if (verbose) {
+    message(sprintf("Flagged %s records", sum(!flags)))
+  }
+  switch(value, dataset = return(out_ds), clean = return(x[flags, 
+  ]), flagged = return(flags))
+}

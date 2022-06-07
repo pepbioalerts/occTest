@@ -188,20 +188,32 @@ findEnvOutliers=function(myPres,
   f=which(apply(p.env,2,function(x) !all(is.nan(x))))
   p.env=p.env[,f]
   pres.inliers=p.env
-  row.id=apply( p.env, 1 , paste , collapse = "-" )
+  if (class (p.env)=='numeric') row.id = as.character(p.env)
+  if (class (p.env)!='numeric') row.id=apply( p.env, 1 , paste , collapse = "-" )
   env.toss.id=NULL
   pval=0
   while(pval<pvalSet){
-    dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
+    if (class (p.env)=='numeric') dists = p.env
+    if (class (p.env)!='numeric') dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
     gt=outliers::grubbs.test(dists)
     pval=gt$p.value
     # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
     if(gt$p.value<pvalSet){
       toss=which.max(dists)
+      
+    
       # IDs in the original data frame
-      thisID=paste(p.env[toss,],collapse='-')
-      env.toss.id=c(env.toss.id,which(row.id == thisID))
-      p.env=p.env[-toss,]
+      if (class (p.env)!='numeric') {
+        thisID=paste(p.env[toss,],collapse='-')
+        env.toss.id=c(env.toss.id,which(row.id == thisID))
+        p.env=p.env[-toss,]  
+      }
+      if (class (p.env)=='numeric') {
+        thisID=as.character(p.env[toss])
+        env.toss.id=c(env.toss.id,which(row.id == thisID))
+        p.env=p.env[-toss]  
+      }
+    
     }
   }
   if(checkPairs) print('checkPairs not yet implemented')

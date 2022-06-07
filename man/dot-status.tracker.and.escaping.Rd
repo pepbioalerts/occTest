@@ -11,9 +11,13 @@
   xf = x.field,
   yf = y.field,
   od = output.dir,
+  rsd = return.spatial.data,
   obf = output.base.filename,
   sp = sp.name,
-  verbose = F
+  verbose = F,
+  as = analysisSettings,
+  ws = writeoutSettings,
+  ts = tableSettings
 )
 }
 \arguments{

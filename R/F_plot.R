@@ -72,9 +72,9 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
   if(is.null(occFilter_list)) warning("No occFilter object provided, plotting only the filtering by coordinates")
   if(!is.null(occFilter_list)){
   
-  filtered_dataset<-occFilter_list$filteredDataset
-  
-  if(nrow(filtered_dataset)==nrow(full_dataset))stop("occFilter filtered 0 occurences")
+  if (is.list(occFilter_list)) filtered_dataset<-occFilter_list$filteredDataset
+  if (is.data.frame (occFilter_list) ) filtered_dataset<-occFilter_list
+  if(nrow(filtered_dataset)==nrow(full_dataset)) message ("occFilter filtered 0 occurences")
   
   summary_stats<-occFilter_list$summaryStats
   treshold<-as.numeric(occFilter_list$rule[2])
