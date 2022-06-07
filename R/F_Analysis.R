@@ -459,46 +459,52 @@ centroidDetection <- function (df=dat,
       country_ext <- occTest:::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    cleaned_countries<-GNRS:::GNRS_super_simple(country = country_ext)
-    matchedCtry <- cleaned_countries$match_status=='full match'
-    cleaned_countries <- cleaned_countries [matchedCtry,]
-    maxValLoop = nrow(cleaned_countries)
-    for(i in 1:nrow(cleaned_countries)){
-      svMisc::progress(i,max.value = maxValLoop)
-      occurrences.df$country <- as.character(occurrences.df$country)
-      occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
-    }
-    
-    for(i in 1:nrow(cleaned_countries)){
-      svMisc::progress(i,max.value = maxValLoop)
-      occurrences.df$state_province <- as.character(occurrences.df$state_province)
-      occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
-                                            occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
-    }
-    
-    for(i in 1:nrow(cleaned_countries)){
-      svMisc::progress(i,max.value = maxValLoop)
-      occurrences.df$county <- as.character(occurrences.df$county)
-      occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
-                                    occurrences.df$state_province ==cleaned_countries$state_province[i]&
-                                    occurrences.df$county==cleaned_countries$county_parish_verbatim[i])] <- unlist(cleaned_countries$county_parish[i]) 
-    }
-    
-    
-    #Get relative distances
-    k <- centroid_assessment(occurrences = occurrences.df, centroid_data = centroid_data)
-    
-    #convert relative distances to binary using threshold
-    centroid_threshold <- 0.002 #smaller values require points to be closer to a centroid in order to be flagged
-    
-    k$is_centroid <- apply(X = k,MARGIN =  1,FUN = function(x){
-      y<-as.vector(na.omit(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))
-      #print(y)
-      logiCentroid = any(as.numeric(y)<centroid_threshold)
-      logiCentroid
-    })
-    k$is_centroid_val <- apply(X = k,MARGIN =  1,FUN = function(x){
-
+    cleaned_countries<-try ({GNRS:::GNRS_super_simple(country = country_ext)},silent=T)
+    if (class(cleaned_countries) == 'error' | is.null(cleaned_countries)){
+      out$centroidDetection_BIEN_value <- NA
+      out$centroidDetection_BIEN_test <- NA
+      out$centroidDetection_BIEN_comments <- 'Not performed. GNRS error'
+      
+    } else{
+      matchedCtry <- cleaned_countries$match_status=='full match'
+      cleaned_countries <- cleaned_countries [matchedCtry,]
+      maxValLoop = nrow(cleaned_countries)
+      for(i in 1:nrow(cleaned_countries)){
+        svMisc::progress(i,max.value = maxValLoop)
+        occurrences.df$country <- as.character(occurrences.df$country)
+        occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
+      }
+      
+      for(i in 1:nrow(cleaned_countries)){
+        svMisc::progress(i,max.value = maxValLoop)
+        occurrences.df$state_province <- as.character(occurrences.df$state_province)
+        occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
+                                              occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
+      }
+      
+      for(i in 1:nrow(cleaned_countries)){
+        svMisc::progress(i,max.value = maxValLoop)
+        occurrences.df$county <- as.character(occurrences.df$county)
+        occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
+                                      occurrences.df$state_province ==cleaned_countries$state_province[i]&
+                                      occurrences.df$county==cleaned_countries$county_parish_verbatim[i])] <- unlist(cleaned_countries$county_parish[i]) 
+      }
+      
+      
+      #Get relative distances
+      k <- centroid_assessment(occurrences = occurrences.df, centroid_data = centroid_data)
+      
+      #convert relative distances to binary using threshold
+      centroid_threshold <- 0.002 #smaller values require points to be closer to a centroid in order to be flagged
+      
+      k$is_centroid <- apply(X = k,MARGIN =  1,FUN = function(x){
+        y<-as.vector(na.omit(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))
+        #print(y)
+        logiCentroid = any(as.numeric(y)<centroid_threshold)
+        logiCentroid
+      })
+      k$is_centroid_val <- apply(X = k,MARGIN =  1,FUN = function(x){
+        
         #print(x)
         if(all(is.na(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))){
           
@@ -506,11 +512,11 @@ centroidDetection <- function (df=dat,
           
         }
         valOut = as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))[which.min(as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))]
-          valOut
-    })
-    
-    #construct comments
-    k$comments <-apply(X = k,MARGIN = 1,FUN = function(x){
+        valOut
+      })
+      
+      #construct comments
+      k$comments <-apply(X = k,MARGIN = 1,FUN = function(x){
         #print(x)
         if(x['is_centroid']==1){ineq<-"<="}else{ineq<-">"}
         
@@ -531,13 +537,15 @@ centroidDetection <- function (df=dat,
         )#paste
         
       } )#apply
-    
-    
-    colnames(k)[which(colnames(k)=="is_centroid")]<-"centroidDetection_BIEN_test"
-    colnames(k)[which(colnames(k)=="comments" )]<-"centroidDetection_BIEN_comments"
-    out$centroidDetection_BIEN_value <- k$is_centroid_val
-    out$centroidDetection_BIEN_test <- as.logical(k$is_centroid)
-    out$centroidDetection_BIEN_comments <- k$comments
+      
+      
+      colnames(k)[which(colnames(k)=="is_centroid")]<-"centroidDetection_BIEN_test"
+      colnames(k)[which(colnames(k)=="comments" )]<-"centroidDetection_BIEN_comments"
+      out$centroidDetection_BIEN_value <- k$is_centroid_val
+      out$centroidDetection_BIEN_test <- as.logical(k$is_centroid)
+      out$centroidDetection_BIEN_comments <- k$comments
+      
+    }
     
     
   }
@@ -710,7 +718,6 @@ institutionLocality <- function (df=dat,
                                  do=T, verbose=F
                                  ){
 
-
   #output table
   out = data.frame (institutionLocality_fromBotanicLocalityName_value=NA,
                     institutionLocality_fromBotanicLocalityName_test=NA,
@@ -739,11 +746,12 @@ institutionLocality <- function (df=dat,
       potential.names <- c('botanic', 'botanische', 'botanico', 'jardin', 'garden', 'botanical')
       localities <- as.character (loc)
       bot.garden <-sapply (localities, function (x) {
-        
-        if (is.na(x)){return (0)}
+        if (is.na(x)){return (NA)}
         if (x==''){return (0)}
-        
-        m <- tolower(.multiple.strsplit(x,multiple.splits = c(' ',',',';',':','/','\\\\','[.]')))
+        splits = c(' ',',',';',':','/','\\\\','[.]')
+        if (x %in% splits ) {return (0)}
+
+        m <- tolower(.multiple.strsplit(x,multiple.splits = splits))
         potential.bot.garden <- sum ((m %in% potential.names) *1)
         potential.bot.garden <- ifelse(potential.bot.garden>0, 1, 0)
         return (potential.bot.garden)
@@ -859,6 +867,8 @@ geoOutliers         <- function (df=dat,
   df$species <- 'MyFakeSp'
   rownames(df) <-1:nrow(df)
   xydat <- df[,c(xf,yf)]
+  if (nrow (xydat)<5) {warning('envOutliers not perfomred. N<5'); return(out)}
+  
 
   if (any (method %in% c('alphaHull','all'))){
 
@@ -1121,8 +1131,13 @@ envOutliers  <- function (
   df$species <- 'MyFakeSp'
   rownames(df) <-1:nrow(df)
   xydat <- df[,c(xf,yf)]
+  
+  if (nrow (xydat)<5) {
+    warning('envOutliers not perfomred. N<5')
+    
+    return(out)}
 
-  dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
+  dat.environment <- raster::extract(x = .r.env, y= df[,c(xf,yf)], df = T)
   
   missingEnvironment <- (!complete.cases(dat.environment))
   out$envOutliers_missingEnv_value <- missingEnvironment * 1
@@ -1269,9 +1284,6 @@ geoEnvAccuracy  <- function (df,
                              mc.cores= 2
 ){
   
-  
-  
-  
   #output results
   out = data.frame (geoenvLowAccuracy_lattice_value = NA,
                     geoenvLowAccuracy_lattice_test = NA,
@@ -1308,13 +1320,13 @@ geoEnvAccuracy  <- function (df,
   
   row.names(x = out) <- NULL
   if (!do) {return (out)}
-  
   #check if need parallel
   os = occTest:::get_os()
-  if (doParallel==T & os=='mac') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='linux') {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & os=='windows') {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & grepl(pattern = 'mac',x = os)) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & grepl(pattern = 'lin',x = os)) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & grepl(pattern = 'win',x = os)) {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
+  if (nrow(df)<100) {mymclapply <- lapply}
   
   #start method lattice
   if (any(method %in% c('lattice','all'))){
@@ -1329,8 +1341,9 @@ geoEnvAccuracy  <- function (df,
       dsf <- 'dataset'
     }
     
-    
-    cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
+    #there are a lot of problems with this function
+    cd_round_test = try({occTest:::cc_round_occTest(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged2',verbose=F,graphs=F)},silent=T)
+    #cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
     out$geoenvLowAccuracy_lattice_value = (!cd_round_test) * 1
     out$geoenvLowAccuracy_lattice_test = (!cd_round_test)
     out$geoenvLowAccuracy_lattice_comments = ('Based on default values of CoordinateCleaner::cd_round')
@@ -1442,8 +1455,8 @@ geoEnvAccuracy  <- function (df,
     out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
     return (out)}
   
-  #Need coordinate uncertainty analysis ?
-  if (is.null(af)) {
+  #Need coordinate uncertainty analysis ? Can you do it?
+  if (is.null(af) | all(is.na(df[,af])) ) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
     out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
@@ -1456,7 +1469,6 @@ geoEnvAccuracy  <- function (df,
   xydat$occCellids = cellFromXY(r.env,as.data.frame (df[,c(xf,yf)]))
   #get cell IDs of buffer points
   cellIds.directions = mymclapply (1:nrow (xydat), function (i){
-    
     distance.accuracy = as.numeric (xydat[i,c(af)])
     if (is.na (distance.accuracy) |is.na (xydat$occCellids[i])  ) {return (NA)}
     if (distance.accuracy>1){
@@ -1501,12 +1513,13 @@ geoEnvAccuracy  <- function (df,
     targetCellUnique =   xydat$occCellids [!xydat$occCellids %in% uniqueCellBuff]
     df.CellTarget = raster::extract(r.env,targetCellUnique,df=T)
     df.CellTarget$cellID = targetCellUnique
-    
     df.cells = rbind (df.CellBuff,df.CellTarget)
     
     env.test = mymclapply (1:nrow(xydat), function (i){
+
       
-      
+      if (all(is.na(cellIds.directions[[i]]))) (return(NA))
+      cellIds.directions[[i]] = na.omit (cellIds.directions[[i]])
       NcellReps = table (cellIds.directions[[i]])
       
       df.env.cellBuffs  = lapply (1:length(NcellReps), function (m){

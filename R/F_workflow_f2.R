@@ -258,13 +258,13 @@ occTest = function(
   }
   #tictoc:::toc()
   
+  if(verbose){message("**** FILTERING PHASE STARTED  ****")}
+  
   ### STEP 2: Quality H Filter : Identify records wo spatial info =====
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues started...')
 
-  if(verbose){message("**** RESOLVING QUALITY FILTER: records wo Spatial Info ****")}
-  
   Analysis.H = filterMissing(df = dat,xf = x.field,yf = y.field)
   dat.Q.H = Analysis.H$stay
   dat = Analysis.H$continue
@@ -289,8 +289,11 @@ occTest = function(
                                                       xf = x.field,
                                                       yf=y.field,
                                                       od = output.dir,
+                                                      rsd=return.spatial.data,
                                                       obf = output.base.filename,
-                                                      sp=sp)
+                                                      sp=sp,
+                                                      as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
+    if(any(class(status.out)=='occTest')) {return(status.out)}
     
     #zero zero long lat
     coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
@@ -306,20 +309,30 @@ occTest = function(
                                                       xf = x.field,
                                                       yf=y.field,
                                                       od = output.dir,
+                                                      rsd=return.spatial.data,
                                                       obf = output.base.filename,
-                                                      sp=sp)
+                                                      sp=sp,
+                                                      as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
+    if(any(class(status.out)=='occTest')) {return(status.out)}
+    
     #error conversion of decimals 
     dat.tmp = dat 
+
     if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
       dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
       ds.field = 'MyInventedCommonDataset'}
-    coordIssues_coordConv_value = ! CoordinateCleaner::cd_ddmm(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F)
+    outDecimalTest = try({occTest:::cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
+    if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
+    coordIssues_coordConv_value = ! outDecimalTest
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
     coordIssues_coordConv_test = as.logical(coordIssues_coordConv_value)
     dat$coordIssues_coordConv_test = coordIssues_coordConv_test
     
-    dat.Q.H3 = dat[coordIssues_coordConv_test,]
-    dat = dat[!coordIssues_coordConv_test,]
+    if (all(is.na(coordIssues_coordConv_test)))      warning ('Coordinate Conversion test errors not perfomred due to internal error. Continuing without that test')
+    
+    if (!all(is.na(coordIssues_coordConv_test)))     dat.Q.H3 = dat[coordIssues_coordConv_test,]
+    if (!all(is.na(coordIssues_coordConv_test)))     dat = dat[!coordIssues_coordConv_test,]
+
     if(ds.field == 'MyInventedCommonDataset')ds.field = NULL
     rm(dat.tmp)
     
@@ -329,11 +342,13 @@ occTest = function(
                                                       xf = x.field,
                                                       yf=y.field,
                                                       od = output.dir,
+                                                      rsd=return.spatial.data,
                                                       obf = output.base.filename,
-                                                      sp=sp)
+                                                      sp=sp,
+                                                      as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   }
   
-  
+  if(any(class(status.out)=='occTest')) {return(status.out)}
   
   #indicate issues of georeference and put them aside
   obj.issues = c('dat.Q.H','dat.Q.H1','dat.Q.H2','dat.Q.H3')
@@ -382,10 +397,12 @@ occTest = function(
                                                     xf = x.field,
                                                     yf=y.field,
                                                     od = output.dir,
+                                                    rsd=return.spatial.data,
                                                     obf = output.base.filename,
-                                                    sp=sp)
+                                                    sp=sp,
+                                                    as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   
-  if(is.list(status.out)){return(status.out)}
+  if(any(class(status.out)=='occTest')) {return(status.out)}
   tictoc:::toc()
   ### STEP 4: Filter Quality G : Identify duplicate records(in geographic space)to prevent pseudoreplicaton ===== 
   #set timer
@@ -415,11 +432,13 @@ occTest = function(
     xf = x.field,
     yf=y.field,
     od = output.dir,
+    rsd=return.spatial.data,
     obf = output.base.filename,
-    sp=sp)
+    sp=sp,
+    as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   
   
-  if( is.list (status.out)){return(status.out)}
+  if(any(class(status.out)=='occTest')) {return(status.out)}
   
   tictoc:::toc()
   ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES  =====
@@ -468,7 +487,9 @@ occTest = function(
                                             habType = habitat,verbose=verbose) 
   
   
-  dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)
+  if (exists ('dat.Q.G') & nrow (Analysis.LandSea$stay) != 0)   dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)
+  if (!exists ('dat.Q.G') & nrow (Analysis.LandSea$stay) != 0)   dat.Q.G =  Analysis.LandSea$stay
+  
   dat = Analysis.LandSea$continue
   
   #check outputs and escape if need be //
@@ -479,11 +500,13 @@ occTest = function(
     xf = x.field,
     yf=y.field,
     od = output.dir,
+    rsd=return.spatial.data,
     obf = output.base.filename,
-    sp=sp)
+    sp=sp,
+    as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   
   
-  if( is.list(status.out)){return(status.out)}
+  if(any(class(status.out)=='occTest')) {return(status.out)}
   tictoc:::toc()
   
   ### STEP 6: Filter Quality F Country selection ======
@@ -521,23 +544,21 @@ occTest = function(
     xf = x.field,
     yf=y.field,
     od = output.dir,
+    rsd=return.spatial.data,
     obf = output.base.filename,
-    sp=sp)
+    sp=sp,
+    as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   
   
-  if( is.list (status.out)){return(status.out)}
+  if(any(class(status.out)=='occTest')) {return(status.out)}
   tictoc:::toc()
   ### STEP 7: Quality A-E Environmental and Geographical outliers  - analysis chunk =====
   #set timer
-  tictoc:::tic('Total Geographic and Range Analysis:')
-  message('Total Geographic and Range Analysis started....')
-  
-  if(verbose){message("**** RESOLVING  ****")}
+  tictoc:::tic('Analysis phase:')
+
+  if(verbose){message("**** ANALYSIS PHASE STARTED  ****")}
   
   #ANALYSIS ELEMENTS
-  #this is important for development, need to specify the number of ELEMENTS of analysis
-  #to sumarize the results later on we will need that number
-  N_analysis = 8
   
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc:::tic('Centroid detection')
@@ -610,6 +631,7 @@ occTest = function(
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc:::tic('Environmental outliers')
   message('Environmental outliers analysis started...')
+
   Analysis.6 = envOutliers(.r.env=r.env,
                              df= dat, xf=x.field,
                              yf =y.field,
@@ -623,7 +645,6 @@ occTest = function(
   ### ELEMENT 8: Coordinate accuracy
   tictoc:::tic('geoEnvironmental accuracy')
   message('geoEnvironmental accuracy analysis started...')
-
   Analysis.7 = geoEnvAccuracy(df=dat,
                               xf = x.field,
                               yf = y.field,
@@ -640,6 +661,10 @@ occTest = function(
   tictoc:::toc()
   
   ### SUMMARY ANALYSIS RESULTS(NEED TO BE IMPROVED !)
+  #this is important for development, need to specify the number of ELEMENTS of analysis
+  #to sumarize the results later on we will need that number
+  N_analysis = 8
+  
   list.analysis = list()
   for(i in 1:N_analysis){
     if(exists(paste0('Analysis.',i))){

@@ -185,8 +185,11 @@
                                          xf=x.field,
                                          yf=y.field,
                                          od=output.dir,
+                                         rsd = return.spatial.data,
                                          obf=output.base.filename,
-                                         sp=sp.name, verbose=F){
+                                         sp=sp.name, verbose=F, 
+                                         as=analysisSettings,
+                                         ws = writeoutSettings,ts =tableSettings){
 
   if (nrow (dataset.to.continue) != 0) {return(NULL)}
   if (nrow (dataset.to.continue) == 0) {print ('Workflow finished')}
@@ -202,22 +205,44 @@
     if (length(dat.out.list) == 1) {full.qaqc <- unlist(dat.out.list)}
     if (length(dat.out.list) > 1)  {full.qaqc <- Reduce (plyr::rbind.fill, dat.out.list)}
 
-    full.qaqc$qualifiers<- NA
-    full.qaqc$quality.label<- full.qaqc$quality.grade
-
-    short.qaqc <-full.qaqc[, c('ID',xf,yf,'quality.grade','qualifiers','quality.label')]
-
-
-    if (wfo==T) {
-      write.csv (full.qaqc,   paste0(od,'/',obf,'_',sp,'_long.csv'),row.names = F)
+    #write outputs
+    if(wfo){
+      sp2 = occTest:::.join.spname(sp)
+      newdir = paste0(od,'/',sp2)
+      dir.create(newdir,recursive = T,showWarnings = F)
+      written = try(write.csv(full.qaqc,  
+                              paste0(newdir,'/',obf,
+                                     '_',sp,'_long.csv'),
+                              row.names = F),silent = T)
+      if(class(written)=='try-error') save(list = 'full.qaqc',file = paste0(newdir,'/',obf,'_',sp,'_long.RData'))
+      if(class(written)=='try-error') try(file.remove(paste0(newdir,'/',obf,'_',sp,'_long.csv')), silent=T )
     }
+    
 
-    if (wso==T) {
-      write.csv (short.qaqc,   paste0(od,'/',obf,'_',sp,'_short.csv'),row.names = F)
+    #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
+    output.function = full.qaqc
+
+    attr(output.function,"class")<-c("occTest",class(output.function))
+    
+    if(!rsd){
+      as$countryStatusRange$countries.shapefile<-NULL
+      as$humanDetection$ras.hii<-NULL
+      as$humanAnalysis$methodHyperHumanDetection<-NULL
+      as$rangeAnalysis$countries.shapefile<-NULL
     }
+    
+    
+    attr(output.function,"Settings")<-list(tableSettings=ts,analysisSettings=as,writeoutSettings=ws)
+    
+    
+    return(output.function)
+    
+    
+    
 
-    output.function <- list (occ_full_profile=full.qaqc, occ_short_profile=short.qaqc)
-    return (output.function)
+    
+
+  
   }
 
 }
