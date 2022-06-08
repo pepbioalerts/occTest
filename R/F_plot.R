@@ -22,7 +22,7 @@ NULL
 #' }
 #' @export 
 
-plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
+plot.occTest<-function(x,occFilter_list=NULL,show_plot=F){
   
   ## get settings
   Settings<- get_occTest_settings(x)
@@ -53,6 +53,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
   full_dataset_sf<-st_as_sf(full_dataset,coords=c(x_field,y_field),crs=st_crs(points_CRS))
   exten_of_plot_1<-st_bbox(full_dataset_sf)
   
+  pch_filtered<-ifelse(n_coords_filtered>5000,17,4)# to fasten the display for bigger dataset, we replace crosses with triangles
   
   list_of_ggplot<-list()
   ## first plot: filtering by bad coordinates
@@ -66,8 +67,8 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
     theme(legend.position = "bottom")+
     coord_sf(xlim=c(exten_of_plot_1[1],exten_of_plot_1[3]),ylim=c(exten_of_plot_1[2],exten_of_plot_1[4]),expand = T)+
     labs(color="Filter reason",title="Coordinates filtering",subtitle =paste0( "Occurences without coordinates = ",n_coords_missing ,"\nOccurences filtered =  ",n_coords_filtered))+
-    scale_shape_manual(breaks = c(TRUE,FALSE),values=c(4,16))+guides(shape = "none")+
-    scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = T))
+    scale_shape_manual(breaks = c(TRUE,FALSE),values=c(pch_filtered,16))+guides(shape = "none")+
+    scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = T,override.aes=list(pch=16)))
   
   if(is.null(occFilter_list)) warning("No occFilter object provided, plotting only the filtering by coordinates")
   if(!is.null(occFilter_list)){
@@ -111,6 +112,9 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
     
     bool_score_name<-paste0(score_name,"_bool")
     
+    pch_filtered<-ifelse(sum(filtered_dataset_scores[,bool_score_name]>5000,na.rm=T),17,4)
+    
+    
     if(all(is.na(filtered_dataset_scores[,bool_score_name]))) return(paste0("No '",sub("_score","",score_name),"' tests done"))
     filtered_dataset_scores_sf$occ_state<-ifelse(!filtered_dataset_scores[,bool_score_name],"Removed",ifelse(filtered_dataset_scores$filtered,"Removed by another test","Kept occurences"))
     n_occ_filtered<-sum(!filtered_dataset_scores[,bool_score_name])
@@ -121,7 +125,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=T){
       theme(legend.position = "bottom")+
       coord_sf(xlim=c(exten_of_plot_2[1],exten_of_plot_2[3]),ylim=c(exten_of_plot_2[2],exten_of_plot_2[4]),expand = T)+
       labs(color="Filter results",title=title_char,subtitle =ifelse(n_occ_filtered==0,"No occurences filtered by these tests",paste0(n_occ_filtered," occurences removed by these tests")))+
-      scale_shape_manual(breaks = c(TRUE,FALSE),labels=c("Rejected","Passed"),values=c(4,16))+guides(shape = "none")+
+      scale_shape_manual(breaks = c(TRUE,FALSE),labels=c("Rejected","Passed"),values=c(pch_filtered,16))+guides(shape = "none",colour=guide_legend(override.aes=list(pch=16)))+
       scale_color_manual(breaks =c("Removed","Removed by another test","Kept occurences"),values=c("brown","goldenrod","grey45") )
     
     return(plot_result)

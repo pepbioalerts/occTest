@@ -4,7 +4,7 @@
 \alias{plot.occTest}
 \title{Display the filtering process}
 \usage{
-\method{plot}{occTest}(x, occFilter_list = NULL, show_plot = T)
+\method{plot}{occTest}(x, occFilter_list = NULL, show_plot = F)
 }
 \arguments{
 \item{x}{An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
