@@ -1507,11 +1507,21 @@ geoEnvAccuracy  <- function (df,
   if (any(method %in% c('envDeviation','all'))) {
     
     uniqueCellBuff <- unique (unlist (cellIds.directions))
-    df.CellBuff = raster::extract(r.env,uniqueCellBuff,df=T)
+    if (raster::nlayers(r.env)>1) df.CellBuff = raster::extract(r.env,uniqueCellBuff,df=T)
+    if (raster::nlayers(r.env)==1) {
+      df.CellBuff = raster::extract(r.env,uniqueCellBuff)
+      df.CellBuff = data.frame (ID=1:length(df.CellBuff),LAYER = df.CellBuff)
+      names (df.CellBuff) = c('ID',names(r.env))
+    } 
     df.CellBuff$cellID = uniqueCellBuff
     
     targetCellUnique =   xydat$occCellids [!xydat$occCellids %in% uniqueCellBuff]
-    df.CellTarget = raster::extract(r.env,targetCellUnique,df=T)
+    if (raster::nlayers(r.env)>1) df.CellTarget = raster::extract(r.env,targetCellUnique,df=T)
+    if (raster::nlayers(r.env)==1) {
+      df.CellTarget = raster::extract(r.env,targetCellUnique)
+      df.CellTarget = data.frame (ID=1:length(df.CellTarget),LAYER = df.CellTarget)
+      names (df.CellTarget) = c('ID',names(r.env))
+    } 
     df.CellTarget$cellID = targetCellUnique
     df.cells = rbind (df.CellBuff,df.CellTarget)
     
