@@ -32,20 +32,12 @@ performs several queries based on the orignir package to identify native and inv
 \details{
 right now based on the package originr, which queries on Flora Europea, GISD or Native species resolver. Future implementation may query more databases.
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
 \seealso{
-
-
 Other spStatus: 
 \code{\link{ctryToIso3}()}
 }

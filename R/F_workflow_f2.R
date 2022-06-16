@@ -66,6 +66,7 @@ occTest = function(
   verbose = F,
   doParallel=F,
   mc.cores=2){
+  
 
   tictoc:::tic()
   
@@ -74,9 +75,15 @@ occTest = function(
   tictoc:::tic('Initial checks and formatting')
   message('Initial checks and formatting started...')
   
+  #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
   if(! pingr:::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
+  if(class(r.env) == 'SpatRaster')
+    stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
+  
+  sp.table <- as.data.frame (sp.table)
+    
   
   
   ### STEP 0: Load settings and study native and invasive countries ====

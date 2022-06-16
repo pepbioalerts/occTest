@@ -23,22 +23,12 @@ cc_round_occTest(
 \description{
 own version of coordinate cleaner cc_round
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (adapted from CoordinateCleaner)
 }
-\concept{}
 \keyword{internal}

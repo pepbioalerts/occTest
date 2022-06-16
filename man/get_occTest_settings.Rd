@@ -15,16 +15,10 @@ list of lists with all different parameters to use in  {\link[=occTest]{occTest}
 \description{
 Get the setting used to create a  occTest or occFilter object
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
-}
-\references{
-
 }
 \seealso{
 {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
@@ -32,5 +26,4 @@ example<-"goes here"
 \author{
 J Borderieux (jeremy.borderieux@agroparistech.fr)
 }
-\concept{}
 \keyword{occTest}

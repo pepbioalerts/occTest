@@ -15,22 +15,12 @@ Loads a list of lists with the different default parameters for analysis, output
 \details{
 it can be use internally or it can be used by a user to subsequently modify parameters
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{user}

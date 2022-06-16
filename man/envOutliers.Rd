@@ -50,16 +50,10 @@ Implemented methods are :\cr
 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 Regardless of the method, the funcition already tests for missing evironmental variables and it outputs the result in the output data.frame
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
-}
-\references{
-
 }
 \seealso{
 findEnvOutliers
@@ -67,5 +61,4 @@ findEnvOutliers
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com)
 }
-\concept{}
 \keyword{internal}

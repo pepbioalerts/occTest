@@ -32,9 +32,6 @@ Convert Alpha Hull object into a shapefile
 \details{
 Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 }
-\examples{
-
-}
 \seealso{
 Alpha hulls are created with \code{\link{ahull}}.
 }

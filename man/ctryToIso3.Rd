@@ -17,20 +17,12 @@ Froma character it uses different methods to derive country ISO3 digit codes
 \details{
 right now not implemented with fuzzy matching, but is case insensitive. Tow methods implemented, 'countrycode' and 'GNRS'
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
 \seealso{
-
-
 Other spStatus: 
 \code{\link{nativeStatusCtry}()}
 }

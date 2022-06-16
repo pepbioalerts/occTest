@@ -83,16 +83,10 @@ Current implmented methods are:
 'percDiffCell' : assess whether the record may be falling in a different raster cell given an information of coordinate accuracy. \cr 
 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
-}
-\references{
-
 }
 \seealso{
 CoordinateCleaner::cd_round

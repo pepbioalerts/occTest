@@ -15,22 +15,9 @@ list
 \description{
 Subset a list removing NA entries
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
-\author{
-
-}
-\concept{}
 \keyword{internal}

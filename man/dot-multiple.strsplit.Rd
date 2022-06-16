@@ -17,22 +17,12 @@ character
 \description{
 uses several splitting characters to split a character string.
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 Pep Serra-Diaz
 }
-\concept{}
 \keyword{internal}

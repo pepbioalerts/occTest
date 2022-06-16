@@ -53,16 +53,10 @@ Methods implented are 'alphaHull', detecting species outside an alphaHull level 
 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
-}
-\references{
-
 }
 \seealso{
 getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
@@ -70,5 +64,4 @@ getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com)
 }
-\concept{}
 \keyword{internal}

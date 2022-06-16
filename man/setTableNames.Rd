@@ -22,22 +22,12 @@ list
 \description{
 set table names internally
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{user}

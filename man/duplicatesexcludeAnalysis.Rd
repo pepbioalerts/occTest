@@ -33,19 +33,10 @@ Duplicated records
 \details{
 it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
-}
-\references{
-
-}
-\seealso{
-
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)

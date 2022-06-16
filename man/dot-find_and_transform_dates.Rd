@@ -19,12 +19,6 @@ character
 \description{
 Identify and harmonize data formats
 }
-\note{
-
-}
-\references{
-
-}
 \seealso{
 dataPreparation::find_and_transform_dates
 
@@ -35,9 +29,6 @@ Other internal:
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}
-}
-\author{
-
 }
 \concept{internal}
 \keyword{internal}

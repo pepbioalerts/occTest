@@ -19,22 +19,12 @@ List with two dataframes: stay = coordinates missing and continue = occurrence t
 \description{
 checks for missing coordinates in the occurrence dataframe
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{internal}

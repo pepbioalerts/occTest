@@ -44,22 +44,12 @@ data.frame
 \description{
 Selection of records within a specified land use
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{internal}

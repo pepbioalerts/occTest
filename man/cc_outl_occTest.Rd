@@ -23,22 +23,12 @@ cc_outl_occTest(
 \description{
 own version of coordinate cleaner geographic outliers
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{internal}

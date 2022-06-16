@@ -24,22 +24,12 @@ function used to select which types of tests you want in occTest workflow
 \details{
 See occTest::showTests for further information on tests used in the packages
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
-\seealso{
-
-}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
-\concept{}
 \keyword{user}

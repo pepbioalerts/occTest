@@ -30,22 +30,12 @@ spatial object or raster
 \description{
 download from Natural Earth the country checklist
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
 \seealso{
 rnaturalearth
 }
-\author{
-
-}
-\concept{}
 \keyword{internal}

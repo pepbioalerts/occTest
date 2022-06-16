@@ -15,17 +15,7 @@ character
 \description{
 Removes NAs when pasting character vectors
 }
-\note{
-
-}
-\references{
-
-}
-\seealso{
-
-}
 \author{
 Pep Serra-Diaz
 }
-\concept{}
 \keyword{internal}
