@@ -38,7 +38,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F){
   n_coords_missing<-sum(full_dataset$coordIssues_coordMissing_value)
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
   
-  # we extract up to date contrie boundaries, but if it fails, we have a local copy of the shape_file (2020)
+  # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
   countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50)),silent = T)
   if("try-error" %in% class(countries_natural_earth))countries_natural_earth<-read_sf(system.file('ext/Country_shp_world',package='occTest'),layer="Pays_WGS84")
   

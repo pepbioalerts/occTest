@@ -834,7 +834,7 @@ geoOutliers         <- function (df=dat,
                                 .projString   = points.proj4string,
                                 do=T, verbose=F){
   
-
+ 
   #build dataframe of all potential results
   out = data.frame (geoOutliers_alphaHull_value=NA,
                     geoOutliers_alphaHull_test=NA,
@@ -861,7 +861,7 @@ geoOutliers         <- function (df=dat,
   row.names (out) <- NULL
 
   if (!do) {return (out)}
-  
+
 
   #prepare df for different methods of outliers in different packages
   df$species <- 'MyFakeSp'
@@ -1418,27 +1418,6 @@ geoEnvAccuracy  <- function (df,
     
   }
   
-  #has format stamp? 
-  if (any(method %in% c('noDateFormatKnown','all'))) {
-    if (!is.null(tf)){
-      
-      warning ('method noDateFormatKnown under development. Sorry')
-      # vecTime = df[,tf]
-      # 
-      # dfVectime = data.frame(vecTime[1])
-      # 
-      # a = identify_dates(dfVectime)
-      # dfVectime = data.table::as.data.table(dfVectime)
-      # k = find_and_transform_dates(dfVectime)
-      # 
-      # 
-      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
-      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
-      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
-    }
-    
-  }
-  
   #is within time range ?
   if (any(method %in% c('outDateRange','all'))) {
     if (!is.null(tf)){
@@ -1449,7 +1428,7 @@ geoEnvAccuracy  <- function (df,
     
   }
   
-  #Need coordinate uncertainty analysis ?
+  #Need coordinate uncertainty analysis ? If not gimme score and leave
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
     out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
@@ -1463,7 +1442,7 @@ geoEnvAccuracy  <- function (df,
     return (out)
   }
   
-  #start methods requiring coordinate uncertainty
+  #Start methods requiring coordinate uncertainty
   if(length(af)>1) {df$new_accuracy = pmax(df[,af[1]],df[,af[2]],na.rm=T); af = 'new_accuracy'}
   xydat = df[,c(xf,yf,af)]
   xydat$occCellids = cellFromXY(r.env,as.data.frame (df[,c(xf,yf)]))
@@ -1621,10 +1600,10 @@ landUseSelect <- function (df=dat,
                            .landUseCodes = landUseCodes,
                            do=T, verbose=F,output.dir=output.dir){
   
-  
   out <- data.frame (landUse_wrongLU_value=NA,
                      landUse_wrongLU_test=NA,
-                     landUse_wrongLU_comments= NA)[1:nrow (df),]
+                     landUse_wrongLU_comments= NA,
+                     landUse_score = NA)[1:nrow (df),]
   row.names(out) <- NULL
   
   if (!do) {return (out)}

@@ -66,7 +66,7 @@ occTest = function(
   verbose = F,
   doParallel=F,
   mc.cores=2){
-  
+
 
   tictoc:::tic()
   

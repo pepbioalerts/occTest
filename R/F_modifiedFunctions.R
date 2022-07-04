@@ -211,7 +211,7 @@ cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
     }
     if (method == "quantile") {
       quo <- quantile(mins, c(0.25, 0.75), na.rm = TRUE)
-      out <- which(mins > quo[2] + stats::IQR(mins) * mltpl)
+      out <- which(mins > quo[2] + stats::IQR(mins,na.rm = T) * mltpl)
     }
     if (method == "mad") {
       quo <- stats::median(mins, na.rm = TRUE)
