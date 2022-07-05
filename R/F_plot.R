@@ -78,25 +78,26 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F){
   if(nrow(filtered_dataset)==nrow(full_dataset)) message ("occFilter filtered 0 occurences")
   
   summary_stats<-occFilter_list$summaryStats
-  treshold<-as.numeric(occFilter_list$rule[2])
   
   filtered_dataset_scores<-cbind(full_dataset[full_dataset$Exclude==0,c(x_field ,y_field,"Exclude")],summary_stats)#"name"
 
   # we extract the score to run the filtering again
   dfScoreVals = filtered_dataset_scores %>% dplyr::select(ends_with('_score')) 
-  filtered_dataset_scores$filtered<- apply (dfScoreVals,1,function (x) {
-    a = any (x >= treshold)
-    if (is.na(a)) a <- F
-    a
-  })
-  
-  
-  # we run the filtering again, and transform each tests passed as a logical
-  tmp_score_passed<-apply (dfScoreVals,2,function (x)x<treshold)
-  colnames(tmp_score_passed)<-paste0(colnames(tmp_score_passed),"_bool")
-  
-  filtered_dataset_scores<-cbind(filtered_dataset_scores,tmp_score_passed);rm(tmp_score_passed)
+  errorRule = occFilter_list$rule
  
+  filter_occ<-function(score,testName){
+    current_treshold<-errorRule %>% dplyr::filter (test == str_remove(testName,"_score")) %>% pull(errorThreshold)
+    return( ifelse(is.na(score),F, score>=current_treshold ))
+    
+  }
+  toss_df<-mapply(filter_occ,dfScoreVals,colnames(dfScoreVals),SIMPLIFY = T)
+  colnames(toss_df)<-paste0(colnames(toss_df),"_bool")
+  toss<-rowSums(toss_df)
+  toss<-toss>=1
+  
+  
+  filtered_dataset_scores<-cbind(filtered_dataset_scores,toss_df);rm(toss_df)
+  filtered_dataset_scores$filtered<-toss
 
   ## This dataframe (transformed to an sf object) contain the filtered occurences, and which tests they passed or not
   filtered_dataset_scores_sf<-st_as_sf(filtered_dataset_scores,coords=c(x_field,y_field),crs=st_crs(points_CRS))
@@ -116,8 +117,8 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F){
     
     
     if(all(is.na(filtered_dataset_scores[,bool_score_name]))) return(paste0("No '",sub("_score","",score_name),"' tests done"))
-    filtered_dataset_scores_sf$occ_state<-ifelse(!filtered_dataset_scores[,bool_score_name],"Removed",ifelse(filtered_dataset_scores$filtered,"Removed by another test","Kept occurences"))
-    n_occ_filtered<-sum(!filtered_dataset_scores[,bool_score_name])
+    filtered_dataset_scores_sf$occ_state<-ifelse(filtered_dataset_scores[,bool_score_name],"Removed",ifelse(filtered_dataset_scores$filtered,"Removed by another test","Kept occurences"))
+    n_occ_filtered<-sum(filtered_dataset_scores[,bool_score_name])
     
     
     plot_result<-ggplot(filtered_dataset_scores_sf)+theme_bw()+geom_sf(data=countries_natural_earth,color="grey60",fill="grey98")+
