@@ -20,6 +20,8 @@ occFilter(
 \item{errorAcceptance}{character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'}
 
 \item{errorThreshold}{double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.}
+
+\item{custom}{data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))}
 }
 \value{
 list of 2 data.frames
@@ -30,10 +32,16 @@ Filter occurrence records from occTest outputs
 \details{
 If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 showTests
@@ -41,4 +49,5 @@ showTests
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{filter}
