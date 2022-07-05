@@ -249,6 +249,7 @@ countryStatusRangeAnalysis=function(df=dat,
                                     excludeNotmatchCountry = F,
                                     doRangeAnalysis=T,
                                     verbose=F) {
+  
 
   if (!doRangeAnalysis) {
     df$countryStatusRange_wrongNTV_value   <- NA
@@ -351,7 +352,7 @@ countryStatusRangeAnalysis=function(df=dat,
   }
 
   #output
-  df$countryStatusRange_score = occTest:::.gimme.score (df)
+  df$countryStatusRange_score = occTest:::.gimme.score (df %>% dplyr::select(starts_with('countryStatusRange')))
   out <- list (stay = df[which(df$Exclude==1),], continue = df[which(df$Exclude!=1),])
   return (out)
 }
