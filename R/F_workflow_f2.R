@@ -74,7 +74,6 @@ occTest = function(
   #set timer
   tictoc:::tic('Initial checks and formatting')
   message('Initial checks and formatting started...')
-  
   #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')

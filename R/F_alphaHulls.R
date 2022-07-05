@@ -37,7 +37,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
                                   #buff = 1000, parameter not implemented
                                   proj = "+proj=longlat +datum=WGS84",  
                                   verbose = FALSE, alphaCap = 20) {
-  
+
   if (proj != "+proj=longlat +datum=WGS84") {
     stop("Currently, proj can only be '+proj=longlat +datum=WGS84'.")
   }
@@ -77,12 +77,12 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   }
   
   #perfomr hull
-  hull <- try(alphahull::ahull(data.frame(x),alpha = alpha), silent = TRUE)
+  hull <- try(R.utils::withTimeout (expr = alphahull::ahull(data.frame(x),alpha = alpha),timeout = 120,onTimeout = 'error'), silent = TRUE)
   if (inherits(hull, 'try-error')) {
     stop('Alpha hull not built')
   }
   
-  hull <- try (occTest:::ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84')), silent=T)
+  hull <- try (R.utils::withTimeout (expr = occTest:::ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84')),timeout = 120,onTimeout = 'error'), silent=T)
   if (!is.null(hull)) {
       slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest:::checkPolygonsGEOS2)
   }
