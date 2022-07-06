@@ -111,7 +111,7 @@ occFilter_depr <- function (df,
 #' @param 
 #' @return list of 2 data.frames
 #' @keywords filter
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), J Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param df data.frame. Output of  occTest
 #' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
@@ -133,9 +133,6 @@ occFilter <- function (df,
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL,
                        custom=NULL) {
-  #load pipes (need to change, you do not call libraries in functions)
-  # usethis::use_pipe()
-  # library (magrittr)
   #load column metadata
   if (is.null(custom)){
     colMetaData = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
@@ -194,42 +191,63 @@ occFilter <- function (df,
    
   }
   
-      nDfScore = unlist(strsplit (names (dfScoreVals),split = '_score'))
+  nDfScore = unlist(strsplit (names (dfScoreVals),split = '_score'))
    
-    errorThresholdDf = colMetaData %>% 
+  errorThresholdDf = colMetaData %>% 
       dplyr::filter (mode != 'filter') %>%
       dplyr::select(by,errorThreshold) %>%
       unique
    
-    names (errorThresholdDf) <- c('test','errorThreshold')
-    errorThresholdDf = errorThresholdDf %>%
-      filter(test %in% nDfScore)
+  names (errorThresholdDf) <- c('test','errorThreshold')
+  errorThresholdDf = errorThresholdDf %>%
+  filter(test %in% nDfScore)
 
   
   if (!is.null(custom)){
 
-   # errorThresholdDf = errorThresholdDf[match(nDfScore, errorThresholdDf$test),]
+   errorThresholdDf = errorThresholdDf[match(nDfScore, errorThresholdDf$test),]
 
-    errorThreshold = errorThresholdDf %>% pull (errorThreshold)
+   errorThreshold = errorThresholdDf %>% pull (errorThreshold)
 
     if (length(errorThreshold) != ncol (dfScoreVals)) {stop (paste('Different threshold for the same',by))}
   
   }
     errorRule=errorThresholdDf
     
-
     filter_occ<-function(score,testName){
       current_treshold<-errorRule %>% dplyr::filter (test == str_remove(testName,"_score")) %>% pull(errorThreshold)
       return( ifelse(is.na(score),F, score>=current_treshold ))
       
     }
-    toss_df<-mapply(filter_occ,dfScoreVals,colnames(dfScoreVals),SIMPLIFY = T)
-    toss<-rowSums(toss_df)
+    
+      toss_df<-mapply(filter_occ,
+                      dfScoreVals,
+                      colnames(dfScoreVals),SIMPLIFY = T)
+    
+    # @JB I added na.rm=T in case some scores are not done for a given record
+    if (class(toss_df) == 'logical') {toss= sum(toss_df,na.rm=T)} else
+    {toss<-rowSums(toss_df,na.rm=T)}
+      
     toss<-toss>=1
+    
   #output
-  
-  if (all(toss==F)) warning("No occurence filtered")
-
+  if (all(toss==F)) {warning("No occurence filtered through quality tests")
+    out = list (filteredDataset = dfFiltered,
+                summaryStats = dfScores,
+                rule = errorRule)
+    attr(out,"class")<-c("occFilter",class(out))
+    attr(out,"Settings")<-get_occTest_settings(df)
+    return(out)
+    }
+  if (all(toss==T)) {
+    warning("All occurence filtered")
+    out = list (filteredDataset = NULL,
+                summaryStats = dfScores,
+                rule = errorRule)
+    attr(out,"class")<-c("occFilter",class(out))
+    attr(out,"Settings")<-get_occTest_settings(df)
+    return(out)
+    }
   out = list (filteredDataset = dfFiltered[which(toss)*(-1),],
               summaryStats = dfScores,
               rule = errorRule)

@@ -32,22 +32,15 @@ Filter occurrence records from occTest outputs
 \details{
 If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
 }
-\note{
-
-}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
-\references{
-
-}
 \seealso{
 showTests
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+JM Serra-Diaz (pep.serradiaz@agroparistech.fr), J Borderieux (jeremy.borderieux@agroparistech.fr)
 }
-\concept{}
 \keyword{filter}
