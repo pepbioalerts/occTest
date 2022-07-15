@@ -420,7 +420,6 @@ centroidDetection <- function (df=dat,
 
   #Method BIEN
   if (any(method %in% c('BIEN','all'))){
-    
     #load centroid data
     centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occTest')
     centroid_data =  read.csv (centroid_data)
@@ -543,8 +542,8 @@ centroidDetection <- function (df=dat,
       colnames(k)[which(colnames(k)=="is_centroid")]<-"centroidDetection_BIEN_test"
       colnames(k)[which(colnames(k)=="comments" )]<-"centroidDetection_BIEN_comments"
       out$centroidDetection_BIEN_value <- k$is_centroid_val
-      out$centroidDetection_BIEN_test <- as.logical(k$is_centroid)
-      out$centroidDetection_BIEN_comments <- k$comments
+      out$centroidDetection_BIEN_test <- as.logical(k$centroidDetection_BIEN_test)
+      out$centroidDetection_BIEN_comments <- k$centroidDetection_BIEN_comments
       
     }
     
@@ -868,8 +867,7 @@ geoOutliers         <- function (df=dat,
   df$species <- 'MyFakeSp'
   rownames(df) <-1:nrow(df)
   xydat <- df[,c(xf,yf)]
-  if (nrow (xydat)<5) {warning('envOutliers not perfomred. N<5'); return(out)}
-  
+  if (nrow (xydat)<5) {warning('geoOutliers not perfomred. N<5'); return(out)}
 
   if (any (method %in% c('alphaHull','all'))){
 
@@ -1018,7 +1016,7 @@ geoOutliers         <- function (df=dat,
     }
   }
 
-  if (any (method %in% c('quantSamplingCorrected','all'))){
+  if (any (method %in% c('quantSamplingCorrected','quantileSamplingCorr','all'))){
 
 
     cc_qsc_tst = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
@@ -1039,7 +1037,7 @@ geoOutliers         <- function (df=dat,
 
   }
 
-  if (any (method %in% c('grubbs','all'))) {
+  if (any (method %in% c('grubbs','all','Grubbs'))) {
     spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
     if (length (spdf)<=5) {
       out$geoOutliers_Grubbs_value = rep(NA,times=nrow(out))
@@ -1323,8 +1321,7 @@ geoEnvAccuracy  <- function (df,
   if (!do) {return (out)}
   #check if need parallel
   os = occTest:::get_os()
-  if (doParallel==T & grepl(pattern = 'mac',x = os)) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & grepl(pattern = 'lin',x = os)) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
   if (doParallel==T & grepl(pattern = 'win',x = os)) {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
   if (nrow(df)<100) {mymclapply <- lapply}

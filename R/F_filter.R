@@ -10,7 +10,7 @@
 #' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
 #' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
-#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
+#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 #' @note
 #' @seealso showTests
 #' @references
@@ -117,7 +117,7 @@ occFilter_depr <- function (df,
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
 #' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
 #' @param custom data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
-#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'stringent' corresponds to an errorAcceptance of 0.2.
+#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 #' @note
 #' @seealso showTests
 #' @references
@@ -216,7 +216,7 @@ occFilter <- function (df,
     
     filter_occ<-function(score,testName){
       current_treshold<-errorRule %>% dplyr::filter (test == str_remove(testName,"_score")) %>% pull(errorThreshold)
-      return( ifelse(is.na(score),F, score>=current_treshold ))
+      return( ifelse(is.na(score),F, score>current_treshold ))
       
     }
     
@@ -225,7 +225,7 @@ occFilter <- function (df,
                       colnames(dfScoreVals),SIMPLIFY = T)
     
     # @JB I added na.rm=T in case some scores are not done for a given record
-    if (class(toss_df) == 'logical') {toss= sum(toss_df,na.rm=T)} else
+    if (any (class(toss_df) %in% 'logical')) {toss= sum(toss_df,na.rm=T)} else
     {toss<-rowSums(toss_df,na.rm=T)}
       
     toss<-toss>=1

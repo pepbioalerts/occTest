@@ -55,7 +55,7 @@ occMartesFiltered = occTest::occFilter(df = martesTests,
 
 occMartesFiltered = occTest::occFilter(df = martesTests,
                                        by = 'testBlock',# no need this is default other option is testTypes
-                                       errorAcceptance = 'stringent')
+                                       errorAcceptance = 'strict')
 #the output table filtered
 occMartesFiltered$fitleredDataset
 

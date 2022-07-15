@@ -238,7 +238,7 @@ The function run with two dedicated options: level and errorAcceptance. Level co
 | ----------   |:------------------------------:| -------:|
 df | data frame output of occurrenceClassify | data.frame
 level | numeric. The hierachy you use to group and summarize the different tests performed | numeric. 1 or 2
-errorAcceptance | majority (error accepted up to 50% of the tests), relaxed (70%), stringent (20%), custom . Level of error you accept in the groupings| character. Deffault is majority
+errorAcceptance | majority (error accepted up to 50% of the tests), relaxed (70%), strict (20%), custom . Level of error you accept in the groupings| character. Deffault is majority
 errorThreshold  | if errorAcceptance set to custom. The threshold of error accepted by group.  | double. 0 to 1
 
 
@@ -257,7 +257,7 @@ outDougFirSelec[['summaryStats']]
 check how the groupings changed with different levels and different threshold acceptance levels 
 
 ```{r}
-outDougFirSelec2 = occFilter (df = outDougFir, errorAcceptance = 'stringent')
+outDougFirSelec2 = occFilter (df = outDougFir, errorAcceptance = 'strict')
 nrow (outDougFirSelec2 [['fitleredDataset']] )
 nrow (outDougFirSelec[['fitleredDataset']])
 ```

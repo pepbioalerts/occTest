@@ -226,7 +226,7 @@ knitr::kable (head(outDougFir))
 ```
 
 
-Then we can use *occFilter* to filter the data according to different acceptance levels of issues in each record. You can have three broad thresholds for filtering data: relaxed (accept up 70% of tests showing issues), stringent (20%) or majority (50%). These percentages are applied to groups of tests depending on their nature (testBlocks or testTypes). For instance, a relaxed approach to filtering will filter a record if for a given test groups (e.g. environmental data tests, geographic tests, human detection tests) more than 70% of the tests fail.
+Then we can use *occFilter* to filter the data according to different acceptance levels of issues in each record. You can have three broad thresholds for filtering data: relaxed (accept up 70% of tests showing issues), strict (20%) or majority (50%). These percentages are applied to groups of tests depending on their nature (testBlocks or testTypes). For instance, a relaxed approach to filtering will filter a record if for a given test groups (e.g. environmental data tests, geographic tests, human detection tests) more than 70% of the tests fail.
 
 ```{r}
 occTest::showTests ()
@@ -268,9 +268,9 @@ head(outDougFirSelec[['summaryStats']])
 check how the groupings changed with different levels and different threshold acceptance levels 
 
 ```{r}
-outDougFirSelecStringent = occFilter (df = outDougFir, errorAcceptance = 'strict')
+outDougFirSelecstrict = occFilter (df = outDougFir, errorAcceptance = 'strict')
 outDougFirSelecMajority = occFilter (df = outDougFir, errorAcceptance = 'majority')
-nrow (outDougFirSelecStringent [['filteredDataset']] )
+nrow (outDougFirSelecstrict [['filteredDataset']] )
 nrow (outDougFirSelecMajority [['filteredDataset']] )
 nrow (outDougFirSelec[['filteredDataset']])
 ```

@@ -231,6 +231,7 @@ occTest = function(
   ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
   #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
   #whatever the want we are going to set it to False from now
+  if (any (c(interactiveMode,resolveNativeCtry,resolveAlienCtry))) message('Automatic resolving of native and non-native ranges not implemented yet')
   interactiveMode= F
   resolveNativeCtry = F
   resolveAlienCtry = F
@@ -267,7 +268,7 @@ occTest = function(
   
   if(verbose){message("**** FILTERING PHASE STARTED  ****")}
   
-  ### STEP 2: Quality H Filter : Identify records wo spatial info =====
+  ### STEP 2: Quality Filter : Identify records wo spatial info =====
   #set timer
   tictoc:::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues started...')
@@ -449,7 +450,7 @@ occTest = function(
   
   tictoc:::toc()
   ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES  =====
-  #-- and potential for Quality G again(duplicates)
+  #-- and potential for new duplicates
   #set timer
   tictoc:::tic('Resolving coastal reassignment')
   message('Resolving coastal reassignment started...')
@@ -516,11 +517,11 @@ occTest = function(
   if(any(class(status.out)=='occTest')) {return(status.out)}
   tictoc:::toc()
   
-  ### STEP 6: Filter Quality F Country selection ======
+  ### STEP 6: Filter Quality : Country selection ======
   #set timer
   tictoc:::tic('Resolving countryStatusRange Analysis')
-  message('Resolving countryStatusRange Analysis started...')
-  if(verbose) message("**** RESOLVING QUALITY FILTER F: CountryStatus range analysis(invasive?native?unkonwn?)****") 
+  
+  if(verbose) message('Resolving countryStatusRange Analysis started...')
   if(verbose & excludeUnknownRanges) message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')
   if(verbose & excludeNotmatchCountry) message('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')
   Analysis.F=countryStatusRangeAnalysis(df=dat,
@@ -540,7 +541,7 @@ occTest = function(
                                         doRangeAnalysis = doRangeAnalysis,
                                         verbose = T)
   
-  if (nrow(Analysis.F$stay)!= 0 ) dat.Q.F = Analysis.F$stay  #; dat.Q.F$quality.grade = 'F'
+  if (nrow(Analysis.F$stay)!= 0 ) dat.Q.F = Analysis.F$stay 
   dat = Analysis.F$continue
   
   #check outputs and escape ifneedbe //
@@ -559,17 +560,14 @@ occTest = function(
   
   if(any(class(status.out)=='occTest')) {return(status.out)}
   tictoc:::toc()
-  ### STEP 7: Quality A-E Environmental and Geographical outliers  - analysis chunk =====
+  ### STEP 7: Environmental and Geographical outliers  - analysis chunk =====
   #set timer
   tictoc:::tic('Analysis phase:')
-
   if(verbose){message("**** ANALYSIS PHASE STARTED  ****")}
-  
   #ANALYSIS ELEMENTS
-  
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc:::tic('Centroid detection')
-  message('Centroid detection started ...')
+  if(verbose) message('Centroid detection started ...')
 
   Analysis.1 = centroidDetection(.r.env = r.env,
                                  df = dat,
@@ -591,7 +589,7 @@ occTest = function(
   
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc:::tic('Land Use Land Cover analysis')
-  message('Land Use Land Cover analysis started ...')
+  if(verbose) message('Land Use Land Cover analysis started ...')
   Analysis.2 = humanDetection (df = dat,
                                xf = x.field,
                                yf = y.field,
@@ -603,7 +601,7 @@ occTest = function(
   
   ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
   tictoc:::tic('Institution locality')
-  message ('Institution locality started ...')
+  if(verbose) message ('Institution locality started ...')
   Analysis.3 = institutionLocality(df=dat,xf = x.field,yf=y.field,
                                    lf=l.field,
                                    do = doInstitutionLocality,
@@ -613,7 +611,7 @@ occTest = function(
   
   ### ELEMENT : land use
   tictoc:::tic('Records in land use')
-  message ('Records in land use started...')
+  if(verbose) message ('Records in land use started...')
   Analysis.4 = landUseSelect(df=dat,xf = x.field,yf=y.field,
                              .points.proj4string =points.proj4string,
                              .landUseCodes = landUseCodes,
@@ -625,7 +623,7 @@ occTest = function(
   
   ### ELEMENT : GEOGRAPHICAL OUTLIER
   tictoc:::tic('geographic outliers detection')
-  message('geographic outliers detection started')
+  if(verbose) message('geographic outliers detection started')
   Analysis.5 = geoOutliers(df=dat,
                            xf=x.field,
                            yf=y.field,
@@ -637,7 +635,7 @@ occTest = function(
  
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc:::tic('Environmental outliers')
-  message('Environmental outliers analysis started...')
+  if(verbose) message('Environmental outliers analysis started...')
 
   Analysis.6 = envOutliers(.r.env=r.env,
                              df= dat, xf=x.field,
@@ -651,7 +649,7 @@ occTest = function(
   
   ### ELEMENT 8: Coordinate accuracy
   tictoc:::tic('geoEnvironmental accuracy')
-  message('geoEnvironmental accuracy analysis started...')
+  if(verbose) message('geoEnvironmental accuracy analysis started...')
   Analysis.7 = geoEnvAccuracy(df=dat,
                               xf = x.field,
                               yf = y.field,
@@ -671,9 +669,9 @@ occTest = function(
   #this is important for development, need to specify the number of ELEMENTS of analysis
   #to sumarize the results later on we will need that number
   N_analysis = 8
-  
   list.analysis = list()
-  for(i in 1:N_analysis){
+
+    for(i in 1:N_analysis){
     if(exists(paste0('Analysis.',i))){
       list.analysis[[i]] = get(paste0('Analysis.',i))
     } else {list.analysis[[i]] =  NULL}
@@ -697,7 +695,7 @@ occTest = function(
   
   ### STEP 10: WRITE THE OUTPUTS =====
   tictoc:::tic('Preparing and Writing outputs')
-  message('Preparing and Writing outputs started ...')
+  if(verbose) message('Preparing and Writing outputs started ...')
   #reorder data as original
   full.qaqc = full.qaqc[order(full.qaqc$roworder),]
   full.qaqc = full.qaqc[,! names(full.qaqc)== 'roworder']
@@ -714,7 +712,6 @@ occTest = function(
     if(class(written)=='try-error')save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
     if(class(written)=='try-error')try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
-  
   tictoc:::toc()
   
   #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
