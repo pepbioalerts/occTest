@@ -319,9 +319,11 @@ cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
 #' @references
 #' @aliases
 #' @family
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+# @examples \dontrun{
+# example<-"goes here"
+# }
+#' @export
+
 cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                            ds = "dataset", T1 = 7, reg_out_thresh = 2, reg_dist_min = 0.1, 
                            reg_dist_max = 2, min_unique_ds_size = 4, graphs = F, 

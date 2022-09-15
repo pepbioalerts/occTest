@@ -1340,7 +1340,7 @@ geoEnvAccuracy  <- function (df,
     }
     
     #there are a lot of problems with this function
-    cd_round_test = try({occTest:::cc_round_occTest(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged2',verbose=F,graphs=F)},silent=T)
+    cd_round_test = try({occTest::cc_round_occTest(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged2',verbose=F,graphs=F)},silent=T)
     #cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
     out$geoenvLowAccuracy_lattice_value = (!cd_round_test) * 1
     out$geoenvLowAccuracy_lattice_test = (!cd_round_test)

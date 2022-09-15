@@ -1,0 +1,27 @@
+---
+title: "maskRangeR: Improving spatial and temporal accuracy of species distribution models"
+author: "Cory Merow, Peter J. Galante, Cecina Babich Morrow, Jamie M. Kass, Alex Moore, Valentina Grisales-Betancur, Beth Gerstner, Jorge Velasquez, Robert P. Anderson, Mary E. Blair"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    toc: true
+    number_sections: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{maskRangeR: Improving spatial and temporal accuracy of species distribution models}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: inline
+---
+
+Our demo requires data larger than we can store on CRAN and involves analyses that run for a few minutes, which also isn't allowed, so we maintain our most comprehensive tutorial on github. Please see our complete tutorial on our github page at:
+
+[https://github.com/cmerow/maskRangeR/tree/master/Vignette](https://github.com/cmerow/maskRangeR/tree/master/Vignette)
+
+To download it (you can't just right-click on github), its easiest to install the chrome extentsion Gitzip:
+[https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn](https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn)
+You can then right-click on the file and an option to download is available, as shown below:
+![](howToDownloadVignette.png) 
+
