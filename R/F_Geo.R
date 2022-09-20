@@ -55,7 +55,7 @@
     rs <- raster::raster(nrows = 24, ncols = 72, xmn = -180, xmx = 180, 
                           ymn = -60, ymx = 60)
     rowTile <- raster::rowFromY(rs, lat)
-    colTile <- raster:::colFromX(rs, lon)
+    colTile <- raster::colFromX(rs, lon)
     if (rowTile < 10) {
       rowTile <- paste("0", rowTile, sep = "")
     }

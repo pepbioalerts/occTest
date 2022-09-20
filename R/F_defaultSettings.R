@@ -17,10 +17,9 @@
 defaultSettings <- function (){
   
   #download info and files
-  require (rnaturalearth)
   dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
   outFile_hii = paste0(tempdir(),'/hii.rds')
-  if (!file.exists(outFile_hii)) download.file(url=dest_url_hii,destfile = outFile_hii)
+  if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
   
   
   
@@ -331,7 +330,7 @@ minimalSettings <- function (){
   #download info
   dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
   outFile_hii = paste0(tempdir(),'/hii.rds')
-  download.file(url=dest_url_hii,destfile = outFile_hii)
+  utils::download.file(url=dest_url_hii,destfile = outFile_hii)
   
   defaultSettings = list (
     

@@ -29,8 +29,8 @@ This is implemented within the occTest function
 
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
-\code{\link{get_os}()},
-\code{\link{hijack}()},
+\code{\link{.get_os}()},
+\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}

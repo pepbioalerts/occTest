@@ -24,9 +24,9 @@ By default, it converts "Species_genus" format to "Species genus" format
 \seealso{
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
+\code{\link{.get_os}()},
 \code{\link{.gimme.score}()},
-\code{\link{get_os}()},
-\code{\link{hijack}()},
+\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()}
 }

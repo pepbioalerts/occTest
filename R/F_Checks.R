@@ -211,10 +211,10 @@
 
     #write outputs
     if(wfo){
-      sp2 = occTest:::.join.spname(sp)
+      sp2 = occTest::.join.spname(sp)
       newdir = paste0(od,'/',sp2)
       dir.create(newdir,recursive = T,showWarnings = F)
-      written = try(write.csv(full.qaqc,  
+      written = try(utils::write.csv(full.qaqc,  
                               paste0(newdir,'/',obf,
                                      '_',sp,'_long.csv'),
                               row.names = F),silent = T)

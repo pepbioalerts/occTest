@@ -200,14 +200,14 @@ occFilter <- function (df,
    
   names (errorThresholdDf) <- c('test','errorThreshold')
   errorThresholdDf = errorThresholdDf %>%
-  filter(test %in% nDfScore)
+  dplyr::filter(test %in% nDfScore)
 
   
   if (!is.null(custom)){
 
    errorThresholdDf = errorThresholdDf[match(nDfScore, errorThresholdDf$test),]
 
-   errorThreshold = errorThresholdDf %>% pull (errorThreshold)
+   errorThreshold = errorThresholdDf %>% dplyr::pull (errorThreshold)
 
     if (length(errorThreshold) != ncol (dfScoreVals)) {stop (paste('Different threshold for the same',by))}
   

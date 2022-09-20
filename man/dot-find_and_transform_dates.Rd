@@ -29,9 +29,9 @@ Identify and harmonize data formats
 dataPreparation::find_and_transform_dates
 
 Other internal: 
+\code{\link{.get_os}()},
 \code{\link{.gimme.score}()},
-\code{\link{get_os}()},
-\code{\link{hijack}()},
+\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}

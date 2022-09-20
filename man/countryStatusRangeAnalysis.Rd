@@ -71,9 +71,9 @@ example<-"goes here"
 
 
 Other analysis: 
+\code{\link{.nearestcell3}()},
 \code{\link{geoEnvAccuracy}()},
-\code{\link{humanDetection}()},
-\code{\link{nearestcell3}()}
+\code{\link{humanDetection}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)

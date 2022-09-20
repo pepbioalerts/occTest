@@ -100,9 +100,9 @@ example<-"goes here"
 CoordinateCleaner::cd_round
 
 Other analysis: 
+\code{\link{.nearestcell3}()},
 \code{\link{countryStatusRangeAnalysis}()},
-\code{\link{humanDetection}()},
-\code{\link{nearestcell3}()}
+\code{\link{humanDetection}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)

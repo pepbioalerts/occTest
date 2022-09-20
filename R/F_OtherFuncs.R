@@ -171,7 +171,7 @@
 #' example<-"goes here"
 #' }
 
-# get_os  ====
+# .get_os  ====
 #' @title Identify type of Operative system
 #' @description The function is used to report the working operative system as a 3-letter character for 'win', and 'mac', 'unix', and 'unknown OS'
 #' @details This is implemented whan parallelizing functions
@@ -185,7 +185,7 @@
 #' @family internal
 #' @examples \dontrun{
 #' example<-"goes here"
-get_os <- function() {
+.get_os <- function() {
   if (.Platform$OS.type == "windows") { 
     "win"
   } else if (Sys.info()["sysname"] == "Darwin") {
@@ -243,7 +243,7 @@ get_os <- function() {
   return(data_set)
 }
 
-# hijack  ====
+# .hijack  ====
 #' @title Hijack functions
 #' @description  Hijacking functions to rename them
 #' @details In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
@@ -263,7 +263,7 @@ get_os <- function() {
 #' dat <- .data.frame(x1 = 1:3, x2 = c("a", "b", "c"))
 #' str(dat)  # yay! strings are character
 #' }
-hijack <- function (FUN, ...) {
+.hijack <- function (FUN, ...) {
   .FUN <- FUN
   args <- list(...)
   invisible(lapply(seq_along(args), function(i) {

@@ -25,9 +25,9 @@ evaluates a conditional expression where if any element is NA the output is F in
 \seealso{
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
+\code{\link{.get_os}()},
 \code{\link{.gimme.score}()},
-\code{\link{get_os}()},
-\code{\link{hijack}()},
+\code{\link{.hijack}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}
 }

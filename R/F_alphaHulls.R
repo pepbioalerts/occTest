@@ -49,7 +49,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   
   #reduce to unique coordinates [this is probably done before, but it is a safety measure]
   x <- x[!duplicated(x[,coordHeaders]), coordHeaders]
-  x <- x[complete.cases(x),]
+  x <- x[stats::complete.cases(x),]
   
   if (nrow(x) < 3) {
     stop('This function requires a minimum of 3 unique coordinates (after removal of duplicates).')
@@ -61,7 +61,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   }
   
   #create spatialpoints
-  x <- sp::SpatialPoints(x, proj4string = CRS(proj))
+  x <- sp::SpatialPoints(x, proj4string = sp::CRS(proj))
   x <- sp::remove.duplicates(x)
   if (length(x) < 3) {
     stop('This function requires a minimum of 3 unique coordinates.')
@@ -83,9 +83,9 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     stop('Alpha hull not built')
   }
   
-  hull <- try (occTest:::ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84')), silent=T)
+  hull <- try (occTest::.ah2sp(hull, proj4string = sp::CRS('+proj=longlat +datum=WGS84')), silent=T)
   if (!is.null(hull)) {
-      slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest:::checkPolygonsGEOS2)
+      slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest::.checkPolygonsGEOS2)
   }
   
   if (is.null(hull) | inherits(hull, 'try-error') | !cleangeo::clgeo_IsValid(hull)) {
@@ -93,7 +93,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     }
   
   #how many points are within hull?
-  slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest:::checkPolygonsGEOS2)
+  slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest::.checkPolygonsGEOS2)
   if (!cleangeo::clgeo_IsValid(hull)) stop ('Invalid GEOS for alphahull built')
   
   pointWithin <- rgeos::gIntersects(x, hull, byid = TRUE)
@@ -105,7 +105,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 
 
 
-### ah2sp  ======
+### .ah2sp  ======
 ##' @title Convert Alpha Hull object into a shapefile 
 ##' @details Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 ##' @param x an alpha hull object
@@ -119,7 +119,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 ##' @examples
 ##' 
 
-ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),tol=1e-4) {
+.ah2sp <- function(x, increment=360, rnd=10, proj4string=sp::CRS(as.character(NA)),tol=1e-4) {
   if (!inherits(x, "ahull")) {
     stop("x needs to be an ahull class object")
   }
@@ -197,8 +197,8 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
           coordsj <- cbind(prevx,prevy)
           colnames(coordsj) <- NULL
           # Build as Line and then Lines class
-          linej <- Line(coordsj)
-          linesj[[j]] <- Lines(linej, ID = as.character(j))
+          linej <- sp::Line(coordsj)
+          linesj[[j]] <- sp::Lines(linej, ID = as.character(j))
         } else {
           prevx <- append(prevx, x[2:ipoints])
           prevy <- append(prevy, y[2:ipoints])
@@ -228,31 +228,31 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
     if (length(badLines) > 0){linesj <- linesj[-badLines]}
     
     # Promote to SpatialLines
-    lspl <- SpatialLines(linesj)
+    lspl <- sp::SpatialLines(linesj)
     # Convert lines to polygons
     # Pull out Lines slot and check which lines have start and end points that are the same
-    lns <- slot(lspl, "lines")
+    lns <- methods::slot(lspl, "lines")
     polys <- sapply(lns, function(x) { 
-      crds <- slot(slot(x, "Lines")[[1]], "coords")
+      crds <- methods::slot(slot(x, "Lines")[[1]], "coords")
       identical(crds[1, ], crds[nrow(crds), ])
     }) 
     # Select those that do and convert to SpatialPolygons
     polyssl <- lspl[polys]
     list_of_Lines <- slot(polyssl, "lines")
-    sppolys <- SpatialPolygons(list(Polygons(lapply(list_of_Lines, function(x) { Polygon(slot(slot(x, "Lines")[[1]], "coords")) }), ID = "1")), proj4string=proj4string)
+    sppolys <- sp::SpatialPolygons(list(sp::Polygons(lapply(list_of_Lines, function(x) { Polygon(slot(slot(x, "Lines")[[1]], "coords")) }), ID = "1")), proj4string=proj4string)
     # Create a set of ids in a dataframe, then promote to SpatialPolygonsDataFrame
     hid <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "ID"))
     areas <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "area"))
     df <- data.frame(hid,areas)
     names(df) <- c("HID","Area")
     rownames(df) <- df$HID
-    res <- SpatialPolygonsDataFrame(sppolys, data=df)
+    res <- sp::SpatialPolygonsDataFrame(sppolys, data=df)
     res <- res[which(res@data$Area > 0),]
   }  
   return(res)
 }
 
-# checkPolygonsGEOS2 ====
+# .checkPolygonsGEOS2 ====
 ##' @title  Check polygon geometry
 ##' @description 
 ##' @details inspired provided by  maptools package and from P Title in rangeBuilder
@@ -266,7 +266,7 @@ ah2sp <- function(x, increment=360, rnd=10, proj4string=CRS(as.character(NA)),to
 ##' see maptools and RangeBuilder package 
 ##' @examples
 ##
-checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
+.checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
   if (!is(obj, "Polygons")) 
     stop("not a Polygons object")
   comm <- try(rgeos::createPolygonsComment(obj), silent = TRUE)

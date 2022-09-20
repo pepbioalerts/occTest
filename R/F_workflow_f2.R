@@ -79,7 +79,7 @@ occTest = function(
   #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
-  if(! pingr:::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
+  if(! pingr::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
   if(class(r.env) == 'SpatRaster')
     stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
   
@@ -179,19 +179,19 @@ occTest = function(
   ### STEP 1a: Data formatting and compatibility for biogeo and initial checks =====
 
   #add fields necesary for initial table
-  sp = occTest:::.join.spname(sp.name)
+  sp = occTest::.join.spname(sp.name)
   sp.table$Species = sp
   
-  sp.table2 = occTest:::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
+  sp.table2 = occTest::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
                                      ef = e.field,tf = t.field,lf = l.field,
                                      cf = c.field,          
                                      idf = taxonobservation.id)
   
-  dat = occTest:::.addmainfields2(sp.table2,species = 'Species')
+  dat = occTest::.addmainfields2(sp.table2,species = 'Species')
   dat$comments = rep('', nrow(dat))
   
   #check data structure
-  ck  = occTest:::.checkdatastr2(dat,xf = x.field,yf=y.field)
+  ck  = occTest::.checkdatastr2(dat,xf = x.field,yf=y.field)
   if(sum(ck$Present)!=10){stop("Error: required table fields could not be created")}
   
   #For development:
@@ -207,7 +207,7 @@ occTest = function(
                                   points.proj4string)
   x = sapply(potential.geosp.objects, is.null)
   actual.input.geosp.objects = potential.geosp.objects[-x]
-  actual.input.geosp.objects = occTest:::.subsetlist.nonNULL(actual.input.geosp.objects)
+  actual.input.geosp.objects = occTest::.subsetlist.nonNULL(actual.input.geosp.objects)
   
   #the development should be in the direction of automatically check and transform
   #occTest:::.check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
@@ -242,19 +242,19 @@ occTest = function(
   #automatically resolve invasive and native countries for target species(not implemented yet)
   
   if(interactiveMode & is.null(ntv.ctry)){
-    resolveNativeCtry = if(interactive()) askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+    resolveNativeCtry = if(interactive()) utils::askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
   }
   if(interactiveMode & is.null(inv.ctry)){
-    resolveAlienCtry = if(interactive()) askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+    resolveAlienCtry = if(interactive()) utils::askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
   }
   if(any(resolveNativeCtry,resolveAlienCtry)){
     if(verbose){message("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
     
     xydatTemporary = dat[,c(x.field,y.field)]
-    xydatTemporary = xydatTemporary[complete.cases(xydatTemporary),]
+    xydatTemporary = xydatTemporary[stats::complete.cases(xydatTemporary),]
     
     
-    checkCountries = occTest:::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+    checkCountries = occTest::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
     if(resolveNativeCtry){
       ntv.ctry = c(ntv.ctry,checkCountries$ntvCtry)
       ntv.ctry = unique(ntv.ctry)
@@ -292,7 +292,7 @@ occTest = function(
     dat = dat[!coordIssues_invalidCoord_test,]
     
     
-    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -312,7 +312,7 @@ occTest = function(
     dat.Q.H2 = dat[coordIssues_zeroCoord_test,]
     dat = dat[!coordIssues_zeroCoord_test,]
     
-    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -330,7 +330,7 @@ occTest = function(
     if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
       dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
       ds.field = 'MyInventedCommonDataset'}
-    outDecimalTest = try({occTest:::cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
+    outDecimalTest = try({occTest::.cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
     if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
     coordIssues_coordConv_value = ! outDecimalTest
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
@@ -345,7 +345,7 @@ occTest = function(
     if(ds.field == 'MyInventedCommonDataset')ds.field = NULL
     rm(dat.tmp)
     
-    status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -400,7 +400,7 @@ occTest = function(
     }
   
   #check outputs and escape ifneedbe //
-  status.out=occTest:::.status.tracker.and.escaping(dataset.to.continue = dat,
+  status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
                                                     wfo = write.full.output,
                                                     wso = write.simple.output,
                                                     xf = x.field,
@@ -434,7 +434,7 @@ occTest = function(
   dat = Analysis.G$continue
   
   #check outputs and escape ifneedbe //
-  status.out=occTest:::.status.tracker.and.escaping(
+  status.out=occTest::.status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -457,17 +457,17 @@ occTest = function(
   message('Resolving coastal reassignment started...')
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
-  dat = occTest:::nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  dat = occTest::.nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
   if(class(dat)== 'list'){
     dat = dat[[1]]
     moved.points = dat[['moved']]
     if(!is.null(output.dir)){
-      sp.name2= occTest:::.join.spname(sp.name)
+      sp.name2= occTest::.join.spname(sp.name)
       odir = paste0(output.dir,'/',sp.name2)
       dir.create(odir,showWarnings = F,recursive = T)
-      write.csv( moved.points,
+      utils::write.csv( moved.points,
                  paste0(odir,'/',sp.name2,'_coastal_Reassignment.csv'))
     }
     
@@ -502,7 +502,7 @@ occTest = function(
   dat = Analysis.LandSea$continue
   
   #check outputs and escape if need be //
-  status.out = occTest:::.status.tracker.and.escaping(
+  status.out = occTest::.status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -546,7 +546,7 @@ occTest = function(
   dat = Analysis.F$continue
   
   #check outputs and escape ifneedbe //
-  status.out=occTest:::.status.tracker.and.escaping(
+  status.out=occTest::.status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -703,10 +703,10 @@ occTest = function(
   
   #write outputs
   if(write.full.output){
-    sp2 = occTest:::.join.spname(sp)
+    sp2 = occTest::.join.spname(sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create(newdir,recursive = T,showWarnings = F)
-    written = try(write.csv(full.qaqc,  
+    written = try(utils::write.csv(full.qaqc,  
                             paste0(newdir,'/',output.base.filename,
                                    '_',sp,'_long.csv'),
                             row.names = F),silent = T)

@@ -65,9 +65,9 @@ example<-"goes here"
 cc_urb in CoordinateCleaner package.
 
 Other analysis: 
+\code{\link{.nearestcell3}()},
 \code{\link{countryStatusRangeAnalysis}()},
-\code{\link{geoEnvAccuracy}()},
-\code{\link{nearestcell3}()}
+\code{\link{geoEnvAccuracy}()}
 }
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)

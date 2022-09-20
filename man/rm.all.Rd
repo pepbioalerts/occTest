@@ -19,9 +19,9 @@ removes all objects in the environment
 \seealso{
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
+\code{\link{.get_os}()},
 \code{\link{.gimme.score}()},
-\code{\link{get_os}()},
-\code{\link{hijack}()},
+\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{splitSpname}()}
 }

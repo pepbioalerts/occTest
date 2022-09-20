@@ -29,7 +29,7 @@ landSeaFilter             =function(df,
   #load high-res land masses
   dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/allLand10.rds'
   outFile = paste0(tempdir(),'/allLand10.rds')
-  if (!file.exists(outFile)) download.file(url=dest_url_hii,destfile = outFile)
+  if (!file.exists(outFile)) utils::download.file(url=dest_url_hii,destfile = outFile)
   land = readRDS (outFile)
   #select coordinates and load sf points
   xydat <- df[,c(xf,yf)]

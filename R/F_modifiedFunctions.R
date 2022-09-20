@@ -1,6 +1,6 @@
 ### Functions slightly modified from other packages for consistency with occTest outputs###
 
-# ne_download_occTest ====
+# .ne_download_occTest ====
 #' @title Download quitely from neearth data (modified from original package)
 #' @description download from Natural Earth the country checklist
 #' @details
@@ -20,7 +20,7 @@
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-ne_download_occTest = function (scale = 110, type = "countries", 
+.ne_download_occTest = function (scale = 110, type = "countries", 
                                     category = c("cultural", "physical", "raster"), 
                                     destdir = tempdir(), 
                                     load = TRUE, 
@@ -43,7 +43,7 @@ ne_download_occTest = function (scale = 110, type = "countries",
                                  stringsAsFactors = FALSE, use_iconv = TRUE,verbose = F)
     sp_object@data[sp_object@data == "-99" | sp_object@data == 
                      "-099"] <- NA
-    return(rnaturalearth:::ne_as_sf(sp_object, returnclass))
+    return(rnaturalearth::ne_as_sf(sp_object, returnclass))
   }
   else {
     return(file_name)
@@ -52,7 +52,7 @@ ne_download_occTest = function (scale = 110, type = "countries",
 
 
 
-# cc_urb_occTest ====
+# .cc_urb_occTest ====
 #' @title Flag values in urban areas (based on coordinate cleaner but modified for occTest to deliver it quitely)
 #'
 #' @description flags values for urban areas
@@ -75,7 +75,7 @@ ne_download_occTest = function (scale = 110, type = "countries",
 #' example<-"goes here"
 #' }
 #' 
-cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
+.cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                         ref = NULL, value = "clean", verbose = F,outdir=output.dir) 
 {
   match.arg(value, choices = c("clean", "flagged"))
@@ -84,7 +84,7 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
   }
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
-    ref <- try(suppressWarnings(occTest:::ne_download_occTest(scale = "medium", 
+    ref <- try(suppressWarnings(occTest::.ne_download_occTest(scale = "medium", 
                                                  type = "urban_areas")), silent = TRUE)
     if (class(ref) == "try-error") {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
@@ -130,7 +130,7 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
 }
 
 
-# cc_outl_occTest ====
+# .cc_outl_occTest ====
 #' @title Identify geographic outliers based on methods from CoordinateCleaner package
 #' @description own version of coordinate cleaner geographic outliers
 #' @details
@@ -145,7 +145,7 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
 #' example<-"goes here"
 #' }
 
-cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
+.cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
                        species = "species", method = "quantile", mltpl = 5, 
                        tdi = 1000, value = "clean", sampling_thresh = 0, verbose = TRUE, 
                        min_occs = 7, thinning = FALSE, thinning_res = 0.5) 
@@ -344,7 +344,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
     out <- lapply(dat, function(k) {
 
 
-      tester <- k[complete.cases(k[, c(lon, lat)]), ]
+      tester <- k[stats::complete.cases(k[, c(lon, lat)]), ]
       if (nrow(tester[!duplicated(tester[, c(lon, lat)]), 
       ]) < min_unique_ds_size) {
         warning(paste0 (unique(k[[ds]])," :Dataset smaller than minimum test size"))
@@ -813,9 +813,9 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
 }
 
 
-## cd_ddmm ====
+## .cd_ddmm ====
 
-cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
+.cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
           ds = "dataset", pvalue = 0.025, diff = 1, mat_size = 1000, 
           min_span = 2, value = "clean", verbose = TRUE, diagnostic = FALSE) 
 {
@@ -823,11 +823,11 @@ cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude
   if (verbose) {
     message("Testing for dd.mm to dd.dd conversion errors")
   }
-  if (sum(!complete.cases(x[, c(lon, lat, ds)])) > 0) {
+  if (sum(!stats::complete.cases(x[, c(lon, lat, ds)])) > 0) {
     warning(sprintf("ignored %s cases with incomplete data", 
-                    sum(!complete.cases(x))))
+                    sum(!stats::complete.cases(x))))
   }
-  dat <- x[complete.cases(x[, c(lon, lat, ds)]), ]
+  dat <- x[stats::complete.cases(x[, c(lon, lat, ds)]), ]
   if (nrow(dat) == 0) {
     stop("no complete cases found")
   }

@@ -162,7 +162,7 @@ findSpatialOutliers=function(myPres,
 # @examples
 # myPres=read.csv(system.file('ext/SampleData/Sp3Occurrence_v3.csv',
 #  package='occTest'))[,c(2,3)]
-#  myPres=myPres[complete.cases(myPres),]
+#  myPres=myPres[stats::complete.cases(myPres),]
 #  coordinates(myPres)=c(1,2)
 # myEnv=raster::stack(system.file('ext/AllEnv.tif',package='occTest'))
 #  envOut=findEnvOutliers(myPres=myPres,env=myEnv,pval=1e-5)

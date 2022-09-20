@@ -20,7 +20,7 @@
 #' }
 #' @export
 filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
- coordIssues_coordMissing_value = !complete.cases  (df[,c(xf,yf)])
+ coordIssues_coordMissing_value = !stats::complete.cases  (df[,c(xf,yf)])
  df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
  df$coordIssues_coordMissing_test = as.logical (coordIssues_coordMissing_value)
  df.out <- df [coordIssues_coordMissing_value,]
@@ -116,7 +116,7 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-nearestcell3 <- function (dat,
+.nearestcell3 <- function (dat,
                           rst,
                           xf=x.field,
                           yf=y.field,
@@ -275,14 +275,14 @@ countryStatusRangeAnalysis=function(df=dat,
         .points.proj4string <- .countries.shapefile@proj4string
       if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))
       }
-      sp.xydat <- sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
-      overlay.sp.xydat <- sp:::over(sp.xydat, .countries.shapefile)
+      sp.xydat <- sp::SpatialPoints(xydat,proj4string = .points.proj4string)
+      overlay.sp.xydat <- sp::over(sp.xydat, .countries.shapefile)
       fieldname  <- match(cfsf, names(overlay.sp.xydat))
       country_ext <- overlay.sp.xydat[, fieldname]
     }
     #extract countries of the points with when a country spdf is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occTest:::.coords2country (xydat)
+      country_ext <- occTest::.coords2country (xydat)
     }
   #inform for whether reported and country in coordinates (extracted country) differ 
   if (is.null (.c.field)) {
@@ -352,7 +352,7 @@ countryStatusRangeAnalysis=function(df=dat,
   }
 
   #output
-  df$countryStatusRange_score = occTest:::.gimme.score (df %>% dplyr::select(starts_with('countryStatusRange')))
+  df$countryStatusRange_score = occTest::.gimme.score (df %>% dplyr::select(starts_with('countryStatusRange')))
   out <- list (stay = df[which(df$Exclude==1),], continue = df[which(df$Exclude!=1),])
   return (out)
 }
@@ -423,7 +423,7 @@ centroidDetection <- function (df=dat,
     #load centroid data
     dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/centroids.rds'
     outFile = paste0(tempdir(),'/centroids.rds')
-    if (!file.exists(outFile)) download.file(url=dest_url,destfile = outFile)
+    if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
     centroid_data =  readRDS (outFile)
     
     #reformat dataframe of occurrences to be the same as in centroid Maitner methods
@@ -449,8 +449,8 @@ centroidDetection <- function (df=dat,
     if (!is.null(.countries.shapefile)){
       
       if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
-      sp.xydat <- sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
-      overlay.sp.xydat <- sp:::over(sp.xydat, .countries.shapefile)
+      sp.xydat <- sp::SpatialPoints(xydat,proj4string = .points.proj4string)
+      overlay.sp.xydat <- sp::over(sp.xydat, .countries.shapefile)
       country_ext <- overlay.sp.xydat[,cfsf]
       occurrences.df$country <- country_ext
       
@@ -458,10 +458,10 @@ centroidDetection <- function (df=dat,
     
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
-      country_ext <- occTest:::.coords2country (xydat)
+      country_ext <- occTest::.coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    cleaned_countries<-try ({GNRS:::GNRS_super_simple(country = country_ext)},silent=T)
+    cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=T)
     if (class(cleaned_countries) == 'error' | is.null(cleaned_countries)){
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
@@ -565,7 +565,7 @@ centroidDetection <- function (df=dat,
     out$centroidDetection_CoordinateCleaner_comment [cc_cen_test==1] = 'ctry/prov centroid'
 
   }
-  out$centroidDetection_score = occTest:::.gimme.score (x = out)
+  out$centroidDetection_score = occTest::.gimme.score (x = out)
   return (out)
 
 }
@@ -629,7 +629,7 @@ humanDetection <- function (df=dat,
 
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
-  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  sp::coordinates (data.sp.pres) <- stats::as.formula (paste0('~',xf,'+',yf))
 
   #start human influence index test
   if (any (method %in% c('hii','all'))) {
@@ -667,10 +667,10 @@ humanDetection <- function (df=dat,
     #check ref exists
     newoutdir = paste0(tempdir(),'/spatialData')
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
-    if (alreadyDownloaded) myRef = rgdal:::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
+    if (alreadyDownloaded) myRef = rgdal::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
     if (!alreadyDownloaded) myRef= NULL 
     
-    cc_urb_test = occTest:::cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
+    cc_urb_test = occTest::.cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_value <- cc_urb_test
     out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
@@ -678,7 +678,7 @@ humanDetection <- function (df=dat,
   }
   
   #compute score
-  out$HumanDetection_score <- occTest:::.gimme.score (out)
+  out$HumanDetection_score <- occTest::.gimme.score (out)
 
 
   return (out)
@@ -782,11 +782,11 @@ institutionLocality <- function (df=dat,
     
     out$institutionLocality_fromCoordinates_value = ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0)
     out$institutionLocality_fromCoordinates_test = as.logical (ifelse ((cc_gbif_test==1 | cc_inst_test==1),1,0))
-    out$institutionLocality_fromCoordinates_comments = occTest:::.paste3(cc_gbif_comments,cc_inst_comments)
+    out$institutionLocality_fromCoordinates_comments = occTest::.paste3(cc_gbif_comments,cc_inst_comments)
 
   }
 
-  out$institutionLocality_score <- occTest:::.gimme.score (out)
+  out$institutionLocality_score <- occTest::.gimme.score (out)
 
   return (out)
 
@@ -875,7 +875,7 @@ geoOutliers         <- function (df=dat,
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      points.outside.alphahull <- try (occTest:::getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
+      points.outside.alphahull <- try (occTest::getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
@@ -991,7 +991,7 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('distance','all'))){
     #create fake species list for Coordinate cleaner
     df$species <- 'MyFakeSp'
-    cc_dist_test = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
+    cc_dist_test = occTest::.cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
     cc_dist_test <- (!  cc_dist_test) 
     out$geoOutliers_distance_value  = cc_dist_test * 1
     out$geoOutliers_distance_test  = cc_dist_test
@@ -1005,7 +1005,7 @@ geoOutliers         <- function (df=dat,
   
   if (any (method %in% c('median','all'))){
 
-    cc_med_test = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
+    cc_med_test = occTest::.cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
     cc_med_test <- (!  cc_med_test) * 1
     out$geoOutliers_median_value = cc_med_test
     out$geoOutliers_median_test  = as.logical(cc_med_test)
@@ -1021,7 +1021,7 @@ geoOutliers         <- function (df=dat,
   if (any (method %in% c('quantSamplingCorrected','quantileSamplingCorr','all'))){
 
 
-    cc_qsc_tst = occTest:::cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
+    cc_qsc_tst = occTest::.cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
                                             verbose=F)
@@ -1049,7 +1049,7 @@ geoOutliers         <- function (df=dat,
     
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
-      grubbs.outl = try(occTest:::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
+      grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
       
       if (class(grubbs.outl)=='try-error') {
         grubbs_tst = rep(NA,times=nrow(out)) 
@@ -1069,7 +1069,7 @@ geoOutliers         <- function (df=dat,
     }
     
 
-  out$geoOutliers_score <- occTest:::.gimme.score (out)
+  out$geoOutliers_score <- occTest::.gimme.score (out)
 
   return (out)
 }
@@ -1140,7 +1140,7 @@ envOutliers  <- function (
 
   dat.environment <- raster::extract(x = .r.env, y= df[,c(xf,yf)], df = T)
   
-  missingEnvironment <- (!complete.cases(dat.environment))
+  missingEnvironment <- (!stats::complete.cases(dat.environment))
   out$envOutliers_missingEnv_value <- missingEnvironment * 1
   out$envOutliers_missingEnv_test <- missingEnvironment
   out$envOutliers_missingEnv_comment <- ''
@@ -1158,7 +1158,7 @@ envOutliers  <- function (
 
     outlier.method.biogeo = '-bxp'
     # dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
-    # missingEnvironment <- (!complete.cases(dat.environment))*1
+    # missingEnvironment <- (!stats::complete.cases(dat.environment))*1
     species <- rep(.sp.name, nrow(dat.environment))
     dups <- rep(0, nrow(dat.environment))
     environmental.columns <- 2:ncol(dat.environment)
@@ -1214,7 +1214,7 @@ envOutliers  <- function (
   }
 
 
-  out$envOutliers_score <- occTest:::.gimme.score (out)
+  out$envOutliers_score <- occTest::.gimme.score (out)
   return (out)
 }
 
@@ -1323,9 +1323,9 @@ geoEnvAccuracy  <- function (df,
   row.names(x = out) <- NULL
   if (!do) {return (out)}
   #check if need parallel
-  os = occTest:::get_os()
-  if (doParallel==T) {mymclapply <- occTest:::hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & grepl(pattern = 'win',x = os)) {mymclapply <- occTest:::hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  os = occTest::.get_os()
+  if (doParallel==T) {mymclapply <- occTest::.hijack (parallel::mclapply,mc.cores=mc.cores)}
+  if (doParallel==T & grepl(pattern = 'win',x = os)) {mymclapply <- occTest::.hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
   if (doParallel==F) {mymclapply <- lapply}
   if (nrow(df)<100) {mymclapply <- lapply}
   
@@ -1432,14 +1432,14 @@ geoEnvAccuracy  <- function (df,
   #Need coordinate uncertainty analysis ? If not gimme score and leave
   if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
-    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest::.gimme.score (out)
     return (out)}
   
   #Need coordinate uncertainty analysis ? Can you do it?
   if (is.null(af) | all(is.na(df[,af])) ) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
-    out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
+    out$geoenvLowAccuracy_score <-occTest::.gimme.score (out)
     return (out)
   }
   
@@ -1520,7 +1520,7 @@ geoEnvAccuracy  <- function (df,
         
       })
       df.env.cellBuffs  = do.call(rbind,df.env.cellBuffs)
-      df.env.cellBuffs  = df.env.cellBuffs[complete.cases(df.env.cellBuffs),]
+      df.env.cellBuffs  = df.env.cellBuffs[stats::complete.cases(df.env.cellBuffs),]
       df.env.targetcell = df.cells[which(df.cells$cellID == xydat$occCellids[i] ), ]
       
       if (nrow (df.env.cellBuffs)==0) {
@@ -1559,7 +1559,7 @@ geoEnvAccuracy  <- function (df,
   }
   
   #write final score
-  out$geoenvLowAccuracy_score <-occTest:::.gimme.score (out)
+  out$geoenvLowAccuracy_score <-occTest::.gimme.score (out)
   return (out)
 }
 
@@ -1614,7 +1614,7 @@ landUseSelect <- function (df=dat,
   
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
-  sp::coordinates (data.sp.pres) <- as.formula (paste0('~',xf,'+',yf))
+  sp::coordinates (data.sp.pres) <- stats::as.formula (paste0('~',xf,'+',yf))
   
   #start with land use raster
   if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
@@ -1644,7 +1644,7 @@ landUseSelect <- function (df=dat,
   out$landUse_wrongLU_comments= paste(method,.landUseCodes)
   
   #compute score
-  out$landUse_score <- occTest:::.gimme.score (out)
+  out$landUse_score <- occTest::.gimme.score (out)
   
   
   return (out)

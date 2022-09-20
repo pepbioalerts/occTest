@@ -34,11 +34,22 @@ Imports:
     tidyverse,
     rnaturalearthdata,
     pingr,
-    ggplot2
+    ggplot2,
+    DT,
+    Matrix,
+    dplyr,
+    methods,
+    stats,
+    graphics,
+    utils
 Suggests:
     GNRS,
     speciesgeocodeR,
     testthat,
     knitr,
     rmarkdown,
-    rworldmap
+    rworldmap,
+    cleangeo,
+    geosphere,
+    originr,
+    parallelsugar
