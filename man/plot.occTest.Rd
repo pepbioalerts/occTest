@@ -22,10 +22,16 @@ Display the filtering process
 \details{
 If \code{occFilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
@@ -33,5 +39,6 @@ example<-"goes here"
 \author{
 J Borderieux (jeremy.borderieux@agroparistech.fr)
 }
+\concept{}
 \keyword{filter}
 \keyword{plot}

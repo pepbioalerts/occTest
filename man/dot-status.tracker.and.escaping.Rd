@@ -33,11 +33,19 @@
 
 \item{od}{The output directory to use}
 
+\item{rsd}{logical. Return spatial data?}
+
 \item{obf}{Output base filename}
 
 \item{sp}{character. Name of the species}
 
 \item{verbose}{logical. Print messages?}
+
+\item{as}{list. analysis settings}
+
+\item{ws}{list. writoutsettings}
+
+\item{ts}{tlist. able setting}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.

@@ -50,10 +50,16 @@ Current implemented methods are: \cr
 'hii' using a raster and a threhold of human influence
 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package.
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 cc_urb in CoordinateCleaner package.

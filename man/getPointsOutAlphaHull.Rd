@@ -26,6 +26,8 @@ longitude and latitude, and \code{coordHeaders} is ignored.}
 \item{proj}{the projection information for x. The default is currently the
 only supported option.}
 
+\item{verbose}{logical. print messages?}
+
 \item{alphaCap}{Max alpha value before function aborts and returns a
 minimum convex hull.}
 }
@@ -47,7 +49,7 @@ If the conditions cannot be satisfied, then a minimum convex hull is
 returned.
 
 If \code{clipToCoast} is set to "terrestrial" or "aquatic", the resulting
-polygon is clipped to the coastline, using the \code{\link{gshhs}} dataset
+polygon is clipped to the coastline, using the dataset
 provided with this package.
 }
 \seealso{

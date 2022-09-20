@@ -2,7 +2,7 @@
 
 #.coords2country =====
 #' @title Extracts country ISO3 based on locations
-#' @param points A dataframe with x and y coordinates
+#' @param xydat A dataframe with x and y coordinates
 #' @param .countries.shapefile SpatialPolygonsDataFrame of world countries and their associated ISO3 codes
 #' @param .points.proj4string Proj4string for the occurrence data
 #' @param ctryNameField character. Column name in .countries shapefile where ISO3 are indicated
@@ -21,11 +21,11 @@
                            .countries.shapefile=NULL,
                            .points.proj4string=NULL,
                            ctryNameField=NULL,verbose=F){  
-  if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap:::getMap(resolution='high') ;  ctryNameField ='ISO3'}
+  if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap::getMap(resolution='high') ;  ctryNameField ='ISO3'}
   if (!class(.countries.shapefile)== 'SpatialPolygonsDataFrame') {stop (".countries shapefile not loaded ")}
   if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
-  sp.xydat = sp:::SpatialPoints(xydat,proj4string = .points.proj4string)
-  overlay.sp.xydat = sp:::over(sp.xydat, .countries.shapefile)
+  sp.xydat = sp::SpatialPoints(xydat,proj4string = .points.proj4string)
+  overlay.sp.xydat = sp::over(sp.xydat, .countries.shapefile)
   country_ext = as.character (overlay.sp.xydat[, ctryNameField])
   country_ext
   }
@@ -52,9 +52,9 @@
     lat <- as.numeric (xydat[i,1])
     stopifnot(lon >= -180 & lon <= 180)
     stopifnot(lat >= -60 & lat <= 60)
-    rs <- raster:::raster(nrows = 24, ncols = 72, xmn = -180, xmx = 180, 
+    rs <- raster::raster(nrows = 24, ncols = 72, xmn = -180, xmx = 180, 
                           ymn = -60, ymx = 60)
-    rowTile <- raster:::rowFromY(rs, lat)
+    rowTile <- raster::rowFromY(rs, lat)
     colTile <- raster:::colFromX(rs, lon)
     if (rowTile < 10) {
       rowTile <- paste("0", rowTile, sep = "")
@@ -93,7 +93,7 @@
     }
     if (file.exists(tiffilename)) {
       rs <- raster(tiffilename)
-      raster:::projection(rs) <- "+proj=longlat +datum=WGS84"
+      raster::projection(rs) <- "+proj=longlat +datum=WGS84"
       return(rs)
     }
     else {

@@ -27,8 +27,14 @@ cc_urb_occTest(
 
 \item{a}{SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download().}
 }
+\value{
+
+}
 \description{
 flags values for urban areas
+}
+\note{
+
 }
 \examples{
 \dontrun{
@@ -42,4 +48,8 @@ CoordinateCleaner package
 \seealso{
 CoordinateCleaner::cc_urb
 }
+\author{
+
+}
+\concept{}
 \keyword{internal}

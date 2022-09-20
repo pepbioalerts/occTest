@@ -60,10 +60,16 @@ Identify occurrence records located near centroids.
 Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
 , and method 'CoordinateCleaner' implementing methods used in coordinateCleaner packge.
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 coordinateCleaner package
@@ -71,4 +77,5 @@ coordinateCleaner package
 \author{
 B Maitner, JM Serra-Diaz, C Merow
 }
+\concept{}
 \keyword{internal}

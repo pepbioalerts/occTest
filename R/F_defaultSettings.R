@@ -14,9 +14,16 @@
 #' example<-"goes here"
 #' }
 #' @export
-defaultSettings <- function (x){
+defaultSettings <- function (){
   
+  #download info and files
   require (rnaturalearth)
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
+  outFile_hii = paste0(tempdir(),'/hii.rds')
+  if (!file.exists(outFile_hii)) download.file(url=dest_url_hii,destfile = outFile_hii)
+  
+  
+  
     defaultSettings = list (
     #grading Settings
     # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
@@ -48,7 +55,7 @@ defaultSettings <- function (x){
     analysisSettings =list (
       geoSettings = list (
         coordinate.decimal.precision = 4,
-        points.proj4string=sp:::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
       )
       ,
       countryStatusRange = list (
@@ -67,7 +74,7 @@ defaultSettings <- function (x){
       humanDetection= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v5.tif',package='occTest'))
+                           ras.hii=readRDS(outFile_hii)
 
       )
       ,
@@ -136,6 +143,15 @@ showTableNames <- function (){
 
 # setTableNames ====
 #' @title set table names internally
+#' @param x.field character. Name of the x coordinate field.
+#' @param y.field character. Name of the y coordinate field.
+#' @param t.field character. Name of the timestamp field.
+#' @param l.field character. Name of the locality field.
+#' @param c.field character. Name of the country code field.
+#' @param e.field character. Name of the eleveation field.
+#' @param a.field character. Name of the accuracy field.
+#' @param ds.field character. Name of the dataset identifier field.
+#' @param taxonobservation.id character. Name of the taxon observartion id field. 
 #' @description
 #' @details 
 #' @return list
@@ -173,6 +189,14 @@ setTableNames <- function (x.field = NULL,
 #' @title Set the tests to run
 #' @description function used to select which types of tests you want in occTest workflow
 #' @details See occTest::showTests for further information on tests used in the packages
+#' @param countryStatusRange logical. Should this test type be performed?
+#' @param centroidDetection logical. Should this test type be performed?
+#' @param humanDetection logical. Should this test type be performed?
+#' @param landUseType logical. Should this test type be performed?
+#' @param institutionLocality logical. Should this test type be performed?
+#' @param geoOutliers logical. Should this test type be performed?
+#' @param envOutliers logical. Should this test type be performed?
+#' @param geoenvLowAccuracy logical. Should this test type be performed?
 #' @return list with user modified settings
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -212,6 +236,10 @@ setTestTypes <- function (countryStatusRange = T,
 #' @title Set the tests to run
 #' @description function used to select which groups of tests you want in occTest workflow
 #' @details See occTest::showTests for further information on tests used in the packages
+#' @param geo logical. Should this family of tests be performed?
+#' @param lu logical. Should this family of tests be performed?
+#' @param env logical. Should this family of tests be performed?
+#' @param time logical. Should this family of tests be performed?
 #' @return list
 #' @keywords user
 #'
@@ -298,7 +326,13 @@ showTests<- function (){
 #' }
 #' @export
 
-minimalSettings <- function (x){
+minimalSettings <- function (){
+  
+  #download info
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
+  outFile_hii = paste0(tempdir(),'/hii.rds')
+  download.file(url=dest_url_hii,destfile = outFile_hii)
+  
   defaultSettings = list (
     
     #grading Settings
@@ -331,7 +365,7 @@ minimalSettings <- function (x){
     analysisSettings =list (
       geoSettings = list (
         coordinate.decimal.precision = 4,
-        points.proj4string=sp:::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
       )
       ,
       countryStatusRange = list (
@@ -350,7 +384,7 @@ minimalSettings <- function (x){
       humanDetection= list (doHumanDetection=T,
                             methodHumanDetection='all',
                             th.human.influence = 45,
-                            ras.hii=raster::raster(system.file('ext/hii/hii_wgs84_v5.tif',package='occTest'))
+                            ras.hii=readRDS(outFile_hii)
       )
       ,
       landUseType   = list (doLandUse=T,

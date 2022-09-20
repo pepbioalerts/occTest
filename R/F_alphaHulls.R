@@ -12,7 +12,7 @@
 ##' returned.
 ##' 
 ##' If \code{clipToCoast} is set to "terrestrial" or "aquatic", the resulting
-##' polygon is clipped to the coastline, using the \code{\link{gshhs}} dataset
+##' polygon is clipped to the coastline, using the dataset
 ##' provided with this package.
 ##' 
 ##' @param x dataframe of coordinates in decimal degrees, with a minimum of 3
@@ -25,6 +25,7 @@
 ##' only supported option.
 ##' @param alphaCap Max alpha value before function aborts and returns a
 ##' minimum convex hull.
+##' @param verbose logical. print messages?
 ##' @return a list with 2 elements: \item{hull}{ a SpatialPolygons object }
 ##' \item{alpha}{ the alpha value that was found to satisfy the criteria.  If a
 ##' convex hull was returned, this will list MCH.  }

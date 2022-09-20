@@ -12,9 +12,13 @@ presPercentile(
 )
 }
 \arguments{
-\item{x}{raster* object}
+\item{xy}{x y coordinates. Class SpatialPoints}
 
-\item{...}{additional functions to be passed to \code{\link[raster]{writeRaster}}}
+\item{percent}{numeric. Defaults to 95. Percentage to def object}
+
+\item{unin}{character vector.}
+
+\item{unout}{character vector.}
 }
 \description{
 Divide raster by the sum of all cells.

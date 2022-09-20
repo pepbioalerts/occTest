@@ -21,13 +21,20 @@ This is implemented whan parallelizing functions
 }
 \note{
 #TInternal function copied from utiles wickham to know which is the os used by the computer
+
+
 }
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
 \seealso{
+
+
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
 \code{\link{.gimme.score}()},

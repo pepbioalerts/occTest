@@ -170,6 +170,10 @@
 #' @param wso write simple output
 #' @param xf The dataframe field containing the x values (e.g. "longitude")
 #' @param yf The dataframe field containing the y values (e.g. "latitude")
+#' @param rsd logical. Return spatial data?
+#' @param as list. analysis settings
+#' @param ws list. writoutsettings
+#' @param ts tlist. able setting
 #' @param od The output directory to use
 #' @param obf Output base filename
 #' @param sp character. Name of the species

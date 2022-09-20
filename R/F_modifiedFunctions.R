@@ -27,19 +27,19 @@ ne_download_occTest = function (scale = 110, type = "countries",
                                     returnclass = c("sp", "sf")) {
   category <- match.arg(category)
   returnclass <- match.arg(returnclass)
-  file_name <- rnaturalearth:::ne_file_name(scale = scale, type = type, category = category, 
+  file_name <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
                                             full_url = FALSE)
-  address <- rnaturalearth:::ne_file_name(scale = scale, type = type, category = category, 
+  address <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
                                           full_url = TRUE)
-  utils:::download.file(file.path(address), zip_file <- tempfile(),quiet = T)
-  utils:::unzip(zip_file, exdir = destdir)
+  utils::download.file(file.path(address), zip_file <- tempfile(),quiet = T)
+  utils::unzip(zip_file, exdir = destdir)
   if (load & category == "raster") {
-    rst <- raster:::raster(file.path(destdir, file_name, paste0(file_name, 
+    rst <- raster::raster(file.path(destdir, file_name, paste0(file_name, 
                                                                 ".tif")))
     return(rst)
   }
   else if (load) {
-    sp_object <- rgdal:::readOGR(destdir, file_name, encoding = "UTF-8", 
+    sp_object <- rgdal::readOGR(destdir, file_name, encoding = "UTF-8", 
                                  stringsAsFactors = FALSE, use_iconv = TRUE,verbose = F)
     sp_object@data[sp_object@data == "-99" | sp_object@data == 
                      "-099"] <- NA
@@ -97,7 +97,7 @@ cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude
     sp::proj4string(ref) <- ""
     newoutdir = paste0(outdir,'/spatialData')
      dir.create(newoutdir,showWarnings = F,recursive = T)
-     rgdal:::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=T)
+     rgdal::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=T)
      
   }
   else {

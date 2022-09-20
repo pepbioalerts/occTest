@@ -15,9 +15,22 @@ character
 \description{
 It collates species names from format "Species genus" to "Species_genus"
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
+\author{
+
+}
+\concept{}
 \keyword{internal}

@@ -16,18 +16,47 @@ setTableNames(
   taxonobservation.id = NULL
 )
 }
+\arguments{
+\item{x.field}{character. Name of the x coordinate field.}
+
+\item{y.field}{character. Name of the y coordinate field.}
+
+\item{t.field}{character. Name of the timestamp field.}
+
+\item{l.field}{character. Name of the locality field.}
+
+\item{c.field}{character. Name of the country code field.}
+
+\item{e.field}{character. Name of the eleveation field.}
+
+\item{a.field}{character. Name of the accuracy field.}
+
+\item{ds.field}{character. Name of the dataset identifier field.}
+
+\item{taxonobservation.id}{character. Name of the taxon observartion id field.}
+}
 \value{
 list
 }
 \description{
 set table names internally
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{user}

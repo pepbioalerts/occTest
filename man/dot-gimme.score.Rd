@@ -18,7 +18,15 @@ compute the scores for each type of test implemented in occTest function
 \details{
 This is implemented within the occTest function
 }
+\note{
+
+}
+\references{
+
+}
 \seealso{
+
+
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
 \code{\link{get_os}()},

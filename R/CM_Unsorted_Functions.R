@@ -4,8 +4,10 @@
 
 #' Identify percentile of presences
 #'
-#' @param x  raster* object
-#' @param ... additional functions to be passed to \code{\link[raster]{writeRaster}}
+#' @param xy  x y coordinates. Class SpatialPoints
+#' @param percent numeric. Defaults to 95. Percentage to def object
+#' @param unin character vector. 
+#' @param unout character vector. 
 #' @description  Divide raster by the sum of all cells.
 #' @export
 #' @import raster
@@ -71,8 +73,7 @@ presPercentile=function (xy,
 
 #' Find outlying occurrence data in geographical space
 #'
-#' @param x  raster* object
-#' @param ... additional functions to be passed to \code{\link[raster]{writeRaster}}
+#' @param myPres  raster* object
 #' @param pvalSet numeric. p value set to identify outliers
 #' @param checkPairs logical.  
 #' @param verbose logical. print messages
@@ -150,8 +151,11 @@ findSpatialOutliers=function(myPres,
 #' See Examples.
 #'
 #' @param myPres a `SpatialPointsDataFrame`
-#' @param env a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
+#' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
+#' @param checkPairs logical. Default to F (T not implemented).
 #' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
+#' @param verbose logic. Should messages be printed out?
+
 # @keywords
 #' @export
 #'

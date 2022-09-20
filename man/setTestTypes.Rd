@@ -15,6 +15,23 @@ setTestTypes(
   geoenvLowAccuracy = T
 )
 }
+\arguments{
+\item{countryStatusRange}{logical. Should this test type be performed?}
+
+\item{centroidDetection}{logical. Should this test type be performed?}
+
+\item{humanDetection}{logical. Should this test type be performed?}
+
+\item{landUseType}{logical. Should this test type be performed?}
+
+\item{institutionLocality}{logical. Should this test type be performed?}
+
+\item{geoOutliers}{logical. Should this test type be performed?}
+
+\item{envOutliers}{logical. Should this test type be performed?}
+
+\item{geoenvLowAccuracy}{logical. Should this test type be performed?}
+}
 \value{
 list with user modified settings
 }
@@ -24,12 +41,22 @@ function used to select which types of tests you want in occTest workflow
 \details{
 See occTest::showTests for further information on tests used in the packages
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{user}

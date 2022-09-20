@@ -12,6 +12,7 @@ occTest(
   tableSettings = NULL,
   analysisSettings = NULL,
   writeoutSettings = NULL,
+  gradingSettings = NULL,
   return.spatial.data = FALSE,
   r.dem = NULL,
   ntv.ctry = NULL,
@@ -39,6 +40,8 @@ occTest(
 
 \item{writeoutSettings}{list. Elements corresponding to different settings of the analysis functions .}
 
+\item{gradingSettings}{list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions .}
+
 \item{return.spatial.data}{logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory}
 
 \item{r.dem}{raster. Elevation data (in meters).}
@@ -58,8 +61,6 @@ occTest(
 \item{doParallel}{logical. Should some operations be run in parellel when possible? Default to F}
 
 \item{mc.cores}{numeric. If doParallel is T, then how many cores to use? Default to 2}
-
-\item{gradingSettings}{list. Elements corresponding to different settings of the analysis functions .}
 }
 \value{
 data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score)

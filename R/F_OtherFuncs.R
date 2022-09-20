@@ -291,7 +291,6 @@ splitSpname = function (x){
 # rm.all =====
 #' @title Remove all objects
 #' @description  removes all objects in the environment
-#' @param ...  No input parameter needed
 #' @return a clear environment
 #' @family internal
 #' @examples \dontrun{

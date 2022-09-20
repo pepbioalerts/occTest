@@ -27,13 +27,13 @@ occSimpFilter(
 
 \item{y}{name of the field with the coordinate y. Default 'y'}
 
+\item{date}{name of the field with the values of the reported timestamp of the record. Default NULL}
+
 \item{isoCountry}{name of the field with the values of the reported country of the record. Default NULL}
 
 \item{classification}{character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'}
 
 \item{filterCols}{logical. Should only the initial input columns be retained in the output (the filtered dataframe)?}
-
-\item{data}{name of the field with the values of the reported timestamp of the record. Default NULL}
 }
 \value{
 a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.

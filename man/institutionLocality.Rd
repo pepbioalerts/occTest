@@ -43,10 +43,16 @@ current implemented methods are : \cr
 "fromCoordinates" (use information on localities of institutions, from CoordinateCleaner package) \cr
 "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 CoordinateCleaner package
@@ -54,3 +60,4 @@ CoordinateCleaner package
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}

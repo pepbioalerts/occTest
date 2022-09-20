@@ -44,11 +44,15 @@ geoEnvAccuracy(
 
 \item{method}{character. Vector of methods to be used. See details. Default 'all'}
 
+\item{r.env}{raster. Raster with environmental data}
+
 \item{accept.threshold.cell}{numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5}
 
 \item{accept.threshold.env}{numeric. Default 0.5}
 
 \item{bearing.classes}{numeric. Default to 10.}
+
+\item{distance.classes}{integer. Default to 5.}
 
 \item{env.quantiles}{numeric. Default to c(0.3,0.7)}
 
@@ -63,8 +67,6 @@ geoEnvAccuracy(
 \item{doParallel}{logical. Should computation use parallel functions? Default F}
 
 \item{mc.cores}{numeric. How many cores to use? (used when doParallel = T). Default 2}
-
-\item{.r.env}{raster. Raster with environmental data}
 }
 \value{
 data.frame
@@ -83,10 +85,16 @@ Current implmented methods are:
 'percDiffCell' : assess whether the record may be falling in a different raster cell given an information of coordinate accuracy. \cr 
 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
+}
+\references{
+
 }
 \seealso{
 CoordinateCleaner::cd_round

@@ -23,12 +23,22 @@ list
 \description{
 Filter the occurrence recoreds  according to whether they should be in land masses or not
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{filter}

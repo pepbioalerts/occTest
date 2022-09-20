@@ -24,12 +24,20 @@ SeaLand reassignement
 \details{
 (function inspiered in nearestcell in biogeo but modified
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
 \seealso{
+
+
 Other analysis: 
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},

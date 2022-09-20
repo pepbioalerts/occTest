@@ -10,7 +10,7 @@
 #' 
 #' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
 #' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
-#' @param gradingSettings list. Elements corresponding to different settings of the analysis functions . 
+#' @param gradingSettings list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions . 
 #' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param return.spatial.data logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory
 #' @param r.dem raster. Elevation data (in meters).
@@ -54,6 +54,7 @@ occTest = function(
   tableSettings=NULL,
   analysisSettings=NULL,
   writeoutSettings=NULL,
+  gradingSettings=NULL,
   return.spatial.data=FALSE,
   
   r.dem=NULL,
@@ -68,11 +69,11 @@ occTest = function(
   mc.cores=2){
 
 
-  tictoc:::tic()
+  tictoc::tic()
   
   ### STEP 00: Initial checks ====
   #set timer
-  tictoc:::tic('Initial checks and formatting')
+  tictoc::tic('Initial checks and formatting')
   message('Initial checks and formatting started...')
   
   #identify starting issues and convert to the right type of object
@@ -210,7 +211,7 @@ occTest = function(
   
   #the development should be in the direction of automatically check and transform
   #occTest:::.check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
-  #lapply(actual.input.geosp.objects, function(x)raster:::projection(x))
+  #lapply(actual.input.geosp.objects, function(x)raster::projection(x))
   
   
   #CHECK 5
@@ -226,7 +227,7 @@ occTest = function(
   #maybe add a warning or something in check geospatial data? idk
   res.in.minutes = res(r.env[[1]])[1] * 60
   
-  tictoc:::toc()
+  tictoc::toc()
   
   ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
   #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
@@ -236,7 +237,7 @@ occTest = function(
   resolveNativeCtry = F
   resolveAlienCtry = F
   #set timer
-  #tictoc:::tic('Resolve native and invasive countries')
+  #tictoc::tic('Resolve native and invasive countries')
   
   #automatically resolve invasive and native countries for target species(not implemented yet)
   
@@ -264,13 +265,13 @@ occTest = function(
     }
     
   }
-  #tictoc:::toc()
+  #tictoc::toc()
   
   if(verbose){message("**** FILTERING PHASE STARTED  ****")}
   
   ### STEP 2: Quality Filter : Identify records wo spatial info =====
   #set timer
-  tictoc:::tic('Filter major coordinate Issues')
+  tictoc::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues started...')
 
   Analysis.H = filterMissing(df = dat,xf = x.field,yf = y.field)
@@ -411,10 +412,10 @@ occTest = function(
                                                     as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
   
   if(any(class(status.out)=='occTest')) {return(status.out)}
-  tictoc:::toc()
+  tictoc::toc()
   ### STEP 4: Filter Quality G : Identify duplicate records(in geographic space)to prevent pseudoreplicaton ===== 
   #set timer
-  tictoc:::tic('Filter duplicates')
+  tictoc::tic('Filter duplicates')
   message('Filter duplicates started')
   if(verbose){message("**** RESOLVING: duplicates ****")}
   
@@ -448,11 +449,11 @@ occTest = function(
   
   if(any(class(status.out)=='occTest')) {return(status.out)}
   
-  tictoc:::toc()
+  tictoc::toc()
   ### STEP 5: SEA/TERRESTRIAL POTENTIAL REASSIGNMENT AND RECHECK DUPLICATES  =====
   #-- and potential for new duplicates
   #set timer
-  tictoc:::tic('Resolving coastal reassignment')
+  tictoc::tic('Resolving coastal reassignment')
   message('Resolving coastal reassignment started...')
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
@@ -515,11 +516,11 @@ occTest = function(
   
   
   if(any(class(status.out)=='occTest')) {return(status.out)}
-  tictoc:::toc()
+  tictoc::toc()
   
   ### STEP 6: Filter Quality : Country selection ======
   #set timer
-  tictoc:::tic('Resolving countryStatusRange Analysis')
+  tictoc::tic('Resolving countryStatusRange Analysis')
   
   if(verbose) message('Resolving countryStatusRange Analysis started...')
   if(verbose & excludeUnknownRanges) message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')
@@ -559,14 +560,14 @@ occTest = function(
   
   
   if(any(class(status.out)=='occTest')) {return(status.out)}
-  tictoc:::toc()
+  tictoc::toc()
   ### STEP 7: Environmental and Geographical outliers  - analysis chunk =====
   #set timer
-  tictoc:::tic('Analysis phase:')
+  tictoc::tic('Analysis phase:')
   if(verbose){message("**** ANALYSIS PHASE STARTED  ****")}
   #ANALYSIS ELEMENTS
   ### ELEMENT : CENTROID ISSUE DETECTION
-  tictoc:::tic('Centroid detection')
+  tictoc::tic('Centroid detection')
   if(verbose) message('Centroid detection started ...')
 
   Analysis.1 = centroidDetection(.r.env = r.env,
@@ -585,10 +586,10 @@ occTest = function(
                                  cfsf=countryfield.shapefile,
                                  method = methodCentroidDetection,
                                  do= doCentroidDetection)
-  tictoc:::toc()
+  tictoc::toc()
   
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
-  tictoc:::tic('Land Use Land Cover analysis')
+  tictoc::tic('Land Use Land Cover analysis')
   if(verbose) message('Land Use Land Cover analysis started ...')
   Analysis.2 = humanDetection (df = dat,
                                xf = x.field,
@@ -597,20 +598,20 @@ occTest = function(
                                ras.hii = ras.hii,
                                .th.human.influence =th.human.influence,
                                do = doHumanDetection,output.dir=output.dir)
-  tictoc:::toc()
+  tictoc::toc()
   
   ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
-  tictoc:::tic('Institution locality')
+  tictoc::tic('Institution locality')
   if(verbose) message ('Institution locality started ...')
   Analysis.3 = institutionLocality(df=dat,xf = x.field,yf=y.field,
                                    lf=l.field,
                                    do = doInstitutionLocality,
                                    method = methodInstitutionLocality)
   
-  tictoc:::toc()
+  tictoc::toc()
   
   ### ELEMENT : land use
-  tictoc:::tic('Records in land use')
+  tictoc::tic('Records in land use')
   if(verbose) message ('Records in land use started...')
   Analysis.4 = landUseSelect(df=dat,xf = x.field,yf=y.field,
                              .points.proj4string =points.proj4string,
@@ -619,10 +620,10 @@ occTest = function(
                              method = methodLandUseSelect,
                              do = doLandUseSelect)
   
-  tictoc:::toc()
+  tictoc::toc()
   
   ### ELEMENT : GEOGRAPHICAL OUTLIER
-  tictoc:::tic('geographic outliers detection')
+  tictoc::tic('geographic outliers detection')
   if(verbose) message('geographic outliers detection started')
   Analysis.5 = geoOutliers(df=dat,
                            xf=x.field,
@@ -631,10 +632,10 @@ occTest = function(
                            #do=doGeoOutliers,
                            method = methodGeoOutliers,
                            .projString = points.proj4string)
-  tictoc:::toc()
+  tictoc::toc()
  
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
-  tictoc:::tic('Environmental outliers')
+  tictoc::tic('Environmental outliers')
   if(verbose) message('Environmental outliers analysis started...')
 
   Analysis.6 = envOutliers(.r.env=r.env,
@@ -645,10 +646,10 @@ occTest = function(
                              .projString = points.proj4string,
                              method = methodEnvOutliers,
                              do = doEnvOutliers)
-  tictoc:::toc()
+  tictoc::toc()
   
   ### ELEMENT 8: Coordinate accuracy
-  tictoc:::tic('geoEnvironmental accuracy')
+  tictoc::tic('geoEnvironmental accuracy')
   if(verbose) message('geoEnvironmental accuracy analysis started...')
   Analysis.7 = geoEnvAccuracy(df=dat,
                               xf = x.field,
@@ -663,7 +664,7 @@ occTest = function(
                               method = methodGeoEnvAccuracy,
                               doParallel=doParallel,
                               mc.cores=mc.cores)
-  tictoc:::toc()
+  tictoc::toc()
   
   ### SUMMARY ANALYSIS RESULTS(NEED TO BE IMPROVED !)
   #this is important for development, need to specify the number of ELEMENTS of analysis
@@ -681,7 +682,7 @@ occTest = function(
   row.names(df.qualityAssessment)= NULL
   
   #timer for the analytic processes
-  tictoc:::toc()
+  tictoc::toc()
 
   ### STEP 9: BUILD FULL dataframe ====
   #load previous filtered objects
@@ -694,7 +695,7 @@ occTest = function(
   }
   
   ### STEP 10: WRITE THE OUTPUTS =====
-  tictoc:::tic('Preparing and Writing outputs')
+  tictoc::tic('Preparing and Writing outputs')
   if(verbose) message('Preparing and Writing outputs started ...')
   #reorder data as original
   full.qaqc = full.qaqc[order(full.qaqc$roworder),]
@@ -712,11 +713,11 @@ occTest = function(
     if(class(written)=='try-error')save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
     if(class(written)=='try-error')try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
-  tictoc:::toc()
+  tictoc::toc()
   
   #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
   output.function = full.qaqc
-  tictoc:::toc()
+  tictoc::toc()
   
   attr(output.function,"class")<-c("occTest",class(output.function))
  

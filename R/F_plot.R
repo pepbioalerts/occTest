@@ -40,7 +40,13 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F){
   
   # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
   countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50)),silent = T)
-  if("try-error" %in% class(countries_natural_earth))countries_natural_earth<-read_sf(system.file('ext/Country_shp_world',package='occTest'),layer="Pays_WGS84")
+  if("try-error" %in% class(countries_natural_earth)) {
+    dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/Pays_WGS84.rds'
+    outFile = paste0(tempdir(),'/Pays_WGS84.rds')
+    if (!file.exists(outFile)) download.file(url=dest_url_hii,destfile = outFile)
+    countries_natural_earth<-readRDS(outFile)
+  }
+    
   
   
   if(raster::compareCRS(points_CRS,countries_natural_earth))countries_natural_earth<-st_transform(countries_natural_earth,crs=st_crs(points_CRS))

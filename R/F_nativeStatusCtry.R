@@ -33,7 +33,7 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   #CHECK BIEN NRS (contains both invasive and native )
   ctryFromCoords =  occTest:::.coords2country (xydat)
   ctryFromCoords =  unique (ctryFromCoords)
-  ctry4GNRS = countrycode:::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
+  ctry4GNRS = countrycode::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
   #we apply over cuz GNRS only accepts one query at at ime
   listNSR = lapply (ctry4GNRS, function (x,s=spName){
     try (originr::nsr(s,x),silent = T)
@@ -154,7 +154,7 @@ ctryToIso3 <- function (x,method='countrycode'){
   if (method=='countrycode' ) {
     
     #direct matching
-    outIso3 = countrycode:::countrycode (sourcevar = x, origin = 'country.name',destination = 'iso3c')
+    outIso3 = countrycode::countrycode (sourcevar = x, origin = 'country.name',destination = 'iso3c')
     
     #fuzzy matching  using stringdist package (not implemented yet)
     # codesAll = countrycode::codelist

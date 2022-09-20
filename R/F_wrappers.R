@@ -6,7 +6,7 @@
 #' @param env raster or rasterStack. Environmental data (e.g. typically climatic).
 #' @param x name of the field with the coordinate x. Default 'x'
 #' @param y name of the field with the coordinate y. Default 'y'
-#' @param data name of the field with the values of the reported timestamp of the record. Default NULL
+#' @param date name of the field with the values of the reported timestamp of the record. Default NULL
 #' @param isoCountry name of the field with the values of the reported country of the record. Default NULL
 #' @param classification character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'
 #' @param filterCols logical. Should only the initial input columns be retained in the output (the filtered dataframe)?

@@ -15,9 +15,22 @@ list
 \description{
 Subset a list removing NULL entries
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
+\author{
+
+}
+\concept{}
 \keyword{internal}

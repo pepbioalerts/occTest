@@ -56,12 +56,20 @@ Identify and filter species records based on countries where species is consider
 \details{
 It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
 \seealso{
+
+
 Other analysis: 
 \code{\link{geoEnvAccuracy}()},
 \code{\link{humanDetection}()},

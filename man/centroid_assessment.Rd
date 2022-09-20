@@ -17,12 +17,22 @@ data.frame
 \description{
 Centroid assessment using BIEN methods
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 Brian Maitner
 }
+\concept{}
 \keyword{internal}

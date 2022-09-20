@@ -15,9 +15,13 @@ findEnvOutliers(
 \arguments{
 \item{myPres}{a `SpatialPointsDataFrame`}
 
+\item{myEnv}{a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)}
+
 \item{pvalSet}{numeric; p-value used in Grubb's test for outlier (see package `outliers`)}
 
-\item{env}{a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)}
+\item{checkPairs}{logical. Default to F (T not implemented).}
+
+\item{verbose}{logic. Should messages be printed out?}
 }
 \value{
 Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.

@@ -6,6 +6,15 @@
 \usage{
 setTestBlocks(geo = T, lu = T, env = T, time = T)
 }
+\arguments{
+\item{geo}{logical. Should this family of tests be performed?}
+
+\item{lu}{logical. Should this family of tests be performed?}
+
+\item{env}{logical. Should this family of tests be performed?}
+
+\item{time}{logical. Should this family of tests be performed?}
+}
 \value{
 list
 }
@@ -15,12 +24,22 @@ function used to select which groups of tests you want in occTest workflow
 \details{
 See occTest::showTests for further information on tests used in the packages
 }
+\note{
+
+}
 \examples{
 \dontrun{
 example<-"goes here"
 }
 }
+\references{
+
+}
+\seealso{
+
+}
 \author{
 JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
+\concept{}
 \keyword{user}

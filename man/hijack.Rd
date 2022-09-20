@@ -16,6 +16,8 @@ Hijacking functions to rename them
 In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
 }
 \note{
+
+
 #Internal function that I got from stack overflow MrFlick
 }
 \examples{
@@ -25,7 +27,12 @@ dat <- .data.frame(x1 = 1:3, x2 = c("a", "b", "c"))
 str(dat)  # yay! strings are character
 }
 }
+\references{
+
+}
 \seealso{
+
+
 Other internal: 
 \code{\link{.find_and_transform_dates}()},
 \code{\link{.gimme.score}()},
@@ -33,6 +40,9 @@ Other internal:
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}
+}
+\author{
+
 }
 \concept{internal}
 \keyword{internal}

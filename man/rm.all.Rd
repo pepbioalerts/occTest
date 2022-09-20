@@ -6,9 +6,6 @@
 \usage{
 rm.all()
 }
-\arguments{
-\item{...}{No input parameter needed}
-}
 \value{
 a clear environment
 }

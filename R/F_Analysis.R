@@ -421,8 +421,10 @@ centroidDetection <- function (df=dat,
   #Method BIEN
   if (any(method %in% c('BIEN','all'))){
     #load centroid data
-    centroid_data = system.file('ext/Centroids/centroids_equal_area_km_box_shape.csv',package='occTest')
-    centroid_data =  read.csv (centroid_data)
+    dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/centroids.rds'
+    outFile = paste0(tempdir(),'/centroids.rds')
+    if (!file.exists(outFile)) download.file(url=dest_url,destfile = outFile)
+    centroid_data =  readRDS (outFile)
     
     #reformat dataframe of occurrences to be the same as in centroid Maitner methods
     if (is.null(idf)) { toid <- 1:nrow (df) } else {toid <- df[,idf]}
@@ -1227,10 +1229,11 @@ envOutliers  <- function (
 #' @param ef character. column name in df containing the registered elevation for the record. 
 #' @param tf character. column name in df containing the dataset with the date/time where the species is recorded
 #' @param method character. Vector of methods to be used. See details. Default 'all'
-#' @param .r.env raster. Raster with environmental data
+#' @param r.env raster. Raster with environmental data
 #' @param accept.threshold.cell numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5
 #' @param accept.threshold.env numeric. Default 0.5
 #' @param bearing.classes numeric. Default to 10.
+#' @param distance.classes integer. Default to 5.
 #' @param env.quantiles numeric. Default to c(0.3,0.7)
 #' @param elev.threshold numeric. Default to 100
 #' @param raster.elevation numeric. Default to 100
