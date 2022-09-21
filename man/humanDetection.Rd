@@ -5,16 +5,16 @@
 \title{HYPER HUMAN ENVIRONMENT FUNCTION}
 \usage{
 humanDetection(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
+  df,
+  xf,
+  yf,
   method = "all",
-  ras.hii = ras.hii,
-  .th.human.influence = th.human.influence,
-  .points.proj4string = points.proj4string,
+  ras.hii,
+  .th.human.influence,
+  .points.proj4string,
   do = T,
   verbose = F,
-  output.dir = output.dir
+  output.dir
 )
 }
 \arguments{

@@ -5,10 +5,10 @@
 \title{Duplicated records}
 \usage{
 duplicatesexcludeAnalysis(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
-  resolution.in.minutes = res.in.minutes,
+  df,
+  xf,
+  yf,
+  resolution.in.minutes,
   raster.grid = NULL,
   verbose = F
 )

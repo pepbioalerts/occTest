@@ -92,7 +92,7 @@ NULL
 #'   errorRule = occFilter_list$rule
 #'  
 #'   filter_occ<-function(score,testName){
-#'     current_treshold<-errorRule %>% dplyr::filter (test == str_remove(testName,"_score")) %>% pull(errorThreshold)
+#'     current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull(errorThreshold)
 #'     return( ifelse(is.na(score),F, score>=current_treshold ))
 #'     
 #'   }
@@ -198,7 +198,7 @@ printOccTest<-function(x,occFilter_list=NULL,show_plot=F){
   if("try-error" %in% class(countries_natural_earth)) {
     dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/Pays_WGS84.rds'
     outFile = paste0(tempdir(),'/Pays_WGS84.rds')
-    if (!file.exists(outFile)) utils::download.file(url=dest_url_hii,destfile = outFile)
+    if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
     countries_natural_earth<-readRDS(outFile)
   }
   
@@ -243,11 +243,11 @@ printOccTest<-function(x,occFilter_list=NULL,show_plot=F){
     filtered_dataset_scores<-cbind(full_dataset[full_dataset$Exclude==0,c(x_field ,y_field,"Exclude")],summary_stats)#"name"
     
     # we extract the score to run the filtering again
-    dfScoreVals = filtered_dataset_scores %>% dplyr::select(ends_with('_score')) 
+    dfScoreVals = filtered_dataset_scores %>% dplyr::select(dplyr::ends_with('_score')) 
     errorRule = occFilter_list$rule
     
     filter_occ<-function(score,testName){
-      current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% pull(errorThreshold)
+      current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull(errorThreshold)
       return( ifelse(is.na(score),F, score>=current_treshold ))
       
     }

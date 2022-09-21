@@ -5,17 +5,17 @@
 \title{Centroid detection function}
 \usage{
 centroidDetection(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
-  cf = c.field,
-  idf = taxonobservation.id,
-  .ntv.ctry = ntv.ctry,
-  .inv.ctry = inv.ctry,
-  .points.proj4string = points.proj4string,
-  .r.env = r.env,
-  .countries.shapefile = countries.shapefile,
-  cfsf = countryfield.shapefile,
+  df,
+  xf,
+  yf,
+  cf,
+  idf,
+  .ntv.ctry,
+  .inv.ctry,
+  .points.proj4string,
+  .r.env,
+  .countries.shapefile,
+  cfsf,
   method = "all",
   do = T,
   verbose = F

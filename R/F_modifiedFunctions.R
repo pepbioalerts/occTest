@@ -76,7 +76,7 @@
 #' }
 #' 
 .cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
-                        ref = NULL, value = "clean", verbose = F,outdir=output.dir) 
+                        ref = NULL, value = "clean", verbose = F,outdir) 
 {
   match.arg(value, choices = c("clean", "flagged"))
   if (verbose) {

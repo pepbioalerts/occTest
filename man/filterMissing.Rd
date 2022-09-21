@@ -4,7 +4,7 @@
 \alias{filterMissing}
 \title{Check for missing coordinates}
 \usage{
-filterMissing(df, xf = x.field, yf = y.field, verbose = F)
+filterMissing(df, xf, yf, verbose = F)
 }
 \arguments{
 \item{df}{dat.frame of species occurrences}

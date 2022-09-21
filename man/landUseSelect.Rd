@@ -5,16 +5,16 @@
 \title{Selection of records within a specified land use}
 \usage{
 landUseSelect(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
+  df,
+  xf,
+  yf,
   method = "in",
-  .points.proj4string = points.proj4string,
-  ras.landUse = ras.landUse,
-  .landUseCodes = landUseCodes,
+  .points.proj4string,
+  ras.landUse,
+  .landUseCodes,
   do = T,
   verbose = F,
-  output.dir = output.dir
+  output.dir
 )
 }
 \arguments{

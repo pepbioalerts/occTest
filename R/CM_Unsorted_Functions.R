@@ -19,7 +19,7 @@ presPercentile=function (xy,
 
   if (!inherits(xy, "SpatialPoints"))
     stop("xy should be of class SpatialPoints")
-  if (ncol(coordinates(xy)) > 2)
+  if (ncol(sp::coordinates(xy)) > 2)
     stop("xy should be defined in two dimensions")
   pfs <- proj4string(xy)
   if(!is.null(percent)){
@@ -45,7 +45,7 @@ presPercentile=function (xy,
 
   if (min(table(id)) < 5) stop("At least 5 relocations are required to fit an home range")
   id <- factor(id)
-  xy <- as.data.frame(coordinates(xy))
+  xy <- as.data.frame(sp::coordinates(xy))
   r <- split(xy, id)
   est.cdg <- function(xy) apply(xy, 2, mean)
   cdg <- lapply(r, est.cdg)
@@ -64,7 +64,7 @@ presPercentile=function (xy,
       acons <- key[di <= quantile(di, percent/100)]
     } else { acons=key }
     xy.t <- df.t[acons, ]
-    coordinates(xy.t)=c(1,2)
+    sp::coordinates(xy.t)=c(1,2)
     return(list(xy.t=xy.t,dist.from.centroid=di))
   })
   res
@@ -104,7 +104,7 @@ findSpatialOutliers=function(myPres,
     if(gt$p.value<pvalSet){
       toss=which.max(dists)
       # IDs in the original data frame
-      sp.toss.coord=rbind(sp.toss.coord,coordinates(pres.inliers)[toss,])
+      sp.toss.coord=rbind(sp.toss.coord,sp::coordinates(pres.inliers)[toss,])
       pres.inliers=pres.inliers[-toss,]
       dists=dists[-toss]
     }
@@ -125,7 +125,7 @@ findSpatialOutliers=function(myPres,
       if(gt$p.value<pvalSet){
         toss=tail(order(dists),2)
         # IDs in the original data frame
-        sp.toss.coord=rbind(sp.toss.coord, coordinates(pres.inliers)[toss,])
+        sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
         pres.inliers=pres.inliers[-toss,]
       }
       #}
@@ -133,7 +133,7 @@ findSpatialOutliers=function(myPres,
   }
 
   if(!is.null(sp.toss.coord)){
-    coor=coordinates(myPres)
+    coor=sp::coordinates(myPres)
     sp.toss.id= apply(sp.toss.coord,1,function(x) which(x[1]==coor[,1] & x[2]==coor[,2]))
   } else {sp.toss.id=NULL}
   if (verbose)
@@ -163,7 +163,7 @@ findSpatialOutliers=function(myPres,
 # myPres=read.csv(system.file('ext/SampleData/Sp3Occurrence_v3.csv',
 #  package='occTest'))[,c(2,3)]
 #  myPres=myPres[stats::complete.cases(myPres),]
-#  coordinates(myPres)=c(1,2)
+#  sp::coordinates(myPres)=c(1,2)
 # myEnv=raster::stack(system.file('ext/AllEnv.tif',package='occTest'))
 #  envOut=findEnvOutliers(myPres=myPres,env=myEnv,pval=1e-5)
 #'

@@ -5,12 +5,12 @@
 \title{Detect biodiversity institutions}
 \usage{
 institutionLocality(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
-  lf = l.field,
+  df,
+  xf,
+  yf,
+  lf,
   method = "all",
-  .points.proj4string = points.proj4string,
+  .points.proj4string,
   do = T,
   verbose = F
 )

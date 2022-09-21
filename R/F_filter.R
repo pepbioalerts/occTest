@@ -215,7 +215,7 @@ occFilter <- function (df,
     errorRule=errorThresholdDf
     
     filter_occ<-function(score,testName){
-      current_treshold<-errorRule %>% dplyr::filter (test == str_remove(testName,"_score")) %>% pull(errorThreshold)
+      current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull(errorThreshold)
       return( ifelse(is.na(score),F, score>current_treshold ))
       
     }

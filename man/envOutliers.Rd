@@ -5,14 +5,14 @@
 \title{Detect environmental outliers}
 \usage{
 envOutliers(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
-  .r.env = r.env,
-  .th.perc.outenv = th.perc.outenv,
-  .sp.name = sp.name,
+  df,
+  xf,
+  yf,
+  .r.env,
+  .th.perc.outenv,
+  .sp.name,
   method = "all",
-  .projString = points.proj4string,
+  .projString,
   do = T,
   verbose = F
 )

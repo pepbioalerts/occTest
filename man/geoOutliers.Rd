@@ -5,15 +5,15 @@
 \title{Detect geographic outliers}
 \usage{
 geoOutliers(
-  df = dat,
-  xf = x.field,
-  yf = y.field,
-  .alpha.parameter = alpha.parameter,
+  df,
+  xf,
+  yf,
+  .alpha.parameter,
   .distance.parameter = 1000,
   .medianDeviation.parameter = 5,
   .samplingIntensThreshold.parameter = 0.1,
   method = "all",
-  .projString = points.proj4string,
+  .projString,
   do = T,
   verbose = F
 )

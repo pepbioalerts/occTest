@@ -4,7 +4,7 @@
 \alias{.checkdatastr2}
 \title{Check data structure}
 \usage{
-.checkdatastr2(dat, xf = x.field, yf = y.field, verbose = F)
+.checkdatastr2(dat, xf, yf, verbose = F)
 }
 \arguments{
 \item{dat}{A dataframe containing occurrence data for checking.}

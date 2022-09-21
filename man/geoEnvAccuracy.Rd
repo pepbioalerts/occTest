@@ -6,12 +6,12 @@
 \usage{
 geoEnvAccuracy(
   df,
-  xf = x.field,
-  yf = y.field,
-  af = a.field,
-  dsf = ds.field,
-  ef = e.field,
-  tf = t.field,
+  xf,
+  yf,
+  af,
+  dsf,
+  ef,
+  tf,
   method = "all",
   r.env,
   accept.threshold.cell = 0.5,

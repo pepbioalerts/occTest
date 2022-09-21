@@ -11,7 +11,7 @@
   ref = NULL,
   value = "clean",
   verbose = F,
-  outdir = output.dir
+  outdir
 )
 }
 \arguments{

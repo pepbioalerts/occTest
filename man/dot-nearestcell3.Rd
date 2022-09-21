@@ -4,7 +4,7 @@
 \alias{.nearestcell3}
 \title{SeaLand reassignement}
 \usage{
-.nearestcell3(dat, rst, xf = x.field, yf = y.field, verbose = F)
+.nearestcell3(dat, rst, xf, yf, verbose = F)
 }
 \arguments{
 \item{dat}{Data.frame of species occurrences}

@@ -4,17 +4,7 @@
 \alias{.checkfields}
 \title{Checking main fields}
 \usage{
-.checkfields(
-  dat,
-  xf = x.field,
-  yf = y.field,
-  ef = e.field,
-  tf = t.field,
-  lf = l.field,
-  cf = c.field,
-  idf = taxonobservation.id,
-  verbose = F
-)
+.checkfields(dat, xf, yf, ef, tf, lf, cf, idf, verbose = F)
 }
 \arguments{
 \item{dat}{A dataframe containing occurrence data for checking.}
@@ -43,6 +33,11 @@ Checking main fields
 }
 \details{
 checking main fields (inspired in addmainfields from biogeo). I put the number two because it consitutes a version 2 of the functions in biogeo
+}
+\examples{
+\dontrun{
+
+}
 }
 \seealso{
 Other checks: 

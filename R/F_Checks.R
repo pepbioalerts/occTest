@@ -58,16 +58,16 @@
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
 #' @examples \dontrun{
-#' @export
+#' 
 #' }
 .checkfields <- function (dat,
-                         xf=x.field,
-                         yf=y.field,
-                         ef=e.field,
-                         tf=t.field,
-                         lf=l.field,
-                         cf=c.field, 
-                         idf = taxonobservation.id,
+                         xf,
+                         yf,
+                         ef,
+                         tf,
+                         lf,
+                         cf, 
+                         idf,
                          verbose=F){
 
   nd <- names (dat)
@@ -108,7 +108,7 @@
 #' Example<-"goes here"
 #' }
 #'
-.checkdatastr2  <- function (dat,xf=x.field,yf=y.field, verbose=F) {
+.checkdatastr2  <- function (dat,xf,yf, verbose=F) {
   cn <- names(dat)
   fn <- c("roworder", xf, yf, "Species", "x_original", "y_original",
           "Correction", "Modified", "Exclude", "Reason")
@@ -183,17 +183,17 @@
 #' @examples \dontrun{
 #' Example<-"goes here"
 #' }
-.status.tracker.and.escaping <- function (dataset.to.continue=dat,
-                                         wfo=write.full.output,
-                                         wso=write.simple.output,
-                                         xf=x.field,
-                                         yf=y.field,
-                                         od=output.dir,
-                                         rsd = return.spatial.data,
-                                         obf=output.base.filename,
-                                         sp=sp.name, verbose=F, 
-                                         as=analysisSettings,
-                                         ws = writeoutSettings,ts =tableSettings){
+.status.tracker.and.escaping <- function (dataset.to.continue,
+                                         wfo,
+                                         wso,
+                                         xf,
+                                         yf,
+                                         od,
+                                         rsd ,
+                                         obf,
+                                         sp, verbose=F, 
+                                         as,
+                                         ws,ts){
 
   if (nrow (dataset.to.continue) != 0) {return(NULL)}
   if (nrow (dataset.to.continue) == 0) {print ('Workflow finished')}

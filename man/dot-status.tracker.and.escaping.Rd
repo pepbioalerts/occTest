@@ -5,19 +5,19 @@
 \title{Workflow status tracker}
 \usage{
 .status.tracker.and.escaping(
-  dataset.to.continue = dat,
-  wfo = write.full.output,
-  wso = write.simple.output,
-  xf = x.field,
-  yf = y.field,
-  od = output.dir,
-  rsd = return.spatial.data,
-  obf = output.base.filename,
-  sp = sp.name,
+  dataset.to.continue,
+  wfo,
+  wso,
+  xf,
+  yf,
+  od,
+  rsd,
+  obf,
+  sp,
   verbose = F,
-  as = analysisSettings,
-  ws = writeoutSettings,
-  ts = tableSettings
+  as,
+  ws,
+  ts
 )
 }
 \arguments{

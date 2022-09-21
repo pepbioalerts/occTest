@@ -19,7 +19,7 @@
 #' example<-"goes here"
 #' }
 #' @export
-filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
+filterMissing <- function (df, xf , yf , verbose=F){
  coordIssues_coordMissing_value = !stats::complete.cases  (df[,c(xf,yf)])
  df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
  df$coordIssues_coordMissing_test = as.logical (coordIssues_coordMissing_value)
@@ -49,8 +49,8 @@ filterMissing <- function (df, xf = x.field, yf = y.field, verbose=F){
 #' example<-"goes here"
 #' }
 #' @export
-duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
-                                        resolution.in.minutes=res.in.minutes,
+duplicatesexcludeAnalysis <- function (df, xf, yf,
+                                        resolution.in.minutes,
                                         raster.grid=NULL, verbose=F){
   #exact duplicates
   duplicates_dupExact_value <- duplicated (x = df[,c(xf,yf)]) *1
@@ -118,8 +118,8 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' }
 .nearestcell3 <- function (dat,
                           rst,
-                          xf=x.field,
-                          yf=y.field,
+                          xf,
+                          yf,
                           verbose=F) {
   dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
@@ -236,15 +236,15 @@ duplicatesexcludeAnalysis <- function (df=dat, xf=x.field, yf=y.field,
 #' example<-"goes here"
 #' }
 #' @export
-countryStatusRangeAnalysis=function(df=dat,
-                                    xf=x.field,
-                                    yf=y.field,
-                                    .ntv.ctry=ntv.ctry,
-                                    .inv.ctry=inv.ctry,
-                                    .c.field=c.field,
-                                    .points.proj4string=points.proj4string,
-                                    .countries.shapefile=countries.shapefile,
-                                    cfsf = countryfield.shapefile,
+countryStatusRangeAnalysis=function(df,
+                                    xf,
+                                    yf,
+                                    .ntv.ctry,
+                                    .inv.ctry,
+                                    .c.field,
+                                    .points.proj4string,
+                                    .countries.shapefile,
+                                    cfsf,
                                     excludeUnknownRanges = F,
                                     excludeNotmatchCountry = F,
                                     doRangeAnalysis=T,
@@ -390,17 +390,17 @@ countryStatusRangeAnalysis=function(df=dat,
 #' }
 #' @export
 
-centroidDetection <- function (df=dat,
-                                xf=x.field,
-                                yf=y.field,
-                                cf =c.field,
-                                idf = taxonobservation.id,
-                                .ntv.ctry=ntv.ctry,
-                                .inv.ctry=inv.ctry,
-                                .points.proj4string=points.proj4string,
-                                .r.env=r.env,
-                                .countries.shapefile=countries.shapefile,
-                                cfsf = countryfield.shapefile,
+centroidDetection <- function (df,
+                                xf,
+                                yf,
+                                cf,
+                                idf,
+                                .ntv.ctry,
+                                .inv.ctry,
+                                .points.proj4string,
+                                .r.env,
+                                .countries.shapefile,
+                                cfsf,
                                  method='all',
                                  do = T, verbose=F){
   #table of outputs
@@ -603,14 +603,14 @@ centroidDetection <- function (df=dat,
 #' }
 #' @export
 
-humanDetection <- function (df=dat,
-                            xf=x.field,
-                            yf=y.field,
+humanDetection <- function (df,
+                            xf,
+                            yf,
                             method='all',
-                            ras.hii=ras.hii,
-                            .th.human.influence =th.human.influence,
-                            .points.proj4string=points.proj4string,
-                            do=T, verbose=F,output.dir=output.dir){
+                            ras.hii,
+                            .th.human.influence,
+                            .points.proj4string,
+                            do=T, verbose=F,output.dir){
 
   out <- data.frame (HumanDetection_HumanInfluence_value=NA,
                      HumanDetection_HumanInfluence_test=NA,
@@ -711,12 +711,12 @@ humanDetection <- function (df=dat,
 #' example<-"goes here"
 #' }
 #' @export
-institutionLocality <- function (df=dat,
-                                 xf=x.field,
-                                 yf=y.field,
-                                 lf=l.field,
+institutionLocality <- function (df,
+                                 xf,
+                                 yf,
+                                 lf,
                                  method='all',
-                                 .points.proj4string=points.proj4string,
+                                 .points.proj4string,
                                  do=T, verbose=F
                                  ){
 
@@ -825,15 +825,15 @@ institutionLocality <- function (df=dat,
 #' }
 #' @export
 
-geoOutliers         <- function (df=dat,
-                                xf=x.field,
-                                yf=y.field,
-                                .alpha.parameter=alpha.parameter,
+geoOutliers         <- function (df,
+                                xf,
+                                yf,
+                                .alpha.parameter,
                                 .distance.parameter=1000,
                                 .medianDeviation.parameter=5,
                                 .samplingIntensThreshold.parameter=0.1,
                                 method = 'all',
-                                .projString   = points.proj4string,
+                                .projString ,
                                 do=T, verbose=F){
   
  
@@ -1104,14 +1104,14 @@ geoOutliers         <- function (df=dat,
 #' }
 #' @export
 envOutliers  <- function (
-                          df= dat,
-                          xf=x.field,
-                          yf =y.field,
-                          .r.env=r.env,
-                          .th.perc.outenv = th.perc.outenv,
-                          .sp.name = sp.name,
+                          df,
+                          xf,
+                          yf,
+                          .r.env,
+                          .th.perc.outenv ,
+                          .sp.name ,
                           method='all',
-                          .projString = points.proj4string,
+                          .projString ,
                           do=T, verbose=F){
 
   #output results
@@ -1264,9 +1264,9 @@ envOutliers  <- function (
 #' @export
 
 geoEnvAccuracy  <- function (df,
-                             xf=x.field,
-                             yf=y.field,
-                             af=a.field,dsf=ds.field,ef =e.field,tf=t.field,
+                             xf,
+                             yf,
+                             af,dsf,ef,tf,
                              
                              method='all',
                              
@@ -1592,14 +1592,14 @@ geoEnvAccuracy  <- function (df,
 #' }
 #' @export
 
-landUseSelect <- function (df=dat,
-                           xf=x.field,
-                           yf=y.field,
+landUseSelect <- function (df,
+                           xf,
+                           yf,
                            method='in', #out would be the other one
-                           .points.proj4string=points.proj4string,
-                           ras.landUse=ras.landUse,
-                           .landUseCodes = landUseCodes,
-                           do=T, verbose=F,output.dir=output.dir){
+                           .points.proj4string,
+                           ras.landUse,
+                           .landUseCodes,
+                           do=T, verbose=F,output.dir){
   
   out <- data.frame (landUse_wrongLU_value=NA,
                      landUse_wrongLU_test=NA,
