@@ -5,8 +5,8 @@
 #' @param verbose logical. Print messages?
 #' @return None. Used to generate warning messages.
 #' @family checks
-#' @examples \dontrun{
-#'
+#' @examples {
+#' example<-"goes here"
 #' }
 
 .check.geospatial.data <- function (list.geospatial.objects, verbose=F)  {
@@ -17,7 +17,7 @@
   if (!is.list (list.geospatial.objects)) {stop ('list.geospatial.objects should be a list')}
 
   #pf <- parent.frame()
-  projections.in <- unlist (lapply (list.geospatial.objects, function(p) {projection(p); return(p)} ))
+  projections.in <- unlist (lapply (list.geospatial.objects, function(p) {raster::projection(p); return(p)} ))
 
   if (any(is.na(projections.in))) {
     # id.obj <- which (is.na(projections.in))
@@ -58,7 +58,7 @@
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
 #' @examples \dontrun{
-#' 
+#' example<-"goes here"
 #' }
 .checkfields <- function (dat,
                          xf,
@@ -105,9 +105,9 @@
 #' @family checks
 #' @note Inspired in addmainfields from biogeo
 #' @examples \dontrun{
-#' Example<-"goes here"
+#' example<-"goes here"
 #' }
-#'
+
 .checkdatastr2  <- function (dat,xf,yf, verbose=F) {
   cn <- names(dat)
   fn <- c("roworder", xf, yf, "Species", "x_original", "y_original",
@@ -211,7 +211,7 @@
 
     #write outputs
     if(wfo){
-      sp2 = occTest::.join.spname(sp)
+      sp2 =  .join.spname(sp)
       newdir = paste0(od,'/',sp2)
       dir.create(newdir,recursive = T,showWarnings = F)
       written = try(utils::write.csv(full.qaqc,  

@@ -1,38 +1,39 @@
 ### Alpha Hull Analysis related scripts
 
-##' @title Generate Spatial object from Alpha Hull object
-##' @description  Generate polygon based on alpha hulls at a given alpha parmater 
-##' @details 
-##' Based on rangeBuilder::getDynamicRange without cropping to sea and without increments
-##' \code{alpha = initialAlpha}, and will then increase \code{alpha} by
-##' \code{alphaIncrement} until both the \code{fraction} and \code{partCount}
-##' conditions are met.
-##' 
-##' If the conditions cannot be satisfied, then a minimum convex hull is
-##' returned.
-##' 
-##' If \code{clipToCoast} is set to "terrestrial" or "aquatic", the resulting
-##' polygon is clipped to the coastline, using the dataset
-##' provided with this package.
-##' 
-##' @param x dataframe of coordinates in decimal degrees, with a minimum of 3
-##' rows.
-##' @param alpha the starting value for alpha
-##' @param coordHeaders the column names for the longitude and latitude
-##' columns, respectively.  If x has two columns, these are assumed to be
-##' longitude and latitude, and \code{coordHeaders} is ignored.
-##' @param proj the projection information for x. The default is currently the
-##' only supported option.
-##' @param alphaCap Max alpha value before function aborts and returns a
-##' minimum convex hull.
-##' @param verbose logical. print messages?
-##' @return a list with 2 elements: \item{hull}{ a SpatialPolygons object }
-##' \item{alpha}{ the alpha value that was found to satisfy the criteria.  If a
-##' convex hull was returned, this will list MCH.  }
-##' @author Pascal Title (original version), JM Serra-Diaz (modifs)
-##' @seealso Alpha hulls are created with \code{\link{ahull}}.
-##' @examples
-##' @export
+#' @title Generate Spatial object from Alpha Hull object
+#' @description  Generate polygon based on alpha hulls at a given alpha parmater 
+#' @details 
+#' Based on rangeBuilder::getDynamicRange without cropping to sea and without increments
+#' \code{alpha = initialAlpha}, and will then increase \code{alpha} by
+#' \code{alphaIncrement} until both the \code{fraction} and \code{partCount}
+#' conditions are met.
+#' 
+#' If the conditions cannot be satisfied, then a minimum convex hull is
+#' returned.
+#' 
+#' If \code{clipToCoast} is set to "terrestrial" or "aquatic", the resulting
+#' polygon is clipped to the coastline, using the dataset
+#' provided with this package.
+#' 
+#' @param x dataframe of coordinates in decimal degrees, with a minimum of 3
+#' rows.
+#' @param alpha the starting value for alpha
+#' @param coordHeaders the column names for the longitude and latitude
+#' columns, respectively.  If x has two columns, these are assumed to be
+#' longitude and latitude, and \code{coordHeaders} is ignored.
+#' @param proj the projection information for x. The default is currently the
+#' only supported option.
+#' @param alphaCap Max alpha value before function aborts and returns a
+#' minimum convex hull.
+#' @param verbose logical. print messages?
+#' @return a list with 2 elements: \item{hull}{ a SpatialPolygons object }
+#' \item{alpha}{ the alpha value that was found to satisfy the criteria.  If a
+#' convex hull was returned, this will list MCH.  }
+#' @author Pascal Title (original version), JM Serra-Diaz (modifs)
+#' @seealso Alpha hulls are created with \code{\link{ahull}}.
+#' @examples
+#' @importFrom methods slot<-
+#' @export
 
 getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', 'Latitude'), 
                                   #buff = 1000, parameter not implemented
@@ -83,9 +84,9 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     stop('Alpha hull not built')
   }
   
-  hull <- try (occTest::.ah2sp(hull, proj4string = sp::CRS('+proj=longlat +datum=WGS84')), silent=T)
+  hull <- try ( .ah2sp(hull, proj4string = sp::CRS('+proj=longlat +datum=WGS84')), silent=T)
   if (!is.null(hull)) {
-      slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest::.checkPolygonsGEOS2)
+      slot(hull, "polygons") <- lapply(slot(hull, "polygons"),  .checkPolygonsGEOS2)
   }
   
   if (is.null(hull) | inherits(hull, 'try-error') | !cleangeo::clgeo_IsValid(hull)) {
@@ -93,7 +94,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     }
   
   #how many points are within hull?
-  slot(hull, "polygons") <- lapply(slot(hull, "polygons"), occTest::.checkPolygonsGEOS2)
+  slot(hull, "polygons") <- lapply(slot(hull, "polygons"),  .checkPolygonsGEOS2)
   if (!cleangeo::clgeo_IsValid(hull)) stop ('Invalid GEOS for alphahull built')
   
   pointWithin <- rgeos::gIntersects(x, hull, byid = TRUE)
@@ -106,18 +107,19 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 
 
 ### .ah2sp  ======
-##' @title Convert Alpha Hull object into a shapefile 
-##' @details Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
-##' @param x an alpha hull object
-##' @param increment numeric. Increments
-##' @param rnd numeric. Decimal rounding
-##' @param proj4string crs object with the spatial projectoinsprojection
-##' @param tol numeric. tolerance
-##' @return a sp polygon object
-##' @author Pascal Title (original version), JM Serra-Diaz (modifications)
-##' @seealso Alpha hulls are created with \code{\link{ahull}}.
-##' @examples
-##' 
+#' @title Convert Alpha Hull object into a shapefile
+#' @details Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
+#' @param x an alpha hull object
+#' @param increment numeric. Increments
+#' @param rnd numeric. Decimal rounding
+#' @param proj4string crs object with the spatial projectoinsprojection
+#' @param tol numeric. tolerance
+#' @return a sp polygon object
+#' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+#' @seealso Alpha hulls are created with \code{\link{ahull}}.
+#' @examples
+#' @importFrom methods slot<-
+#' @importFrom sp Lines Polygons
 
 .ah2sp <- function(x, increment=360, rnd=10, proj4string=sp::CRS(as.character(NA)),tol=1e-4) {
   if (!inherits(x, "ahull")) {
@@ -210,7 +212,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
         coordsj <- cbind(prevx,prevy)
         colnames(coordsj)<-NULL
         # Build as Line and then Lines class
-        linej <- Line(coordsj)
+        linej <- sp::Line(coordsj)
         linesj[[j]] <- Lines(linej, ID = as.character(j))
         j <- j + 1
         prevx <- NULL
@@ -239,7 +241,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     # Select those that do and convert to SpatialPolygons
     polyssl <- lspl[polys]
     list_of_Lines <- slot(polyssl, "lines")
-    sppolys <- sp::SpatialPolygons(list(sp::Polygons(lapply(list_of_Lines, function(x) { Polygon(slot(slot(x, "Lines")[[1]], "coords")) }), ID = "1")), proj4string=proj4string)
+    sppolys <- sp::SpatialPolygons(list(sp::Polygons(lapply(list_of_Lines, function(x) { sp::Polygon(slot(slot(x, "Lines")[[1]], "coords")) }), ID = "1")), proj4string=proj4string)
     # Create a set of ids in a dataframe, then promote to SpatialPolygonsDataFrame
     hid <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "ID"))
     areas <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "area"))
@@ -253,19 +255,19 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 }
 
 # .checkPolygonsGEOS2 ====
-##' @title  Check polygon geometry
-##' @description 
-##' @details inspired provided by  maptools package and from P Title in rangeBuilder
-##' @param obj an alpha hull object
-##' @param properly logic. 
-##' @param force logic.
-##' @param useSTRtree logic. 
-##' @return a sp polygon object
-##' @author Pascal Title (original version), JM Serra-Diaz (modifications)
-##' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
-##' see maptools and RangeBuilder package 
-##' @examples
-##
+#' @title  Check polygon geometry
+#' @description
+#' @details inspired provided by  maptools package and from P Title in rangeBuilder
+#' @param obj an alpha hull object
+#' @param properly logic.
+#' @param force logic.
+#' @param useSTRtree logic.
+#' @return a sp polygon object
+#' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+#' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
+#' see maptools and RangeBuilder package
+#' @examples
+#
 .checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
   if (!is(obj, "Polygons")) 
     stop("not a Polygons object")
@@ -283,7 +285,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   if (n > 1) {
     if (useSTRtree) 
       tree1 <- rgeos::gUnarySTRtreeQuery(obj)
-    SP <- SpatialPolygons(lapply(1:n, function(i) Polygons(list(pls[[i]]), ID = i)))
+    SP <- sp::SpatialPolygons(lapply(1:n, function(i) Polygons(list(pls[[i]]), ID = i)))
     for (i in 1:(n - 1)) {
       if (useSTRtree) {
         if (!is.null(tree1[[i]])) {
@@ -326,7 +328,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   pls <- pls[order(areas, decreasing = TRUE)]
   oholes <- sapply(pls, function(x) slot(x, "hole"))
   holes <- rep(FALSE, n)
-  SP <- SpatialPolygons(lapply(1:n, function(i) Polygons(list(pls[[i]]), ID = i)))
+  SP <- sp::SpatialPolygons(lapply(1:n, function(i) Polygons(list(pls[[i]]), ID = i)))
   if (useSTRtree) 
     tree2 <- rgeos::gUnarySTRtreeQuery(SP)
   for (i in 1:(n - 1)) {
@@ -353,7 +355,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
   }
   for (i in 1:n) {
     if (oholes[i] != holes[i]) 
-      pls[[i]] <- Polygon(slot(pls[[i]], "coords"), hole = holes[i])
+      pls[[i]] <- sp::Polygon(slot(pls[[i]], "coords"), hole = holes[i])
   }
   oobj <- Polygons(pls, ID = IDs)
   comment(oobj) <- rgeos::createPolygonsComment(oobj)

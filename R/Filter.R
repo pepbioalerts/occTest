@@ -1,8 +1,6 @@
 # occFilter ====
 #' @title Filter occurrence records from occTest outputs
-#' @descriptions Select occurrence records based on aggregated values of different tests
-#' @details
-#' @param 
+#' @description Select occurrence records based on aggregated values of different tests
 #' @return list of 2 data.frames
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -10,12 +8,9 @@
 #' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
 #' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
-#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
-#' @note
+#' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 
+#' 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 #' @seealso showTests
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -67,7 +62,7 @@ occFilter_depr <- function (df,
        dfScore
    })
   dfScores = dplyr::bind_cols(dfScores)
-  dfScoreVals = dfScores %>% dplyr::select(ends_with('_score')) 
+  dfScoreVals = dfScores %>% dplyr::select(dplyr::ends_with('_score')) 
    
   #rules of selection 
   if (is.null(errorThreshold)){
@@ -106,9 +101,7 @@ occFilter_depr <- function (df,
 
 # occFilter ====
 #' @title Filter occurrence records from occTest outputs
-#' @descriptions Select occurrence records based on aggregated values of different tests
-#' @details
-#' @param 
+#' @description Select occurrence records based on aggregated values of different tests
 #' @return list of 2 data.frames
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), J Borderieux (jeremy.borderieux@@agroparistech.fr)
@@ -118,11 +111,7 @@ occFilter_depr <- function (df,
 #' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
 #' @param custom data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
 #' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
-#' @note
 #' @seealso showTests
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -162,7 +151,7 @@ occFilter <- function (df,
   
   #get the scores for each category
   dfScores = lapply (uniqueTargetLevels, function (categ){
-    baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = baseLevel)
+    baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = 'baseLevel')
     
     idCols = grep (pattern = paste0(baseCategSelec,collapse = '|'), names(dfFiltered),value = T)
     idCols = grep (pattern ='_test', idCols,value = T)
@@ -176,7 +165,7 @@ occFilter <- function (df,
     dfScore
   })
   dfScores = dplyr::bind_cols(dfScores)
-  dfScoreVals = dfScores %>% dplyr::select(ends_with('_score')) 
+  dfScoreVals = dfScores %>% dplyr::select(dplyr::ends_with('_score')) 
   
   #rules of selection 
   if (is.null(errorThreshold) & is.null(custom)){

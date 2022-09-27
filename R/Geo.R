@@ -10,13 +10,9 @@
 #' @return Factor with ISO3 codes for countries 
 #' @family Geo
 #' @examples \dontrun{
-#'
+#' example<-"goes here"
 #' }
-#' 
-# The most important argument argument to this function, points, is a data.frame in which:
-#   - column 1 contains the longitude in degrees
-#   - column 2 contains the latitude in degrees
-# ,GNRScheck=F (whether we want to implement a gnrs check)
+
 .coords2country = function(xydat,
                            .countries.shapefile=NULL,
                            .points.proj4string=NULL,
@@ -42,9 +38,9 @@
 #' @family Geo
 #' @seealso  raster::getData
 #' @examples \dontrun{
-#'
+#' example<-"goes here"
 #' }
-#' 
+
 .getSRTM = function (xydat,download=T,path=getwd(), verbose=F) {
   #get file names of the tiles in srtm
   file.tiles = sapply ( 1:nrow (xydat), function (i) {
@@ -77,7 +73,7 @@
       if (!file.exists(zipfilename)) {
         if (download) {
           theurl <- paste0(baseurl, f)
-          test <- try(raster:::.download(theurl, zipfilename), silent = TRUE)
+          test <- try(.download(theurl, zipfilename), silent = TRUE)
           if (class(test) == "try-error") {
             stop("cannot download the file")
           }
@@ -92,7 +88,7 @@
       }
     }
     if (file.exists(tiffilename)) {
-      rs <- raster(tiffilename)
+      rs <- raster::raster(tiffilename)
       raster::projection(rs) <- "+proj=longlat +datum=WGS84"
       return(rs)
     }

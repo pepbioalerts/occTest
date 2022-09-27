@@ -11,12 +11,8 @@
 #' @param load Raster of human influence index
 #' @return spatial object or raster
 #' @keywords internal
-#' @author 
-#' @note
 #' @seealso rnaturalearth
-#' @references
-#' @aliases
-#' @family
+#' @import rnaturalearth
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -43,7 +39,7 @@
                                  stringsAsFactors = FALSE, use_iconv = TRUE,verbose = F)
     sp_object@data[sp_object@data == "-99" | sp_object@data == 
                      "-099"] <- NA
-    return(rnaturalearth::ne_as_sf(sp_object, returnclass))
+    return(ne_as_sf(sp_object, returnclass))
   }
   else {
     return(file_name)
@@ -62,19 +58,17 @@
 #' @param lat character. Column name in x with decimal latitude values
 #' @param a SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download(). 
 #' @param value character string. Defining the output value. See value.
-#' @param verbose logical. If TRUE reports the name of the test and the number of records flagged.
-#' @return 
+#' @param verbose logical. If TRUE reports the name of the test and the number of records flagged
+#' @param outdir output directory
+#' @return a clean data.frame 
 #' @keywords internal
-#' @author 
-#' @note
+#' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
 #' @seealso CoordinateCleaner::cc_urb
 #' @references CoordinateCleaner package
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-#' 
+#' @importFrom methods as is slot
 .cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                         ref = NULL, value = "clean", verbose = F,outdir) 
 {
@@ -84,7 +78,7 @@
   }
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
-    ref <- try(suppressWarnings(occTest::.ne_download_occTest(scale = "medium", 
+    ref <- try(suppressWarnings(.ne_download_occTest(scale = "medium", 
                                                  type = "urban_areas")), silent = TRUE)
     if (class(ref) == "try-error") {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
@@ -133,14 +127,24 @@
 # .cc_outl_occTest ====
 #' @title Identify geographic outliers based on methods from CoordinateCleaner package
 #' @description own version of coordinate cleaner geographic outliers
+#' @param x Data.frame of species occurrences
+#' @param lon character. Column name in x with decimal longitude values
+#' @param lat character. Column name in x with decimal latitude values
+#' @param species  character. Species name. 
+#' @param method character. Quantile by default
+#' @param mltpl integer. Multiplication factor. Default to 5
+#' @param tdi numeric. Default to 1000
+#' @param value character. Type of output. Default to 'clean'
+#' @param sampling_thresh numeric. Sampling threshold. Defaults to 0
+#' @param verbose logical. Should output messages be printed. Default to T
+#' @param min_occs integer. Minimum number of occurrences. Defaults to 7
+#' @param thinning logical. Should thinning be performed? Defaults to F
+#' @param thinning_res double. Thinnning resolution. Defaults to 0.5
 #' @details
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
+#' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
+#' @return a clean data.frame 
+#' @import CoordinateCleaner
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -171,7 +175,7 @@
   }
   if (any(test >= 10000) | thinning) {
     warning("Using raster approximation.")
-    ras <- CoordinateCleaner:::ras_create(x = x, lat = lat, lon = lon, thinning_res = thinning_res)
+    ras <- ras_create(x = x, lat = lat, lon = lon, thinning_res = thinning_res)
   }
   flags <- lapply(splist, function(k) {
     if (nrow(k) <= 10000 & !thinning) {
@@ -180,13 +184,13 @@
     }
     else {
       if (thinning) {
-        dist_obj <- CoordinateCleaner:::ras_dist(x = k, lat = lat, lon = lon, 
+        dist_obj <- ras_dist(x = k, lat = lat, lon = lon, 
                              ras = ras, weights = FALSE)
         pts <- dist_obj$pts
         dist <- dist_obj$dist
       }
       else {
-        dist_obj <- CoordinateCleaner:::ras_dist(x = k, lat = lat, lon = lon, 
+        dist_obj <- ras_dist(x = k, lat = lat, lon = lon, 
                              ras = ras, weights = TRUE)
         pts <- dist_obj$pts
         dist <- dist_obj$dist
@@ -311,20 +315,27 @@
 # cc_round_occTest ====
 #' @title Flag records with regular pattern interval
 #' @description own version of coordinate cleaner cc_round
-#' @details
-#' @keywords internal
-#' @author JM Serra-Diaz (adapted from CoordinateCleaner)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
-# @examples \dontrun{
-# example<-"goes here"
-# }
-#' @export
-
-cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
+#' @author A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+#' @param x Data.frame of species occurrences
+#' @param lon character. Column name in x with decimal longitude values
+#' @param lat character. Column name in x with decimal latitude values
+#' @param ds character. Column name in x with dataset name of the record
+#' @param T1 numeric. Defaults to 7
+#' @param reg_out_thresh numeric. Defaults to 7
+#' @param reg_dist_min numeric. Defaults to 7
+#' @param reg_dist_max numeric. Defaults to 7
+#' @param min_unique_ds_size numeric. Defaults to 7
+#' @param graphs logical. Defaults to F
+#' @param test character. Defaults to 'both'
+#' @param value character. Defaults to flagged
+#' @param verbose logical. Defaults to T
+#' @examples \dontrun{
+#' example<-"goes here"
+#' }
+#' @return a clean data.frame 
+#' @import CoordinateCleaner
+#' @importFrom graphics title
+.cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                            ds = "dataset", T1 = 7, reg_out_thresh = 2, reg_dist_min = 0.1, 
                            reg_dist_max = 2, min_unique_ds_size = 4, graphs = F, 
                            test = "both", value = "flagged", verbose = TRUE) 
@@ -358,7 +369,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
       }
       else {
         if (test == "lon") {
-          gvec <- try(CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+          gvec <- try(.CalcACT(data = k[[lon]], digit_round = digit_round, 
                            nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
           if (class(gvec) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -367,7 +378,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
             return (out)
           }
           
-          n_outl <- try(CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+          n_outl <- try(.OutDetect(gvec, T1 = T1, window_size = window_size, 
                                detection_rounding = detection_rounding, 
                                detection_threshold = detection_threshold, 
                                graphs = graphs),silent=T)
@@ -393,7 +404,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
                              "summary")
         }
         if (test == "lat") {
-          gvec <- try({CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+          gvec <- try({.CalcACT(data = k[[lat]], digit_round = digit_round, 
                            nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
                       silent=T)
           
@@ -404,7 +415,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
             return (out)
           }
           
-          n_outl <- try({CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+          n_outl <- try({.OutDetect(gvec, T1 = T1, window_size = window_size, 
                                detection_rounding = detection_rounding, 
                                detection_threshold = detection_threshold, 
                                graphs = graphs)},silent = T)
@@ -431,7 +442,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
         }
         
         if (test== 'both') {
-          gvec1 <- try(CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+          gvec1 <- try(.CalcACT(data = k[[lon]], digit_round = digit_round, 
                                                    nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
           if (class(gvec1) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -440,7 +451,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
             return (out)
           }
           
-          n_outl_lon <- try(CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+          n_outl_lon <- try(.OutDetect(gvec1, T1 = T1, window_size = window_size, 
                                                        detection_rounding = detection_rounding, 
                                                        detection_threshold = detection_threshold, 
                                                        graphs = graphs),silent=T)
@@ -462,7 +473,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           }
           
           #latitude
-          gvec2 <- try({CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+          gvec2 <- try({.CalcACT(data = k[[lat]], digit_round = digit_round, 
                                                     nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
                       silent=T)
           
@@ -473,7 +484,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
             return (out)
           }
           
-          n_outl_lat <- try({CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+          n_outl_lat <- try({.OutDetect(gvec2, T1 = T1, window_size = window_size, 
                                                         detection_rounding = detection_rounding, 
                                                         detection_threshold = detection_threshold, 
                                                         graphs = graphs)},silent = T)
@@ -503,9 +514,9 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           n_outl$summary <- n_outl$lon.flag | n_outl$lat.flag
         }
         if (test == "bothOld") {
-          gvec1 <- CoordinateCleaner:::.CalcACT(data = k[[lon]], digit_round = digit_round, 
+          gvec1 <- .CalcACT(data = k[[lon]], digit_round = digit_round, 
                             nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))
-          n_outl_lon <- CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+          n_outl_lon <- .OutDetect(gvec1, T1 = T1, window_size = window_size, 
                                    detection_rounding = detection_rounding, 
                                    detection_threshold = detection_threshold, 
                                    graphs = graphs)
@@ -517,9 +528,9 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
             title(paste(unique(k[[ds]]), n_outl_lon$flag, 
                         sep = " - "))
           }
-          gvec2 <- CoordinateCleaner:::.CalcACT(data = k[[lat]], digit_round = digit_round, 
+          gvec2 <- .CalcACT(data = k[[lat]], digit_round = digit_round, 
                             nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))
-          n_outl_lat <- CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+          n_outl_lat <- .OutDetect(gvec2, T1 = T1, window_size = window_size, 
                                    detection_rounding = detection_rounding, 
                                    detection_threshold = detection_threshold, 
                                    graphs = graphs)
@@ -555,7 +566,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
     }
     else {
       if (test == "lon") {
-        gvec <- try({CoordinateCleaner:::.CalcACT(data = x[[lon]], digit_round = digit_round, 
+        gvec <- try({.CalcACT(data = x[[lon]], digit_round = digit_round, 
                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]]))},silent=T)
         if (class(gvec) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
@@ -577,7 +588,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           )
         }
         
-        n_outl <- CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+        n_outl <- .OutDetect(gvec, T1 = T1, window_size = window_size, 
                              detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
                              graphs = graphs)
         
@@ -615,7 +626,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
                            "summary")
       }
       if (test == "lat") {
-        gvec <- try (CoordinateCleaner:::.CalcACT(data = x[[lat]], digit_round = digit_round, 
+        gvec <- try (.CalcACT(data = x[[lat]], digit_round = digit_round, 
                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])),silent=T)
         if (class(gvec) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
@@ -637,7 +648,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           flagged2 = return(out$summary)
           )
           }
-        n_outl <- try (CoordinateCleaner:::.OutDetect(gvec, T1 = T1, window_size = window_size, 
+        n_outl <- try (.OutDetect(gvec, T1 = T1, window_size = window_size, 
                              detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
                              graphs = graphs), silent=T)
         if (class(n_outl) %in% c('error','try-error')) {
@@ -674,7 +685,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
                            "summary")
       }
       if (test == "both") {
-        gvec1 <- try(CoordinateCleaner:::.CalcACT(data = x[[lon]], digit_round = digit_round, 
+        gvec1 <- try(.CalcACT(data = x[[lon]], digit_round = digit_round, 
                           nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
         
         if (class(gvec1) %in% c('error','try-error')) {
@@ -698,7 +709,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           )
           }
         
-        n_outl_lon <- try (CoordinateCleaner:::.OutDetect(gvec1, T1 = T1, window_size = window_size, 
+        n_outl_lon <- try (.OutDetect(gvec1, T1 = T1, window_size = window_size, 
                                  detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
                                  graphs = graphs), silent=T)
         if (class(n_outl_lon) %in% c('error','try-error')) {
@@ -731,7 +742,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           title(paste(unique(x[[ds]]), n_outl_lon$flag, 
                       sep = " - "))
         }
-        gvec2 <- try (CoordinateCleaner:::.CalcACT(data = x[[lat]], digit_round = digit_round, 
+        gvec2 <- try (.CalcACT(data = x[[lat]], digit_round = digit_round, 
                           nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
         if (class(gvec2) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
@@ -753,7 +764,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
           flagged2 = return(out$summary)
           )
           }
-        n_outl_lat <- try (CoordinateCleaner:::.OutDetect(gvec2, T1 = T1, window_size = window_size, 
+        n_outl_lat <- try (.OutDetect(gvec2, T1 = T1, window_size = window_size, 
                                  detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
                                  graphs = graphs), silent = T)
         
@@ -813,7 +824,16 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
 }
 
 
-## .cd_ddmm ====
+## .cd_ddmm occTest ====
+#' @title Flag records with regular pattern interval
+#' @description own version of coordinate cleaner cc_round
+#' @details
+#' @keywords internal
+#' @author A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+#' @return a clean data.frame 
+# @examples \dontrun{
+# example<-"goes here"
+# }
 
 .cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
           ds = "dataset", pvalue = 0.025, diff = 1, mat_size = 1000, 
@@ -869,7 +889,7 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
       }
       outp <- c(round(v1, 4), round(v2, 3), flag_t1)
       if (diagnostic) {
-        plo <- raster(dat_t1)
+        plo <- raster::raster(dat_t1)
         raster::plot(plo)
         title(as.logical(flag_t1))
       }
@@ -893,3 +913,8 @@ cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitu
   switch(value, dataset = return(out_ds), clean = return(x[flags, 
   ]), flagged = return(flags))
 }
+
+
+
+
+

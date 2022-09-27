@@ -1,7 +1,5 @@
 #' @title Filter occurrence by habitat (terrestrial/non-Terrestrial)
-#'
 #' @description Filter the occurrence recoreds  according to whether they should be in land masses or not
-#' @details
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
@@ -10,11 +8,6 @@
 #' @return list
 #' @keywords filter
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -27,13 +20,13 @@ landSeaFilter             =function(df,
 
   
   #load high-res land masses
-  dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/allLand10.rds'
+  dest_url <- 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/allLand10.rds'
   outFile = paste0(tempdir(),'/allLand10.rds')
-  if (!file.exists(outFile)) utils::download.file(url=dest_url_hii,destfile = outFile)
+  if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
   land = readRDS (outFile)
   #select coordinates and load sf points
   xydat <- df[,c(xf,yf)]
-  pts = sf::st_as_sf(xydat,coords=c(1,2),crs=crs(land))
+  pts = sf::st_as_sf(xydat,coords=c(1,2),crs=raster::crs(land))
   #intersect
   intersectMatrix <- sf::st_intersects(x = pts, y = land,sparse = T)
   intersectMatrix <- Matrix::as.matrix(intersectMatrix)

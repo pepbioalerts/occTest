@@ -6,8 +6,7 @@
 #' @param sp.name character. Name of the species.
 #' @param habitat NULL
 #' @param sp.table data.frame. Object with the coordinate data.
-#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic).
-#' 
+#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic.
 #' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
 #' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param gradingSettings list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions . 
@@ -37,12 +36,12 @@
 #' occ.data <-occ2df(df)
 #' names (occ.data)[2] <- 'decimalLongitude'
 #' names (occ.data)[3] <- 'decimalLatitude'
-#'library (raster)
+#' library (raster)
 #' renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
 #' library(occTest)
 #' outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
-#                              sp.table = occ.data,
-#                              r.env = renv)
+#'                              sp.table = occ.data,
+#'                              r.env = renv)
 #' }
 #' @export
 occTest = function(
@@ -96,29 +95,43 @@ occTest = function(
   y.field             = tableSettings$y.field
   if (! all(c(x.field,y.field)%in%  names(sp.table))){stop('No coordinate fields specified')}
   
+  #set table field names
+  ## taxonobservation.id
   taxonobservation.id = tableSettings$taxonobservation.id
-  if(! taxonobservation.id %in% names(sp.table))   taxonobservation.id = NULL
-  
+  if (!is.null(taxonobservation.id)){
+    if(! taxonobservation.id %in% names(sp.table))   taxonobservation.id = NULL
+  }
+  ## t.field
   t.field             = tableSettings$t.field
-  if(! t.field %in% names(sp.table))   t.field = NULL
-  
+  if (!is.null(t.field)){
+    if(! t.field %in% names(sp.table))   t.field = NULL
+  }
+  ## l.field
   l.field             = tableSettings$l.field  
-  if(! l.field %in% names(sp.table))   l.field = NULL
-  
+  if (!is.null(l.field)){
+    if(! l.field %in% names(sp.table))   l.field = NULL
+  }
+  ## c.field
   c.field             = tableSettings$c.field
-  if(! c.field %in% names(sp.table))   c.field = NULL
-  
+  if (!is.null(c.field)){
+    if(! c.field %in% names(sp.table))   c.field = NULL
+  }
+  ## e.field
   e.field             = tableSettings$e.field
-  if(! e.field %in% names(sp.table))   e.field = NULL
-  
+  if (!is.null(e.field)){
+    if(! e.field %in% names(sp.table))   e.field = NULL
+  }
+  ## a.field
   a.field             = tableSettings$a.field
-  if(any(! a.field %in% names(sp.table)))   a.field = NULL
-  
+  if (!is.null(a.field)){
+    if(any(! a.field %in% names(sp.table)))   a.field = NULL
+  }
+  ## ds.field
   ds.field            =  tableSettings$ds.field
-  if(! ds.field %in% names(sp.table))   ds.field = NULL
+  if (!is.null(ds.field)){
+    if(! ds.field %in% names(sp.table))   ds.field = NULL
+  }
 
-  ds.field            =  tableSettings$ds.field
-  if(! ds.field %in% names(sp.table))   ds.field = NULL
   
   #load analysisSettings
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
@@ -179,19 +192,19 @@ occTest = function(
   ### STEP 1a: Data formatting and compatibility for biogeo and initial checks =====
 
   #add fields necesary for initial table
-  sp = occTest::.join.spname(sp.name)
+  sp =  .join.spname(sp.name)
   sp.table$Species = sp
   
-  sp.table2 = occTest::.checkfields(dat=sp.table,xf = x.field, yf=y.field,
+  sp.table2 =  .checkfields(dat=sp.table,xf = x.field, yf=y.field,
                                      ef = e.field,tf = t.field,lf = l.field,
                                      cf = c.field,          
                                      idf = taxonobservation.id)
   
-  dat = occTest::.addmainfields2(sp.table2,species = 'Species')
+  dat =  .addmainfields2(sp.table2,species = 'Species')
   dat$comments = rep('', nrow(dat))
   
   #check data structure
-  ck  = occTest::.checkdatastr2(dat,xf = x.field,yf=y.field)
+  ck  =  .checkdatastr2(dat,xf = x.field,yf=y.field)
   if(sum(ck$Present)!=10){stop("Error: required table fields could not be created")}
   
   #For development:
@@ -207,10 +220,10 @@ occTest = function(
                                   points.proj4string)
   x = sapply(potential.geosp.objects, is.null)
   actual.input.geosp.objects = potential.geosp.objects[-x]
-  actual.input.geosp.objects = occTest::.subsetlist.nonNULL(actual.input.geosp.objects)
+  actual.input.geosp.objects =  .subsetlist.nonNULL(actual.input.geosp.objects)
   
   #the development should be in the direction of automatically check and transform
-  #occTest:::.check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
+  # .check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
   #lapply(actual.input.geosp.objects, function(x)raster::projection(x))
   
   
@@ -225,7 +238,7 @@ occTest = function(
   #res is is in minutes...therefore(30 arcsec = 0.5 min)
   #if this is a projected data, we need to redo stuff and also tweak funcitons in biogeo
   #maybe add a warning or something in check geospatial data? idk
-  res.in.minutes = res(r.env[[1]])[1] * 60
+  res.in.minutes = raster::res(r.env[[1]])[1] * 60
   
   tictoc::toc()
   
@@ -292,7 +305,7 @@ occTest = function(
     dat = dat[!coordIssues_invalidCoord_test,]
     
     
-    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out= .status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -312,7 +325,7 @@ occTest = function(
     dat.Q.H2 = dat[coordIssues_zeroCoord_test,]
     dat = dat[!coordIssues_zeroCoord_test,]
     
-    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out= .status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -330,7 +343,7 @@ occTest = function(
     if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
       dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
       ds.field = 'MyInventedCommonDataset'}
-    outDecimalTest = try({occTest::.cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
+    outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
     if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
     coordIssues_coordConv_value = ! outDecimalTest
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
@@ -345,7 +358,7 @@ occTest = function(
     if(ds.field == 'MyInventedCommonDataset')ds.field = NULL
     rm(dat.tmp)
     
-    status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
+    status.out= .status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
                                                       xf = x.field,
@@ -400,7 +413,7 @@ occTest = function(
     }
   
   #check outputs and escape ifneedbe //
-  status.out=occTest::.status.tracker.and.escaping(dataset.to.continue = dat,
+  status.out= .status.tracker.and.escaping(dataset.to.continue = dat,
                                                     wfo = write.full.output,
                                                     wso = write.simple.output,
                                                     xf = x.field,
@@ -434,7 +447,7 @@ occTest = function(
   dat = Analysis.G$continue
   
   #check outputs and escape ifneedbe //
-  status.out=occTest::.status.tracker.and.escaping(
+  status.out= .status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -457,14 +470,14 @@ occTest = function(
   message('Resolving coastal reassignment started...')
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
-  dat = occTest::.nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  dat =  .nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
   if(class(dat)== 'list'){
     dat = dat[[1]]
     moved.points = dat[['moved']]
     if(!is.null(output.dir)){
-      sp.name2= occTest::.join.spname(sp.name)
+      sp.name2=  .join.spname(sp.name)
       odir = paste0(output.dir,'/',sp.name2)
       dir.create(odir,showWarnings = F,recursive = T)
       utils::write.csv( moved.points,
@@ -502,7 +515,7 @@ occTest = function(
   dat = Analysis.LandSea$continue
   
   #check outputs and escape if need be //
-  status.out = occTest::.status.tracker.and.escaping(
+  status.out =  .status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -546,7 +559,7 @@ occTest = function(
   dat = Analysis.F$continue
   
   #check outputs and escape ifneedbe //
-  status.out=occTest::.status.tracker.and.escaping(
+  status.out= .status.tracker.and.escaping(
     dataset.to.continue = dat,
     wfo = write.full.output,
     wso = write.simple.output,
@@ -703,7 +716,7 @@ occTest = function(
   
   #write outputs
   if(write.full.output){
-    sp2 = occTest::.join.spname(sp)
+    sp2 =  .join.spname(sp)
     newdir = paste0(output.dir,'/',sp2)
     dir.create(newdir,recursive = T,showWarnings = F)
     written = try(utils::write.csv(full.qaqc,  

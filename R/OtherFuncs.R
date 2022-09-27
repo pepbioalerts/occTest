@@ -9,16 +9,11 @@
 #' @param x List
 #' @return list
 #' @keywords internal
-#' @author 
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
-#' @family
+#' @author JM Serra-Diaz 
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
-
+#' @noRd
 .subsetlist.nonNULL <- function (x) {base::Filter(Negate(is.null), x)}
 
 
@@ -30,15 +25,11 @@
 #' @param x List
 #' @return list
 #' @keywords internal
-#' @author 
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
-#' @family
+#' @author JM Serra Diaz
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
+#' @noRd
 .subsetlist.isNA <- function (x) {Filter(Negate(is.na), x)}
 
 
@@ -51,15 +42,10 @@
 #' @param x character
 #' @return character
 #' @keywords internal
-#' @author 
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
+#' @noRd
 .join.spname <- function (x){
   a <- strsplit(x,split=' ')
   a <- unlist (a)
@@ -76,14 +62,10 @@
 #' @return character
 #' @keywords internal
 #' @author Pep Serra-Diaz
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
+#' @noRd
 # Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 .multiple.strsplit <- function (x,multiple.splits) {
 
@@ -105,14 +87,11 @@
 #' @return character
 #' @keywords internal
 #' @author Pep Serra-Diaz
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
-#' 
+#' }
+#' @noRd
+
 .paste3 <- function(...,sep=", ") {
   L <- list(...)
   L <- lapply(L,function(x) {x[is.na(x)] <- ""; x})
@@ -131,13 +110,11 @@
 #' @return character
 #' @keywords internal 
 #' @author Pep Serra-Diaz
-#' @note
-#' @seealso 
-#' @references
-#' @aliases
 #' @family internal
 #' @examples \dontrun{
 #' example<-"goes here"
+#' }
+#' @noRd
 .gimme.score <- function (x){
   if (!is.data.frame(x)) {stop ('input needs to be a dataframe')}
 
@@ -180,7 +157,6 @@
 #' @author Pep Serra-Diaz
 #' @note
 #' @seealso 
-#' @references
 #' @aliases
 #' @family internal
 #' @examples \dontrun{
@@ -200,18 +176,14 @@
 
 # .find_and_transform_dates  ====
 #' @title Identify and harmonize data formats
-#' @description 
-#' @details 
+#' @description haromnize different date styles 
 #' @return character
 #' @keywords internal 
-#' @author
-#' @note
 #' @seealso dataPreparation::find_and_transform_dates
-#' @references
-#' @aliases
-#' @family internal
+#' @import dataPreparation 
 #' @examples \dontrun{
 #' example<-"goes here"
+#' }
 .find_and_transform_dates <- function (data_set, cols = "auto", formats = NULL, n_test = 30, 
           ambiguities = "IGNORE", verbose = TRUE) {
   function_name <- "find_and_transform_dates"
@@ -220,7 +192,7 @@
   is_ambiguities(ambiguities, function_name)
   cols <- real_cols(data_set = data_set, cols = cols, function_name = function_name)
   start_time <- proc.time()
-  formats_found <- identify_dates(data_set, cols = cols, formats = formats, 
+  formats_found <- dataPreparation::identify_dates(data_set, cols = cols, formats = formats, 
                                   n_test = n_test, ambiguities = ambiguities, verbose = verbose)
   if (verbose) {
     printl(function_name, ": It took me ", round((proc.time() - 
@@ -233,7 +205,7 @@
     return(data_set)
   }
   start_time <- proc.time()
-  data_set <- set_col_as_date(data_set, format = formats_found, 
+  data_set <- dataPreparation::set_col_as_date(data_set, format = formats_found, 
                               verbose = FALSE)
   if (verbose) {
     printl(function_name, ": It took me ", round((proc.time() - 
@@ -249,11 +221,8 @@
 #' @details In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
 #' @return character
 #' @keywords internal 
-#' @author
-#' @note
-#' @seealso
-#' @references
-#' @aliases
+#' @author tylerrinker on Rbloggers
+#' @note got it from https://www.r-bloggers.com/2014/08/hijacking-r-functions-changing-default-arguments/
 #' @family internal
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -279,9 +248,9 @@
 #' @return a species name where genus and species are separated by a space 
 #' @family internal
 #' @examples \dontrun{
+#' example not run
 #' }
-#' 
-#' 
+
 splitSpname = function (x){
   a = strsplit(x,'_')[[1]]
   paste(a,collapse = ' ')
@@ -294,6 +263,9 @@ splitSpname = function (x){
 #' @return a clear environment
 #' @family internal
 #' @examples \dontrun{
+#'  k = NA
+#'  k == 1
+#'  lazylogic (k==1)
 #' }
 rm.all <- function () {rm (list =  setdiff(ls(),'rm.all') ) ; gc(verbose = F) }
 

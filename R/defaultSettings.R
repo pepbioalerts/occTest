@@ -1,15 +1,10 @@
 # defaultSettings ====
 #' @title load default settings for occTest
 #' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
-#' @details it can be use internally or it can be used by a user to subsequently modify parameters
+#' @details it can be use internally or it can be used by a user to subsequently modify parameters. No input parameters are required
 #' @return list of lists with all different parameters to use in occProfile function
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -122,15 +117,12 @@ defaultSettings <- function (){
 # showTableNames ====
 #' @title Print naming conventions in occTest
 #' @description prints a table with the the conventions used for column names
-#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
-#' @return prints a dataframe
+#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. 
+#'          These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
+#'          It does not require input parameters
+#' @return prints a data.frame
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -151,16 +143,10 @@ showTableNames <- function (){
 #' @param a.field character. Name of the accuracy field.
 #' @param ds.field character. Name of the dataset identifier field.
 #' @param taxonobservation.id character. Name of the taxon observartion id field. 
-#' @description
-#' @details 
+#' @description helper function to set the names for the fields in the input table
 #' @return list
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -199,11 +185,6 @@ setTableNames <- function (x.field = NULL,
 #' @return list with user modified settings
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -241,13 +222,7 @@ setTestTypes <- function (countryStatusRange = T,
 #' @param time logical. Should this family of tests be performed?
 #' @return list
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -290,13 +265,7 @@ setTestBlocks      <- function (geo = T,
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
 #' @return prints a dataframe
 #' @keywords user
-#'
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -315,11 +284,6 @@ showTests<- function (){
 #' @return list of lists with all different parameters to use in occTest function
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
-#' @family
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }

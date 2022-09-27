@@ -24,12 +24,11 @@ occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
                          classification='majority',filterCols=T ){
   
   #set up params
-  mySettings = occTest::defaultSettings()
+  mySettings = occTest::minimalSettings()
   mySettings$tableSettings$x.field <- x
   mySettings$tableSettings$y.field <- y
   mySettings$tableSettings$t.field <- date
   mySettings$tableSettings$c.field <- isoCountry
-  
   
   #run test functions 
   #output is a list of 2 data.frames (the full and  the short, we continue with the full, see below)
@@ -39,11 +38,8 @@ occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
                             tableSettings =mySettings$tableSettings)
   
   #select records
-  #ouput 2 is a list of 2 data.frames one with the filtered data after all tests, the other one with
-  # the statistics of the scores by each of the domains used
-  output2 = occTest::occFilter(df = output$occTest_full,level = 1,errorAcceptance = classification)
+  output2 = occTest::occFilter(df = output,errorAcceptance = classification)
 
-  
   #to consider, maybe you do not want to drag all the columns for Wallace or any other thing, right
   if (filterCols == T) { output2$fitleredDataset[,names (spOcc)]} else {
     output2$fitleredDataset

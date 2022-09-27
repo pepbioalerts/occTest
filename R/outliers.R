@@ -10,7 +10,6 @@
 #' @param unout character vector. 
 #' @description  Divide raster by the sum of all cells.
 #' @export
-#' @import raster
 # unin = c("m");  unout ='m2'
 presPercentile=function (xy,
                          percent = 95,
@@ -21,7 +20,7 @@ presPercentile=function (xy,
     stop("xy should be of class SpatialPoints")
   if (ncol(sp::coordinates(xy)) > 2)
     stop("xy should be defined in two dimensions")
-  pfs <- proj4string(xy)
+  pfs <- sp::proj4string(xy)
   if(!is.null(percent)){
     if (length(percent) > 1)
       stop("only one value is required for percent")
@@ -80,7 +79,6 @@ presPercentile=function (xy,
 #' 
 #' @description  Divide raster by the sum of all cells.
 #' @export
-#' @import raster
 # unin = c("m");  unout ='m2'
 
 findSpatialOutliers=function(myPres,
@@ -123,7 +121,7 @@ findSpatialOutliers=function(myPres,
       (pval=gt$p.value)
       # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
       if(gt$p.value<pvalSet){
-        toss=tail(order(dists),2)
+        toss=utils::tail(order(dists),2)
         # IDs in the original data frame
         sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
         pres.inliers=pres.inliers[-toss,]

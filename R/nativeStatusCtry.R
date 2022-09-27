@@ -12,10 +12,6 @@
 #' @return list with two vectors: ntvCtry and invCtry, showing the countries in ISO3 standard codes
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
 #' @family spStatus
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -31,7 +27,7 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   try (gisdInvasive <- originr::gisd(x = spName,messages = verbose), silent=T)
   
   #CHECK BIEN NRS (contains both invasive and native )
-  ctryFromCoords =  occTest::.coords2country (xydat)
+  ctryFromCoords =   .coords2country (xydat)
   ctryFromCoords =  unique (ctryFromCoords)
   ctry4GNRS = countrycode::countrycode(sourcevar = ctryFromCoords,origin = 'iso3c',destination = 'country.name')
   #we apply over cuz GNRS only accepts one query at at ime
@@ -96,8 +92,8 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
 
 
   #convert country names to iso3 country codes
-  ntvCtryResolved <- occTest::ctryToIso3(ntvCtryResolved)
-  invCtryResolved <- occTest::ctryToIso3(invCtryResolved)
+  ntvCtryResolved <-  ctryToIso3(ntvCtryResolved)
+  invCtryResolved <-  ctryToIso3(invCtryResolved)
   if (any(ntvCtryResolved %in% invCtryResolved)) {
     # print (paste ('Species is considered native and invasive in',paste(ntvCtryResolved[ntvCtryResolved %in% invCtryResolved],collapse = ','),sep = ': ' ) )
     # print ('We will consider it only as in the native range')
@@ -122,10 +118,6 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
 #' @param method character. Package name used to derive IS03 codes. Options are 'countrycode' (default) or 'GNRS'.
 #' @keywords spStatus
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @note
-#' @seealso
-#' @references
-#' @aliases
 #' @family spStatus
 #' @examples \dontrun{
 #' example<-"goes here"
