@@ -16,9 +16,12 @@ list of lists with all different parameters to use in  {\link[=occTest]{occTest}
 Get the settings used to create a  occTest or occFilter object
 }
 \examples{
-\dontrun{
-example<-"goes here"
-}
+### THIS IS A CUT DOWN  EXAMPLE 
+### visit vignetteXtra-occTest for more info
+
+#load output from occTest
+occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+get_occTest_settings(occTest_output)
 }
 \seealso{
 {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}

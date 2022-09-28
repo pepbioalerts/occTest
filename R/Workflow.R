@@ -1,6 +1,6 @@
-###### ========================================
+# occTest ========================================
 
-#'Occurrence tests
+#'Occurrence tests 
 #'
 #'Perform tests for data quality in species occurrence  using several methods
 #' @param sp.name character. Name of the species.
@@ -29,20 +29,29 @@
 #' $AnalysisType$_$SpecificTest$_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record. \cr
 #' $AnalysisType$_$SpecificTest$_comment: character. Shows some comments related to the specific test.\cr
 #' Examples: HumanDetection_HumanInfluence_value gives you the score of current human influence in the record HumanDetection_HumanInfluence_test gives you whether we consider the former value an error/bias (T) or not (F) HumanDetection_HumanInfluence_comment gives you a commen that give further detail on the analysis. In this case that the threshold of 45 was used for the test. HumanDetection_score summarizes all the other HumanDetection tests and outputs a value from 0 to 1. A value of 0.5 would indicate that half of the tests used indicate that is an a Human signal in the record.
-#' @examples \dontrun{
-#' library(occTest)
-#' library(spocc)
-#' df <- occ(query = 'Pseudotsuga menziesii')
-#' occ.data <-occ2df(df)
-#' names (occ.data)[2] <- 'decimalLongitude'
-#' names (occ.data)[3] <- 'decimalLatitude'
-#' library (raster)
-#' renv = raster::getData(name='worldclim',var='bio', res=10,path = tempdir())
-#' library(occTest)
-#' outDougFir = occTest(sp.name='Pseudotsuga menziesii', 
-#'                              sp.table = occ.data,
-#'                              r.env = renv)
-#' }
+#' @examples 
+#' ### THIS IS A CUT DOWN  EXAMPLE 
+#' ### visit vignetteXtra-occTest for more info
+#'
+#' #load occurrence data
+#' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
+#' #load environmental raster
+#' renv <- readRDS (system.file('ext/env.rds',package = 'occTest'))
+#' #load elevation raster
+#' dem <- readRDS (system.file('ext/dem.rds',package = 'occTest'))
+#' #load settings
+#' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
+#'
+#' out = occTest(sp.name='MyFake species', 
+#'              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
+#'              tableSettings = settings$tableSettings,
+#'              writeoutSettings = settings$writeoutSettings,
+#'              analysisSettings = settings$analysisSettings,
+#'              r.env = renv,r.dem=dem)
+#'
+#' class(out)
+#' head (out)
+#' 
 #' @export
 occTest = function(
   sp.name,
@@ -87,8 +96,9 @@ occTest = function(
   
   
   ### STEP 0: Load settings and study native and invasive countries ====
-  defaultSettings = occTest::minimalSettings()
-  #load table settings(old stuff, we  could attache the different labels)
+  if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::minimalSettings()
+  
+  #load table settings(old stuff, we  could attach the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
   
   x.field             = tableSettings$x.field
@@ -137,8 +147,10 @@ occTest = function(
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
   points.proj4string = analysisSettings$geoSettings$points.proj4string
-  
+  doCoastalReassignment = analysisSettings$doCoastalReassignment
   countries.shapefile = analysisSettings$countryStatusRange$countries.shapefile
+  landSurfacePol = analysisSettings$landSurfacePol
+  if (any (class(countries.shapefile) %in% c('sf'))) {stop('sf not implemented, tramsform ctry polygons to Spatial object and rerun')}
   countryfield.shapefile = analysisSettings$countryStatusRange$countryfield.shapefile
   doRangeAnalysis = analysisSettings$countryStatusRange$doRangeAnalysis
   excludeUnknownRanges = analysisSettings$countryStatusRange$excludeUnknownRanges
@@ -470,7 +482,7 @@ occTest = function(
   message('Resolving coastal reassignment started...')
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
-  dat =  .nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
+  if (doCoastalReassignment) dat =  .nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
   if(class(dat)== 'list'){
@@ -506,7 +518,9 @@ occTest = function(
   ### filter those that are still in the sea/land (depending on habitatType)
   Analysis.LandSea = occTest::landSeaFilter(df = dat, 
                                             xf= x.field, y= y.field, 
-                                            habType = habitat,verbose=verbose) 
+                                            habType = habitat,
+                                            habPol = landSurfacePol,
+                                            verbose=verbose) 
   
   
   if (exists ('dat.Q.G') & nrow (Analysis.LandSea$stay) != 0)   dat.Q.G = dplyr::bind_rows (dat.Q.G, Analysis.LandSea$stay)
@@ -642,7 +656,7 @@ occTest = function(
                            xf=x.field,
                            yf=y.field,
                            .alpha.parameter = alpha.parameter,
-                           #do=doGeoOutliers,
+                           do=doGeoOutliers,
                            method = methodGeoOutliers,
                            .projString = points.proj4string)
   tictoc::toc()

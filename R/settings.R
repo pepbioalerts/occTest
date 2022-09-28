@@ -6,7 +6,8 @@
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' #load default settings
+#' settings <- defaultSettings()
 #' }
 #' @export
 defaultSettings <- function (){
@@ -47,6 +48,8 @@ defaultSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
+      doCoastalReassignment = T,
+      landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
         points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
@@ -124,7 +127,7 @@ defaultSettings <- function (){
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' showTableNames ()
 #' }
 #' @export
 showTableNames <- function (){
@@ -143,12 +146,16 @@ showTableNames <- function (){
 #' @param a.field character. Name of the accuracy field.
 #' @param ds.field character. Name of the dataset identifier field.
 #' @param taxonobservation.id character. Name of the taxon observartion id field. 
-#' @description helper function to set the names for the fields in the input table
+#' @description helper function to set the names for the fields in the input table (tableSettings). 
+#' By default it provides rbif like column names (not fully consistent yet tho). 
+#' Alternatively, the user can specify their own field names for the table
 #' @return list
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' defaultTableNames <- setTableNames()
+#' #only modifying the names for the coordinates
+#' myTable_withMyNames <- setTableNames (x.field='x_coord',y.field = 'y_coord') 
 #' }
 #' @export
 setTableNames <- function (x.field = NULL,
@@ -172,7 +179,7 @@ setTableNames <- function (x.field = NULL,
 
 # setTestTypes ====
 #' @title Set the tests to run
-#' @description function used to select which types of tests you want in occTest workflow
+#' @description function used to select which types of tests you want in occTest workflow (analysisSet)
 #' @details See occTest::showTests for further information on tests used in the packages
 #' @param countryStatusRange logical. Should this test type be performed?
 #' @param centroidDetection logical. Should this test type be performed?
@@ -182,11 +189,13 @@ setTableNames <- function (x.field = NULL,
 #' @param geoOutliers logical. Should this test type be performed?
 #' @param envOutliers logical. Should this test type be performed?
 #' @param geoenvLowAccuracy logical. Should this test type be performed?
-#' @return list with user modified settings
+#' @return list with user analysis settings
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' defaultSettings_analysis <- setTestTypes()
+#' #now we do not want to perform centroid geoenironmental accuracy type of tests
+#' mySettings_analysis <- setTestTypes(geoenvLowAccuracy=F)
 #' }
 #' @export
 setTestTypes <- function (countryStatusRange = T,
@@ -215,7 +224,7 @@ setTestTypes <- function (countryStatusRange = T,
 # setTestBlocks ====
 #' @title Set the tests to run
 #' @description function used to select which groups of tests you want in occTest workflow
-#' @details See occTest::showTests for further information on tests used in the packages
+#' @details You can turn off an entire type of tests altogether by modifying this seetings. See occTest::showTests for further information on tests used in the packages
 #' @param geo logical. Should this family of tests be performed?
 #' @param lu logical. Should this family of tests be performed?
 #' @param env logical. Should this family of tests be performed?
@@ -224,7 +233,9 @@ setTestTypes <- function (countryStatusRange = T,
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' defaultSettings_analysis  <- setTestBlocks()
+#' #now we turn off the block of tests related to land use
+#' mySettings_analysis  <- setTestBlocks(lu=F)
 #' }
 #' @export
 setTestBlocks      <- function (geo = T,
@@ -267,7 +278,7 @@ setTestBlocks      <- function (geo = T,
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' showTests()
 #' }
 #' @export
 
@@ -279,13 +290,15 @@ showTests<- function (){
 
 # minimalSettings ====
 #' @title Load minimal settings for occTest 
-#' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest. It avoids using  some functions of the pkg under development.
+#' @description Loads a list of lists with the different default parameters for analysi. 
+#' It avoids using  some functions of the pkg under development.
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
 #' @return list of lists with all different parameters to use in occTest function
 #' @keywords user
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' #load default settings
+#' settings <- minimalSettings()
 #' }
 #' @export
 
@@ -326,6 +339,8 @@ minimalSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
+      doCoastalReassignment = T,
+      landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
         points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")

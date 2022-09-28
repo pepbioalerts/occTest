@@ -58,3 +58,4 @@ Alpha hulls are created with \code{\link{ahull}}.
 \author{
 Pascal Title (original version), JM Serra-Diaz (modifs)
 }
+\keyword{internal}

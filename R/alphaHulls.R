@@ -1,5 +1,6 @@
 ### Alpha Hull Analysis related scripts
 
+# getPointsOutAlphaHull ====
 #' @title Generate Spatial object from Alpha Hull object
 #' @description  Generate polygon based on alpha hulls at a given alpha parmater 
 #' @details 
@@ -33,7 +34,7 @@
 #' @seealso Alpha hulls are created with \code{\link{ahull}}.
 #' @examples
 #' @importFrom methods slot<-
-#' @export
+#' @keywords internal
 
 getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', 'Latitude'), 
                                   #buff = 1000, parameter not implemented
@@ -117,7 +118,6 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 #' @return a sp polygon object
 #' @author Pascal Title (original version), JM Serra-Diaz (modifications)
 #' @seealso Alpha hulls are created with \code{\link{ahull}}.
-#' @examples
 #' @importFrom methods slot<-
 #' @importFrom sp Lines Polygons
 
@@ -266,8 +266,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 #' @author Pascal Title (original version), JM Serra-Diaz (modifications)
 #' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
 #' see maptools and RangeBuilder package
-#' @examples
-#
+
 .checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = FALSE) {
   if (!is(obj, "Polygons")) 
     stop("not a Polygons object")

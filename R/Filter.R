@@ -1,4 +1,4 @@
-# occFilter ====
+# occFilter deprecated ====
 #' @title Filter occurrence records from occTest outputs
 #' @description Select occurrence records based on aggregated values of different tests
 #' @return list of 2 data.frames
@@ -11,7 +11,7 @@
 #' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 
 #' 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 #' @seealso showTests
-#' @examples \dontrun{
+#' @examples {
 #' example<-"goes here"
 #' }
 #' 
@@ -112,9 +112,17 @@ occFilter_depr <- function (df,
 #' @param custom data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
 #' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 #' @seealso showTests
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @examples 
+#' 
+#' ### THIS IS A CUT DOWN  EXAMPLE 
+#' ### visit vignetteXtra-occTest for more info
+#'
+#' #load output from occTest
+#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' filtered_dataset <- occFilter (occTest_output)
+#' #inspect results
+#' names (filtered_dataset)
+#' 
 #' @export
 
 occFilter <- function (df,

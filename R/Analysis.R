@@ -276,13 +276,14 @@ countryStatusRangeAnalysis=function(df,
 
     #check if ISO3 format in country reported [FUTURE: use GNRS to automatically correct]
     ctry.reported = as.character (df[,.c.field])
-    if (any (nchar (ctry.reported)!=3,na.rm=T) | all (is.na(ctry.reported)) ) {
+    if (all (nchar (ctry.reported)!=3,na.rm=T) | all (is.na(ctry.reported)) ) {
       warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
       wrong.ctry.reported <- rep (NA,length(country_ext))
-    }
-    if (all(nchar (ctry.reported)==3,na.rm=T)) {
+    } else {
       #match reported country with extracted country
       wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
+      nonMissingVals = ifelse (test = is.na (as.character (df[,.c.field])) | as.character (df[,.c.field]) == '',yes = NA,no = T)
+      wrong.ctry.reported <- wrong.ctry.reported * nonMissingVals
     }
 
   }
@@ -841,7 +842,7 @@ geoOutliers         <- function (df,
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      points.outside.alphahull <- try (occTest::getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
+      points.outside.alphahull <- try (getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }

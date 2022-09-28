@@ -12,9 +12,21 @@
 #' @param filterCols logical. Should only the initial input columns be retained in the output (the filtered dataframe)?
 #' @return a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
 #' @note There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
-#' @author Pep Serra-Diaz
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
-#' example<-"goes here"
+#' #' ### THIS IS A CUT DOWN  EXAMPLE 
+#' ### visit vignetteXtra-occTest for more info
+#'
+#' #load occurrence data
+#' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
+#' #load environmental raster
+#' renv <- readRDS (system.file('ext/env.rds',package = 'occTest'))
+#' #do a simple occTest + occFilter altogether with simplified params
+#' outS = occSimpFilter (spOcc = occData,env = renv,speciesName = 'MyFake species', 
+#' x = 'MAPX',y = 'MAPY',date = 'DATE',isoCountry = 'COUNTRYRECORD',
+#' classification = 'relaxed',
+#' filterCols = T)
+#' 
 #' }
 #' @export
 

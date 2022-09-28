@@ -25,9 +25,12 @@ Display the filtering process
 If \code{occFilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
 }
 \examples{
-\dontrun{
-example<-"goes here"
-}
+#load output from occTest
+occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#filter dataset output from occTest
+filtered_occTest <- occFilter (occTest_output)
+#plot the outputs
+descriptive_plots <- plot (x=occTest_output,occFilter_list=filtered_occTest)
 }
 \seealso{
 {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package

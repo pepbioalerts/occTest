@@ -15,13 +15,16 @@ NULL
 #' @param ... not used
 #' @seealso  {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 #' @method plot occTest
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @examples 
+#' #load output from occTest
+#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' #filter dataset output from occTest
+#' filtered_occTest <- occFilter (occTest_output)
+#' #plot the outputs
+#' descriptive_plots <- plot (x=occTest_output,occFilter_list=filtered_occTest)
 #' @export 
 
 plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
-  
   ## get settings
   Settings<- get_occTest_settings(x)
   tableSettings<-Settings$tableSettings
@@ -110,7 +113,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
     ## we create this function, it will plot the result of every testBlock or testType passed
     plot_a_test_results<-function(score_name){
       ## test blocks get a special title
-      title_char<-switch(score_name,geo_score="Geographical outliers tests",env_score="Environental outliers tests",
+      title_char<-switch(score_name,geo_score="Geographical outliers tests",env_score="Environmental outliers tests",
                          lu_score="Land uses and human influence tests",time_score="Time precision test",sub("_score","",score_name))# Specific headers for the testBlocks
       
       bool_score_name<-paste0(score_name,"_bool")
@@ -160,9 +163,13 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
 #' @author J Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param x An occTest or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}
 #' @seealso {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @examples 
+#' ### THIS IS A CUT DOWN  EXAMPLE 
+#' ### visit vignetteXtra-occTest for more info
+#'
+#' #load output from occTest
+#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' get_occTest_settings(occTest_output)
 #' @export 
 
 get_occTest_settings<-function(x){
