@@ -14,7 +14,6 @@ NULL
 #' @param show_plot  Logical, should the plots be plotted ?
 #' @param ... not used
 #' @seealso  {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
-#' @method plot occTest
 #' @examples 
 #' #load output from occTest
 #' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
@@ -22,9 +21,19 @@ NULL
 #' filtered_occTest <- occFilter (occTest_output)
 #' #plot the outputs
 #' descriptive_plots <- plot (x=occTest_output,occFilter_list=filtered_occTest)
-#' @export 
+#' @export plot.occTest
+#' @export
+#' 
+#' 
 
 plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
+  ## check for S2 usage within sf, disabling it for the call if TRUE
+  s2_used<-F
+  if(sf::sf_use_s2()){
+    sf::sf_use_s2(FALSE)
+    s2_used<-T
+  }
+  
   ## get settings
   Settings<- get_occTest_settings(x)
   tableSettings<-Settings$tableSettings
@@ -50,6 +59,11 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
   
   
   if(raster::compareCRS(points_CRS,countries_natural_earth))countries_natural_earth<-st_transform(countries_natural_earth,crs=st_crs(points_CRS))
+  
+  ## cran check return notes for variable used with the ggplot syntaxe used within a function
+  ## we can disable si note by declaring these vairable beforehand
+  ## https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/
+  Exclude<-Reason<-occ_state<-NULL
   
   ## this dataframe contains ecery occurences, useful for the fist map displaying the first filtering
   ## we check for missing coordinated also
@@ -123,6 +137,11 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
     
     ## we create this function, it will plot the result of every testBlock or testType passed
     plot_a_test_results<-function(score_name){
+      
+      ## avoid the note
+      occ_state<-NULL
+      
+      
       ## test blocks get a special title
       title_char<-switch(score_name,geo_score="Geographical outliers tests",env_score="Environmental outliers tests",
                          lu_score="Land uses and human influence tests",time_score="Time precision test",sub("_score","",score_name))# Specific headers for the testBlocks
@@ -161,6 +180,8 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
     if(current_plot!=length(list_of_ggplot))user_press<-readline(prompt="Press [enter] to see the next plot, type 'no' to stop plotting ")
     if(trimws(tolower(user_press))=="no")break
   }
+  
+  if(s2_used)sf::sf_use_s2(TRUE)
   
   return(list_of_ggplot)
   
