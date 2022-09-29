@@ -1,8 +1,8 @@
 Package: occTest
 Title: Characterizing Species Occurrence Data Quality
 Version: 0.1
-Author: Pep Serra Diaz, Cory Merow, Brian Maitner, Jeremy Borderieux
-Maintainer: Cory Merow <cory.merow@gmail.com>
+Author: JM Serra Diaz, Cory Merow, Brian Maitner, Jeremy Borderieux
+Maintainer: JM Serra Diaz <pep.agroparistech@gmail.com>
 Description: Tools for determining the quality of occurrence data and optionally cleaning them. Profiling is based on (1) missing data and geographical errors; (2) Filtering duplicate records; (3) Sea/Terrestrial potential reassignment; (4) Country-related range analysis; (5) Geoenvironmental analysis. Based on the outcomes of these tests, each records is assigned a grade. Users can then optionally filter based on grades.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
