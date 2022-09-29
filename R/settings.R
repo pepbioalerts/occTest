@@ -13,8 +13,8 @@
 defaultSettings <- function (){
   
   #download info and files
-  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
-  outFile_hii = paste0(tempdir(),'/hii.rds')
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii_wrld.tif'
+  outFile_hii = paste0(tempdir(),'/hii_wrld.tif')
   if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
   
   
@@ -71,7 +71,7 @@ defaultSettings <- function (){
       humanDetection= list (doHumanDetection=T,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=readRDS(outFile_hii)
+                           ras.hii=raster::raster(outFile_hii)
 
       )
       ,
@@ -305,8 +305,8 @@ showTests<- function (){
 minimalSettings <- function (){
   
   #download info
-  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii.rds'
-  outFile_hii = paste0(tempdir(),'/hii.rds')
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii_wrld.tif'
+  outFile_hii = paste0(tempdir(),'/hii_wrld.tif')
   utils::download.file(url=dest_url_hii,destfile = outFile_hii)
   
   defaultSettings = list (
@@ -362,7 +362,7 @@ minimalSettings <- function (){
       humanDetection= list (doHumanDetection=T,
                             methodHumanDetection='all',
                             th.human.influence = 45,
-                            ras.hii=readRDS(outFile_hii)
+                            ras.hii=raster::raster(outFile_hii)
       )
       ,
       landUseType   = list (doLandUse=T,
