@@ -13,9 +13,11 @@
 defaultSettings <- function (){
   
   #download info and files
-  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii_wrld.tif'
-  outFile_hii = paste0(tempdir(),'/hii_wrld.tif')
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
+  outFile_hii = paste0(tempdir(),'/hii3.zip')
   if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+  utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
+  outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
   
   
   
@@ -305,9 +307,12 @@ showTests<- function (){
 minimalSettings <- function (){
   
   #download info
-  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii_wrld.tif'
-  outFile_hii = paste0(tempdir(),'/hii_wrld.tif')
-  utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
+  outFile_hii = paste0(tempdir(),'/hii3.zip')
+  if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+  utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
+  outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
+  
   
   defaultSettings = list (
     
