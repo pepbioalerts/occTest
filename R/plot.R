@@ -91,10 +91,21 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
     dfScoreVals = filtered_dataset_scores %>% dplyr::select(dplyr::ends_with('_score')) 
     errorRule = occFilter_list$rule
     
+    # @Pep avoiding CRAN-check notes on binding variables due to the use of tidyverse
+    # filter_occ<-function(score,testName){
+    #   current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull('errorThreshold')
+    #   return( ifelse(is.na(score),F, score>=current_treshold ))
+    # }
+    
     filter_occ<-function(score,testName){
-      current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull('errorThreshold')
-      return( ifelse(is.na(score),F, score>=current_treshold ))
+      current_treshold<-errorRule 
+      keepRows = which (current_treshold[,'test'] == stringr::str_remove(testName,"_score"))
+      current_treshold = current_treshold [keepRows,]
+      current_treshold = current_treshold %>% dplyr::pull('errorThreshold')
+      return( ifelse(is.na(score),F, score>current_treshold ))
+      
     }
+    
     toss_df<-mapply(filter_occ,dfScoreVals,colnames(dfScoreVals),SIMPLIFY = T)
     colnames(toss_df)<-paste0(colnames(toss_df),"_bool")
     toss<-rowSums(toss_df)

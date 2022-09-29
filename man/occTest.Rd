@@ -80,21 +80,31 @@ Examples: HumanDetection_HumanInfluence_value gives you the score of current hum
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
 
+#load environmental raster
+library (raster)
+library (sf)
+library (occTest)
 #load occurrence data
 occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
 #load environmental raster
-renv <- readRDS (system.file('ext/env.rds',package = 'occTest'))
+renv <- raster (system.file('ext/AllEnv.tif',package = 'occTest'))
 #load elevation raster
-dem <- readRDS (system.file('ext/dem.rds',package = 'occTest'))
+dem <- raster (system.file('ext/DEM.tif',package = 'occTest'))
 #load settings
 settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
-
-out = occTest(sp.name='MyFake species', 
-             sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
-             tableSettings = settings$tableSettings,
-             writeoutSettings = settings$writeoutSettings,
-             analysisSettings = settings$analysisSettings,
-             r.env = renv,r.dem=dem)
+#insert hii in settings
+#settings$analysisSettings$humanDetection$ras.hii <- 
+# raster (system.file('ext/HII.tif',package = 'occTest'))
+#settings$analysisSettings$landSurfacePol <- 
+# st_read (system.file('ext/ctryExample.shp',package = 'occTest'))
+#saveRDS (settings, 
+# system.file('ext/exSettings.rds',package = 'occTest'))
+out = occTest(sp.name='MyFake species',
+              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
+              tableSettings = settings$tableSettings,
+              writeoutSettings = settings$writeoutSettings,
+              analysisSettings = settings$analysisSettings,
+              r.env = renv,r.dem=dem)
 
 class(out)
 head (out)

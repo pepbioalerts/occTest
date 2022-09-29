@@ -22,6 +22,5 @@ Our demo requires data larger than we can store on CRAN and involves analyses th
 
 To download it (you can't just right-click on github), its easiest to install the chrome extentsion Gitzip:
 [https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn](https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn)
-You can then right-click on the file and an option to download is available, as shown below:
-![](howToDownloadVignette.png) 
+You can then right-click on the vignette html to download 
 
