@@ -58,6 +58,9 @@ own version of coordinate cleaner cc_round
 example<-"goes here"
 }
 }
+\seealso{
+\link[CoordinateCleaner]{CoordinateCleaner-package}
+}
 \author{
 A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
 }

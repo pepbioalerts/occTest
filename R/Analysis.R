@@ -4,8 +4,9 @@
 #' @title Check for missing coordinates
 #' @description checks for missing coordinates in the occurrence dataframe
 #' @param df dat.frame of species occurrences
-#' @param xf character. The field in the dataframe containing the x cordinates
-#' @param yf character. The field in the dataframe containing the y cordinates
+#' @param xf character. The field in the data.frame containing the x coordinates
+#' @param yf character. The field in the data.frame containing the y coordinates
+#' @param verbose logical. Print messages? Default F
 #' @return List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -24,17 +25,18 @@ filterMissing <- function (df, xf , yf , verbose=F){
 
 # duplicatesexcludeAnalysis ====
 #' @title Duplicated records
-#' @descriptions checks for duplicated coordinates in the occurrence dataframe
+#' @descriptions checks for duplicated coordinates in the occurrence data frame
 #' @details it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 #' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
+#' @param xf the field in the data frame containing the x coordinators
+#' @param yf the field in the data frame containing the y coordinates
 #' @param resolution.in.minutes the resolution of environmental data used, specified in minutes
 #' @param raster.grid An optional raster grid
+#' @param verbose logical. Print messages? Default F
 #' @return list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @family Analysis
+#' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -87,18 +89,20 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
   #return
   return (list (Dups.Exact=df.exact.dups, Dups.Grid= df.grid.dups, continue = df))
 }
-# SeaLand reassignement ====
-#' @title SeaLand reassignement
+# SeaLand reassignment ====
+#' @title SeaLand reassignment
 #' @descriptions Reassign coastal coordinates as needed to be in 
-#' @details (function inspiered in nearestcell in biogeo but modified 
+#' @details (function inspired in nearestcell in biogeo but modified 
 #' @param dat Data.frame of species occurrences 
 #' @param rst raster class object.
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
+#' @param xf the field in the data frame containing the x coordinators
+#' @param yf the field in the data frame containing the y coordinators
+#' @param verbose logical. Print messages? Default F
 #' @return list
 #' @keywords internal
-#' @author modified from Biogeo package
+#' @author Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), JM Serra-Diaz (modifs)
 #' @family analysis
+#' @seealso original code at \link[biogeo]{nearestcell}
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -209,7 +213,7 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @param excludeUnknownRanges logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE
 #' @param excludeNotmatchCountry Should records be if the reported country is different than the locatoin country? . Default FALSE
 #' @param doRangeAnalysis logical. Should range analysis be performed?
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default F
 #' @return list
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -354,16 +358,17 @@ countryStatusRangeAnalysis=function(df,
 #' @param .points.proj4string Proj4string argument. Coordinate reference system
 #' @param .r.env raster. Raster of environmental variables considered in the analysis
 #' @param .countries.shapefile spatialPolygonDataFrame of political divisions
-#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.
-#' @param method charcter. Vector with the methods to detect centroids
+#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicating the country in ISO3 coding.
+#' @param method character. Vector with the methods to detect centroids
 #' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default F
 #' @return data.frame
 #' @keywords internal
+#' @family analysis
 #' @details Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
-#' , and method 'CoordinateCleaner' implementing methods used in coordinateCleaner packge. 
-#' @author B Maitner, JM Serra-Diaz, C Merow
-#' @seealso coordinateCleaner package
+#' , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package. 
+#' @author B Maitner, JM Serra-Diaz, C Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
+#' @seealso \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen} 
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -441,7 +446,7 @@ centroidDetection <- function (df,
       occurrences.df$country <- country_ext
     }
     cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=T)
-    if (class(cleaned_countries) == 'error' | is.null(cleaned_countries)){
+    if (inherits(cleaned_countries,'error') | is.null(cleaned_countries)){
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
       out$centroidDetection_BIEN_comments <- 'Not performed. GNRS error'
@@ -550,15 +555,15 @@ centroidDetection <- function (df,
 }
 
 # human detection ====
-#' @title HYPER HUMAN ENVIRONMENT FUNCTION
+#' @title Hyper Human Influence
 #' @description Detect occurrences in heavily human-impacted environments
 #' @details It uses several methods to detect records in high human influence records.\cr
 #' Current implemented methods are: \cr
 #' 'hii' using a raster and a threhold of human influence
 #' 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package. 
 #' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
+#' @param xf the field in the data frame containing the x coordinates
+#' @param yf the field in the data frame containing the y coordinates
 #' @param ras.hii Raster of human influence index
 #' @param .th.human.influence threshold of human influence index
 #' @param method character. Indicate which tests to use. Default 'all'. See Details
@@ -566,13 +571,13 @@ centroidDetection <- function (df,
 #' @param ras.hii raster. Raster map of human influence index use
 #' @param .th.human.influence numeric. Threhold to identify places of high human influence
 #' @param .points.proj4string proj4string argument for df
-#' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages?
+#' @param do logical. Should range analysis be performed? Default T
+#' @param verbose logical. Print messages? Default F
 #' @param output.dir character. Output directory 
 #' @return data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @seealso cc_urb in CoordinateCleaner package.
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr). A Zizka (CoordinateCleaner functions)
+#' @seealso \link[CoordinateCleaner]{cc_urb} for CoordinateCleaner functions
 #' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -670,14 +675,14 @@ humanDetection <- function (df,
 #' @param method charcter. Vector of methods to be used. See details. Default 'all'
 #' @param .points.proj4string proj4string argument for df
 #' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default F
 #' @return data.frame
 #' @details current implemented methods are : \cr
-#' "fromCoordinates" (use information on localities of institutions, from CoordinateCleaner package) \cr
+#' "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 #' "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
 #' @keywords internal 
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @seealso CoordinateCleaner package
+#' @seealso \link[CoordinateCleaner]{cc_inst} \link[CoordinateCleaner]{cc_gbif} 
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -786,7 +791,7 @@ institutionLocality <- function (df,
 #' @return data.frame
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com)
-#' @seealso getPointsOutAlphaHull, CoordinateCleaner::cc_outl, findSpatialOutliers
+#' @seealso getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -1018,12 +1023,12 @@ geoOutliers         <- function (df,
       grubbs_tst = rep(0,times=nrow(out))
       grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
       
-      if (class(grubbs.outl)=='try-error') {
+      if (inherits(grubbs.outl,what = 'try-error')) {
         grubbs_tst = rep(NA,times=nrow(out)) 
         grubbs_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
       }
       
-      if (class(grubbs.outl)!='try-error') {
+      if (!inherits(grubbs.outl,what = 'try-error')) {
         grubbs_tst [grubbs.outl] = 1
         grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
       }
@@ -1056,12 +1061,12 @@ geoOutliers         <- function (df,
 #' @param verbose logical. Print messages? Default F
 #' @return data.frame
 #' @details Implemented methods are :\cr
-#' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier \cr
+#' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
 #' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
-#' Regardless of the method, the funcition already tests for missing evironmental variables and it outputs the result in the output data.frame
+#' Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com)
-#' @seealso findEnvOutliers
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com). Mark Robertson (biogeo package)
+#' @seealso findEnvOutliers \link[biogeo]{outliers}
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -1147,9 +1152,9 @@ envOutliers  <- function (
     a.df <- do.call (cbind, a.df)
     choice.of.method.df <- a.df [,grep (names(a.df),pattern = outlier.method.biogeo)]
 
-    if (class(.r.env)=="RasterLayer") {outlier.level <- choice.of.method.df}
-    if (class(.r.env)=="RasterStack") {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
-    if (class(.r.env)=="RasterBrick") {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
+    if (inherits(.r.env,"RasterLayer")) {outlier.level <- choice.of.method.df}
+    if (inherits(.r.env,"RasterStack")) {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
+    if (inherits(.r.env,"RasterBrick")) {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
 
     outlier.env <- (outlier.level >= .th.perc.outenv)*1
     comments.outlier.env <- paste (paste("Outlier",outlier.method.biogeo,".level="), outlier.level)
@@ -1206,17 +1211,17 @@ envOutliers  <- function (
 #' @param mc.cores numeric. How many cores to use? (used when doParallel = T). Default 2 
 #' @return data.frame
 #' @keywords Analysis 
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), A Zizka (CoordinateCleaner package)
 #' @details Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
 #' Current implmented methods are:
-#' 'lattice' : tests for lattice arrangement in occurrence datasets. Borrowed from CoordinateCleaner::cd_round. \cr
+#' 'lattice' : tests for lattice arrangement in occurrence datasets. Borrowed from \link[CoordinateCleaner]{cd_round} . \cr
 #' 'elevDiff' : assess the elevation difference between a given raster (or automatically downloaded fro SRTM), and the elevation recorded. If differences >elev.threshold then the record is considered as a low accuracy threshold\cr
 #' 'noDate' : assess whether there is a date or timestamp information in the record. \cr 
 #' 'noDateFormatKnown' : assess whether the information in the timestamp agrees with different formatting of Dates. \cr 
 #' 'outDateRange' : (not implemented) assess whether the record is within a user specified time frame. \cr 
 #' 'percDiffCell' : assess whether the record may be falling in a different raster cell given an information of coordinate accuracy. \cr 
 #' 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr 
-#' @seealso CoordinateCleaner::cd_round
+#' @seealso \link[CoordinateCleaner]{cd_round}
 #' @family analysis
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -1326,7 +1331,7 @@ geoEnvAccuracy  <- function (df,
         
       }
       #determining elevation test
-      if (class(raster.elevation) == "RasterLayer" ) {
+      if (inherits(raster.elevation,"RasterLayer") ) {
         elev.xy <- raster::extract (raster.elevation, df[,c(xf,yf)])
         elev.difference <- abs (df[,ef] - elev.xy)
         out$geoenvLowAccuracy_elevDiff_value <- elev.difference
@@ -1334,7 +1339,7 @@ geoEnvAccuracy  <- function (df,
         out$geoenvLowAccuracy_elevDiff_comments <- paste ('Elev difference:', elev.difference)
       }
       #skipping elevation test
-      if (class(raster.elevation) != "RasterLayer" ) {
+      if (!inherits(raster.elevation,"RasterLayer")   ) {
         if(verbose) warning ("raster.elevation is not a raster; skipping elevDiff method")
       }
     }
@@ -1524,7 +1529,7 @@ geoEnvAccuracy  <- function (df,
 }
 
 
-
+# landUseSelect ====
 #' @title Selection of records within a specified land use 
 #' @descriptions Selection of records within a specified land use 
 #' @param df data.frame of species occurrences
@@ -1535,7 +1540,7 @@ geoEnvAccuracy  <- function (df,
 #' @param ras.landUse raster. Land use raster with integer codes for land use classes.
 #' @param .landUseCodes numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')
 #' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default  F
 #' @param output.dir character. Output directory
 #' @return data.frame
 #' @keywords internal
@@ -1570,7 +1575,7 @@ landUseSelect <- function (df,
   sp::coordinates (data.sp.pres) <- stats::as.formula (paste0('~',xf,'+',yf))
   
   #start with land use raster
-  if(! class(ras.landUse)=='RasterLayer') {warning ('no raster of land use provided. Test not performed'); return (out)}
+  if(! inherits(ras.landUse,'RasterLayer')) {warning ('no raster of land use provided. Test not performed'); return (out)}
   
   #accommodate projections
   if (is.null (.points.proj4string)){sp::proj4string(data.sp.pres) <- raster::projection(ras.landUse); warning ('ASSUMING Points and HumanRaster data have the same projection')}
@@ -1604,13 +1609,13 @@ landUseSelect <- function (df,
 }
 
 
-
+# centroidsBIEN ====
 #' @title Centroid assessment using BIEN methods
 #'
-#' @descriptions Detect centroids in occurrences dataframe using BIEN methods
+#' @descriptions Detect centroids in occurrences data frame using BIEN methods
 #' @details
 #' @param occurrences data.frame with occurrence data
-#' @param centroid_data data.frame with centroid coordinates for differenet administrative entities. 
+#' @param centroid_data data.frame with centroid coordinates for different administrative entities. 
 #' @return data.frame
 #' @keywords internal
 #' @author Brian Maitner

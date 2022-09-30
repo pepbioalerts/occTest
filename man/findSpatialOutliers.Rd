@@ -18,3 +18,7 @@ findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T, verbose = T)
 \description{
 Divide raster by the sum of all cells.
 }
+\author{
+C Merow
+}
+\keyword{internal}

@@ -11,7 +11,9 @@
 #' @param classification character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'
 #' @param filterCols logical. Should only the initial input columns be retained in the output (the filtered dataframe)?
 #' @return a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
-#' @note There are several parameters in the function. The majority of them can be adjusted, but we also provide default values. We recommend those default values if the user is to use the geospatial data included in the package.
+#' @note The majority of function parameters can be adjusted but we  provide default values. \cr 
+#' We recommend those default values if the user is to use the geospatial data included in the package.\cr
+#' but this automatic implementation (occTest + occFilter) missses some analysis to increase speed.
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \dontrun{
 #' #' ### THIS IS A CUT DOWN  EXAMPLE 

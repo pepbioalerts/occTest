@@ -23,3 +23,7 @@ presPercentile(
 \description{
 Divide raster by the sum of all cells.
 }
+\author{
+JM SerraDiaz
+}
+\keyword{internal}

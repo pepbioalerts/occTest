@@ -44,7 +44,7 @@ example<-"goes here"
 CoordinateCleaner package
 }
 \seealso{
-CoordinateCleaner::cc_urb
+\link[CoordinateCleaner]{cc_urb}
 }
 \author{
 A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)

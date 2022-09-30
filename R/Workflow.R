@@ -87,7 +87,6 @@ occTest = function(
   doParallel=F,
   mc.cores=2){
 
-
   tictoc::tic()
   
   ### STEP 00: Initial checks ====
@@ -99,8 +98,7 @@ occTest = function(
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
   if(! pingr::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
-  if(class(r.env) == 'SpatRaster')
-    stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
+  if(inherits(r.env,'SpatRaster')) stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
   
   sp.table <- as.data.frame (sp.table)
     
@@ -496,7 +494,7 @@ occTest = function(
   if (doCoastalReassignment) dat =  .nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
   
   #check results and recheck dups ifneedbe
-  if(class(dat)== 'list'){
+  if(inherits(dat,'list')){
     dat = dat[[1]]
     moved.points = dat[['moved']]
     if(!is.null(output.dir)){
@@ -748,8 +746,8 @@ occTest = function(
                             paste0(newdir,'/',output.base.filename,
                                    '_',sp,'_long.csv'),
                             row.names = F),silent = T)
-    if(class(written)=='try-error')save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
-    if(class(written)=='try-error')try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
+    if(inherits(written,'try-error')) save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
+    if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
   }
   tictoc::toc()
   

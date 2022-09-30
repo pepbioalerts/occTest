@@ -13,6 +13,9 @@
 #' @keywords internal
 #' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family spStatus
+#' @notes originr is a non-standard package. \cr
+#' Working on updates and alternative workflows as the package has been abandonded \cr
+#' source code here: https://github.com/ropensci-archive/originr
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -47,13 +50,13 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   #GATHER DATA NATIVES
   if (resolveNative){
     ntvCtryResolved <- NULL
-    if (exists('floraEurope') & class(floraEurope)=="list") {ntvCtryResolved <- c(ntvCtryResolved,floraEurope$native)}
-    if (exists('listNsrClean') & class(listNsrClean)=="data.frame") {
+    if (exists('floraEurope') & inherits(floraEurope,"list")) {ntvCtryResolved <- c(ntvCtryResolved,floraEurope$native)}
+    if (exists('listNsrClean') & inherits(listNsrClean,"data.frame")) {
       ntvNSR <- listNsrClean [listNsrClean$native_status == 'N', 'country']
       if (length(ntvNSR)==0) {ntvNSR<- NULL}
       ntvCtryResolved <- c(ntvCtryResolved, ntvNSR)
     }
-    if (exists('gisdInvasive') & class(gisdInvasive)=="list") {
+    if (exists('gisdInvasive') & inherits(gisdInvasive,'list')) {
       ntvCtryResolved <- c (ntvCtryResolved,gisdInvasive[[1]]$native_range)
     }
     
@@ -65,18 +68,18 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
   #GATHER DATA INVASIVE 
   if (resolveAlien){
     invCtryResolved <- NULL
-    if (exists('floraEurope') & class(floraEurope)=="list") {invCtryResolved <- c(invCtryResolved,floraEurope$exotic)}
-    if (exists('gisdInvasive') & class(gisdInvasive)=="list") {
+    if (exists('floraEurope') & inherits(floraEurope,"list")) {invCtryResolved <- c(invCtryResolved,floraEurope$exotic)}
+    if (exists('gisdInvasive') & inherits(gisdInvasive,"list")) {
       invCtryResolved <- c (invCtryResolved,gisdInvasive[[1]]$alien_range)
     }
-    if (exists('griisInvasive') & class(griisInvasive)=="data.frame") {
+    if (exists('griisInvasive') & inherits(griisInvasive,"data.frame")) {
       griisInvasive <- griisInvasive[griisInvasive$Origin=='Alien',]
       if (nrow(griisInvasive)>0){
         invCtryResolved <- c (invCtryResolved,griisInvasive$Country)
       }
       
     }
-    if (exists('listNsrClean') & class(listNsrClean)=="data.frame") {
+    if (exists('listNsrClean') & inherits(listNsrClean,"data.frame")) {
       invNSR <- listNsrClean [listNsrClean$native_status %in% c('I','A'), 'country']
       if (length(invNSR)==0) {invNSR<- NULL}
       invCtryResolved <- c(invCtryResolved, invNSR)
@@ -113,12 +116,15 @@ nativeStatusCtry <- function (spName,xydat, resolveNative=T,resolveAlien=T, verb
 # ctryToIso3 ====
 #' @title Convert country names to ISO3 codes
 #' @description Froma character it uses different methods to derive country ISO3 digit codes
-#' @details right now not implemented with fuzzy matching, but is case insensitive. Tow methods implemented, 'countrycode' and 'GNRS'
+#' @details right now not implemented with fuzzy matching, but is case insensitive. Methods implemented, 'countrycode' and 'GNRS'
 #' @param x character. country name
 #' @param method character. Package name used to derive IS03 codes. Options are 'countrycode' (default) or 'GNRS'.
 #' @keywords spStatus
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr) (adpatation) \cr 
+#' \link[countrycode]{countrycode-package} Vincent Arel-Bundock vincent.arel-bundock@@umontreal.ca ,\cr
+#' \link[GNRS]{GNRS-package}  Brad Boyle, Brian Maitner 
 #' @family spStatus
+#' @seealso \link[countrycode]{countrycode} and \link[GNRS]{GNRS}
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }

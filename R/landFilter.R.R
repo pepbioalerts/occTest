@@ -1,3 +1,4 @@
+# landSeaFilter ====
 #' @title Filter occurrence by habitat (terrestrial/non-Terrestrial)
 #' @description Filter the occurrence recoreds  according to whether they should be in land masses or not
 #' @param df Data.frame of species occurrences

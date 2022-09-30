@@ -9,6 +9,7 @@
 #' @param verbose logical. Print messages?
 #' @return Factor with ISO3 codes for countries 
 #' @family Geo
+#' @author JM Serra Diaz
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -18,7 +19,7 @@
                            .points.proj4string=NULL,
                            ctryNameField=NULL,verbose=F){  
   if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap::getMap(resolution='high') ;  ctryNameField ='ISO3'}
-  if (!class(.countries.shapefile)== 'SpatialPolygonsDataFrame') {stop (".countries shapefile not loaded ")}
+  if (!inherits(.countries.shapefile,'SpatialPolygonsDataFrame')) {stop (".countries shapefile not loaded ")}
   if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
   sp.xydat = sp::SpatialPoints(xydat,proj4string = .points.proj4string)
   overlay.sp.xydat = sp::over(sp.xydat, .countries.shapefile)
@@ -31,12 +32,13 @@
 #' @title Download SRTM elevation raster
 #' @param xydat A dataframe with x and y coordinates
 #' @param download Default to T. Whether the data should be downloaded 
-#' @param path where the downloads should go. Default to the currendt directory
+#' @param path where the downloads should go. Default to the current directory
 #' @param verbose if you want to print messages of progress or warnings
 #' @details Basedd on getData from raster
 #' @return raster
 #' @family Geo
-#' @seealso  raster::getData
+#' @note borrowed from raster package but adapted to work directly within the occTest workflow
+#' @seealso  \link[raster]{getData}
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -74,7 +76,7 @@
         if (download) {
           theurl <- paste0(baseurl, f)
           test <- try(.download(theurl, zipfilename), silent = TRUE)
-          if (class(test) == "try-error") {
+          if (inherits(test,"try-error")) {
             stop("cannot download the file")
           }
         }

@@ -4,6 +4,7 @@
 #' @title Download quitely from neearth data (modified from original package)
 #' @description download from Natural Earth the country checklist
 #' @details
+#' @author Andy South (southandy@@gmail.com) rnaturalearth; JM Serra Diaz (modifs)
 #' @param scale Data.frame of species occurrences
 #' @param type the field in the dataframe containing the x coordinates
 #' @param category the field in the dataframe containing the y coordinates
@@ -11,7 +12,7 @@
 #' @param load Raster of human influence index
 #' @return spatial object or raster
 #' @keywords internal
-#' @seealso rnaturalearth
+#' @seealso \[linkrnaturalearth]{ne_download}
 #' @import rnaturalearth
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -50,9 +51,7 @@
 
 # .cc_urb_occTest ====
 #' @title Flag values in urban areas (based on coordinate cleaner but modified for occTest to deliver it quitely)
-#'
 #' @description flags values for urban areas
-#' @details
 #' @param x Data.frame of species occurrences
 #' @param lon character. Column name in x with decimal longitude values
 #' @param lat character. Column name in x with decimal latitude values
@@ -63,7 +62,7 @@
 #' @return a clean data.frame 
 #' @keywords internal
 #' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
-#' @seealso CoordinateCleaner::cc_urb
+#' @seealso \link[CoordinateCleaner]{cc_urb}
 #' @references CoordinateCleaner package
 #' @examples \dontrun{
 #' example<-"goes here"
@@ -80,7 +79,7 @@
     #message("Downloading urban areas via rnaturalearth")
     ref <- try(suppressWarnings(.ne_download_occTest(scale = "medium", 
                                                  type = "urban_areas")), silent = TRUE)
-    if (class(ref) == "try-error") {
+    if (inherits(ref,"try-error") ) {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
                       rnaturalearth::ne_file_name(scale = "medium", 
                                                   type = "urban_areas", full_url = TRUE)))
@@ -140,7 +139,7 @@
 #' @param min_occs integer. Minimum number of occurrences. Defaults to 7
 #' @param thinning logical. Should thinning be performed? Defaults to F
 #' @param thinning_res double. Thinnning resolution. Defaults to 0.5
-#' @details
+#' @seealse \link[CoordinateCleaner]{cc_outl}
 #' @keywords internal
 #' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
 #' @return a clean data.frame 
@@ -253,8 +252,7 @@
       stop("package 'rgbif' not found. Needed for sampling_cor = TRUE", 
            call. = FALSE)
     }
-    if (class(try(rgbif::occ_count(country = "DEU"))) == 
-        "try-error") {
+    if (inherits(try(rgbif::occ_count(country = "DEU")),"try-error")) {
       warnings("Could not retrive records number from GBIF, skipping sampling correction")
     }
     else {
@@ -329,6 +327,8 @@
 #' @param test character. Defaults to 'both'
 #' @param value character. Defaults to flagged
 #' @param verbose logical. Defaults to T
+#' @seealso \link[CoordinateCleaner]{CoordinateCleaner-package}
+#' @notes Turned off by default as it disappeared from CoordinateCleaner pkg
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -831,6 +831,7 @@
 #' @keywords internal
 #' @author A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
 #' @return a clean data.frame 
+#' @seealso \link[CoordinateCleaner]{cd_ddmm}
 # @examples \dontrun{
 # example<-"goes here"
 # }

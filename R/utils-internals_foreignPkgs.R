@@ -1,4 +1,4 @@
-### IMPORTED COPIES OF HIDDEN FUNCTIONS
+### IMPORTED COPIES OF HIDDEN FUNCTIONS IN OTHER PACKGES (for stability)
 
 # .CalcACT Non-exported function from CoordinateCleaner ====
 #' @importFrom graphics hist plot abline segments

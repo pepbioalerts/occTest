@@ -29,9 +29,7 @@ Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spat
 \description{
 Environmental outliers
 }
-\details{
-See Examples.
-}
 \author{
 Cory Merow <cory.merow@gmail.com>
 }
+\keyword{internal}

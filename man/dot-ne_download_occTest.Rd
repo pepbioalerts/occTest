@@ -36,6 +36,9 @@ example<-"goes here"
 }
 }
 \seealso{
-rnaturalearth
+\[linkrnaturalearth]{ne_download}
+}
+\author{
+Andy South (southandy@gmail.com) rnaturalearth; JM Serra Diaz (modifs)
 }
 \keyword{internal}

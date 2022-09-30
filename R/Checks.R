@@ -3,6 +3,7 @@
 #' @description Verify that all data are in the same projection
 #' @param list.geospatial.objects A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'
 #' @param verbose logical. Print messages?
+#' @author JM Serra Diaz
 #' @return None. Used to generate warning messages.
 #' @family checks
 #' @examples {
@@ -45,7 +46,7 @@
 # .checkfields ====
 #' @title Checking main fields
 #' @descriptoin Verify that all main data fields are correctly populated.
-#' @details  checking main fields (inspired in addmainfields from biogeo). I put the number two because it consitutes a version 2 of the functions in biogeo
+#' @details  checking main fields (inspired by \link[biogeo]{addmainfields} . 
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
@@ -54,9 +55,10 @@
 #' @param lf character. Name of the field where the toponim/location of data collection is stored in the original dataset. Default is l.field.
 #' @param cf character. Name of the field where the registered country of data collection is stored in the original dataset. Default is c.field.
 #' @param idf character. Name of the field of the id of the observation
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default to F
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
+#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -96,14 +98,14 @@
 # .checkdatastr2 ====
 #' @title Check data structure
 #' @description Verify that all main data fields are correctly structured
-#' @details Inspired by bioegeo functions
+#' @details Inspired by \link[biogeo]{checkdatastr} but modified (hence number 2 after the function original name)
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Defaults to F
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
-#' @note Inspired in addmainfields from biogeo
+#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
 #' @examples \dontrun{
 #' example<-"goes here"
 #' }
@@ -126,10 +128,12 @@
 
 #' @title  Add main fields 
 #' @description Incorporate fields in the initial data frame
+#' @details Inspired by \link[biogeo]{addmainfields} but modified (hence number 2 after the function original name)
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param species character. Name of the species
 #' @param verbose logical. Print messages?
 #' @return Original dataframe, dat. 
+#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
 #' @family checks
 #' @examples \dontrun{
 #' Example<-"goes here"
@@ -177,9 +181,10 @@
 #' @param od The output directory to use
 #' @param obf Output base filename
 #' @param sp character. Name of the species
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Defaults to F
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
+#' @author JM Serra Diaz
 #' @examples \dontrun{
 #' Example<-"goes here"
 #' }
@@ -218,8 +223,8 @@
                               paste0(newdir,'/',obf,
                                      '_',sp,'_long.csv'),
                               row.names = F),silent = T)
-      if(class(written)=='try-error') save(list = 'full.qaqc',file = paste0(newdir,'/',obf,'_',sp,'_long.RData'))
-      if(class(written)=='try-error') try(file.remove(paste0(newdir,'/',obf,'_',sp,'_long.csv')), silent=T )
+      if(inherits(written,'try-error')) save(list = 'full.qaqc',file = paste0(newdir,'/',obf,'_',sp,'_long.RData'))
+      if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',obf,'_',sp,'_long.csv')), silent=T )
     }
     
 

@@ -1,13 +1,13 @@
 
-#======================================================================
-#======================================================================
-
+# presPercentile ====
 #' Identify percentile of presences
 #'
 #' @param xy  x y coordinates. Class SpatialPoints
 #' @param percent numeric. Defaults to 95. Percentage to def object
 #' @param unin character vector. 
-#' @param unout character vector. 
+#' @param unout character vector.
+#' @author JM SerraDiaz
+#' @keywords internal 
 #' @description  Divide raster by the sum of all cells.
 #' @export
 # unin = c("m");  unout ='m2'
@@ -69,14 +69,15 @@ presPercentile=function (xy,
   res
 }
 
-
+# findSpatialOutliers =====
 #' Find outlying occurrence data in geographical space
 #'
 #' @param myPres  raster* object
 #' @param pvalSet numeric. p value set to identify outliers
 #' @param checkPairs logical.  
 #' @param verbose logical. print messages
-#' 
+#' @author C Merow
+#' @keywords internal
 #' @description  Divide raster by the sum of all cells.
 #' @export
 # unin = c("m");  unout ='m2'
@@ -139,41 +140,19 @@ findSpatialOutliers=function(myPres,
   sp.toss.id
 }
 
-#======================================================================
-#======================================================================
+# findEnvOutliers =====
 #' @title Find outlying occurrence data in environmental space
-#'
 #' @description Environmental outliers
-#'
 #' @details
-#' See Examples.
-#'
 #' @param myPres a `SpatialPointsDataFrame`
 #' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
 #' @param checkPairs logical. Default to F (T not implemented).
 #' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
 #' @param verbose logic. Should messages be printed out?
-
-# @keywords
+#' @keywords internal
 #' @export
-#'
-# @examples
-# myPres=read.csv(system.file('ext/SampleData/Sp3Occurrence_v3.csv',
-#  package='occTest'))[,c(2,3)]
-#  myPres=myPres[stats::complete.cases(myPres),]
-#  sp::coordinates(myPres)=c(1,2)
-# myEnv=raster::stack(system.file('ext/AllEnv.tif',package='occTest'))
-#  envOut=findEnvOutliers(myPres=myPres,env=myEnv,pval=1e-5)
-#'
 #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 #' @author Cory Merow <cory.merow@@gmail.com>
-# @note
-# @seealso
-# @references
-# @aliases - a list of additional topic names that will be mapped to
-# this documentation when the user looks them up from the command
-# line.
-# @family - a family name. All functions that have the same family tag will be linked in the documentation.
 
 findEnvOutliers=function(myPres,
                          myEnv=NULL,
