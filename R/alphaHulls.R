@@ -18,7 +18,7 @@
 #' 
 #' @param x dataframe of coordinates in decimal degrees, with a minimum of 3
 #' rows.
-#' @param alpha the starting value for alpha
+#' @param alpha the starting value for alpha.
 #' @param coordHeaders the column names for the longitude and latitude
 #' columns, respectively.  If x has two columns, these are assumed to be
 #' longitude and latitude, and \code{coordHeaders} is ignored.
@@ -26,11 +26,11 @@
 #' only supported option.
 #' @param alphaCap Max alpha value before function aborts and returns a
 #' minimum convex hull.
-#' @param verbose logical. print messages?
+#' @param verbose logical. print messages? Default to FALSE
 #' @return a list with 2 elements: \item{hull}{ a SpatialPolygons object }
 #' \item{alpha}{ the alpha value that was found to satisfy the criteria.  If a
 #' convex hull was returned, this will list MCH.  }
-#' @author Pascal Title (original version), JM Serra-Diaz (modifs)
+#' @author Pascal Title (original version), Josep M Serra-Diaz (modifs)
 #' @seealso Alpha hulls are created with \code{\link{ahull}}.
 #' @examples
 #' @importFrom methods slot<-
@@ -85,7 +85,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     stop('Alpha hull not built')
   }
   
-  hull <- try ( .ah2sp(hull, proj4string = sp::CRS('+proj=longlat +datum=WGS84')), silent=T)
+  hull <- try ( .ah2sp(hull, proj4string = sp::CRS('+proj=longlat +datum=WGS84')), silent=TRUE)
   if (!is.null(hull)) {
       slot(hull, "polygons") <- lapply(slot(hull, "polygons"),  .checkPolygonsGEOS2)
   }
@@ -113,10 +113,10 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 #' @param x an alpha hull object
 #' @param increment numeric. Increments
 #' @param rnd numeric. Decimal rounding
-#' @param proj4string crs object with the spatial projectoinsprojection
+#' @param proj4string crs object with the spatial projection.
 #' @param tol numeric. tolerance
 #' @return a sp polygon object
-#' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+#' @author Pascal Title (original version), Josep M Serra-Diaz (modifications)
 #' @seealso Alpha hulls are created with \code{\link{ahull}}.
 #' @importFrom methods slot<-
 #' @importFrom sp Lines Polygons
@@ -263,7 +263,7 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 #' @param force logic.
 #' @param useSTRtree logic.
 #' @return a sp polygon object
-#' @author Pascal Title (original version), JM Serra-Diaz (modifications)
+#' @author Pascal Title (original version), Josep M Serra-Diaz (modifications)
 #' @seealso Alpha hulls are created with \code{\link{ahull}}. \cr
 #' see maptools and RangeBuilder package
 

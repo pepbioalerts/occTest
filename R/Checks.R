@@ -3,14 +3,14 @@
 #' @description Verify that all data are in the same projection
 #' @param list.geospatial.objects A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'
 #' @param verbose logical. Print messages?
-#' @author JM Serra Diaz
+#' @author Josep M Serra Diaz
 #' @return None. Used to generate warning messages.
 #' @family checks
 #' @examples {
 #' example<-"goes here"
 #' }
 
-.check.geospatial.data <- function (list.geospatial.objects, verbose=F)  {
+.check.geospatial.data <- function (list.geospatial.objects, verbose=FALSE)  {
 
                                    
   if (missing (list.geospatial.objects)) {stop ('missing list.geospatial.objects')}
@@ -55,13 +55,10 @@
 #' @param lf character. Name of the field where the toponim/location of data collection is stored in the original dataset. Default is l.field.
 #' @param cf character. Name of the field where the registered country of data collection is stored in the original dataset. Default is c.field.
 #' @param idf character. Name of the field of the id of the observation
-#' @param verbose logical. Print messages? Default to F
+#' @param verbose logical. Print messages? Default to FALSE
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
-#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Mark Robertson and Vernon Visser (original function), Josep M Serra Diaz (modifs)
 .checkfields <- function (dat,
                          xf,
                          yf,
@@ -70,7 +67,7 @@
                          lf,
                          cf, 
                          idf,
-                         verbose=F){
+                         verbose=FALSE){
 
   nd <- names (dat)
   if ( any (! c(xf,yf) %in% nd )) {stop("need to provide x and y coordinates in your data")}
@@ -102,15 +99,12 @@
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
-#' @param verbose logical. Print messages? Defaults to F
+#' @param verbose logical. Print messages? Defaults to FALSE
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
-#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Mark Robertson and Vernon Visser (original function), Josep M Serra Diaz (modifs)
 
-.checkdatastr2  <- function (dat,xf,yf, verbose=F) {
+.checkdatastr2  <- function (dat,xf,yf, verbose=FALSE) {
   cn <- names(dat)
   fn <- c("roworder", xf, yf, "Species", "x_original", "y_original",
           "Correction", "Modified", "Exclude", "Reason")
@@ -131,15 +125,12 @@
 #' @details Inspired by \link[biogeo]{addmainfields} but modified (hence number 2 after the function original name)
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param species character. Name of the species
-#' @param verbose logical. Print messages?
+#' @param verbose logical. Print messages? Default FALSE
 #' @return Original dataframe, dat. 
-#' @author Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
+#' @author Mark Robertson and Vernon Visser (original function), Josep M Serra Diaz (modifs)
 #' @family checks
-#' @examples \dontrun{
-#' Example<-"goes here"
-#' }
-#'
-.addmainfields2 <- function (dat, species, verbose=F) {
+
+.addmainfields2 <- function (dat, species, verbose=FALSE) {
 
   if (is.na(species)) {
     species <- "Species"
@@ -162,7 +153,7 @@
   if ('Exclude' %in% missingNames) newdf$Exclude = 0
   if ('roworder' %in% missingNames) newdf$roworder = 1:nrow (newdf)
   
-  z <- data.frame(dat, newdf,stringsAsFactors = F)
+  z <- data.frame(dat, newdf,stringsAsFactors = FALSE)
   return(z)
 }
 
@@ -181,13 +172,11 @@
 #' @param od The output directory to use
 #' @param obf Output base filename
 #' @param sp character. Name of the species
-#' @param verbose logical. Print messages? Defaults to F
+#' @param verbose logical. Print messages? Defaults to FALSE
 #' @return Original dataframe, dat.  Used primarily to generate warning messages.
 #' @family checks
-#' @author JM Serra Diaz
-#' @examples \dontrun{
-#' Example<-"goes here"
-#' }
+#' @author Josep M Serra Diaz
+
 .status.tracker.and.escaping <- function (dataset.to.continue,
                                          wfo,
                                          wso,
@@ -196,7 +185,7 @@
                                          od,
                                          rsd ,
                                          obf,
-                                         sp, verbose=F, 
+                                         sp, verbose=FALSE, 
                                          as,
                                          ws,ts){
 
@@ -206,7 +195,7 @@
 
     ### exit control flow
     pf <- parent.frame()
-    all.potential.output.qdf  <- grep(pattern = 'dat.Q',ls(name = pf),value = T)
+    all.potential.output.qdf  <- grep(pattern = 'dat.Q',ls(name = pf),value = TRUE)
 
     dat.out.list <- lapply (all.potential.output.qdf,
                             function (i){if (exists(i,pf)){get (i,pf)}})
@@ -218,13 +207,13 @@
     if(wfo){
       sp2 =  .join.spname(sp)
       newdir = paste0(od,'/',sp2)
-      dir.create(newdir,recursive = T,showWarnings = F)
+      dir.create(newdir,recursive = TRUE,showWarnings = FALSE)
       written = try(utils::write.csv(full.qaqc,  
                               paste0(newdir,'/',obf,
                                      '_',sp,'_long.csv'),
-                              row.names = F),silent = T)
+                              row.names = FALSE),silent = TRUE)
       if(inherits(written,'try-error')) save(list = 'full.qaqc',file = paste0(newdir,'/',obf,'_',sp,'_long.RData'))
-      if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',obf,'_',sp,'_long.csv')), silent=T )
+      if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',obf,'_',sp,'_long.csv')), silent=TRUE )
     }
     
 

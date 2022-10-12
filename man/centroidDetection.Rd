@@ -17,8 +17,8 @@ centroidDetection(
   .countries.shapefile,
   cfsf,
   method = "all",
-  do = T,
-  verbose = F
+  do = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -44,9 +44,9 @@ centroidDetection(
 
 \item{method}{character. Vector with the methods to detect centroids}
 
-\item{do}{logical. Should range analysis be performed?}
+\item{do}{logical. Should range analysis be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 
 \item{.c.field}{character. Country field in the species data.frame (df)}
 }
@@ -60,11 +60,6 @@ Identify occurrence records located near centroids.
 Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
 , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package.
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen}
 
@@ -76,7 +71,7 @@ Other analysis:
 \code{\link{humanDetection}()}
 }
 \author{
-B Maitner, JM Serra-Diaz, C Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
+Brian Maitner, Josep M Serra-Diaz, Cory Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
 }
 \concept{analysis}
 \keyword{internal}

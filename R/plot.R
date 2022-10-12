@@ -8,7 +8,7 @@ NULL
 #' @details If \code{occFilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
 #' @return list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 #' @keywords plot filter
-#' @author J Borderieux (jeremy.borderieux@@agroparistech.fr)
+#' @author Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param x An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame 
 #' @param occFilter_list Optional, an occFilter object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}
 #' @param show_plot  Logical, should the plots be plotted ?
@@ -23,15 +23,13 @@ NULL
 #' descriptive_plots <- plot (x=occTest_output,occFilter_list=filtered_occTest)
 #' @export plot.occTest
 #' @export
-#' 
-#' 
 
-plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
+plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   ## check for S2 usage within sf, disabling it for the call if TRUE
-  s2_used<-F
+  s2_used<-FALSE
   if(sf::sf_use_s2()){
     sf::sf_use_s2(FALSE)
-    s2_used<-T
+    s2_used<-TRUE
   }
   
   ## get settings
@@ -49,7 +47,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
   
   # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
-  countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50)),silent = T)
+  countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50)),silent = TRUE)
   if("try-error" %in% class(countries_natural_earth)) {
     dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/Pays_WGS84.rds'
     outFile = paste0(tempdir(),'/Pays_WGS84.rds')
@@ -80,15 +78,15 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
   
   reasons<-unique(full_dataset[full_dataset$Reason!="Occurences kept for later tests",]$Reason)
   df_col<-data.frame(res=c("Occurences kept for later tests",reasons),
-                     colors=c("grey45",c("brown","goldenrod","dodgerblue3","darkorchid3","forestgreen","lightblue3")[1:length(reasons)]),stringsAsFactors = F)
+                     colors=c("grey45",c("brown","goldenrod","dodgerblue3","darkorchid3","forestgreen","lightblue3")[1:length(reasons)]),stringsAsFactors = FALSE)
   
   list_of_ggplot[[1]]<-ggplot(full_dataset_sf)+theme_bw()+geom_sf(data=countries_natural_earth,color="grey60",fill="grey98")+
     geom_sf(aes(color=Reason,shape=Exclude==1),size=0.75,stroke=1.75,alpha=0.65)+
     theme(legend.position = "bottom")+
-    coord_sf(xlim=c(exten_of_plot_1[1],exten_of_plot_1[3]),ylim=c(exten_of_plot_1[2],exten_of_plot_1[4]),expand = T)+
+    coord_sf(xlim=c(exten_of_plot_1[1],exten_of_plot_1[3]),ylim=c(exten_of_plot_1[2],exten_of_plot_1[4]),expand = TRUE)+
     labs(color="Filter reason",title="Coordinates filtering",subtitle =paste0( "Occurences without coordinates = ",n_coords_missing ,"\nOccurences filtered =  ",n_coords_filtered))+
     scale_shape_manual(breaks = c(TRUE,FALSE),values=c(pch_filtered,16))+guides(shape = "none")+
-    scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = T,override.aes=list(pch=16)))
+    scale_color_manual(breaks =df_col$res ,values=df_col$colors)+ guides(colour = guide_legend(ncol = 2, byrow = TRUE,override.aes=list(pch=16)))
   
   if(is.null(occFilter_list)) warning("No occFilter object provided, plotting only the filtering by coordinates")
   if(!is.null(occFilter_list)){
@@ -108,7 +106,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
     # @Pep avoiding CRAN-check notes on binding variables due to the use of tidyverse
     # filter_occ<-function(score,testName){
     #   current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull('errorThreshold')
-    #   return( ifelse(is.na(score),F, score>=current_treshold ))
+    #   return( ifelse(is.na(score),FALSE, score>=current_treshold ))
     # }
     
     filter_occ<-function(score,testName){
@@ -116,11 +114,11 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
       keepRows = which (current_treshold[,'test'] == stringr::str_remove(testName,"_score"))
       current_treshold = current_treshold [keepRows,]
       current_treshold = current_treshold %>% dplyr::pull('errorThreshold')
-      return( ifelse(is.na(score),F, score>current_treshold ))
+      return( ifelse(is.na(score),FALSE, score>current_treshold ))
       
     }
     
-    toss_df<-mapply(filter_occ,dfScoreVals,colnames(dfScoreVals),SIMPLIFY = T)
+    toss_df<-mapply(filter_occ,dfScoreVals,colnames(dfScoreVals),SIMPLIFY = TRUE)
     colnames(toss_df)<-paste0(colnames(toss_df),"_bool")
     toss<-rowSums(toss_df)
     toss<-toss>=1
@@ -148,7 +146,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
       
       bool_score_name<-paste0(score_name,"_bool")
       
-      pch_filtered<-ifelse(sum(filtered_dataset_scores[,bool_score_name]>5000,na.rm=T),17,4)
+      pch_filtered<-ifelse(sum(filtered_dataset_scores[,bool_score_name]>5000,na.rm=TRUE),17,4)
       
       
       if(all(is.na(filtered_dataset_scores[,bool_score_name]))) return(paste0("No '",sub("_score","",score_name),"' tests done"))
@@ -159,7 +157,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
       plot_result<-ggplot(filtered_dataset_scores_sf)+theme_bw()+geom_sf(data=countries_natural_earth,color="grey60",fill="grey98")+
         geom_sf(aes(color=occ_state,shape=occ_state=="Removed"),size=0.75,stroke=1.75,alpha=0.5)+
         theme(legend.position = "bottom")+
-        coord_sf(xlim=c(exten_of_plot_2[1],exten_of_plot_2[3]),ylim=c(exten_of_plot_2[2],exten_of_plot_2[4]),expand = T)+
+        coord_sf(xlim=c(exten_of_plot_2[1],exten_of_plot_2[3]),ylim=c(exten_of_plot_2[2],exten_of_plot_2[4]),expand = TRUE)+
         labs(color="Filter results",title=title_char,subtitle =ifelse(n_occ_filtered==0,"No occurences filtered by these tests",paste0(n_occ_filtered," occurences removed by these tests")))+
         scale_shape_manual(breaks = c(TRUE,FALSE),labels=c("Rejected","Passed"),values=c(pch_filtered,16))+guides(shape = "none",colour=guide_legend(override.aes=list(pch=16)))+
         scale_color_manual(breaks =c("Removed","Removed by another test","Kept occurences"),values=c("brown","goldenrod","grey45") )
@@ -192,7 +190,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=F,...){
 #' @description Get the settings used to create a  occTest or occFilter object
 #' @return list of lists with all different parameters to use in  {\link[=occTest]{occTest}} 
 #' @keywords occTest 
-#' @author J Borderieux (jeremy.borderieux@@agroparistech.fr)
+#' @author Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param x An occTest or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}
 #' @seealso {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
 #' @examples 

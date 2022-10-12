@@ -4,7 +4,7 @@
 \alias{.nearestcell3}
 \title{SeaLand reassignment}
 \usage{
-.nearestcell3(dat, rst, xf, yf, verbose = F)
+.nearestcell3(dat, rst, xf, yf, verbose = FALSE)
 }
 \arguments{
 \item{dat}{Data.frame of species occurrences}
@@ -15,7 +15,7 @@
 
 \item{yf}{the field in the data frame containing the y coordinators}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 list
@@ -25,11 +25,6 @@ SeaLand reassignment
 }
 \details{
 (function inspired in nearestcell in biogeo but modified
-}
-\examples{
-\dontrun{
-example<-"goes here"
-}
 }
 \seealso{
 original code at \link[biogeo]{nearestcell}
@@ -42,7 +37,7 @@ Other analysis:
 \code{\link{humanDetection}()}
 }
 \author{
-Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), JM Serra-Diaz (modifs)
+Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)
 }
 \concept{analysis}
 \keyword{internal}

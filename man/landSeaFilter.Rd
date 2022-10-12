@@ -4,7 +4,7 @@
 \alias{landSeaFilter}
 \title{Filter occurrence by habitat (terrestrial/non-Terrestrial)}
 \usage{
-landSeaFilter(df, xf, yf, habType = NULL, verbose = T, habPol = NULL)
+landSeaFilter(df, xf, yf, habType = NULL, verbose = TRUE, habPol = NULL)
 }
 \arguments{
 \item{df}{Data.frame of species occurrences}
@@ -15,7 +15,7 @@ landSeaFilter(df, xf, yf, habType = NULL, verbose = T, habPol = NULL)
 
 \item{habType}{character. Define the species habitat. Only "terrestrial" and "sea" implemented.}
 
-\item{verbose}{logical. Print messages? Default T}
+\item{verbose}{logical. Print messages? Default TRUE}
 
 \item{habPol}{sf polygon boject. Shows land masses}
 }
@@ -26,11 +26,12 @@ list
 Filter the occurrence recoreds  according to whether they should be in land masses or not
 }
 \examples{
-\dontrun{
-example<-"goes here"
+\donttest{
+xyDF <- data.frame (x=c(0,42),y=c(0,1),Reason=NA)
+landSeaFilter(xyDF,xf='x',yf='y')
 }
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{filter}

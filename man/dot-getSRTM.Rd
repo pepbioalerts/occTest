@@ -4,12 +4,12 @@
 \alias{.getSRTM}
 \title{Download SRTM elevation raster}
 \usage{
-.getSRTM(xydat, download = T, path = getwd(), verbose = F)
+.getSRTM(xydat, download = TRUE, path = tempdir(), verbose = FALSE)
 }
 \arguments{
 \item{xydat}{A dataframe with x and y coordinates}
 
-\item{download}{Default to T. Whether the data should be downloaded}
+\item{download}{Default to TRUE. Whether the data should be downloaded}
 
 \item{path}{where the downloads should go. Default to the current directory}
 
@@ -26,11 +26,6 @@ Basedd on getData from raster
 }
 \note{
 borrowed from raster package but adapted to work directly within the occTest workflow
-}
-\examples{
-\dontrun{
-example<-"goes here"
-}
 }
 \seealso{
 \link[raster]{getData}

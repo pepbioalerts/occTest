@@ -10,7 +10,7 @@
   lat = "decimallatitude",
   ref = NULL,
   value = "clean",
-  verbose = F,
+  verbose = FALSE,
   outdir
 )
 }
@@ -35,11 +35,6 @@ a clean data.frame
 \description{
 flags values for urban areas
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \references{
 CoordinateCleaner package
 }
@@ -47,6 +42,6 @@ CoordinateCleaner package
 \link[CoordinateCleaner]{cc_urb}
 }
 \author{
-A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)
+A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)
 }
 \keyword{internal}

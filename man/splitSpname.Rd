@@ -15,15 +15,9 @@ a species name where genus and species are separated by a space
 \description{
 By default, it converts "Species_genus" format to "Species genus" format
 }
-\examples{
-\dontrun{
-example not run
-}
-}
 \seealso{
 Other internal: 
 \code{\link{.get_os}()},
-\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()}
 }

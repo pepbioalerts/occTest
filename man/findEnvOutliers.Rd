@@ -8,8 +8,8 @@ findEnvOutliers(
   myPres,
   myEnv = NULL,
   pvalSet = 1e-05,
-  checkPairs = F,
-  verbose = T
+  checkPairs = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ findEnvOutliers(
 
 \item{pvalSet}{numeric; p-value used in Grubb's test for outlier (see package `outliers`)}
 
-\item{checkPairs}{logical. Default to F (T not implemented).}
+\item{checkPairs}{logical. Default to FALSE (TRUE not implemented).}
 
 \item{verbose}{logic. Should messages be printed out?}
 }

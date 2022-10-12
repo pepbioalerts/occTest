@@ -16,11 +16,9 @@ prints a table with the column names
 The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions.
 }
 \examples{
-\dontrun{
 showTests()
 }
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

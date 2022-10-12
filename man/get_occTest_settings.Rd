@@ -27,6 +27,6 @@ get_occTest_settings(occTest_output)
 {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
 }
 \author{
-J Borderieux (jeremy.borderieux@agroparistech.fr)
+Jeremy Borderieux (jeremy.borderieux@agroparistech.fr)
 }
 \keyword{occTest}

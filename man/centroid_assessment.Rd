@@ -17,11 +17,6 @@ data.frame
 \description{
 Centroid assessment using BIEN methods
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \author{
 Brian Maitner
 }

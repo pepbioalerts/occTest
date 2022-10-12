@@ -7,33 +7,21 @@
 .get_os()
 }
 \value{
-a character function.
-
 character
 }
 \description{
 The function is used to report the working operative system as a 3-letter character for 'win', and 'mac', 'unix', and 'unknown OS'
 }
 \details{
-Checks the Operative System
-
 This is implemented whan parallelizing functions
 }
 \note{
-#TInternal function copied from utiles wickham to know which is the os used by the computer
-
-
-}
-\examples{
-\dontrun{
-example<-"goes here"
-}
+Internal function copied from utils wickham to know which is the os used by the computer
 }
 \seealso{
 
 
 Other internal: 
-\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}

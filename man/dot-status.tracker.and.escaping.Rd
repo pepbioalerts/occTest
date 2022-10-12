@@ -14,7 +14,7 @@
   rsd,
   obf,
   sp,
-  verbose = F,
+  verbose = FALSE,
   as,
   ws,
   ts
@@ -39,7 +39,7 @@
 
 \item{sp}{character. Name of the species}
 
-\item{verbose}{logical. Print messages? Defaults to F}
+\item{verbose}{logical. Print messages? Defaults to FALSE}
 
 \item{as}{list. analysis settings}
 
@@ -53,11 +53,6 @@ Original dataframe, dat.  Used primarily to generate warning messages.
 \description{
 Track status and write useful output
 }
-\examples{
-\dontrun{
-Example<-"goes here"
-}
-}
 \seealso{
 Other checks: 
 \code{\link{.addmainfields2}()},
@@ -66,6 +61,6 @@ Other checks:
 \code{\link{.checkfields}()}
 }
 \author{
-JM Serra Diaz
+Josep M Serra Diaz
 }
 \concept{checks}

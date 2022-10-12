@@ -1,6 +1,6 @@
 ---
 title: "occTest: an integrated set of tests to assess quality of occurrence data in species distributions"
-author: "JM Serra-Diaz, Cory Merow, J Borderieux, B Maitner, A Callbaut"
+author: "Josep M Serra-Diaz, Cory Merow, Jeremy Borderieux, Brian Maitner, A Callbaut"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -9,7 +9,7 @@ output:
     number_sections: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{maskRangeR: Improving spatial and temporal accuracy of species distribution models}
+  %\VignetteIndexEntry{occTest: an integrated set of tests to assess quality of occurrence data in species distributions}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -20,7 +20,7 @@ Our demo requires data larger than we can store on CRAN and involves analyses th
 
 [https://github.com/pepbioalerts/vignetteXTRA-occTest](https://github.com/pepbioalerts/vignetteXTRA-occTest)
 
-To download it (you can't just right-click on github), its easiest to install the chrome extentsion Gitzip:
+To download it (you can't just right-click on github), its easiest to install the chrome extension Gitzip:
 [https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn](https://chrome.google.com/webstore/detail/gitzip-for-github/ffabmkklhbepgcgfonabamgnfafbdlkn)
 You can then right-click on the vignette html to download 
 

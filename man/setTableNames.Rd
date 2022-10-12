@@ -44,13 +44,11 @@ By default it provides rbif like column names (not fully consistent yet tho).
 Alternatively, the user can specify their own field names for the table
 }
 \examples{
-\dontrun{
 defaultTableNames <- setTableNames()
 #only modifying the names for the coordinates
 myTable_withMyNames <- setTableNames (x.field='x_coord',y.field = 'y_coord') 
 }
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

@@ -4,11 +4,10 @@
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters. No input parameters are required
 #' @return list of lists with all different parameters to use in occProfile function
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' #load default settings
 #' settings <- defaultSettings()
-#' }
 #' @export
 defaultSettings <- function (){
   
@@ -24,16 +23,16 @@ defaultSettings <- function (){
     defaultSettings = list (
     #grading Settings
     # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
-    #                         qualifiers=T,
+    #                         qualifiers=TRUE,
     #                         qualifier.label.scoping=c('A','B','C','D','E'))
     # 
     # ,
     #writing outputs settings
     writeoutSettings = list (#writing outputs
       output.dir=NULL,
-      writeAllOutput=F, #overwrites write.simple.output, write.full.output
-      write.simple.output=F,
-      write.full.output=F,
+      writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
+      write.simple.output=FALSE,
+      write.full.output=FALSE,
       output.base.filename="occTest")
     ,
     #tableSettings
@@ -50,7 +49,7 @@ defaultSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
-      doCoastalReassignment = T,
+      doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
@@ -60,49 +59,49 @@ defaultSettings <- function (){
       countryStatusRange = list (
         countries.shapefile=rnaturalearth::ne_countries(scale = 50),
         countryfield.shapefile = 'iso_a3',
-        doRangeAnalysis=T,
-        excludeUnknownRanges= F,
-        excludeNotmatchCountry= F,
-        doCountryRecordAnalysis=T
+        doRangeAnalysis=TRUE,
+        excludeUnknownRanges= FALSE,
+        excludeNotmatchCountry= FALSE,
+        doCountryRecordAnalysis=TRUE
       )
       ,
-      centroidDetection = list (doCentroidDetection=T,
+      centroidDetection = list (doCentroidDetection=TRUE,
                                methodCentroidDetection='all'
       )
       ,
-      humanDetection= list (doHumanDetection=T,
+      humanDetection= list (doHumanDetection=TRUE,
                            methodHumanDetection='all',
                            th.human.influence = 45,
                            ras.hii=raster::raster(outFile_hii)
 
       )
       ,
-      landUseType   = list (doLandUse=T,
+      landUseType   = list (doLandUse=TRUE,
                              methodLandUse='in',
                              landUseCodes = NULL,
                              ras.landUse=NULL #we need a default here to be downloaded
       )
       ,
-      institutionLocality = list (doInstitutionLocality=T,
+      institutionLocality = list (doInstitutionLocality=TRUE,
                                   methodInstitutionLocality='all'
       )
       ,
       
       geoOutliers = list (
-        doGeoOutliers=T,
+        doGeoOutliers=TRUE,
         methodGeoOutliers='all',
         alpha.parameter = 2
       )
       ,
       
       envOutliers = list (
-        doEnvOutliers=T,
+        doEnvOutliers=TRUE,
         methodEnvOutliers='all',
         th.perc.outenv =  0.2
       )
       ,
       geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
-                               doGeoEnvAccuracy=T,
+                               doGeoEnvAccuracy=TRUE,
                                elev.quality.threshold = 100
       )
       
@@ -127,10 +126,9 @@ defaultSettings <- function (){
 #'          It does not require input parameters
 #' @return prints a data.frame
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' showTableNames ()
-#' }
 #' @export
 showTableNames <- function (){
   tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
@@ -153,12 +151,11 @@ showTableNames <- function (){
 #' Alternatively, the user can specify their own field names for the table
 #' @return list
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' defaultTableNames <- setTableNames()
 #' #only modifying the names for the coordinates
 #' myTable_withMyNames <- setTableNames (x.field='x_coord',y.field = 'y_coord') 
-#' }
 #' @export
 setTableNames <- function (x.field = NULL,
                            y.field = NULL,
@@ -193,21 +190,20 @@ setTableNames <- function (x.field = NULL,
 #' @param geoenvLowAccuracy logical. Should this test type be performed?
 #' @return list with user analysis settings
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' defaultSettings_analysis <- setTestTypes()
 #' #now we do not want to perform centroid geoenironmental accuracy type of tests
-#' mySettings_analysis <- setTestTypes(geoenvLowAccuracy=F)
-#' }
+#' mySettings_analysis <- setTestTypes(geoenvLowAccuracy=FALSE)
 #' @export
-setTestTypes <- function (countryStatusRange = T,
-                      centroidDetection = T,
-                      humanDetection = T,
-                      landUseType = T,
-                      institutionLocality =T,
-                      geoOutliers = T,
-                      envOutliers = T,
-                      geoenvLowAccuracy = T) {
+setTestTypes <- function (countryStatusRange = TRUE,
+                      centroidDetection = TRUE,
+                      humanDetection = TRUE,
+                      landUseType = TRUE,
+                      institutionLocality =TRUE,
+                      geoOutliers = TRUE,
+                      envOutliers = TRUE,
+                      geoenvLowAccuracy = TRUE) {
   
   myTestDoParams= ls()
   targetList = defaultSettings()
@@ -233,20 +229,19 @@ setTestTypes <- function (countryStatusRange = T,
 #' @param time logical. Should this family of tests be performed?
 #' @return list
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' defaultSettings_analysis  <- setTestBlocks()
 #' #now we turn off the block of tests related to land use
-#' mySettings_analysis  <- setTestBlocks(lu=F)
-#' }
+#' mySettings_analysis  <- setTestBlocks(lu=FALSE)
 #' @export
-setTestBlocks      <- function (geo = T,
-                                lu = T,
-                                env = T,
-                                time = T){
+setTestBlocks      <- function (geo = TRUE,
+                                lu = TRUE,
+                                env = TRUE,
+                                time = TRUE){
   
   #for testing
-  #geo = T; lu = T; env = T; time = T
+  #geo = TRUE; lu = TRUE; env = TRUE; time = TRUE
   
   objName = ls()
   paramsDF = list ()
@@ -255,7 +250,7 @@ setTestBlocks      <- function (geo = T,
   }
   
   paramsDF = do.call(rbind,paramsDF)
-  allMetadata = readRDS(system.file('ext/fieldmetadata.rds',package='occTest'))
+  allMetadata = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
   newSettings = dplyr::left_join(allMetadata,paramsDF,by='testBlock')
   
   newParamsList = setTestTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
@@ -278,10 +273,9 @@ setTestBlocks      <- function (geo = T,
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
 #' @return prints a dataframe
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples
 #' showTests()
-#' }
 #' @export
 
 showTests<- function (){
@@ -297,11 +291,10 @@ showTests<- function (){
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
 #' @return list of lists with all different parameters to use in occTest function
 #' @keywords user
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
 #' #load default settings
 #' settings <- minimalSettings()
-#' }
 #' @export
 
 minimalSettings <- function (){
@@ -318,16 +311,16 @@ minimalSettings <- function (){
     
     #grading Settings
     # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
-    #                         qualifiers=T,
+    #                         qualifiers=TRUE,
     #                         qualifier.label.scoping=c('A','B','C','D','E'))
     # 
     # ,
     #writing outputs settings
     writeoutSettings = list (#writing outputs
       output.dir=NULL,
-      writeAllOutput=F, #overwrites write.simple.output, write.full.output
-      write.simple.output=F,
-      write.full.output=F,
+      writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
+      write.simple.output=FALSE,
+      write.full.output=FALSE,
       output.base.filename="occTest")
     ,
     #tableSettings
@@ -344,7 +337,7 @@ minimalSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
-      doCoastalReassignment = T,
+      doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
@@ -354,48 +347,48 @@ minimalSettings <- function (){
       countryStatusRange = list (
         countries.shapefile=rnaturalearth::ne_countries(scale = 50),
         countryfield.shapefile = 'iso_a3',
-        doRangeAnalysis=T,
-        excludeUnknownRanges= F,
-        excludeNotmatchCountry= F,
-        doCountryRecordAnalysis=T
+        doRangeAnalysis=TRUE,
+        excludeUnknownRanges= FALSE,
+        excludeNotmatchCountry= FALSE,
+        doCountryRecordAnalysis=TRUE
       )
       ,
-      centroidDetection = list (doCentroidDetection=T,
+      centroidDetection = list (doCentroidDetection=TRUE,
                                 methodCentroidDetection='CoordinateCleaner'
       )
       ,
-      humanDetection= list (doHumanDetection=T,
+      humanDetection= list (doHumanDetection=TRUE,
                             methodHumanDetection='all',
                             th.human.influence = 45,
                             ras.hii=raster::raster(outFile_hii)
       )
       ,
-      landUseType   = list (doLandUse=T,
+      landUseType   = list (doLandUse=TRUE,
                             methodLandUse='in',
                             landUseCodes = NULL,
                             ras.landUse=NULL #we need a default here to be downloaded
       )
       ,
-      institutionLocality = list (doInstitutionLocality=T,
+      institutionLocality = list (doInstitutionLocality=TRUE,
                                   methodInstitutionLocality='all'
       )
       ,
       
       geoOutliers = list (
-        doGeoOutliers=T,
+        doGeoOutliers=TRUE,
         methodGeoOutliers='all',
         alpha.parameter = 2
       )
       ,
       
       envOutliers = list (
-        doEnvOutliers=T,
+        doEnvOutliers=TRUE,
         methodEnvOutliers='all',
         th.perc.outenv =  0.2
       )
       ,
       geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
-                                doGeoEnvAccuracy=T,
+                                doGeoEnvAccuracy=TRUE,
                                 elev.quality.threshold = 100
       )
       

@@ -7,9 +7,9 @@
 nativeStatusCtry(
   spName,
   xydat,
-  resolveNative = T,
-  resolveAlien = T,
-  verbose = T
+  resolveNative = TRUE,
+  resolveAlien = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,8 +33,11 @@ performs several queries based on the orignir package to identify native and inv
 right now based on the package originr, which queries on Flora Europea, GISD or Native species resolver. Future implementation may query more databases.
 }
 \examples{
-\dontrun{
-example<-"goes here"
+\donttest{
+#needs spocc library
+df <- spocc::occ(query = 'Pseudotsuga menziesii')
+occ.data <- spocc::occ2df(df)
+nativeStatusCtry(spName = 'Pseudotsuga menziesii',xydat = occ.data[,2:3])
 }
 }
 \seealso{
@@ -42,7 +45,7 @@ Other spStatus:
 \code{\link{ctryToIso3}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \concept{spStatus}
 \keyword{internal}

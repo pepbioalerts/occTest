@@ -14,10 +14,10 @@ countryStatusRangeAnalysis(
   .points.proj4string,
   .countries.shapefile,
   cfsf,
-  excludeUnknownRanges = F,
-  excludeNotmatchCountry = F,
-  doRangeAnalysis = T,
-  verbose = F
+  excludeUnknownRanges = FALSE,
+  excludeNotmatchCountry = FALSE,
+  doRangeAnalysis = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ countryStatusRangeAnalysis(
 
 \item{doRangeAnalysis}{logical. Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 list
@@ -56,11 +56,6 @@ Identify and filter species records based on countries where species is consider
 \details{
 It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 Other analysis: 
 \code{\link{.nearestcell3}()},
@@ -70,7 +65,7 @@ Other analysis:
 \code{\link{humanDetection}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \concept{analysis}
 \keyword{internal}

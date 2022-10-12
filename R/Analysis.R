@@ -6,15 +6,15 @@
 #' @param df dat.frame of species occurrences
 #' @param xf character. The field in the data.frame containing the x coordinates
 #' @param yf character. The field in the data.frame containing the y coordinates
-#' @param verbose logical. Print messages? Default F
+#' @param verbose logical. Print messages? Default FALSE
 #' @return List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
+#' k <- data.frame (x=c(runif (n = 100),NA),y=c(runif (n = 100),1000))
+#' filterMissing(k,xf='x',yf='y')
 #' @export
-filterMissing <- function (df, xf , yf , verbose=F){
+filterMissing <- function (df, xf , yf , verbose=FALSE){
  coordIssues_coordMissing_value = !stats::complete.cases  (df[,c(xf,yf)])
  df$coordIssues_coordMissing_value = coordIssues_coordMissing_value
  df$coordIssues_coordMissing_test = as.logical (coordIssues_coordMissing_value)
@@ -32,18 +32,18 @@ filterMissing <- function (df, xf , yf , verbose=F){
 #' @param yf the field in the data frame containing the y coordinates
 #' @param resolution.in.minutes the resolution of environmental data used, specified in minutes
 #' @param raster.grid An optional raster grid
-#' @param verbose logical. Print messages? Default F
+#' @param verbose logical. Print messages? Default FALSE
 #' @return list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @examples 
+#' k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000),Reason=NA)
+#' duplicatesexcludeAnalysis(k,xf='x',yf='y',resolution.in.minutes=60)
 #' @export
 duplicatesexcludeAnalysis <- function (df, xf, yf,
                                         resolution.in.minutes,
-                                        raster.grid=NULL, verbose=F){
+                                        raster.grid=NULL, verbose=FALSE){
   #exact duplicates
   duplicates_dupExact_value <- duplicated (x = df[,c(xf,yf)]) *1
   duplicates_dupExact_test <- as.logical (duplicates_dupExact_value)
@@ -97,20 +97,17 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @param rst raster class object.
 #' @param xf the field in the data frame containing the x coordinators
 #' @param yf the field in the data frame containing the y coordinators
-#' @param verbose logical. Print messages? Default F
+#' @param verbose logical. Print messages? Default FALSE
 #' @return list
 #' @keywords internal
-#' @author Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), JM Serra-Diaz (modifs)
+#' @author Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)
 #' @family analysis
 #' @seealso original code at \link[biogeo]{nearestcell}
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 .nearestcell3 <- function (dat,
                           rst,
                           xf,
                           yf,
-                          verbose=F) {
+                          verbose=FALSE) {
   dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
   fx <- which(dat$Exclude == 0)
@@ -166,7 +163,7 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
         nce <- g1[fx, ]
         nce2 <- as.matrix(cbind(nce$x, nce$y))
         pts <- dd2[uj, ]
-        dst <- raster::pointDistance(c(pts$x1, pts$y1), nce2, longlat = F)
+        dst <- raster::pointDistance(c(pts$x1, pts$y1), nce2, longlat = FALSE)
         fm <- which.min(dst)
         nr <- nce[fm, ]
         near <- rbind(near, nr)
@@ -213,14 +210,11 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @param excludeUnknownRanges logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE
 #' @param excludeNotmatchCountry Should records be if the reported country is different than the locatoin country? . Default FALSE
 #' @param doRangeAnalysis logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default F
+#' @param verbose logical. Print messages? Default FALSE
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 countryStatusRangeAnalysis=function(df,
                                     xf,
@@ -231,10 +225,10 @@ countryStatusRangeAnalysis=function(df,
                                     .points.proj4string,
                                     .countries.shapefile,
                                     cfsf,
-                                    excludeUnknownRanges = F,
-                                    excludeNotmatchCountry = F,
-                                    doRangeAnalysis=T,
-                                    verbose=F) {
+                                    excludeUnknownRanges = FALSE,
+                                    excludeNotmatchCountry = FALSE,
+                                    doRangeAnalysis=TRUE,
+                                    verbose=FALSE) {
   
 
   if (!doRangeAnalysis) {
@@ -280,13 +274,13 @@ countryStatusRangeAnalysis=function(df,
 
     #check if ISO3 format in country reported [FUTURE: use GNRS to automatically correct]
     ctry.reported = as.character (df[,.c.field])
-    if (all (nchar (ctry.reported)!=3,na.rm=T) | all (is.na(ctry.reported)) ) {
+    if (all (nchar (ctry.reported)!=3,na.rm=TRUE) | all (is.na(ctry.reported)) ) {
       warning ("the countries in your database do not match ISO3 codes, test of reported vs. match dropped")
       wrong.ctry.reported <- rep (NA,length(country_ext))
     } else {
       #match reported country with extracted country
       wrong.ctry.reported <- (! as.character (df[,.c.field]) %in% as.character(country_ext))  * 1
-      nonMissingVals = ifelse (test = is.na (as.character (df[,.c.field])) | as.character (df[,.c.field]) == '',yes = NA,no = T)
+      nonMissingVals = ifelse (test = is.na (as.character (df[,.c.field])) | as.character (df[,.c.field]) == '',yes = NA,no = TRUE)
       wrong.ctry.reported <- wrong.ctry.reported * nonMissingVals
     }
 
@@ -317,19 +311,19 @@ countryStatusRangeAnalysis=function(df,
   
   #Exclusion from subsequent analysis for wrong native and invasive ranges
   #  (depending how much data has been provided)
-  if (excludeUnknownRanges == T & !is.null(.ntv.ctry)  & !is.null(.inv.ctry) ){
+  if (excludeUnknownRanges == TRUE & !is.null(.ntv.ctry)  & !is.null(.inv.ctry) ){
     total.data <- (!is.na (wrong.ntv.ctry.xy) *1) + (!is.na(wrong.inv.ctry.xy)*1)
-    sum.wrong.extracted.ranges <-  mapply (function (x,y) (sum (x,y,na.rm = T)),wrong.ntv.ctry.xy, wrong.inv.ctry.xy)
+    sum.wrong.extracted.ranges <-  mapply (function (x,y) (sum (x,y,na.rm = TRUE)),wrong.ntv.ctry.xy, wrong.inv.ctry.xy)
     exclusion.based.on.wrong <- sum.wrong.extracted.ranges / total.data
     df$Exclude  <- (exclusion.based.on.wrong == 1)*1
     exclude.rows <- which (df$Exclude == 1)
     #add the reason of exclusion
     if (length(exclude.rows) > 0) {df$Reason [exclude.rows] <-"XY in not in invasive or native ranges"}
   }
-  if (excludeUnknownRanges == F) {df$Exclude  <- 0}
+  if (excludeUnknownRanges == FALSE) {df$Exclude  <- 0}
 
   # Exclusion based on wrong country reported
-  if  (excludeNotmatchCountry == T & !is.null (.c.field)) {
+  if  (excludeNotmatchCountry == TRUE & !is.null (.c.field)) {
     exclusion.based.on.wrong <- df$Exclude  + (10*wrong.ctry.reported)
     only.wrong.reported.range <- which (exclusion.based.on.wrong == 10 )
     wrong.reported.range.and.informedrange <- which (exclusion.based.on.wrong == 11 )
@@ -360,18 +354,15 @@ countryStatusRangeAnalysis=function(df,
 #' @param .countries.shapefile spatialPolygonDataFrame of political divisions
 #' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicating the country in ISO3 coding.
 #' @param method character. Vector with the methods to detect centroids
-#' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default F
+#' @param do logical. Should range analysis be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
 #' @return data.frame
 #' @keywords internal
 #' @family analysis
 #' @details Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
 #' , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package. 
-#' @author B Maitner, JM Serra-Diaz, C Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
+#' @author Brian Maitner, Josep M Serra-Diaz, Cory Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
 #' @seealso \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen} 
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 
 centroidDetection <- function (df,
@@ -386,7 +377,7 @@ centroidDetection <- function (df,
                                 .countries.shapefile,
                                 cfsf,
                                  method='all',
-                                 do = T, verbose=F){
+                                 do = TRUE, verbose=FALSE){
   #table of outputs
   out = data.frame (centroidDetection_BIEN_value=NA,
                     centroidDetection_BIEN_test=NA,
@@ -445,7 +436,7 @@ centroidDetection <- function (df,
       country_ext <-  .coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=T)
+    cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=TRUE)
     if (inherits(cleaned_countries,'error') | is.null(cleaned_countries)){
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
@@ -538,12 +529,12 @@ centroidDetection <- function (df,
   #Method CoordinateCleaner
   if (any(method %in% c('CoordinateCleaner','all'))){
 
-    cc_cap_test = CoordinateCleaner::cc_cap(x = df,lon =xf,lat=yf,value='flagged', verbose = F)
+    cc_cap_test = CoordinateCleaner::cc_cap(x = df,lon =xf,lat=yf,value='flagged', verbose = FALSE)
     cc_cap_test = (!cc_cap_test) *1
-    cc_cen_test <- CoordinateCleaner::cc_cen (x = df, lon =xf,lat=yf ,value='flagged', verbose = F)
+    cc_cen_test <- CoordinateCleaner::cc_cen (x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE)
     cc_cen_test <- (!cc_cen_test) * 1
     out$centroidDetection_CoordinateCleaner_value =  cc_cen_test+cc_cen_test
-    out$centroidDetection_CoordinateCleaner_test = ifelse ((cc_cap_test==1 | cc_cen_test==1),T,F)
+    out$centroidDetection_CoordinateCleaner_test = ifelse ((cc_cap_test==1 | cc_cen_test==1),TRUE,FALSE)
     out$centroidDetection_CoordinateCleaner_comment = ''
     out$centroidDetection_CoordinateCleaner_comment [cc_cap_test==1] = 'capital centroid'
     out$centroidDetection_CoordinateCleaner_comment [cc_cen_test==1] = 'ctry/prov centroid'
@@ -571,17 +562,14 @@ centroidDetection <- function (df,
 #' @param ras.hii raster. Raster map of human influence index use
 #' @param .th.human.influence numeric. Threhold to identify places of high human influence
 #' @param .points.proj4string proj4string argument for df
-#' @param do logical. Should range analysis be performed? Default T
-#' @param verbose logical. Print messages? Default F
+#' @param do logical. Should range analysis be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
 #' @param output.dir character. Output directory 
 #' @return data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr). A Zizka (CoordinateCleaner functions)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr). A Zizka (CoordinateCleaner functions)
 #' @seealso \link[CoordinateCleaner]{cc_urb} for CoordinateCleaner functions
 #' @family analysis
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 
 humanDetection <- function (df,
@@ -591,7 +579,7 @@ humanDetection <- function (df,
                             ras.hii,
                             .th.human.influence,
                             .points.proj4string,
-                            do=T, verbose=F,output.dir){
+                            do=TRUE, verbose=FALSE,output.dir){
 
   out <- data.frame (HumanDetection_HumanInfluence_value=NA,
                      HumanDetection_HumanInfluence_test=NA,
@@ -625,7 +613,7 @@ humanDetection <- function (df,
       if (!is.na (raster::projection (ras.hii)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj = raster::projection(ras.hii) )}
     }
 
-    hii.sp.pres <-raster::extract(ras.hii, y = data.sp.pres, cellnumbers=F, df=T)
+    hii.sp.pres <-raster::extract(ras.hii, y = data.sp.pres, cellnumbers=FALSE, df=TRUE)
     row.id.hii.NA <- which(is.na(hii.sp.pres[,2]))
     if (length (row.id.hii.NA) != 0) {
       output.comments <- rep (NA,length =nrow (xydat))
@@ -648,10 +636,10 @@ humanDetection <- function (df,
     #check ref exists
     newoutdir = paste0(tempdir(),'/spatialData')
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
-    if (alreadyDownloaded) myRef = rgdal::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = F)
+    if (alreadyDownloaded) myRef = rgdal::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = FALSE)
     if (!alreadyDownloaded) myRef= NULL 
     
-    cc_urb_test =  .cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = F,ref = myRef,outdir = output.dir )
+    cc_urb_test =  .cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_value <- cc_urb_test
     out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
@@ -675,17 +663,14 @@ humanDetection <- function (df,
 #' @param method charcter. Vector of methods to be used. See details. Default 'all'
 #' @param .points.proj4string proj4string argument for df
 #' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default F
+#' @param verbose logical. Print messages? Default FALSE
 #' @return data.frame
 #' @details current implemented methods are : \cr
 #' "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 #' "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
 #' @keywords internal 
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @seealso \link[CoordinateCleaner]{cc_inst} \link[CoordinateCleaner]{cc_gbif} 
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 institutionLocality <- function (df,
                                  xf,
@@ -693,7 +678,7 @@ institutionLocality <- function (df,
                                  lf,
                                  method='all',
                                  .points.proj4string,
-                                 do=T, verbose=F
+                                 do=TRUE, verbose=FALSE
                                  ){
 
   #output table
@@ -748,9 +733,9 @@ institutionLocality <- function (df,
   
   #method from Coordinates
   if (any (method %in% c('fromCoordinates','all'))) {
-    cc_inst_test = CoordinateCleaner::cc_inst(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
+    cc_inst_test = CoordinateCleaner::cc_inst(x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE )
     cc_inst_test <- (!  cc_inst_test) * 1
-    cc_gbif_test = CoordinateCleaner::cc_gbif(x = df, lon =xf,lat=yf ,value='flagged', verbose = F )
+    cc_gbif_test = CoordinateCleaner::cc_gbif(x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE )
     cc_gbif_test <- (!  cc_gbif_test) * 1
 
     cc_gbif_comments = ifelse(cc_gbif_test==1,'GBIFheadquarters',NA)
@@ -780,8 +765,8 @@ institutionLocality <- function (df,
 #' @param .medianDeviation.parameter  numeric. Deviation parameter to . Default to 0.1
 #' @param method charcter. Vector of methods to be used. See details. Default 'all'
 #' @param .projString proj4string character. Indicate coordinate reference system
-#' @param do logical. Should tests be performed? Default T
-#' @param verbose logical. Print messages? Default F
+#' @param do logical. Should tests be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
 #' @details Methods implented are 'alphaHull', detecting species outside an alphaHull level (default 2), \cr
 #' 'alphaHull' \cr
 #' 'distance' corresponds to 'distance' method in  CoordinateCleaner::cc_outl(method='distance'). See ?CoordinateCleaner::cc_outl \cr
@@ -790,11 +775,8 @@ institutionLocality <- function (df,
 #' 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
 #' @return data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com)
 #' @seealso getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 
 geoOutliers         <- function (df,
@@ -806,7 +788,7 @@ geoOutliers         <- function (df,
                                 .samplingIntensThreshold.parameter=0.1,
                                 method = 'all',
                                 .projString ,
-                                do=T, verbose=F){
+                                do=TRUE, verbose=FALSE){
   
  
   #build dataframe of all potential results
@@ -847,7 +829,7 @@ geoOutliers         <- function (df,
 
     #We typically will consider by default an alpha 2 -like ALA
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
-      points.outside.alphahull <- try (getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=T)
+      points.outside.alphahull <- try (getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=TRUE)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
@@ -872,13 +854,13 @@ geoOutliers         <- function (df,
     #   #build alpha hulls and determine alpha parameter for each from 1 to 10
     #   ah.hulls.list <- lapply (1:10, function (a){
     #
-    #     try(ah <- alphahull::ahull (x = df[,xf], y= df[,yf], alpha=a), silent = T)
+    #     try(ah <- alphahull::ahull (x = df[,xf], y= df[,yf], alpha=a), silent = TRUE)
     #     if (exists("ah")){return (ah)}
     #
     #   })
     #
     #   ah.hulls.thresholds <- lapply (1:10, function (i) {
-    #     if((is.null(ah.hulls.list[[i]]) == F) & (is.list (ah.hulls.list[[i]]) == T)  ) {inahull(ah.hulls.list[[i]] , as.matrix(xydat) ) * i}
+    #     if((is.null(ah.hulls.list[[i]]) == FALSE) & (is.list (ah.hulls.list[[i]]) == TRUE)  ) {inahull(ah.hulls.list[[i]] , as.matrix(xydat) ) * i}
     #   })
     #
     #   is.not.null <- lapply (ah.hulls.thresholds, function (x) !is.null(x))
@@ -895,7 +877,7 @@ geoOutliers         <- function (df,
     #     ah.hulls.level <- apply (ah.hulls.thresholds, 1, function (x){
     #
     #       x [which (x==0)] <- NA
-    #       m <- min (x, na.rm=T)
+    #       m <- min (x, na.rm=TRUE)
     #       out <- ifelse (m==Inf, NA, m)
     #       return (out)
     #
@@ -907,7 +889,7 @@ geoOutliers         <- function (df,
     #     ah.dataframe <- lapply (1:length(ah.hulls.list), function (i){
     #
     #       ah <- ah.hulls.list[[i]]
-    #       if (exists("ah") & is.null(ah) == F & is.list(ah)==T ){
+    #       if (exists("ah") & is.null(ah) == FALSE & is.list(ah)==TRUE ){
     #         perc.points.in.hull <- round ((sum (alphahull::inahull(ah,as.matrix(xydat)))/nrow (xydat))*100,digits=2)
     #         area.hull <-alphahull::areaahull(ah)
     #         return (data.frame (perc.points.in.hull, area.hull))
@@ -938,7 +920,7 @@ geoOutliers         <- function (df,
     #     }
     #
     #     if (nrow (alpha.choice) >= 0){
-    #       alpha.choice <- alpha.choice[order(alpha.choice$optim.alpha.values,decreasing = T,na.last = T),]
+    #       alpha.choice <- alpha.choice[order(alpha.choice$optim.alpha.values,decreasing = TRUE,na.last = TRUE),]
     #       alpha.choice <- alpha.choice[1,'alpha']
     #       if(verbose) print (paste("Optimal alpha selected =", alpha.choice, "for alpha geoindicator of outliers"))
     #
@@ -963,7 +945,7 @@ geoOutliers         <- function (df,
   if (any (method %in% c('distance','all'))){
     #create fake species list for Coordinate cleaner
     df$species <- 'MyFakeSp'
-    cc_dist_test =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=F)
+    cc_dist_test =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'distance',value = 'flagged',tdi = .distance.parameter, verbose=FALSE)
     cc_dist_test <- (!  cc_dist_test) 
     out$geoOutliers_distance_value  = cc_dist_test * 1
     out$geoOutliers_distance_test  = cc_dist_test
@@ -977,7 +959,7 @@ geoOutliers         <- function (df,
   
   if (any (method %in% c('median','all'))){
 
-    cc_med_test =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=F)
+    cc_med_test =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method = 'mad',value = 'flagged',mltpl =  .medianDeviation.parameter , verbose=FALSE)
     cc_med_test <- (!  cc_med_test) * 1
     out$geoOutliers_median_value = cc_med_test
     out$geoOutliers_median_test  = as.logical(cc_med_test)
@@ -996,7 +978,7 @@ geoOutliers         <- function (df,
     cc_qsc_tst =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
                                             mltpl =  .medianDeviation.parameter ,
                                             sampling_thresh = .samplingIntensThreshold.parameter ,
-                                            verbose=F)
+                                            verbose=FALSE)
     cc_qsc_tst <- (!  cc_qsc_tst) * 1
     
     out$geoOutliers_quantileSamplingCorr_value = cc_qsc_tst
@@ -1021,7 +1003,7 @@ geoOutliers         <- function (df,
     
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
-      grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = F),silent=T)
+      grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = FALSE),silent=TRUE)
       
       if (inherits(grubbs.outl,what = 'try-error')) {
         grubbs_tst = rep(NA,times=nrow(out)) 
@@ -1057,19 +1039,16 @@ geoOutliers         <- function (df,
 #' @param .sp.name Species name
 #' @param method charcter. Vector of methods to be used. See details. Default 'all'
 #' @param .projString proj4string character. Indicate coordinate reference system
-#' @param do logical. Should tests be performed? Default T
-#' @param verbose logical. Print messages? Default F
+#' @param do logical. Should tests be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
 #' @return data.frame
 #' @details Implemented methods are :\cr
 #' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
 #' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 #' Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), C Merow (cmerow@@gmail.com). Mark Robertson (biogeo package)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com). Mark Robertson (biogeo package)
 #' @seealso findEnvOutliers \link[biogeo]{outliers}
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @export
 envOutliers  <- function (
                           df,
@@ -1080,7 +1059,7 @@ envOutliers  <- function (
                           .sp.name ,
                           method='all',
                           .projString ,
-                          do=T, verbose=F){
+                          do=TRUE, verbose=FALSE){
 
   #output results
   out = data.frame (envOutliers_missingEnv_value = NA,
@@ -1106,7 +1085,7 @@ envOutliers  <- function (
     
     return(out)}
 
-  dat.environment <- raster::extract(x = .r.env, y= df[,c(xf,yf)], df = T)
+  dat.environment <- raster::extract(x = .r.env, y= df[,c(xf,yf)], df = TRUE)
   
   missingEnvironment <- (!stats::complete.cases(dat.environment))
   out$envOutliers_missingEnv_value <- missingEnvironment * 1
@@ -1114,7 +1093,7 @@ envOutliers  <- function (
   out$envOutliers_missingEnv_comment <- ''
   
   if (any (missingEnvironment)){
-    ids = which (missingEnvironment==T)
+    ids = which (missingEnvironment==TRUE)
     for (i in ids){
       de = dat.environment[i,]
       layersWithNA = which (is.na(de))
@@ -1125,7 +1104,7 @@ envOutliers  <- function (
   if (any (method %in% c('bxp','all'))) {
 
     outlier.method.biogeo = '-bxp'
-    # dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = T)
+    # dat.environment <- extract(x = .r.env, y= df[,c(xf,yf)], df = TRUE)
     # missingEnvironment <- (!stats::complete.cases(dat.environment))*1
     species <- rep(.sp.name, nrow(dat.environment))
     dups <- rep(0, nrow(dat.environment))
@@ -1134,13 +1113,13 @@ envOutliers  <- function (
 
       ev<-dat.environment[,i]
 
-      try (a<-biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=T)
+      try (a<-biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
       if (exists ('a') ) {
         a<- as.data.frame (a)
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
         return (a)}
 
-      if (exists ('a') == F ) {
+      if (exists ('a') == FALSE ) {
         #in case there is no variation across the variable and then outliers function throws an error
         a <- data.frame (col1=rep (0,nrow(dat.environment)), col2 = rep (0,nrow(dat.environment) ))
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
@@ -1170,7 +1149,7 @@ envOutliers  <- function (
     #spdf = sp::SpatialPointsDataFrame(data = dat.environment[,-1],coords = df[,c(xf,yf)] ,proj4string =.projString )
 
     env.grubbs_tst = rep(0,times=nrow(out))
-    env.grubbs.outl = occTest::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = F)
+    env.grubbs.outl = occTest::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = FALSE)
     env.grubbs_tst [env.grubbs.outl] = 1
     env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
     
@@ -1205,13 +1184,13 @@ envOutliers  <- function (
 #' @param env.quantiles numeric. Default to c(0.3,0.7)
 #' @param elev.threshold numeric. Default to 100
 #' @param raster.elevation numeric. Default to 100
-#' @param do logical. Should tests be performed? Default T
-#' @param verbose logical. Print messages? Default F
-#' @param doParallel logical. Should computation use parallel functions? Default F
-#' @param mc.cores numeric. How many cores to use? (used when doParallel = T). Default 2 
+#' @param do logical. Should tests be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
+#' @param doParallel logical. Should computation use parallel functions? Default FALSE
+#' @param mc.cores numeric. How many cores to use? (used when doParallel = TRUE). Default 2 
 #' @return data.frame
 #' @keywords Analysis 
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), A Zizka (CoordinateCleaner package)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), A Zizka (CoordinateCleaner package)
 #' @details Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
 #' Current implmented methods are:
 #' 'lattice' : tests for lattice arrangement in occurrence datasets. Borrowed from \link[CoordinateCleaner]{cd_round} . \cr
@@ -1223,9 +1202,8 @@ envOutliers  <- function (
 #' 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr 
 #' @seealso \link[CoordinateCleaner]{cd_round}
 #' @family analysis
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @examples 
+#' #see examples in vignetteXtra-occTest
 #' @export
 
 geoEnvAccuracy  <- function (df,
@@ -1245,9 +1223,9 @@ geoEnvAccuracy  <- function (df,
                              
                              elev.threshold = 100,
                              raster.elevation=NULL,
-                             verbose=F,
-                             do=T,
-                             doParallel=F,
+                             verbose=FALSE,
+                             do=TRUE,
+                             doParallel=FALSE,
                              mc.cores= 2
 ){
   
@@ -1289,9 +1267,15 @@ geoEnvAccuracy  <- function (df,
   if (!do) {return (out)}
   #check if need parallel
   os =  .get_os()
-  if (doParallel==T) {mymclapply <-  .hijack (parallel::mclapply,mc.cores=mc.cores)}
-  if (doParallel==T & grepl(pattern = 'win',x = os)) {mymclapply <-  .hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
-  if (doParallel==F) {mymclapply <- lapply}
+  # if (doParallel==TRUE) {mymclapply <-  .hijack (parallel::mclapply,mc.cores=mc.cores)}
+  # if (doParallel==TRUE & grepl(pattern = 'win',x = os)) {mymclapply <-  .hijack (parallelsugar::mclapply,mc.cores=mc.cores)}
+  if (doParallel == TRUE){
+    mymclapply <- switch( Sys.info()[['sysname']],
+                        Windows = {parallelsugar::mclapply},
+                        Linux   = {parallel::mclapply},
+                        Darwin  = {parallel::mclapply})
+  }
+  if (doParallel==FALSE) {mymclapply <- lapply}
   if (nrow(df)<100) {mymclapply <- lapply}
   
   #start method lattice
@@ -1308,8 +1292,8 @@ geoEnvAccuracy  <- function (df,
     }
     
     #there are a lot of problems with this function
-    cd_round_test = try({.cc_round_occTest(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged2',verbose=F,graphs=F)},silent=T)
-    #cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=F,graphs=F)
+    cd_round_test = try({.cc_round_occTest(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged2',verbose=FALSE,graphs=FALSE)},silent=TRUE)
+    #cd_round_test = CoordinateCleaner::cd_round(x = xydat,lon = xf,lat = yf,ds=dsf,value='flagged',verbose=FALSE,graphs=FALSE)
     out$geoenvLowAccuracy_lattice_value = (!cd_round_test) * 1
     out$geoenvLowAccuracy_lattice_test = (!cd_round_test)
     out$geoenvLowAccuracy_lattice_comments = ('Based on default values of CoordinateCleaner::cd_round')
@@ -1323,11 +1307,11 @@ geoEnvAccuracy  <- function (df,
       
       if (is.null (raster.elevation)) {
         if (verbose) print ('elevation raster not provided, downloading from SRTM')
-        do.srtm.download = T
-      } else {do.srtm.download=F}
+        do.srtm.download = TRUE
+      } else {do.srtm.download=FALSE}
       #if no elevation raster provided, download it
       if (do.srtm.download){
-        raster.elevation = try  (expr = {.getSRTM (xydat=df,download=T, verbose=F)},silent = T)
+        raster.elevation = try  (expr = {.getSRTM (xydat=df,download=TRUE, verbose=FALSE)},silent = TRUE)
         
       }
       #determining elevation test
@@ -1355,7 +1339,7 @@ geoEnvAccuracy  <- function (df,
                                 isEmpty = (as.character(vecTime)==''),
                                 isEmptySpace = (as.character(vecTime)== '  '))
       
-      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==T)})
+      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==TRUE)})
       out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
       out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
       out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
@@ -1409,7 +1393,7 @@ geoEnvAccuracy  <- function (df,
   }
   
   #Start methods requiring coordinate uncertainty
-  if(length(af)>1) {df$new_accuracy = pmax(df[,af[1]],df[,af[2]],na.rm=T); af = 'new_accuracy'}
+  if(length(af)>1) {df$new_accuracy = pmax(df[,af[1]],df[,af[2]],na.rm=TRUE); af = 'new_accuracy'}
   xydat = df[,c(xf,yf,af)]
   xydat$occCellids = raster::cellFromXY(r.env,as.data.frame (df[,c(xf,yf)]))
   #get cell IDs of buffer points
@@ -1431,7 +1415,7 @@ geoEnvAccuracy  <- function (df,
         #diff.2.target.cell
         dest.point.cellID
       })
-      #perc.points.buffer = mean (points.buffer,na.rm=T)
+      #perc.points.buffer = mean (points.buffer,na.rm=TRUE)
       points.buffer.id
     })
     
@@ -1441,7 +1425,7 @@ geoEnvAccuracy  <- function (df,
   #start method percentage of Different cells around uncertainty
   if (any(method %in% c('percDiffCell','all'))){
     perc.diff <- sapply (1:nrow(xydat), function (i){
-      pdiff <- mean ((cellIds.directions[[i]]==xydat$occCellids[i]) * 1, na.rm = T)
+      pdiff <- mean ((cellIds.directions[[i]]==xydat$occCellids[i]) * 1, na.rm = TRUE)
       pdiff
     })
     out$geoenvLowAccuracy_percDiffCell_value = (perc.diff)
@@ -1452,7 +1436,7 @@ geoEnvAccuracy  <- function (df,
   if (any(method %in% c('envDeviation','all'))) {
     
     uniqueCellBuff <- unique (unlist (cellIds.directions))
-    if (raster::nlayers(r.env)>1) df.CellBuff = raster::extract(r.env,uniqueCellBuff,df=T)
+    if (raster::nlayers(r.env)>1) df.CellBuff = raster::extract(r.env,uniqueCellBuff,df=TRUE)
     if (raster::nlayers(r.env)==1) {
       df.CellBuff = raster::extract(r.env,uniqueCellBuff)
       df.CellBuff = data.frame (ID=1:length(df.CellBuff),LAYER = df.CellBuff)
@@ -1461,7 +1445,7 @@ geoEnvAccuracy  <- function (df,
     df.CellBuff$cellID = uniqueCellBuff
     
     targetCellUnique =   xydat$occCellids [!xydat$occCellids %in% uniqueCellBuff]
-    if (raster::nlayers(r.env)>1) df.CellTarget = raster::extract(r.env,targetCellUnique,df=T)
+    if (raster::nlayers(r.env)>1) df.CellTarget = raster::extract(r.env,targetCellUnique,df=TRUE)
     if (raster::nlayers(r.env)==1) {
       df.CellTarget = raster::extract(r.env,targetCellUnique)
       df.CellTarget = data.frame (ID=1:length(df.CellTarget),LAYER = df.CellTarget)
@@ -1511,7 +1495,7 @@ geoEnvAccuracy  <- function (df,
         return (0)
       })
       vars.outlier =  as.data.frame (t(vars.outlier))
-      vars.outlier$all <- mean (as.numeric(vars.outlier[1,]),na.rm=T)
+      vars.outlier$all <- mean (as.numeric(vars.outlier[1,]),na.rm=TRUE)
       vars.outlier
       
     })
@@ -1540,14 +1524,11 @@ geoEnvAccuracy  <- function (df,
 #' @param ras.landUse raster. Land use raster with integer codes for land use classes.
 #' @param .landUseCodes numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')
 #' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default  F
+#' @param verbose logical. Print messages? Default  FALSE
 #' @param output.dir character. Output directory
 #' @return data.frame
 #' @keywords internal
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @export
 
 landUseSelect <- function (df,
@@ -1557,7 +1538,7 @@ landUseSelect <- function (df,
                            .points.proj4string,
                            ras.landUse,
                            .landUseCodes,
-                           do=T, verbose=F,output.dir){
+                           do=TRUE, verbose=FALSE,output.dir){
   
   out <- data.frame (landUse_wrongLU_value=NA,
                      landUse_wrongLU_test=NA,
@@ -1585,7 +1566,7 @@ landUseSelect <- function (df,
     if (!is.na (raster::projection (ras.landUse)) ) {data.sp.pres <- sp::spTransform(data.sp.pres,CRSobj =raster::projection(ras.landUse) )}
   }
   
-  lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=F, df=T)
+  lu.sp.pres <-raster::extract(ras.landUse, y = data.sp.pres, cellnumbers=FALSE, df=TRUE)
   row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
   if (length (row.id.lu.NA) != 0) {
     output.comments <- rep (NA,length =nrow (xydat))
@@ -1619,9 +1600,6 @@ landUseSelect <- function (df,
 #' @return data.frame
 #' @keywords internal
 #' @author Brian Maitner
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 
 centroid_assessment<-function(occurrences,centroid_data){
   

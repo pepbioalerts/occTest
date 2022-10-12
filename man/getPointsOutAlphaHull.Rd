@@ -17,7 +17,7 @@ getPointsOutAlphaHull(
 \item{x}{dataframe of coordinates in decimal degrees, with a minimum of 3
 rows.}
 
-\item{alpha}{the starting value for alpha}
+\item{alpha}{the starting value for alpha.}
 
 \item{coordHeaders}{the column names for the longitude and latitude
 columns, respectively.  If x has two columns, these are assumed to be
@@ -26,7 +26,7 @@ longitude and latitude, and \code{coordHeaders} is ignored.}
 \item{proj}{the projection information for x. The default is currently the
 only supported option.}
 
-\item{verbose}{logical. print messages?}
+\item{verbose}{logical. print messages? Default to FALSE}
 
 \item{alphaCap}{Max alpha value before function aborts and returns a
 minimum convex hull.}
@@ -56,6 +56,6 @@ provided with this package.
 Alpha hulls are created with \code{\link{ahull}}.
 }
 \author{
-Pascal Title (original version), JM Serra-Diaz (modifs)
+Pascal Title (original version), Josep M Serra-Diaz (modifs)
 }
 \keyword{internal}

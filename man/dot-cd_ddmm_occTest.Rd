@@ -24,10 +24,7 @@ a clean data.frame
 \description{
 own version of coordinate cleaner cc_round
 }
-\seealso{
-\link[CoordinateCleaner]{cd_ddmm}
-}
 \author{
-A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+A Zizka (original author) Josep M Serra-Diaz (adapted from CoordinateCleaner)
 }
 \keyword{internal}

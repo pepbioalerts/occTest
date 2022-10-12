@@ -17,11 +17,6 @@ Froma character it uses different methods to derive country ISO3 digit codes
 \details{
 right now not implemented with fuzzy matching, but is case insensitive. Methods implemented, 'countrycode' and 'GNRS'
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \link[countrycode]{countrycode} and \link[GNRS]{GNRS}
 
@@ -29,9 +24,9 @@ Other spStatus:
 \code{\link{nativeStatusCtry}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr) (adpatation) \cr 
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr) (adpatation) \cr 
 \link[countrycode]{countrycode-package} Vincent Arel-Bundock vincent.arel-bundock@umontreal.ca ,\cr
-\link[GNRS]{GNRS-package}  Brad Boyle, Brian Maitner
+\link[GNRS]{GNRS}  Brad Boyle, Brian Maitner
 }
 \concept{spStatus}
 \keyword{spStatus}

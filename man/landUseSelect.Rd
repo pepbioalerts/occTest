@@ -12,8 +12,8 @@ landUseSelect(
   .points.proj4string,
   ras.landUse,
   .landUseCodes,
-  do = T,
-  verbose = F,
+  do = TRUE,
+  verbose = FALSE,
   output.dir
 )
 }
@@ -34,7 +34,7 @@ landUseSelect(
 
 \item{do}{logical. Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default  F}
+\item{verbose}{logical. Print messages? Default  FALSE}
 
 \item{output.dir}{character. Output directory}
 }
@@ -44,12 +44,7 @@ data.frame
 \description{
 Selection of records within a specified land use
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{internal}

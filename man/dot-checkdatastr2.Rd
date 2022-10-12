@@ -4,7 +4,7 @@
 \alias{.checkdatastr2}
 \title{Check data structure}
 \usage{
-.checkdatastr2(dat, xf, yf, verbose = F)
+.checkdatastr2(dat, xf, yf, verbose = FALSE)
 }
 \arguments{
 \item{dat}{A dataframe containing occurrence data for checking.}
@@ -13,7 +13,7 @@
 
 \item{yf}{character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field}
 
-\item{verbose}{logical. Print messages? Defaults to F}
+\item{verbose}{logical. Print messages? Defaults to FALSE}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.
@@ -24,11 +24,6 @@ Verify that all main data fields are correctly structured
 \details{
 Inspired by \link[biogeo]{checkdatastr} but modified (hence number 2 after the function original name)
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 Other checks: 
 \code{\link{.addmainfields2}()},
@@ -37,6 +32,6 @@ Other checks:
 \code{\link{.status.tracker.and.escaping}()}
 }
 \author{
-Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
+Mark Robertson and Vernon Visser (original function), Josep M Serra Diaz (modifs)
 }
 \concept{checks}

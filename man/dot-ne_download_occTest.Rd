@@ -30,15 +30,10 @@ spatial object or raster
 \description{
 download from Natural Earth the country checklist
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \[linkrnaturalearth]{ne_download}
 }
 \author{
-Andy South (southandy@gmail.com) rnaturalearth; JM Serra Diaz (modifs)
+Andy South (southandy@gmail.com) rnaturalearth; Josep M Serra Diaz (modifs)
 }
 \keyword{internal}

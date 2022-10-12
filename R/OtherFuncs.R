@@ -9,10 +9,7 @@
 #' @param x List
 #' @return list
 #' @keywords internal
-#' @author JM Serra-Diaz 
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Josep M Serra-Diaz 
 #' @noRd
 .subsetlist.nonNULL <- function (x) {base::Filter(Negate(is.null), x)}
 
@@ -25,10 +22,7 @@
 #' @param x List
 #' @return list
 #' @keywords internal
-#' @author JM Serra Diaz
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Josep M Serra Diaz
 #' @noRd
 .subsetlist.isNA <- function (x) {Filter(Negate(is.na), x)}
 
@@ -42,9 +36,6 @@
 #' @param x character
 #' @return character
 #' @keywords internal
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @noRd
 .join.spname <- function (x){
   a <- strsplit(x,split=' ')
@@ -62,9 +53,6 @@
 #' @return character
 #' @keywords internal
 #' @author Pep Serra-Diaz
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @noRd
 # Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
 .multiple.strsplit <- function (x,multiple.splits) {
@@ -87,9 +75,6 @@
 #' @return character
 #' @keywords internal
 #' @author Pep Serra-Diaz
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @noRd
 
 .paste3 <- function(...,sep=", ") {
@@ -111,9 +96,6 @@
 #' @keywords internal 
 #' @author Pep Serra-Diaz
 #' @family internal
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @noRd
 .gimme.score <- function (x){
   if (!is.data.frame(x)) {stop ('input needs to be a dataframe')}
@@ -123,7 +105,7 @@
   columns.for.scoring = grep ('_test',names(x))
   
   if (length(columns.for.scoring)>1) {
-    score <- rowMeans (x [,columns.for.scoring], na.rm = T)
+    score <- rowMeans (x [,columns.for.scoring], na.rm = TRUE)
     
   }
   if (length(columns.for.scoring)==1){
@@ -140,14 +122,6 @@
 }
 
 
-#'Checks the Operative System 
-#'
-#' @return a character function. 
-#' @note #TInternal function copied from utiles wickham to know which is the os used by the computer
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
-
 # .get_os  ====
 #' @title Identify type of Operative system
 #' @description The function is used to report the working operative system as a 3-letter character for 'win', and 'mac', 'unix', and 'unknown OS'
@@ -155,12 +129,11 @@
 #' @return character
 #' @keywords internal 
 #' @author Pep Serra-Diaz
-#' @note
+#' @note Internal function copied from utils wickham to know which is the os used by the computer
 #' @seealso 
 #' @aliases
 #' @family internal
-#' @examples \dontrun{
-#' example<-"goes here"
+
 .get_os <- function() {
   if (.Platform$OS.type == "windows") { 
     "win"
@@ -181,9 +154,7 @@
 #' @keywords internal 
 #' @seealso dataPreparation::find_and_transform_dates
 #' @import dataPreparation 
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+
 .find_and_transform_dates <- function (data_set, cols = "auto", formats = NULL, n_test = 30, 
           ambiguities = "IGNORE", verbose = TRUE) {
   function_name <- "find_and_transform_dates"
@@ -215,31 +186,6 @@
   return(data_set)
 }
 
-# .hijack  ====
-#' @title Hijack functions
-#' @description  Hijacking functions to rename them
-#' @details In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
-#' @return character
-#' @keywords internal 
-#' @author tylerrinker on Rbloggers
-#' @note got it from https://www.r-bloggers.com/2014/08/hijacking-r-functions-changing-default-arguments/
-#' @family internal
-#' @examples \dontrun{
-#' example<-"goes here"
-#' @note #Internal function that I got from stack overflow MrFlick
-#' @examples \dontrun{
-#' .data.frame <- hijack(data.frame, stringsAsFactors = FALSE)
-#' dat <- .data.frame(x1 = 1:3, x2 = c("a", "b", "c"))
-#' str(dat)  # yay! strings are character
-#' }
-.hijack <- function (FUN, ...) {
-  .FUN <- FUN
-  args <- list(...)
-  invisible(lapply(seq_along(args), function(i) {
-    formals(.FUN)[[names(args)[i]]] <<- args[[i]]
-  }))
-  .FUN
-}
 
 # splitSpname  ====
 #' @title Split joined species name
@@ -247,10 +193,6 @@
 #' @param x species name join as a string separated by "_" 
 #' @return a species name where genus and species are separated by a space 
 #' @family internal
-#' @examples \dontrun{
-#' example not run
-#' }
-
 splitSpname = function (x){
   a = strsplit(x,'_')[[1]]
   paste(a,collapse = ' ')
@@ -262,28 +204,36 @@ splitSpname = function (x){
 #' @description  removes all objects in the environment
 #' @return a clear environment
 #' @family internal
-#' @examples \dontrun{
-#'  k = NA
-#'  k == 1
-#'  lazylogic (k==1)
-#' }
-rm.all <- function () {rm (list =  setdiff(ls(),'rm.all') ) ; gc(verbose = F) }
+rm.all <- function () {rm (list =  setdiff(ls(),'rm.all') ) ; gc(verbose = FALSE) }
 
 # lazylogic =====
 #' @title a lazy logic omitting NAs
-#' @description  evaluates a conditional expression where if any element is NA the output is F instead of NA
+#' @description  evaluates a conditional expression where if any element is NA the output is FALSE instead of NA
 #' @param e expression 
 #' @return logic
 #' @family internal
-#' @examples \dontrun{
-#'  k = NA
-#'  k == 1
-#'  lazylogic (k==1)
-#' }
+
 lazylogic <- function (e){
   
   o <- eval(parse(text=e))
-  ifelse(is.na(o),F,o)
+  ifelse(is.na(o),FALSE,o)
   
 }
 
+# .hijack [deprecated] ====
+# #' @title Hijack functions
+# #' @description  Hijacking functions to rename them
+# #' @details In the occTest package this is used to get to a same function name for different OS implementing differnt parallelization systems
+# #' @return character
+# #' @keywords internal 
+# #' @author tylerrinker on Rbloggers
+# #' @note got it from https://www.r-bloggers.com/2014/08/hijacking-r-functions-changing-default-arguments/
+# #' @family internal
+# .hijack <- function (FUN, ...) {
+#   .FUN <- FUN
+#   args <- list(...)
+#   invisible(lapply(seq_along(args), function(i) {
+#     formals(.FUN)[[names(args)[i]]] <<- args[[i]]
+#   }))
+#   .FUN
+#  }

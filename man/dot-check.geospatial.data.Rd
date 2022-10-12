@@ -4,7 +4,7 @@
 \alias{.check.geospatial.data}
 \title{Checks on the projection of the spatial data}
 \usage{
-.check.geospatial.data(list.geospatial.objects, verbose = F)
+.check.geospatial.data(list.geospatial.objects, verbose = FALSE)
 }
 \arguments{
 \item{list.geospatial.objects}{A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'}
@@ -30,6 +30,6 @@ Other checks:
 \code{\link{.status.tracker.and.escaping}()}
 }
 \author{
-JM Serra Diaz
+Josep M Serra Diaz
 }
 \concept{checks}

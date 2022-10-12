@@ -14,7 +14,7 @@
   reg_dist_min = 0.1,
   reg_dist_max = 2,
   min_unique_ds_size = 4,
-  graphs = F,
+  graphs = FALSE,
   test = "both",
   value = "flagged",
   verbose = TRUE
@@ -39,13 +39,13 @@
 
 \item{min_unique_ds_size}{numeric. Defaults to 7}
 
-\item{graphs}{logical. Defaults to F}
+\item{graphs}{logical. Defaults to FALSE.}
 
 \item{test}{character. Defaults to 'both'}
 
 \item{value}{character. Defaults to flagged}
 
-\item{verbose}{logical. Defaults to T}
+\item{verbose}{logical. Defaults to TRUE.}
 }
 \value{
 a clean data.frame
@@ -53,14 +53,9 @@ a clean data.frame
 \description{
 own version of coordinate cleaner cc_round
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \link[CoordinateCleaner]{CoordinateCleaner-package}
 }
 \author{
-A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+A Zizka (original author) Josep M Serra-Diaz (adapted from CoordinateCleaner)
 }

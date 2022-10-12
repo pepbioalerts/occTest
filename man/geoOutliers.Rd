@@ -14,8 +14,8 @@ geoOutliers(
   .samplingIntensThreshold.parameter = 0.1,
   method = "all",
   .projString,
-  do = T,
-  verbose = F
+  do = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -35,9 +35,9 @@ geoOutliers(
 
 \item{.projString}{proj4string character. Indicate coordinate reference system}
 
-\item{do}{logical. Should tests be performed? Default T}
+\item{do}{logical. Should tests be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 data.frame
@@ -53,15 +53,10 @@ Methods implented are 'alphaHull', detecting species outside an alphaHull level 
 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), Cory Merow (cmerow@gmail.com)
 }
 \keyword{internal}

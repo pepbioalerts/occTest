@@ -48,6 +48,6 @@ names (filtered_dataset)
 showTests
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr), J Borderieux (jeremy.borderieux@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), Jeremy Borderieux (jeremy.borderieux@agroparistech.fr)
 }
 \keyword{filter}

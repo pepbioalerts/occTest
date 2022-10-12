@@ -13,8 +13,8 @@ envOutliers(
   .sp.name,
   method = "all",
   .projString,
-  do = T,
-  verbose = F
+  do = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,9 +34,9 @@ envOutliers(
 
 \item{.projString}{proj4string character. Indicate coordinate reference system}
 
-\item{do}{logical. Should tests be performed? Default T}
+\item{do}{logical. Should tests be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 data.frame
@@ -50,15 +50,10 @@ Implemented methods are :\cr
 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 findEnvOutliers \link[biogeo]{outliers}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr), C Merow (cmerow@gmail.com). Mark Robertson (biogeo package)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), Cory Merow (cmerow@gmail.com). Mark Robertson (biogeo package)
 }
 \keyword{internal}

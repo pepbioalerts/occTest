@@ -9,7 +9,7 @@
   .countries.shapefile = NULL,
   .points.proj4string = NULL,
   ctryNameField = NULL,
-  verbose = F
+  verbose = FALSE
 )
 }
 \arguments{
@@ -29,16 +29,11 @@ Factor with ISO3 codes for countries
 \description{
 Extracts country ISO3 based on locations
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 Other Geo: 
 \code{\link{.getSRTM}()}
 }
 \author{
-JM Serra Diaz
+Josep M Serra Diaz
 }
 \concept{Geo}

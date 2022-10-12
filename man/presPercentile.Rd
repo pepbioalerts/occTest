@@ -24,6 +24,6 @@ presPercentile(
 Divide raster by the sum of all cells.
 }
 \author{
-JM SerraDiaz
+Josep M Serra Diaz
 }
 \keyword{internal}

@@ -29,5 +29,5 @@ Alpha hulls are created with \code{\link{ahull}}. \cr
 see maptools and RangeBuilder package
 }
 \author{
-Pascal Title (original version), JM Serra-Diaz (modifications)
+Pascal Title (original version), Josep M Serra-Diaz (modifications)
 }

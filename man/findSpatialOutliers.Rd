@@ -4,7 +4,7 @@
 \alias{findSpatialOutliers}
 \title{Find outlying occurrence data in geographical space}
 \usage{
-findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T, verbose = T)
+findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{myPres}{raster* object}
@@ -15,10 +15,19 @@ findSpatialOutliers(myPres, pvalSet = 1e-05, checkPairs = T, verbose = T)
 
 \item{verbose}{logical. print messages}
 }
+\value{
+a numeric vector indicating which rows are spatial outliers.
+}
 \description{
 Divide raster by the sum of all cells.
 }
+\examples{
+ 
+k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000))
+k <- sp::SpatialPoints(k)
+occTest::findSpatialOutliers(k)
+}
 \author{
-C Merow
+Cory Merow
 }
 \keyword{internal}

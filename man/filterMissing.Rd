@@ -4,7 +4,7 @@
 \alias{filterMissing}
 \title{Check for missing coordinates}
 \usage{
-filterMissing(df, xf, yf, verbose = F)
+filterMissing(df, xf, yf, verbose = FALSE)
 }
 \arguments{
 \item{df}{dat.frame of species occurrences}
@@ -13,7 +13,7 @@ filterMissing(df, xf, yf, verbose = F)
 
 \item{yf}{character. The field in the data.frame containing the y coordinates}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
@@ -22,11 +22,10 @@ List with two dataframes: stay = coordinates missing and continue = occurrence t
 checks for missing coordinates in the occurrence dataframe
 }
 \examples{
-\dontrun{
-example<-"goes here"
-}
+k <- data.frame (x=c(runif (n = 100),NA),y=c(runif (n = 100),1000))
+filterMissing(k,xf='x',yf='y')
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{internal}

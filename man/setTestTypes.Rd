@@ -5,14 +5,14 @@
 \title{Set the tests to run}
 \usage{
 setTestTypes(
-  countryStatusRange = T,
-  centroidDetection = T,
-  humanDetection = T,
-  landUseType = T,
-  institutionLocality = T,
-  geoOutliers = T,
-  envOutliers = T,
-  geoenvLowAccuracy = T
+  countryStatusRange = TRUE,
+  centroidDetection = TRUE,
+  humanDetection = TRUE,
+  landUseType = TRUE,
+  institutionLocality = TRUE,
+  geoOutliers = TRUE,
+  envOutliers = TRUE,
+  geoenvLowAccuracy = TRUE
 )
 }
 \arguments{
@@ -42,13 +42,11 @@ function used to select which types of tests you want in occTest workflow (analy
 See occTest::showTests for further information on tests used in the packages
 }
 \examples{
-\dontrun{
 defaultSettings_analysis <- setTestTypes()
 #now we do not want to perform centroid geoenironmental accuracy type of tests
-mySettings_analysis <- setTestTypes(geoenvLowAccuracy=F)
-}
+mySettings_analysis <- setTestTypes(geoenvLowAccuracy=FALSE)
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

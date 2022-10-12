@@ -17,12 +17,10 @@ It avoids using  some functions of the pkg under development.
 it can be use internally or it can be used by a user to subsequently modify parameters
 }
 \examples{
-\dontrun{
 #load default settings
 settings <- minimalSettings()
 }
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

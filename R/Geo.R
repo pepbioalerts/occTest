@@ -9,15 +9,13 @@
 #' @param verbose logical. Print messages?
 #' @return Factor with ISO3 codes for countries 
 #' @family Geo
-#' @author JM Serra Diaz
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+#' @author Josep M Serra Diaz
+
 
 .coords2country = function(xydat,
                            .countries.shapefile=NULL,
                            .points.proj4string=NULL,
-                           ctryNameField=NULL,verbose=F){  
+                           ctryNameField=NULL,verbose=FALSE){  
   if (is.null(.countries.shapefile)) {   .countries.shapefile = rworldmap::getMap(resolution='high') ;  ctryNameField ='ISO3'}
   if (!inherits(.countries.shapefile,'SpatialPolygonsDataFrame')) {stop (".countries shapefile not loaded ")}
   if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
@@ -31,7 +29,7 @@
 #.getSRTM =====
 #' @title Download SRTM elevation raster
 #' @param xydat A dataframe with x and y coordinates
-#' @param download Default to T. Whether the data should be downloaded 
+#' @param download Default to TRUE. Whether the data should be downloaded 
 #' @param path where the downloads should go. Default to the current directory
 #' @param verbose if you want to print messages of progress or warnings
 #' @details Basedd on getData from raster
@@ -39,11 +37,9 @@
 #' @family Geo
 #' @note borrowed from raster package but adapted to work directly within the occTest workflow
 #' @seealso  \link[raster]{getData}
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 
-.getSRTM = function (xydat,download=T,path=getwd(), verbose=F) {
+
+.getSRTM = function (xydat,download=TRUE,path=tempdir(), verbose=FALSE) {
   #get file names of the tiles in srtm
   file.tiles = sapply ( 1:nrow (xydat), function (i) {
     lon <- as.numeric (xydat[i,1])

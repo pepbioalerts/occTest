@@ -19,7 +19,7 @@
 
 \item{rnd}{numeric. Decimal rounding}
 
-\item{proj4string}{crs object with the spatial projectoinsprojection}
+\item{proj4string}{crs object with the spatial projection.}
 
 \item{tol}{numeric. tolerance}
 }
@@ -36,5 +36,5 @@ Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Tit
 Alpha hulls are created with \code{\link{ahull}}.
 }
 \author{
-Pascal Title (original version), JM Serra-Diaz (modifications)
+Pascal Title (original version), Josep M Serra-Diaz (modifications)
 }

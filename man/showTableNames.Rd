@@ -18,11 +18,9 @@ The function prints a guide to column naming conventions used by occTest in thei
          It does not require input parameters
 }
 \examples{
-\dontrun{
 showTableNames ()
 }
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

@@ -4,7 +4,7 @@
 \alias{plot.occTest}
 \title{Display the filtering process}
 \usage{
-\method{plot}{occTest}(x, occFilter_list = NULL, show_plot = F, ...)
+\method{plot}{occTest}(x, occFilter_list = NULL, show_plot = FALSE, ...)
 }
 \arguments{
 \item{x}{An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
@@ -36,7 +36,7 @@ descriptive_plots <- plot (x=occTest_output,occFilter_list=filtered_occTest)
 {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 }
 \author{
-J Borderieux (jeremy.borderieux@agroparistech.fr)
+Jeremy Borderieux (jeremy.borderieux@agroparistech.fr)
 }
 \keyword{filter}
 \keyword{plot}

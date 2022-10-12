@@ -11,8 +11,8 @@ institutionLocality(
   lf,
   method = "all",
   .points.proj4string,
-  do = T,
-  verbose = F
+  do = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ institutionLocality(
 
 \item{do}{logical. Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 data.frame
@@ -43,15 +43,10 @@ current implemented methods are : \cr
 "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \link[CoordinateCleaner]{cc_inst} \link[CoordinateCleaner]{cc_gbif}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{internal}

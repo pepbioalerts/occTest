@@ -17,22 +17,21 @@
 #' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
 #' @param resolveAlienCtry logical. To automatically try to detect  countries for which species is considered native
 #' @param resolveNativeCtry logical. To automatically try to detect  countries for which species is considered alien
-#' @param interactiveMode logical. Should prompts be ouput for some decisions taken by the workflow? Deafult F,
-#' @param verbose logical. Print workflow information? Default to F
-#' @param doParallel logical. Should some operations be run in parellel when possible? Default to F
-#' @param mc.cores numeric. If doParallel is T, then how many cores to use? Default to 2
+#' @param interactiveMode logical. Should prompts be ouput for some decisions taken by the workflow? Deafult FALSE,
+#' @param verbose logical. Print workflow information? Default to FALSE
+#' @param doParallel logical. Should some operations be run in parellel when possible? Default to FALSE
+#' @param mc.cores numeric. If doParallel is TRUE, then how many cores to use? Default to 2
 #' @return data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score) 
 #' @note 
 #' The output dataframe allows users to classify or scrub the occurrences the way they want to. \cr
 #' The names of the columns in the output object have the following naming convention: \cr
 #' $AnalysisType$_$SpecificTest$_value: numeric or logical. Shows the quantitative result of the test (sometimes the same as in the result of the _test) \cr
-#' $AnalysisType$_$SpecificTest$_test: logical Shows whether the occurrence passes or not the test, being T a flag for a wrong record and NA indicating that the test was not performed on that record. \cr
+#' $AnalysisType$_$SpecificTest$_test: logical Shows whether the occurrence passes or not the test, being TRUE a flag for a wrong record and NA indicating that the test was not performed on that record. \cr
 #' $AnalysisType$_$SpecificTest$_comment: character. Shows some comments related to the specific test.\cr
-#' Examples: HumanDetection_HumanInfluence_value gives you the score of current human influence in the record HumanDetection_HumanInfluence_test gives you whether we consider the former value an error/bias (T) or not (F) HumanDetection_HumanInfluence_comment gives you a commen that give further detail on the analysis. In this case that the threshold of 45 was used for the test. HumanDetection_score summarizes all the other HumanDetection tests and outputs a value from 0 to 1. A value of 0.5 would indicate that half of the tests used indicate that is an a Human signal in the record.
-#' @examples 
+#' Examples: HumanDetection_HumanInfluence_value gives you the score of current human influence in the record HumanDetection_HumanInfluence_test gives you whether we consider the former value an error/bias (TRUE) or not (FALSE) HumanDetection_HumanInfluence_comment gives you a commen that give further detail on the analysis. In this case that the threshold of 45 was used for the test. HumanDetection_score summarizes all the other HumanDetection tests and outputs a value from 0 to 1. A value of 0.5 would indicate that half of the tests used indicate that is an a Human signal in the record.
+#' @examples \donttest{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
-#'
 #' #load environmental raster
 #' library (raster)
 #' library (sf)
@@ -45,24 +44,14 @@
 #' dem <- raster (system.file('ext/DEM.tif',package = 'occTest'))
 #' #load settings
 #' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
-#' #insert hii in settings
-#' #settings$analysisSettings$humanDetection$ras.hii <- 
-#' # raster (system.file('ext/HII.tif',package = 'occTest'))
-#' #settings$analysisSettings$landSurfacePol <- 
-#' # st_read (system.file('ext/ctryExample.shp',package = 'occTest'))
-#' #saveRDS (settings, 
-#' # system.file('ext/exSettings.rds',package = 'occTest'))
-
+#' #run occTest
 #' out = occTest(sp.name='MyFake species',
-#'               sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
-#'               tableSettings = settings$tableSettings,
-#'               writeoutSettings = settings$writeoutSettings,
-#'               analysisSettings = settings$analysisSettings,
-#'               r.env = renv,r.dem=dem)
-#' 
-#' class(out)
-#' head (out)
-#' 
+#'              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
+#'              tableSettings = settings$tableSettings,
+#'              writeoutSettings = settings$writeoutSettings,
+#'              analysisSettings = settings$analysisSettings,
+#'              r.env = renv,r.dem=dem)
+#' }
 #' @export
 occTest = function(
   sp.name,
@@ -79,12 +68,12 @@ occTest = function(
   r.dem=NULL,
   ntv.ctry=NULL,
   inv.ctry=NULL,
-  resolveAlienCtry=F,
-  resolveNativeCtry=F,
+  resolveAlienCtry=FALSE,
+  resolveNativeCtry=FALSE,
   
-  interactiveMode=F,
-  verbose = F,
-  doParallel=F,
+  interactiveMode=FALSE,
+  verbose = FALSE,
+  doParallel=FALSE,
   mc.cores=2){
 
   tictoc::tic()
@@ -267,19 +256,19 @@ occTest = function(
   #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
   #whatever the want we are going to set it to False from now
   if (any (c(interactiveMode,resolveNativeCtry,resolveAlienCtry))) message('Automatic resolving of native and non-native ranges not implemented yet')
-  interactiveMode= F
-  resolveNativeCtry = F
-  resolveAlienCtry = F
+  interactiveMode= FALSE
+  resolveNativeCtry = FALSE
+  resolveAlienCtry = FALSE
   #set timer
   #tictoc::tic('Resolve native and invasive countries')
   
   #automatically resolve invasive and native countries for target species(not implemented yet)
   
   if(interactiveMode & is.null(ntv.ctry)){
-    resolveNativeCtry = if(interactive()) utils::askYesNo(default = F,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+    resolveNativeCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
   }
   if(interactiveMode & is.null(inv.ctry)){
-    resolveAlienCtry = if(interactive()) utils::askYesNo(default = F,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+    resolveAlienCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
   }
   if(any(resolveNativeCtry,resolveAlienCtry)){
     if(verbose){message("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
@@ -317,7 +306,7 @@ occTest = function(
       c('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0',"+proj=longlat +datum=WGS84 +no_defs")){
     
   
-    coordIssues_invalidCoord_value =! CoordinateCleaner::cc_val(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
+    coordIssues_invalidCoord_value =! CoordinateCleaner::cc_val(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=FALSE)
     dat$coordIssues_invalidCoord_value = coordIssues_invalidCoord_value
     coordIssues_invalidCoord_test = as.logical(coordIssues_invalidCoord_value)
     dat$coordIssues_invalidCoord_test = coordIssues_invalidCoord_test
@@ -339,7 +328,7 @@ occTest = function(
     if(any(class(status.out)=='occTest')) {return(status.out)}
     
     #zero zero long lat
-    coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=F)
+    coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=FALSE)
     dat$coordIssues_zeroCoord_value = coordIssues_zeroCoord_value
     coordIssues_zeroCoord_test = as.logical(coordIssues_zeroCoord_value)
     dat$coordIssues_zeroCoord_test = coordIssues_zeroCoord_test
@@ -364,7 +353,7 @@ occTest = function(
     if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
       dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
       ds.field = 'MyInventedCommonDataset'}
-    outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=F,diff=1.5)},silent=T)
+    outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=FALSE,diff=1.5)},silent=TRUE)
     if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
     coordIssues_coordConv_value = ! outDecimalTest
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
@@ -500,7 +489,7 @@ occTest = function(
     if(!is.null(output.dir)){
       sp.name2=  .join.spname(sp.name)
       odir = paste0(output.dir,'/',sp.name2)
-      dir.create(odir,showWarnings = F,recursive = T)
+      dir.create(odir,showWarnings = FALSE,recursive = TRUE)
       utils::write.csv( moved.points,
                  paste0(odir,'/',sp.name2,'_coastal_Reassignment.csv'))
     }
@@ -576,9 +565,9 @@ occTest = function(
                                         excludeNotmatchCountry =
                                           excludeNotmatchCountry,
                                         doRangeAnalysis = doRangeAnalysis,
-                                        verbose = T)
+                                        verbose = TRUE)
   
-  if (nrow(Analysis.F$stay)!= 0 ) dat.Q.F = Analysis.F$stay 
+  if (nrow(Analysis.F$stay)!= 0 ) dat.Q.FALSE = Analysis.F$stay 
   dat = Analysis.F$continue
   
   #check outputs and escape ifneedbe //
@@ -722,7 +711,7 @@ occTest = function(
 
   ### STEP 9: BUILD FULL dataframe ====
   #load previous filtered objects
-  previousFiltered = grep(pattern = 'dat.Q.',ls(),value = T)
+  previousFiltered = grep(pattern = 'dat.Q.',ls(),value = TRUE)
   full.qaqc = cbind(dat, df.qualityAssessment)
   for(o in previousFiltered){
     rowsToAdd = get(o)
@@ -741,13 +730,13 @@ occTest = function(
   if(write.full.output){
     sp2 =  .join.spname(sp)
     newdir = paste0(output.dir,'/',sp2)
-    dir.create(newdir,recursive = T,showWarnings = F)
+    dir.create(newdir,recursive = TRUE,showWarnings = FALSE)
     written = try(utils::write.csv(full.qaqc,  
                             paste0(newdir,'/',output.base.filename,
                                    '_',sp,'_long.csv'),
-                            row.names = F),silent = T)
+                            row.names = FALSE),silent = TRUE)
     if(inherits(written,'try-error')) save(list = 'full.qaqc',file = paste0(newdir,'/',output.base.filename,'_',sp,'_long.RData'))
-    if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=T )
+    if(inherits(written,'try-error')) try(file.remove(paste0(newdir,'/',output.base.filename,'_',sp,'_long.csv')), silent=TRUE )
   }
   tictoc::toc()
   

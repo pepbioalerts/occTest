@@ -3,7 +3,7 @@
 #' @description Select occurrence records based on aggregated values of different tests
 #' @return list of 2 data.frames
 #' @keywords filter
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr), J Borderieux (jeremy.borderieux@@agroparistech.fr)
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param df data.frame. Output of  occTest
 #' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
 #' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
@@ -63,8 +63,8 @@ occFilter <- function (df,
   dfScores = lapply (uniqueTargetLevels, function (categ){
     baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = 'baseLevel')
     
-    idCols = grep (pattern = paste0(baseCategSelec,collapse = '|'), names(dfFiltered),value = T)
-    idCols = grep (pattern ='_test', idCols,value = T)
+    idCols = grep (pattern = paste0(baseCategSelec,collapse = '|'), names(dfFiltered),value = TRUE)
+    idCols = grep (pattern ='_test', idCols,value = TRUE)
     
     dfSelec = dfFiltered [,idCols]
     
@@ -118,35 +118,35 @@ occFilter <- function (df,
     
     # filter_occ<-function(score,testName){
     #   current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull(errorThreshold)
-    #   return( ifelse(is.na(score),F, score>current_treshold ))
+    #   return( ifelse(is.na(score),FALSE, score>current_treshold ))
     # 
     # }
     filter_occ<-function(score,testName){
       
       # current_treshold<-errorRule %>% dplyr::filter (test == stringr::str_remove(testName,"_score")) %>% dplyr::pull(errorThreshold)
-      # return( ifelse(is.na(score),F, score>current_treshold ))
+      # return( ifelse(is.na(score),FALSE, score>current_treshold ))
       # 
       current_treshold<-errorRule 
       keepRows = which (current_treshold[,'test'] == stringr::str_remove(testName,"_score"))
       current_treshold = current_treshold [keepRows,]
       current_treshold = current_treshold %>% dplyr::pull('errorThreshold')
-      return( ifelse(is.na(score),F, score>current_treshold ))
+      return( ifelse(is.na(score),FALSE, score>current_treshold ))
 
     }
 
 
       toss_df<-mapply(filter_occ,
                       dfScoreVals,
-                      colnames(dfScoreVals),SIMPLIFY = T)
+                      colnames(dfScoreVals),SIMPLIFY = TRUE)
     
-    # @JB I added na.rm=T in case some scores are not done for a given record
-    if (any (class(toss_df) %in% 'logical')) {toss= sum(toss_df,na.rm=T)} else
-    {toss<-rowSums(toss_df,na.rm=T)}
+    # @JB I added na.rm=TRUE in case some scores are not done for a given record
+    if (any (class(toss_df) %in% 'logical')) {toss= sum(toss_df,na.rm=TRUE)} else
+    {toss<-rowSums(toss_df,na.rm=TRUE)}
       
     toss<-toss>=1
     
   #output
-  if (all(toss==F)) {warning("No occurence filtered through quality tests")
+  if (all(toss==FALSE)) {warning("No occurence filtered through quality tests")
     out = list (filteredDataset = dfFiltered,
                 summaryStats = dfScores,
                 rule = errorRule)
@@ -154,7 +154,7 @@ occFilter <- function (df,
     attr(out,"Settings")<-get_occTest_settings(df)
     return(out)
     }
-  if (all(toss==T)) {
+  if (all(toss==TRUE)) {
     warning("All occurence filtered")
     out = list (filteredDataset = NULL,
                 summaryStats = dfScores,

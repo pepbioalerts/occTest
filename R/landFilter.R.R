@@ -6,20 +6,21 @@
 #' @param yf the field in the dataframe containing the y cordinates
 #' @param habType character. Define the species habitat. Only "terrestrial" and "sea" implemented. 
 #' @param habPol sf polygon boject. Shows land masses
-#' @param verbose logical. Print messages? Default T
+#' @param verbose logical. Print messages? Default TRUE
 #' @return list
 #' @details 
 #' @keywords filter
-#' @author JM Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \dontrun{
-#' example<-"goes here"
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples \donttest{
+#' xyDF <- data.frame (x=c(0,42),y=c(0,1),Reason=NA)
+#' landSeaFilter(xyDF,xf='x',yf='y')
 #' }
 #' @export
 
 landSeaFilter             =function(df,
                                     xf,
                                     yf,
-                                    habType=NULL,verbose=T,habPol=NULL) {
+                                    habType=NULL,verbose=TRUE,habPol=NULL) {
 
   
   #load high-res land masses
@@ -33,7 +34,7 @@ landSeaFilter             =function(df,
   xydat <- df[,c(xf,yf)]
   pts = sf::st_as_sf(xydat,coords=c(1,2),crs=raster::crs(land))
   #intersect
-  intersectMatrix <- sf::st_intersects(x = pts, y = land,sparse = T)
+  intersectMatrix <- sf::st_intersects(x = pts, y = land,sparse = TRUE)
   intersectMatrix <- Matrix::as.matrix(intersectMatrix)
   ptsInLand <- Matrix::rowSums(intersectMatrix)
   #points in out of the land/sea

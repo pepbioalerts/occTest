@@ -13,19 +13,11 @@ lazylogic(e)
 logic
 }
 \description{
-evaluates a conditional expression where if any element is NA the output is F instead of NA
-}
-\examples{
-\dontrun{
- k = NA
- k == 1
- lazylogic (k==1)
-}
+evaluates a conditional expression where if any element is NA the output is FALSE instead of NA
 }
 \seealso{
 Other internal: 
 \code{\link{.get_os}()},
-\code{\link{.hijack}()},
 \code{\link{rm.all}()},
 \code{\link{splitSpname}()}
 }

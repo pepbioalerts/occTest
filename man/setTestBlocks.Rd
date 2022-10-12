@@ -4,7 +4,7 @@
 \alias{setTestBlocks}
 \title{Set the tests to run}
 \usage{
-setTestBlocks(geo = T, lu = T, env = T, time = T)
+setTestBlocks(geo = TRUE, lu = TRUE, env = TRUE, time = TRUE)
 }
 \arguments{
 \item{geo}{logical. Should this family of tests be performed?}
@@ -25,13 +25,11 @@ function used to select which groups of tests you want in occTest workflow
 You can turn off an entire type of tests altogether by modifying this seetings. See occTest::showTests for further information on tests used in the packages
 }
 \examples{
-\dontrun{
 defaultSettings_analysis  <- setTestBlocks()
 #now we turn off the block of tests related to land use
-mySettings_analysis  <- setTestBlocks(lu=F)
-}
+mySettings_analysis  <- setTestBlocks(lu=FALSE)
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

@@ -1,10 +1,16 @@
 Package: occTest
 Title: Characterizing and Filtering Species Occurrence Data 
-Version: 0.1
-Author: JM Serra Diaz, Cory Merow, Brian Maitner, Jeremy Borderieux
-Maintainer: JM Serra Diaz <pep.agroparistech@gmail.com>
-Description: Tools for determining potential errors of occurrence data and filter them. Multiple tests are performed and grouped based on (1) missing data and geographical errors; (2) Filtering duplicate records; (3) Sea/Terrestrial potential reassignment; (4) Country-related range analysis; (5) Geographic and (6) environmental analysis. Based on the outcomes of these tests several scores are summarized to let the user decide which occurrences to filter.
-Depends: R (>= 3.5.0)
+Version: 0.11
+Authors@R: c(person(given = "Josep M", family = "Serra-Diaz", email = "pep.agroparistech@gmail.com",
+                    role = c("aut", "cre")),
+             person(given = "Cory", family = "Merow", role = c("aut","ctb"), 
+             comment = "Cory co-developped the structure for testing blocks"),
+             person(given = "Jeremy", family = "Borderieux", role = c("aut","ctb"), 
+             comment="Jeremy developped plotting and filtering functions"),
+             person(given = "Brian", family = "Maitner", role = c("aut","ctb"), 
+             comment = "Brian developped and incorporated centroid and GNRS analysis")
+             )
+Description: Perform multiple tests for potential errors in species occurrence data and filter, and filter data according to users specifications.
 License:  MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -52,3 +58,4 @@ Suggests:
     originr,
     parallelsugar,
     assertthat
+Additional_repositories: https://pepbioalerts.github.io/drat

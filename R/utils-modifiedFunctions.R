@@ -4,7 +4,7 @@
 #' @title Download quitely from neearth data (modified from original package)
 #' @description download from Natural Earth the country checklist
 #' @details
-#' @author Andy South (southandy@@gmail.com) rnaturalearth; JM Serra Diaz (modifs)
+#' @author Andy South (southandy@@gmail.com) rnaturalearth; Josep M Serra Diaz (modifs)
 #' @param scale Data.frame of species occurrences
 #' @param type the field in the dataframe containing the x coordinates
 #' @param category the field in the dataframe containing the y coordinates
@@ -14,9 +14,7 @@
 #' @keywords internal
 #' @seealso \[linkrnaturalearth]{ne_download}
 #' @import rnaturalearth
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
+
 .ne_download_occTest = function (scale = 110, type = "countries", 
                                     category = c("cultural", "physical", "raster"), 
                                     destdir = tempdir(), 
@@ -28,7 +26,7 @@
                                             full_url = FALSE)
   address <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
                                           full_url = TRUE)
-  utils::download.file(file.path(address), zip_file <- tempfile(),quiet = T)
+  utils::download.file(file.path(address), zip_file <- tempfile(),quiet = TRUE)
   utils::unzip(zip_file, exdir = destdir)
   if (load & category == "raster") {
     rst <- raster::raster(file.path(destdir, file_name, paste0(file_name, 
@@ -37,7 +35,7 @@
   }
   else if (load) {
     sp_object <- rgdal::readOGR(destdir, file_name, encoding = "UTF-8", 
-                                 stringsAsFactors = FALSE, use_iconv = TRUE,verbose = F)
+                                 stringsAsFactors = FALSE, use_iconv = TRUE,verbose = FALSE)
     sp_object@data[sp_object@data == "-99" | sp_object@data == 
                      "-099"] <- NA
     return(ne_as_sf(sp_object, returnclass))
@@ -61,15 +59,12 @@
 #' @param outdir output directory
 #' @return a clean data.frame 
 #' @keywords internal
-#' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
+#' @author A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
 #' @seealso \link[CoordinateCleaner]{cc_urb}
 #' @references CoordinateCleaner package
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @importFrom methods as is slot
 .cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
-                        ref = NULL, value = "clean", verbose = F,outdir) 
+                        ref = NULL, value = "clean", verbose = FALSE,outdir) 
 {
   match.arg(value, choices = c("clean", "flagged"))
   if (verbose) {
@@ -89,8 +84,8 @@
     }
     sp::proj4string(ref) <- ""
     newoutdir = paste0(outdir,'/spatialData')
-     dir.create(newoutdir,showWarnings = F,recursive = T)
-     rgdal::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=T)
+     dir.create(newoutdir,showWarnings = FALSE,recursive = TRUE)
+     rgdal::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=TRUE)
      
   }
   else {
@@ -135,19 +130,15 @@
 #' @param tdi numeric. Default to 1000
 #' @param value character. Type of output. Default to 'clean'
 #' @param sampling_thresh numeric. Sampling threshold. Defaults to 0
-#' @param verbose logical. Should output messages be printed. Default to T
+#' @param verbose logical. Should output messages be printed. Default to TRUE
 #' @param min_occs integer. Minimum number of occurrences. Defaults to 7
-#' @param thinning logical. Should thinning be performed? Defaults to F
+#' @param thinning logical. Should thinning be performed? Defaults to FALSE
 #' @param thinning_res double. Thinnning resolution. Defaults to 0.5
 #' @seealse \link[CoordinateCleaner]{cc_outl}
 #' @keywords internal
-#' @author A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
+#' @author A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
 #' @return a clean data.frame 
 #' @import CoordinateCleaner
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
-
 .cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
                        species = "species", method = "quantile", mltpl = 5, 
                        tdi = 1000, value = "clean", sampling_thresh = 0, verbose = TRUE, 
@@ -214,7 +205,7 @@
     }
     if (method == "quantile") {
       quo <- quantile(mins, c(0.25, 0.75), na.rm = TRUE)
-      out <- which(mins > quo[2] + stats::IQR(mins,na.rm = T) * mltpl)
+      out <- which(mins > quo[2] + stats::IQR(mins,na.rm = TRUE) * mltpl)
     }
     if (method == "mad") {
       quo <- stats::median(mins, na.rm = TRUE)
@@ -313,7 +304,7 @@
 # cc_round_occTest ====
 #' @title Flag records with regular pattern interval
 #' @description own version of coordinate cleaner cc_round
-#' @author A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+#' @author A Zizka (original author) Josep M Serra-Diaz (adapted from CoordinateCleaner)
 #' @param x Data.frame of species occurrences
 #' @param lon character. Column name in x with decimal longitude values
 #' @param lat character. Column name in x with decimal latitude values
@@ -323,21 +314,18 @@
 #' @param reg_dist_min numeric. Defaults to 7
 #' @param reg_dist_max numeric. Defaults to 7
 #' @param min_unique_ds_size numeric. Defaults to 7
-#' @param graphs logical. Defaults to F
+#' @param graphs logical. Defaults to FALSE.
 #' @param test character. Defaults to 'both'
 #' @param value character. Defaults to flagged
-#' @param verbose logical. Defaults to T
+#' @param verbose logical. Defaults to TRUE.
 #' @seealso \link[CoordinateCleaner]{CoordinateCleaner-package}
 #' @notes Turned off by default as it disappeared from CoordinateCleaner pkg
-#' @examples \dontrun{
-#' example<-"goes here"
-#' }
 #' @return a clean data.frame 
 #' @import CoordinateCleaner
 #' @importFrom graphics title
 .cc_round_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                            ds = "dataset", T1 = 7, reg_out_thresh = 2, reg_dist_min = 0.1, 
-                           reg_dist_max = 2, min_unique_ds_size = 4, graphs = F, 
+                           reg_dist_max = 2, min_unique_ds_size = 4, graphs = FALSE, 
                            test = "both", value = "flagged", verbose = TRUE) 
 {
   window_size <- 10
@@ -370,7 +358,7 @@
       else {
         if (test == "lon") {
           gvec <- try(.CalcACT(data = k[[lon]], digit_round = digit_round, 
-                           nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
+                           nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=TRUE)
           if (class(gvec) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
                               n.outliers = NA, n.regular.outliers = NA,
@@ -381,7 +369,7 @@
           n_outl <- try(.OutDetect(gvec, T1 = T1, window_size = window_size, 
                                detection_rounding = detection_rounding, 
                                detection_threshold = detection_threshold, 
-                               graphs = graphs),silent=T)
+                               graphs = graphs),silent=TRUE)
           
           if (class(n_outl) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -406,7 +394,7 @@
         if (test == "lat") {
           gvec <- try({.CalcACT(data = k[[lat]], digit_round = digit_round, 
                            nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
-                      silent=T)
+                      silent=TRUE)
           
           if (class(gvec) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -418,7 +406,7 @@
           n_outl <- try({.OutDetect(gvec, T1 = T1, window_size = window_size, 
                                detection_rounding = detection_rounding, 
                                detection_threshold = detection_threshold, 
-                               graphs = graphs)},silent = T)
+                               graphs = graphs)},silent = TRUE)
           
           if (class(n_outl) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -443,7 +431,7 @@
         
         if (test== 'both') {
           gvec1 <- try(.CalcACT(data = k[[lon]], digit_round = digit_round, 
-                                                   nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=T)
+                                                   nc = nc, graphs = graphs, graph_title = unique(k[[ds]])),silent=TRUE)
           if (class(gvec1) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
                               n.outliers = NA, n.regular.outliers = NA,
@@ -454,7 +442,7 @@
           n_outl_lon <- try(.OutDetect(gvec1, T1 = T1, window_size = window_size, 
                                                        detection_rounding = detection_rounding, 
                                                        detection_threshold = detection_threshold, 
-                                                       graphs = graphs),silent=T)
+                                                       graphs = graphs),silent=TRUE)
           
           if (class(n_outl_lon) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -475,7 +463,7 @@
           #latitude
           gvec2 <- try({.CalcACT(data = k[[lat]], digit_round = digit_round, 
                                                     nc = nc, graphs = graphs, graph_title = unique(k[[ds]]))}, 
-                      silent=T)
+                      silent=TRUE)
           
           if (class(gvec2) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -487,7 +475,7 @@
           n_outl_lat <- try({.OutDetect(gvec2, T1 = T1, window_size = window_size, 
                                                         detection_rounding = detection_rounding, 
                                                         detection_threshold = detection_threshold, 
-                                                        graphs = graphs)},silent = T)
+                                                        graphs = graphs)},silent = TRUE)
           
           if (class(n_outl_lat) %in% c('error','try-error')) {
             out <- data.frame(dataset = unique(k[[ds]]),
@@ -567,7 +555,7 @@
     else {
       if (test == "lon") {
         gvec <- try({.CalcACT(data = x[[lon]], digit_round = digit_round, 
-                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]]))},silent=T)
+                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]]))},silent=TRUE)
         if (class(gvec) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
                             n.outliers = rep(NA,length.out=nrow(x)), 
@@ -627,7 +615,7 @@
       }
       if (test == "lat") {
         gvec <- try (.CalcACT(data = x[[lat]], digit_round = digit_round, 
-                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]])),silent=T)
+                         nc = nc, graphs = graphs, graph_title = unique(x[[ds]])),silent=TRUE)
         if (class(gvec) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
                             n.outliers = rep(NA,length.out=nrow(x)), 
@@ -650,7 +638,7 @@
           }
         n_outl <- try (.OutDetect(gvec, T1 = T1, window_size = window_size, 
                              detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
-                             graphs = graphs), silent=T)
+                             graphs = graphs), silent=TRUE)
         if (class(n_outl) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
                             n.outliers = rep(NA,length.out=nrow(x)), 
@@ -686,7 +674,7 @@
       }
       if (test == "both") {
         gvec1 <- try(.CalcACT(data = x[[lon]], digit_round = digit_round, 
-                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
+                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=TRUE)
         
         if (class(gvec1) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
@@ -711,7 +699,7 @@
         
         n_outl_lon <- try (.OutDetect(gvec1, T1 = T1, window_size = window_size, 
                                  detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
-                                 graphs = graphs), silent=T)
+                                 graphs = graphs), silent=TRUE)
         if (class(n_outl_lon) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
                             n.outliers = rep(NA,length.out=nrow(x)), 
@@ -743,7 +731,7 @@
                       sep = " - "))
         }
         gvec2 <- try (.CalcACT(data = x[[lat]], digit_round = digit_round, 
-                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=T)
+                          nc = nc, graphs = graphs, graph_title = unique(x[[ds]])), silent=TRUE)
         if (class(gvec2) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
                             n.outliers = rep(NA,length.out=nrow(x)), 
@@ -766,7 +754,7 @@
           }
         n_outl_lat <- try (.OutDetect(gvec2, T1 = T1, window_size = window_size, 
                                  detection_rounding = detection_rounding, detection_threshold = detection_threshold, 
-                                 graphs = graphs), silent = T)
+                                 graphs = graphs), silent = TRUE)
         
         if (class(n_outl_lat) %in% c('error','try-error')) {
           out <- data.frame(dataset = rep(unique(x[[ds]]),length.out=nrow(x)), 
@@ -808,7 +796,7 @@
       out <- n_outl
     }
   }
-  out2 = merge (x,out[c('dataset','summary')], by.x= ds,by.y='dataset',all.x=T)
+  out2 = merge (x,out[c('dataset','summary')], by.x= ds,by.y='dataset',all.x=TRUE)
   switch(value, dataset = return(out), clean = return({
     test <- x[x[[ds]] %in% out[out$summary, "dataset"], 
     ]
@@ -829,12 +817,8 @@
 #' @description own version of coordinate cleaner cc_round
 #' @details
 #' @keywords internal
-#' @author A Zizka (original author) JM Serra-Diaz (adapted from CoordinateCleaner)
+#' @author A Zizka (original author) Josep M Serra-Diaz (adapted from CoordinateCleaner)
 #' @return a clean data.frame 
-#' @seealso \link[CoordinateCleaner]{cd_ddmm}
-# @examples \dontrun{
-# example<-"goes here"
-# }
 
 .cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
           ds = "dataset", pvalue = 0.025, diff = 1, mat_size = 1000, 

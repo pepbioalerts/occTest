@@ -4,7 +4,7 @@
 \alias{.checkfields}
 \title{Checking main fields}
 \usage{
-.checkfields(dat, xf, yf, ef, tf, lf, cf, idf, verbose = F)
+.checkfields(dat, xf, yf, ef, tf, lf, cf, idf, verbose = FALSE)
 }
 \arguments{
 \item{dat}{A dataframe containing occurrence data for checking.}
@@ -23,7 +23,7 @@
 
 \item{idf}{character. Name of the field of the id of the observation}
 
-\item{verbose}{logical. Print messages? Default to F}
+\item{verbose}{logical. Print messages? Default to FALSE}
 }
 \value{
 Original dataframe, dat.  Used primarily to generate warning messages.
@@ -34,11 +34,6 @@ Checking main fields
 \details{
 checking main fields (inspired by \link[biogeo]{addmainfields} .
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 Other checks: 
 \code{\link{.addmainfields2}()},
@@ -47,6 +42,6 @@ Other checks:
 \code{\link{.status.tracker.and.escaping}()}
 }
 \author{
-Mark Robertson and Vernon Visser (original function), JM Serra Diaz (modifs)
+Mark Robertson and Vernon Visser (original function), Josep M Serra Diaz (modifs)
 }
 \concept{checks}

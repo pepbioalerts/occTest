@@ -6,11 +6,10 @@
 #' @param percent numeric. Defaults to 95. Percentage to def object
 #' @param unin character vector. 
 #' @param unout character vector.
-#' @author JM SerraDiaz
+#' @author Josep M Serra Diaz
 #' @keywords internal 
 #' @description  Divide raster by the sum of all cells.
-#' @export
-# unin = c("m");  unout ='m2'
+
 presPercentile=function (xy,
                          percent = 95,
                          unin = c("m", "km"),
@@ -76,18 +75,18 @@ presPercentile=function (xy,
 #' @param pvalSet numeric. p value set to identify outliers
 #' @param checkPairs logical.  
 #' @param verbose logical. print messages
-#' @author C Merow
+#' @author Cory Merow
 #' @keywords internal
 #' @description  Divide raster by the sum of all cells.
+#' @return a numeric vector indicating which rows are spatial outliers.
+#' @examples  
+#' k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000))
+#' k <- sp::SpatialPoints(k)
+#' occTest::findSpatialOutliers(k)
 #' @export
-# unin = c("m");  unout ='m2'
-
 findSpatialOutliers=function(myPres,
                              pvalSet=1e-5,
-                             checkPairs=T,verbose=T){
-  #  for testing
-  #  myPres=pres; pvalSet=1e-5
-  #  myPres=mcp.pres; pvalSet=toDo$presences$pvalSet; checkPairs=T
+                             checkPairs=TRUE,verbose=TRUE){
 
   pres.inliers=myPres
   sp.toss.coord=NULL
@@ -146,7 +145,7 @@ findSpatialOutliers=function(myPres,
 #' @details
 #' @param myPres a `SpatialPointsDataFrame`
 #' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
-#' @param checkPairs logical. Default to F (T not implemented).
+#' @param checkPairs logical. Default to FALSE (TRUE not implemented).
 #' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
 #' @param verbose logic. Should messages be printed out?
 #' @keywords internal
@@ -157,9 +156,9 @@ findSpatialOutliers=function(myPres,
 findEnvOutliers=function(myPres,
                          myEnv=NULL,
                          pvalSet=1e-5,
-                         checkPairs=F,verbose=T){
+                         checkPairs=FALSE,verbose=TRUE){
   #  for testing
-  #  myPres=presDF; pvalSet=1e-5; checkPairs=F; myEnv=NULL
+  #  myPres=presDF; pvalSet=1e-5; checkPairs=FALSE; myEnv=NULL
   #  myEnv=env
   #  myPres=myPres; env=myEnv; pvalSet=1e-5
   if(!is.null(myEnv)){ p.env=raster::extract(myEnv,myPres)} else {p.env=myPres}

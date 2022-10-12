@@ -12,8 +12,8 @@ humanDetection(
   ras.hii,
   .th.human.influence,
   .points.proj4string,
-  do = T,
-  verbose = F,
+  do = TRUE,
+  verbose = FALSE,
   output.dir
 )
 }
@@ -32,9 +32,9 @@ humanDetection(
 
 \item{.points.proj4string}{proj4string argument for df}
 
-\item{do}{logical. Should range analysis be performed? Default T}
+\item{do}{logical. Should range analysis be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 
 \item{output.dir}{character. Output directory}
 }
@@ -50,11 +50,6 @@ Current implemented methods are: \cr
 'hii' using a raster and a threhold of human influence
 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package.
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 \link[CoordinateCleaner]{cc_urb} for CoordinateCleaner functions
 
@@ -66,7 +61,7 @@ Other analysis:
 \code{\link{geoEnvAccuracy}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr). A Zizka (CoordinateCleaner functions)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr). A Zizka (CoordinateCleaner functions)
 }
 \concept{analysis}
 \keyword{internal}

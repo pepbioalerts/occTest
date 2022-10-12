@@ -21,9 +21,9 @@ geoEnvAccuracy(
   env.quantiles = c(0.3, 0.7),
   elev.threshold = 100,
   raster.elevation = NULL,
-  verbose = F,
-  do = T,
-  doParallel = F,
+  verbose = FALSE,
+  do = TRUE,
+  doParallel = FALSE,
   mc.cores = 2
 )
 }
@@ -60,13 +60,13 @@ geoEnvAccuracy(
 
 \item{raster.elevation}{numeric. Default to 100}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 
-\item{do}{logical. Should tests be performed? Default T}
+\item{do}{logical. Should tests be performed? Default TRUE}
 
-\item{doParallel}{logical. Should computation use parallel functions? Default F}
+\item{doParallel}{logical. Should computation use parallel functions? Default FALSE}
 
-\item{mc.cores}{numeric. How many cores to use? (used when doParallel = T). Default 2}
+\item{mc.cores}{numeric. How many cores to use? (used when doParallel = TRUE). Default 2}
 }
 \value{
 data.frame
@@ -86,9 +86,7 @@ Current implmented methods are:
 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr
 }
 \examples{
-\dontrun{
-example<-"goes here"
-}
+#see examples in vignetteXtra-occTest
 }
 \seealso{
 \link[CoordinateCleaner]{cd_round}
@@ -101,7 +99,7 @@ Other analysis:
 \code{\link{humanDetection}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr), A Zizka (CoordinateCleaner package)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), A Zizka (CoordinateCleaner package)
 }
 \concept{analysis}
 \keyword{Analysis}

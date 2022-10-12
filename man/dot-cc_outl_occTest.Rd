@@ -39,11 +39,11 @@
 
 \item{sampling_thresh}{numeric. Sampling threshold. Defaults to 0}
 
-\item{verbose}{logical. Should output messages be printed. Default to T}
+\item{verbose}{logical. Should output messages be printed. Default to TRUE}
 
 \item{min_occs}{integer. Minimum number of occurrences. Defaults to 7}
 
-\item{thinning}{logical. Should thinning be performed? Defaults to F}
+\item{thinning}{logical. Should thinning be performed? Defaults to FALSE}
 
 \item{thinning_res}{double. Thinnning resolution. Defaults to 0.5}
 }
@@ -53,12 +53,7 @@ a clean data.frame
 \description{
 own version of coordinate cleaner geographic outliers
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \author{
-A Zizka (original function) JM Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)
+A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)
 }
 \keyword{internal}

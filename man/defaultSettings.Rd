@@ -16,12 +16,10 @@ Loads a list of lists with the different default parameters for analysis, output
 it can be use internally or it can be used by a user to subsequently modify parameters. No input parameters are required
 }
 \examples{
-\dontrun{
 #load default settings
 settings <- defaultSettings()
 }
-}
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \keyword{user}

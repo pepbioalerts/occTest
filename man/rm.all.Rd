@@ -12,17 +12,9 @@ a clear environment
 \description{
 removes all objects in the environment
 }
-\examples{
-\dontrun{
- k = NA
- k == 1
- lazylogic (k==1)
-}
-}
 \seealso{
 Other internal: 
 \code{\link{.get_os}()},
-\code{\link{.hijack}()},
 \code{\link{lazylogic}()},
 \code{\link{splitSpname}()}
 }

@@ -19,11 +19,6 @@ character
 \description{
 haromnize different date styles
 }
-\examples{
-\dontrun{
-example<-"goes here"
-}
-}
 \seealso{
 dataPreparation::find_and_transform_dates
 }

@@ -10,7 +10,7 @@ duplicatesexcludeAnalysis(
   yf,
   resolution.in.minutes,
   raster.grid = NULL,
-  verbose = F
+  verbose = FALSE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ duplicatesexcludeAnalysis(
 
 \item{raster.grid}{An optional raster grid}
 
-\item{verbose}{logical. Print messages? Default F}
+\item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
 list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
@@ -36,9 +36,8 @@ Duplicated records
 it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 }
 \examples{
-\dontrun{
-example<-"goes here"
-}
+k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000),Reason=NA)
+duplicatesexcludeAnalysis(k,xf='x',yf='y',resolution.in.minutes=60)
 }
 \seealso{
 Other analysis: 
@@ -49,7 +48,7 @@ Other analysis:
 \code{\link{humanDetection}()}
 }
 \author{
-JM Serra-Diaz (pep.serradiaz@agroparistech.fr)
+Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)
 }
 \concept{analysis}
 \keyword{internal}
