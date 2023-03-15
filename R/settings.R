@@ -118,24 +118,24 @@ defaultSettings <- function (){
   
 }
 
-# showTableNames ====
+# show_tableNames ====
 #' @title Print naming conventions in occTest
 #' @description prints a table with the the conventions used for column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. 
-#'          These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
+#'          These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
 #'          It does not require input parameters
 #' @return prints a data.frame
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' showTableNames ()
+#' show_tableNames ()
 #' @export
-showTableNames <- function (){
+show_tableNames <- function (){
   tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
   DT::datatable(tabNames)
 }
 
-# setTableNames ====
+# set_tableNames ====
 #' @title set table names internally
 #' @param x.field character. Name of the x coordinate field.
 #' @param y.field character. Name of the y coordinate field.
@@ -153,11 +153,11 @@ showTableNames <- function (){
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' defaultTableNames <- setTableNames()
+#' defaultTableNames <- set_tableNames()
 #' #only modifying the names for the coordinates
-#' myTable_withMyNames <- setTableNames (x.field='x_coord',y.field = 'y_coord') 
+#' myTable_withMyNames <- set_tableNames (x.field='x_coord',y.field = 'y_coord') 
 #' @export
-setTableNames <- function (x.field = NULL,
+set_tableNames <- function (x.field = NULL,
                            y.field = NULL,
                            t.field = NULL,
                            l.field = NULL,
@@ -176,7 +176,42 @@ setTableNames <- function (x.field = NULL,
   return (targetList)
 }
 
-# setTestTypes ====
+
+# set_writeout ====
+#' @title Set output objects from ocTest
+#' @param output.dir character. Output directory
+#' @param writeAllOutput logical. Should all outputs be written to a file? Overides write.simple.output and write.full.output
+#' @param write.simple.output logical. Should only summary outputs be written to a file?
+#' @param write.full.output logical. Should all detailed outputs be written to a file?
+#' @param output.base.filename character. Name of the country code field.
+#' @description helper function to set the options for the outputs (writeoutSettings) in occTest function. 
+#' Defaults values may be found 
+#' Alternatively, the user can specify their own field names for the table
+#' @return list
+#' @keywords user
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
+#' defaultOutput <- set_writeout()
+#' #only modifying the names for the coordinates
+#' myTable_withMyOutput- set_writeout(writeAllOutput=T) 
+#' @export
+set_writeout <- function (output.dir = NULL,
+                            writeAllOutput = NULL,
+                            write.simple.output = NULL,
+                            write.full.output = NULL,
+                            output.base.filename = NULL)
+  {
+  targetList = defaultSettings()
+  targetList = targetList$writeoutSettings
+  ids = names (targetList)
+  for (i in ids){
+    if (!is.null(get(i))) targetList[[i]] <- get (i)
+  }
+  
+  return (targetList)
+}
+
+# set_testTypes ====
 #' @title Set the tests to run
 #' @description function used to select which types of tests you want in occTest workflow (analysisSet)
 #' @details See occTest::showTests for further information on tests used in the packages
@@ -192,11 +227,11 @@ setTableNames <- function (x.field = NULL,
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' defaultSettings_analysis <- setTestTypes()
+#' defaultSettings_analysis <- set_testTypes()
 #' #now we do not want to perform centroid geoenironmental accuracy type of tests
-#' mySettings_analysis <- setTestTypes(geoenvLowAccuracy=FALSE)
+#' mySettings_analysis <- set_testTypes(geoenvLowAccuracy=FALSE)
 #' @export
-setTestTypes <- function (countryStatusRange = TRUE,
+set_testTypes <- function (countryStatusRange = TRUE,
                       centroidDetection = TRUE,
                       humanDetection = TRUE,
                       landUseType = TRUE,
@@ -219,7 +254,7 @@ setTestTypes <- function (countryStatusRange = TRUE,
   return (targetList)
 }
 
-# setTestBlocks ====
+# set_testBlocks ====
 #' @title Set the tests to run
 #' @description function used to select which groups of tests you want in occTest workflow
 #' @details You can turn off an entire type of tests altogether by modifying this seetings. See occTest::showTests for further information on tests used in the packages
@@ -231,11 +266,11 @@ setTestTypes <- function (countryStatusRange = TRUE,
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' defaultSettings_analysis  <- setTestBlocks()
+#' defaultSettings_analysis  <- set_testBlocks()
 #' #now we turn off the block of tests related to land use
-#' mySettings_analysis  <- setTestBlocks(lu=FALSE)
+#' mySettings_analysis  <- set_testBlocks(lu=FALSE)
 #' @export
-setTestBlocks      <- function (geo = TRUE,
+set_testBlocks      <- function (geo = TRUE,
                                 lu = TRUE,
                                 env = TRUE,
                                 time = TRUE){
@@ -253,7 +288,7 @@ setTestBlocks      <- function (geo = TRUE,
   allMetadata = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
   newSettings = dplyr::left_join(allMetadata,paramsDF,by='testBlock')
   
-  newParamsList = setTestTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
+  newParamsList = set_testTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
                            centroidDetection = unique (newSettings$activate [which (newSettings$testType == 'centroidDetection')]),
                            humanDetection = unique (newSettings$activate [which (newSettings$testType == 'humanDetection')]),
                            landUseType = unique (newSettings$activate [which (newSettings$testType == 'landUseType')]),
@@ -270,7 +305,7 @@ setTestBlocks      <- function (geo = TRUE,
 # showTests ====
 #' @title Show implemented tests and types of tests 
 #' @description prints a table with the column names
-#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions. 
+#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
 #' @return prints a dataframe
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)

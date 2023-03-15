@@ -1,6 +1,6 @@
 Package: occTest
 Title: Characterizing and Filtering Species Occurrence Data 
-Version: 0.11
+Version: 0.1.1
 Authors@R: c(person(given = "Josep M", family = "Serra-Diaz", email = "pep.agroparistech@gmail.com",
                     role = c("aut", "cre")),
              person(given = "Cory", family = "Merow", role = c("aut","ctb"), 
@@ -38,13 +38,15 @@ Imports:
     rnaturalearth,
     svMisc,
     spocc,
-    tidyverse,
+    dplyr,
+    tidyselect,
+    magrittr,
+    tibble,
     rnaturalearthdata,
     pingr,
     ggplot2,
     DT,
     Matrix,
-    dplyr,
     graphics,
     dataPreparation
 Suggests:

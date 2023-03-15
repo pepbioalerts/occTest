@@ -1,7 +1,7 @@
 # occFilter ====
 #' @title Filter occurrence records from occTest outputs
 #' @description Select occurrence records based on aggregated values of different tests
-#' @return list of 2 data.frames
+#' @return list of 3 elements. 
 #' @keywords filter
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
 #' @param df data.frame. Output of  occTest
@@ -29,7 +29,6 @@ occFilter <- function (df,
                        errorAcceptance = 'relaxed',
                        errorThreshold = NULL,
                        custom=NULL) {
-  
   #load column metadata
   if (is.null(custom)){
     colMetaData = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
@@ -42,7 +41,7 @@ occFilter <- function (df,
   
   targetLevel = colMetaData %>% 
     dplyr::filter (mode != 'filter') %>%
-    dplyr::select(by)
+    dplyr::select(all_of(by))
   
   basecateg = colMetaData %>% 
     dplyr::filter (mode != 'filter') %>%
@@ -57,8 +56,7 @@ occFilter <- function (df,
   dfFiltered  = dplyr::as_tibble(df) 
   keep=which(dfFiltered[,'Exclude']==0)
   dfFiltered = dfFiltered[keep,]
-             
-        
+  
   #get the scores for each category
   dfScores = lapply (uniqueTargetLevels, function (categ){
     baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = 'baseLevel')
@@ -85,9 +83,8 @@ occFilter <- function (df,
     if (errorAcceptance == 'relaxed')   {colMetaData$errorThreshold =0.7}
    
   }
-  if (is.null(errorAcceptance) & is.null(custom)){
+  if (!is.null(errorThreshold) & is.null(custom)){
     colMetaData$errorThreshold =errorThreshold
-   
   }
   
   nDfScore = unlist(strsplit (names (dfScoreVals),split = '_score'))

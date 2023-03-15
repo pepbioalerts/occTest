@@ -13,7 +13,7 @@ prints a dataframe
 prints a table with the column names
 }
 \details{
-The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via setTableNames, but the user may also decide to format their input table according to these naming conventions.
+The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions.
 }
 \examples{
 showTests()

@@ -91,14 +91,11 @@ occTest = function(
   
   sp.table <- as.data.frame (sp.table)
     
-  
-  
   ### STEP 0: Load settings and study native and invasive countries ====
   if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::minimalSettings()
   
   #load table settings(old stuff, we  could attach the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
-  
   x.field             = tableSettings$x.field
   y.field             = tableSettings$y.field
   if (! all(c(x.field,y.field)%in%  names(sp.table))){stop('No coordinate fields specified')}

@@ -1258,10 +1258,7 @@ geoEnvAccuracy  <- function (df,
                     geoenvLowAccuracy_outDateRange_test =NA,
                     geoenvLowAccuracy_outDateRange_comments =NA,
                     
-                    
-                    
-                    geoenvLowAccuracy_score=NA
-  )[1:nrow (df),]
+                    geoenvLowAccuracy_score=NA)[1:nrow (df),]
   
   row.names(x = out) <- NULL
   if (!do) {return (out)}

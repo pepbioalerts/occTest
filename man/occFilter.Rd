@@ -24,7 +24,7 @@ occFilter(
 \item{custom}{data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))}
 }
 \value{
-list of 2 data.frames
+list of 3 elements.
 }
 \description{
 Select occurrence records based on aggregated values of different tests
