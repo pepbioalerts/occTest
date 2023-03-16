@@ -40,6 +40,7 @@ Imports:
     spocc,
     dplyr,
     tidyselect,
+    lubridate,
     magrittr,
     tibble,
     rnaturalearthdata,
@@ -48,7 +49,9 @@ Imports:
     DT,
     Matrix,
     graphics,
-    dataPreparation
+    dataPreparation,
+    lubridate,
+    anytime
 Suggests:
     GNRS,
     testthat,

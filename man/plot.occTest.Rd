@@ -22,7 +22,7 @@ list of ggplots objects, of varying length, depending on whether the filtering w
 Display the filtering process
 }
 \details{
-If \code{occFilter_list} is provided, display how the occurences passed the different tests, otherwise only plot the coordinates filtering step
+If \code{occFilter_list} is provided, display how the occurrences passed the different tests, otherwise only plot the coordinates filtering step
 }
 \examples{
 #load output from occTest

@@ -62,7 +62,8 @@ Other analysis:
 \code{\link{centroidDetection}()},
 \code{\link{duplicatesexcludeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},
-\code{\link{humanDetection}()}
+\code{\link{humanDetection}()},
+\code{\link{timeAccuracy}()}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

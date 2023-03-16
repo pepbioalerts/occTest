@@ -68,7 +68,8 @@ Other analysis:
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},
-\code{\link{humanDetection}()}
+\code{\link{humanDetection}()},
+\code{\link{timeAccuracy}()}
 }
 \author{
 Brian Maitner, Josep M Serra-Diaz, Cory Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)

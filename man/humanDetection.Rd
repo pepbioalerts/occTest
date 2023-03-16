@@ -58,7 +58,8 @@ Other analysis:
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
-\code{\link{geoEnvAccuracy}()}
+\code{\link{geoEnvAccuracy}()},
+\code{\link{timeAccuracy}()}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr). A Zizka (CoordinateCleaner functions)

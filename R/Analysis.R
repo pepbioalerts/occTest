@@ -1158,7 +1158,7 @@ envOutliers  <- function (
 
 # geoEnvAccuracy ====
 #' @title Coordinate accuracy
-#' @description Detect records with low accuracy in space and time 
+#' @description Detect records with low accuracy affecting environmental values
 #' @param df data.frame of species occurrences
 #' @param xf character. column name in df containing the x coordinates
 #' @param yf character. column name in df containing the y coordinates
@@ -1332,9 +1332,7 @@ geoEnvAccuracy  <- function (df,
       out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
       out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
     }
-    
   }
-  
   #has format stamp? 
   if (any(method %in% c('noDateFormatKnown','all'))) {
     if (!is.null(tf)){
@@ -1358,9 +1356,11 @@ geoEnvAccuracy  <- function (df,
   #is within time range ?
   if (any(method %in% c('outDateRange','all'))) {
     if (!is.null(tf)){
-      
       warning ('method outDateRange under development. Sorry')
-
+      vecTime = df[,tf]
+      
+      
+      
     }
     
   }
@@ -1497,6 +1497,101 @@ geoEnvAccuracy  <- function (df,
 }
 
 
+# timeAccuracy ====
+#' @title Flag occurrences with temporal inaccuracies
+#' @description Detect records with low temporal accuracy
+#' @param df data.frame of species occurrences
+#' @param tf character. column name in df containing the dataset with the date/time where the species is recorded
+#' @param iniTime character or Date. indicates the initial time point considered in year-month-day format. Defaults to NA.
+#' @param endTime character or Date. indicates the time point considered in year-month-day format. Defaults to NA.
+#' @param do logical. Should tests be performed? Default TRUE
+#' @param verbose logical. Print messages? Default FALSE
+#' @return data.frame
+#' @keywords Analysis 
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @details timeAccuracy function will implement different methods to assess the temporal scale of the parameters.\cr
+#' @seealso 
+#' @family analysis
+#' @examples 
+#' #see examples in vignetteXtra-occTest
+#' @export
+timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T)
+  {
+  #output results
+  out = data.frame (
+                    timeAccuracy_noDate_value =NA,
+                    timeAccuracy_noDate_test =NA,
+                    timeAccuracy_noDate_comments =NA,
+                    
+                    timeAccuracy_noDateFormatKnown_value =NA,
+                    timeAccuracy_noDateFormatKnown_test =NA,
+                    timeAccuracy_noDateFormatKnown_comments =NA,
+                    
+                    timeAccuracy_outDateRange_value =NA,
+                    timeAccuracy_outDateRange_test =NA,
+                    timeAccuracy_outDateRange_comments =NA,
+                    
+                    timeAccuracy_score=NA)[1:nrow (df),]
+  
+  row.names(x = out) <- NULL
+  if (!do) {return (out)}
+
+  #has time stamp? 
+  if (any(method %in% c('noDate','all'))) {
+    if (!is.null(tf)){
+      vecTime = df[,tf]
+      dfEmptyVals = data.frame (na=is.na(vecTime),
+                                #null=is.null(as.character(vecTime)==NULL),
+                                isEmpty = (as.character(vecTime)==''),
+                                isEmptySpace = (as.character(vecTime)== '  '))
+      
+      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==TRUE)})
+      out$timeAccuracy_noDate_value = vecTimeLogi * 1
+      out$time_noDate_test = vecTimeLogi 
+      out$time_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+    }
+  }
+  
+  #has format stamp? 
+  if (any(method %in% c('noDateFormatKnown','all'))) {
+    if (!is.null(tf)){
+      vecTime = df[,tf]
+      if (all(is.na(vecTime))) {if (verbose) warning('all time stamps are NA')}
+      if (!all(is.na(vecTime))){
+        vecTime_date_formated <- anytime::anydate(vecTime)
+        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (vecTime!='\t'))
+        vecTime_timeStamp  <- ifelse((is.na(vecTime) | (vecTime=='')| (vecTime=='\t')),yes = NA,no = T) 
+        out$timeAccuracy_noDateFormatKnown_value = !vecTime_guessed *1 * vecTime_timeStamp
+        out$timeAccuracy_noDateFormatKnown_test = (!vecTime_guessed) * vecTime_timeStamp
+        out$timeAccuracy_noDateFormatKnown_comments =NA  
+      }
+    }
+  }
+  
+  #is within time range ?
+  if (any(method %in% c('outDateRange','all'))) {
+    if (!is.null(tf)){
+      vecTime = df[,tf]
+      if (all(is.na(vecTime))) {if (verbose) warning('all time stamps are NA')}
+      if (!all(is.na(vecTime))){
+        vecTime_date_formated <- anytime::anydate(vecTime)
+        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (vecTime!='\t'))
+        vecTime_timeStamp  <- ifelse((is.na(vecTime) | (vecTime=='')| (vecTime=='\t')),yes = NA,no = T) 
+        it = lubridate::as_date(iniTime)
+        et = lubridate::as_date(endTime)
+        target_interval = lubridate::interval(it,et)
+        in_interval = vecTime_date_formated %within% target_interval
+        out$timeAccuracy_outDateRange_value = !in_interval * 1
+        out$timeAccuracy_outDateRange_test = !in_interval
+        out$timeAccuracy_outDateRange_comments = paste('interval:',as.character (target_interval))
+      }
+    }
+  }
+
+  #write final score
+  out$timeAccuracy_score <- .gimme.score (out)
+  return (out)
+}
 # landUseSelect ====
 #' @title Selection of records within a specified land use 
 #' @descriptions Selection of records within a specified land use 

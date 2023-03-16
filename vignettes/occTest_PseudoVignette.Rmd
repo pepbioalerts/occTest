@@ -1,6 +1,6 @@
 ---
 title: "occTest: an integrated set of tests to assess quality of occurrence data in species distributions"
-author: "Josep M Serra-Diaz, Cory Merow, Jeremy Borderieux, Brian Maitner, A Callbaut"
+author: "Josep M Serra-Diaz, Cory Merow, Jeremy Borderieux, Arnaud Callebaut, Brian Maitner, A Callbaut"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:

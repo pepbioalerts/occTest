@@ -72,7 +72,7 @@ geoEnvAccuracy(
 data.frame
 }
 \description{
-Detect records with low accuracy in space and time
+Detect records with low accuracy affecting environmental values
 }
 \details{
 Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
@@ -96,7 +96,8 @@ Other analysis:
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
-\code{\link{humanDetection}()}
+\code{\link{humanDetection}()},
+\code{\link{timeAccuracy}()}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), A Zizka (CoordinateCleaner package)

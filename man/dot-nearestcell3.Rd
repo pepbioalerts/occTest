@@ -34,7 +34,8 @@ Other analysis:
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},
-\code{\link{humanDetection}()}
+\code{\link{humanDetection}()},
+\code{\link{timeAccuracy}()}
 }
 \author{
 Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)

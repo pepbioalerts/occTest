@@ -1,5 +1,4 @@
 ### Functions related to identifying native or invasive status ###
-
 # nativeStatusCtry ====
 #' @title Check native and alien ranges in countries
 #' @description performs several queries based on the orignir package to identify native and invasive range status for a given species
