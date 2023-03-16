@@ -65,6 +65,9 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   
   ## this dataframe contains ecery occurences, useful for the fist map displaying the first filtering
   ## we check for missing coordinated also
+  full.withMissingCoord<-full_dataset
+  
+  
   full_dataset<-full_dataset[!full_dataset$coordIssues_coordMissing_value,]
   full_dataset$Reason<-ifelse(is.na(full_dataset$Reason),"Occurences kept for later tests",full_dataset$Reason)
   
@@ -97,7 +100,8 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
     
     summary_stats<-occFilter_list$summaryStats
     
-    filtered_dataset_scores<-cbind(full_dataset[full_dataset$Exclude==0,c(x_field ,y_field,"Exclude")],summary_stats)#"name"
+    filtered_dataset_scores<-cbind(full.withMissingCoord[full.withMissingCoord$Exclude==0,c(x_field ,y_field,"coordIssues_coordMissing_value","Exclude")],summary_stats)#"name"
+    filtered_dataset_scores<-filtered_dataset_scores[!filtered_dataset_scores$coordIssues_coordMissing_value,]
     
     # we extract the score to run the filtering again
     dfScoreVals = filtered_dataset_scores %>% dplyr::select(dplyr::ends_with('_score')) 
