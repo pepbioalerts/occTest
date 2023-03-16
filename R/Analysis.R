@@ -973,14 +973,11 @@ geoOutliers         <- function (df,
   }
 
   if (any (method %in% c('quantSamplingCorrected','quantileSamplingCorr','all'))){
-
-
     cc_qsc_tst =  .cc_outl_occTest(x = df,lon = xf,lat = yf,method='quantile',value = 'flagged',
-                                            mltpl =  .medianDeviation.parameter ,
-                                            sampling_thresh = .samplingIntensThreshold.parameter ,
-                                            verbose=FALSE)
+                                            mltpl =  .medianDeviation.parameter,
+                                            sampling_thresh = .samplingIntensThreshold.parameter,
+                                             verbose=FALSE)
     cc_qsc_tst <- (!  cc_qsc_tst) * 1
-    
     out$geoOutliers_quantileSamplingCorr_value = cc_qsc_tst
     out$geoOutliers_quantileSamplingCorr_test = as.logical(cc_qsc_tst)
     out$geoOutliers_quantileSamplingCorr_comments = rep(paste('IQRmultiplier=', .medianDeviation.parameter,';SamplIntensityThres=',.samplingIntensThreshold.parameter),times=nrow(out))
@@ -989,8 +986,6 @@ geoOutliers         <- function (df,
       out$geoOutliers_quantileSamplingCorr_test = rep(NA,times=nrow(out))
       out$geoOutliers_quantileSamplingCorr_comments = rep(paste('N<7. Analysis not run'),times=nrow(out))
       }
-    
-
   }
 
   if (any (method %in% c('grubbs','all','Grubbs'))) {
@@ -1114,23 +1109,19 @@ envOutliers  <- function (
       ev<-dat.environment[,i]
 
       try (a<-biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
-      if (exists ('a') ) {
+      if (exists('a')){
         a<- as.data.frame (a)
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
         return (a)}
 
-      if (exists ('a') == FALSE ) {
+      if (!exists('a')){
         #in case there is no variation across the variable and then outliers function throws an error
-        a <- data.frame (col1=rep (0,nrow(dat.environment)), col2 = rep (0,nrow(dat.environment) ))
+        a <- data.frame (col1=rep (0,nrow(dat.environment)), col2 = rep (0,nrow(dat.environment)))
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
         return (a)}
-
-
-
     })
     a.df <- do.call (cbind, a.df)
     choice.of.method.df <- a.df [,grep (names(a.df),pattern = outlier.method.biogeo)]
-
     if (inherits(.r.env,"RasterLayer")) {outlier.level <- choice.of.method.df}
     if (inherits(.r.env,"RasterStack")) {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
     if (inherits(.r.env,"RasterBrick")) {outlier.level <- round (rowMeans(choice.of.method.df) ,digits=2)}
@@ -1364,7 +1355,6 @@ geoEnvAccuracy  <- function (df,
     }
     
   }
-  
   #is within time range ?
   if (any(method %in% c('outDateRange','all'))) {
     if (!is.null(tf)){
@@ -1374,21 +1364,18 @@ geoEnvAccuracy  <- function (df,
     }
     
   }
-  
   #Need coordinate uncertainty analysis ? If not gimme score and leave
-  if ( ! any (method %in% c('percDiffCell','envDeviation','all')) ) {
+  if (!any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
     out$geoenvLowAccuracy_score <- .gimme.score (out)
     return (out)}
-  
   #Need coordinate uncertainty analysis ? Can you do it?
-  if (is.null(af) | all(is.na(df[,af])) ) {
+  if (is.null(af) | all(is.na(df[,af]))) {
     print ('no coordinate accuracy/uncertainty field provided')
     #write final score
     out$geoenvLowAccuracy_score <- .gimme.score (out)
     return (out)
   }
-  
   #Start methods requiring coordinate uncertainty
   if(length(af)>1) {df$new_accuracy = pmax(df[,af[1]],df[,af[2]],na.rm=TRUE); af = 'new_accuracy'}
   xydat = df[,c(xf,yf,af)]
