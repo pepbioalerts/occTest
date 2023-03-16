@@ -311,7 +311,7 @@ occTest = function(
     dat.Q.H1 = dat[coordIssues_invalidCoord_test,]
     dat = dat[!coordIssues_invalidCoord_test,]
     
-    
+
     status.out= .status.tracker.and.escaping(dataset.to.continue = dat,
                                                       wfo = write.full.output,
                                                       wso = write.simple.output,
@@ -375,9 +375,12 @@ occTest = function(
                                                       obf = output.base.filename,
                                                       sp=sp,
                                                       as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
-  }
+ 
+      if(any(class(status.out)=='occTest')) {return(status.out)}
+    
+     } ############################
   
-  if(any(class(status.out)=='occTest')) {return(status.out)}
+
   
   #indicate issues of georeference and put them aside
   obj.issues = c('dat.Q.H','dat.Q.H1','dat.Q.H2','dat.Q.H3')
