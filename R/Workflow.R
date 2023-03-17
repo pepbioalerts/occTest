@@ -180,6 +180,11 @@ occTest = function(
   doGeoEnvAccuracy=analysisSettings$geoenvLowAccuracy$doGeoEnvAccuracy
   elev.quality.threshold=analysisSettings$geoenvLowAccuracy$elev.quality.threshold
   
+  doTimeAccuracy=analysisSettings$timeAccuracy$doTimeAccuracy
+  methodTimeAccuracy=analysisSettings$timeAccuracy$methodTimeAccuracy
+  timeAccuracy_initial.date=analysisSettings$timeAccuracy$iniDate
+  timeAccuracy_end.date=analysisSettings$timeAccuracy$endDate
+  
   #load gradingSettings
   # if(is.null(gradingSettings)){ gradingSettings = defaultSettings$gradingSettings}
   # 
@@ -681,7 +686,7 @@ occTest = function(
                               yf = y.field,
                               af = a.field,
                               dsf= ds.field,
-                              tf= t.field,
+                              #tf= t.field,
                               r.env = r.env,
                               ef= e.field,
                               raster.elevation = r.dem,
@@ -689,6 +694,16 @@ occTest = function(
                               method = methodGeoEnvAccuracy,
                               doParallel=doParallel,
                               mc.cores=mc.cores)
+  tictoc::toc()
+  
+  tictoc::tic('time accuracy')
+  if(verbose) message('time accuracy analysis started...')
+  Analysis.8 =  timeAccuracy (df=dat,
+                              tf= t.field,
+                              method = methodTimeAccuracy,
+                              iniTime = timeAccuracy_initial.date,
+                              endTime = timeAccuracy_end.date,
+                              do = doTimeAccuracy)
   tictoc::toc()
   
   ### SUMMARY ANALYSIS RESULTS(NEED TO BE IMPROVED !)

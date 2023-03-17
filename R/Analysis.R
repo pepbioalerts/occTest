@@ -1200,7 +1200,8 @@ envOutliers  <- function (
 geoEnvAccuracy  <- function (df,
                              xf,
                              yf,
-                             af,dsf,ef,tf,
+                             af,dsf,ef,
+                             #tf,
                              
                              method='all',
                              
@@ -1237,17 +1238,17 @@ geoEnvAccuracy  <- function (df,
                     geoenvLowAccuracy_elevDiff_test =NA,
                     geoenvLowAccuracy_elevDiff_comments =NA,
                     
-                    geoenvLowAccuracy_noDate_value =NA,
-                    geoenvLowAccuracy_noDate_test =NA,
-                    geoenvLowAccuracy_noDate_comments =NA,
+                    #geoenvLowAccuracy_noDate_value =NA,
+                    #geoenvLowAccuracy_noDate_test =NA,
+                    #geoenvLowAccuracy_noDate_comments =NA,
                     
-                    geoenvLowAccuracy_noDateFormatKnown_value =NA,
-                    geoenvLowAccuracy_noDateFormatKnown_test =NA,
-                    geoenvLowAccuracy_noDateFormatKnown_comments =NA,
+                    #geoenvLowAccuracy_noDateFormatKnown_value =NA,
+                    #geoenvLowAccuracy_noDateFormatKnown_test =NA,
+                    #geoenvLowAccuracy_noDateFormatKnown_comments =NA,
                     
-                    geoenvLowAccuracy_outDateRange_value =NA,
-                    geoenvLowAccuracy_outDateRange_test =NA,
-                    geoenvLowAccuracy_outDateRange_comments =NA,
+                    #geoenvLowAccuracy_outDateRange_value =NA,
+                    #geoenvLowAccuracy_outDateRange_test =NA,
+                    #geoenvLowAccuracy_outDateRange_comments =NA,
                     
                     geoenvLowAccuracy_score=NA)[1:nrow (df),]
   
@@ -1318,52 +1319,55 @@ geoEnvAccuracy  <- function (df,
     
   }
   
-  #has time stamp? 
-  if (any(method %in% c('noDate','all'))) {
-    if (!is.null(tf)){
-      vecTime = df[,tf]
-      dfEmptyVals = data.frame (na=is.na(vecTime),
-                                #null=is.null(as.character(vecTime)==NULL),
-                                isEmpty = (as.character(vecTime)==''),
-                                isEmptySpace = (as.character(vecTime)== '  '))
-      
-      vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==TRUE)})
-      out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
-      out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
-      out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
-    }
-  }
-  #has format stamp? 
-  if (any(method %in% c('noDateFormatKnown','all'))) {
-    if (!is.null(tf)){
-      
-      warning ('method noDateFormatKnown under development. Sorry')
-      # vecTime = df[,tf]
-      # 
-      # dfVectime = data.frame(vecTime[1])
-      # 
-      # a = identify_dates(dfVectime)
-      # dfVectime = data.table::as.data.table(dfVectime)
-      # k = find_and_transform_dates(dfVectime)
-      # 
-      # 
-      # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
-      # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
-      # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
-    }
-    
-  }
-  #is within time range ?
-  if (any(method %in% c('outDateRange','all'))) {
-    if (!is.null(tf)){
-      warning ('method outDateRange under development. Sorry')
-      vecTime = df[,tf]
-      
-      
-      
-    }
-    
-  }
+  # #start time methods
+  # #has time stamp? 
+  # if (any(method %in% c('noDate','all'))) {
+  #   if (!is.null(tf)){
+  #     vecTime = df[,tf]
+  #     dfEmptyVals = data.frame (na=is.na(vecTime),
+  #                               #null=is.null(as.character(vecTime)==NULL),
+  #                               isEmpty = (as.character(vecTime)==''),
+  #                               isEmptySpace = (as.character(vecTime)== '  '))
+  #     
+  #     vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==TRUE)})
+  #     out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+  #     out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+  #     out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+  #   }
+  # }
+  # #has format stamp? 
+  # if (any(method %in% c('noDateFormatKnown','all'))) {
+  #   if (!is.null(tf)){
+  #     
+  #     warning ('method noDateFormatKnown under development. Sorry')
+  #     # vecTime = df[,tf]
+  #     # 
+  #     # dfVectime = data.frame(vecTime[1])
+  #     # 
+  #     # a = identify_dates(dfVectime)
+  #     # dfVectime = data.table::as.data.table(dfVectime)
+  #     # k = find_and_transform_dates(dfVectime)
+  #     # 
+  #     # 
+  #     # out$geoenvLowAccuracy_noDate_value = vecTimeLogi * 1
+  #     # out$geoenvLowAccuracy_noDate_test = vecTimeLogi 
+  #     # out$geoenvLowAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+  #   }
+  #   
+  # }
+  # #is within time range ?
+  # if (any(method %in% c('outDateRange','all'))) {
+  #   if (!is.null(tf)){
+  #     warning ('method outDateRange under development. Sorry')
+  #     vecTime = df[,tf]
+  #     
+  #     
+  #     
+  #   }
+  #   
+  # }
+  # 
+  
   #Need coordinate uncertainty analysis ? If not gimme score and leave
   if (!any (method %in% c('percDiffCell','envDeviation','all')) ) {
     #write final score
@@ -1515,7 +1519,7 @@ geoEnvAccuracy  <- function (df,
 #' @examples 
 #' #see examples in vignetteXtra-occTest
 #' @export
-timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T)
+timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,method='all')
   {
   #output results
   out = data.frame (
@@ -1547,8 +1551,8 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T)
       
       vecTimeLogi = apply(dfEmptyVals,MARGIN = 1,FUN = function (x){any (x==TRUE)})
       out$timeAccuracy_noDate_value = vecTimeLogi * 1
-      out$time_noDate_test = vecTimeLogi 
-      out$time_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
+      out$timeAccuracy_noDate_test = vecTimeLogi 
+      out$timeAccuracy_noDate_comments = 'checked for NA,NULL, blankSpace and tab' 
     }
   }
   
@@ -1570,7 +1574,7 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T)
   
   #is within time range ?
   if (any(method %in% c('outDateRange','all'))) {
-    if (!is.null(tf)){
+    if ( !is.null(tf) & (!any(is.na(c(iniTime,endTime)))) & (!any(is.null(c(iniTime,endTime)))) ){
       vecTime = df[,tf]
       if (all(is.na(vecTime))) {if (verbose) warning('all time stamps are NA')}
       if (!all(is.na(vecTime))){

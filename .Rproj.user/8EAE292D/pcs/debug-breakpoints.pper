@@ -1,21 +1,5 @@
 {
     "debugBreakpointsState": {
-        "breakpoints": [
-            {
-                "id": 0,
-                "path": "~/Github/occTest/R/analysis.R",
-                "line_number": 48,
-                "function_steps": "2",
-                "function_name": "duplicatesexcludeAnalysis",
-                "state": 1,
-                "editor_state": 1,
-                "editor_line_number": 48,
-                "is_pending_debug_completion": false,
-                "needs_updated_steps": false,
-                "type": 0,
-                "is_package_breakpoint": true,
-                "package_name": "occTest"
-            }
-        ]
+        "breakpoints": []
     }
 }

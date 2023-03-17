@@ -98,15 +98,17 @@ defaultSettings <- function (){
         doEnvOutliers=TRUE,
         methodEnvOutliers='all',
         th.perc.outenv =  0.2
-      )
-      ,
-      geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
-                               doGeoEnvAccuracy=TRUE,
-                               elev.quality.threshold = 100
-      )
-      
-      
-      
+      ),
+      geoenvLowAccuracy = list (doGeoEnvAccuracy=TRUE,
+                                methodGeoEnvAccuracy='all',
+                                elev.quality.threshold = 100
+      ),
+      timeAccuracy= list (doTimeAccuracy = TRUE,
+                          methodTimeAccuracy = 'all',
+                          iniDate = NA,
+                          endDate = NA
+                          )
+
     )#end analysis settings
     
   )#end all default settings
@@ -175,8 +177,6 @@ set_tableNames <- function (x.field = NULL,
   
   return (targetList)
 }
-
-
 # set_writeout ====
 #' @title Set output objects from ocTest
 #' @param output.dir character. Output directory
@@ -223,6 +223,7 @@ set_writeout <- function (output.dir = NULL,
 #' @param geoOutliers logical. Should this test type be performed?
 #' @param envOutliers logical. Should this test type be performed?
 #' @param geoenvLowAccuracy logical. Should this test type be performed?
+#' @param timeAccuracy logical. Should this test type be perfomed?
 #' @return list with user analysis settings
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
@@ -238,7 +239,8 @@ set_testTypes <- function (countryStatusRange = TRUE,
                       institutionLocality =TRUE,
                       geoOutliers = TRUE,
                       envOutliers = TRUE,
-                      geoenvLowAccuracy = TRUE) {
+                      geoenvLowAccuracy = TRUE,
+                      timeAccuracy = TRUE) {
   
   myTestDoParams= ls()
   targetList = defaultSettings()
@@ -425,10 +427,12 @@ minimalSettings <- function (){
       geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
                                 doGeoEnvAccuracy=TRUE,
                                 elev.quality.threshold = 100
+      ),
+      timeAccuracy= list (doTimeAccuracy = TRUE,
+                          methodTimeAccuracy = 'all',
+                          iniDate = NA,
+                          endDate = NA
       )
-      
-      
-      
     )#end analysis settings
     
   )#end all default settings

@@ -12,7 +12,8 @@ set_testTypes(
   institutionLocality = TRUE,
   geoOutliers = TRUE,
   envOutliers = TRUE,
-  geoenvLowAccuracy = TRUE
+  geoenvLowAccuracy = TRUE,
+  timeAccuracy = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ set_testTypes(
 \item{envOutliers}{logical. Should this test type be performed?}
 
 \item{geoenvLowAccuracy}{logical. Should this test type be performed?}
+
+\item{timeAccuracy}{logical. Should this test type be perfomed?}
 }
 \value{
 list with user analysis settings

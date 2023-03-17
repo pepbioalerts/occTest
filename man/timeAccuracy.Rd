@@ -4,7 +4,7 @@
 \alias{timeAccuracy}
 \title{Flag occurrences with temporal inaccuracies}
 \usage{
-timeAccuracy(df, tf, iniTime = NA, endTime = NA, do = T)
+timeAccuracy(df, tf, iniTime = NA, endTime = NA, do = T, method = "all")
 }
 \arguments{
 \item{df}{data.frame of species occurrences}

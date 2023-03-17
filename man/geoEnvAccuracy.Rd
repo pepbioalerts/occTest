@@ -11,7 +11,6 @@ geoEnvAccuracy(
   af,
   dsf,
   ef,
-  tf,
   method = "all",
   r.env,
   accept.threshold.cell = 0.5,
@@ -40,8 +39,6 @@ geoEnvAccuracy(
 
 \item{ef}{character. column name in df containing the registered elevation for the record.}
 
-\item{tf}{character. column name in df containing the dataset with the date/time where the species is recorded}
-
 \item{method}{character. Vector of methods to be used. See details. Default 'all'}
 
 \item{r.env}{raster. Raster with environmental data}
@@ -67,6 +64,8 @@ geoEnvAccuracy(
 \item{doParallel}{logical. Should computation use parallel functions? Default FALSE}
 
 \item{mc.cores}{numeric. How many cores to use? (used when doParallel = TRUE). Default 2}
+
+\item{tf}{character. column name in df containing the dataset with the date/time where the species is recorded}
 }
 \value{
 data.frame
