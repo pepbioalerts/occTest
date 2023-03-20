@@ -263,7 +263,7 @@ occTest = function(
   resolveAlienCtry = FALSE
   #set timer
   #tictoc::tic('Resolve native and invasive countries')
-  
+
   #automatically resolve invasive and native countries for target species(not implemented yet)
   
   if(interactiveMode & is.null(ntv.ctry)){

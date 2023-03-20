@@ -40,11 +40,11 @@ occFilter <- function (df,
   }
   
   targetLevel = colMetaData %>% 
-    dplyr::filter (mode != 'filter') %>%
+    dplyr::filter (phase != 'filter') %>%
     dplyr::select(all_of(by))
   
   basecateg = colMetaData %>% 
-    dplyr::filter (mode != 'filter') %>%
+    dplyr::filter (phase != 'filter') %>%
     dplyr::select('method')
   
   myCategories = dplyr::bind_cols(targetLevel,basecateg) %>% unique
@@ -90,7 +90,7 @@ occFilter <- function (df,
   nDfScore = unlist(strsplit (names (dfScoreVals),split = '_score'))
    
   errorThresholdDf = colMetaData %>% 
-      dplyr::filter (mode != 'filter') %>%
+      dplyr::filter (phase != 'filter') %>%
       dplyr::select(by,errorThreshold) %>%
       unique
    
