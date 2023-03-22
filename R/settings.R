@@ -120,23 +120,6 @@ defaultSettings <- function (){
   
 }
 
-# show_tableNames ====
-#' @title Print naming conventions in occTest
-#' @description prints a table with the the conventions used for column names
-#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. 
-#'          These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
-#'          It does not require input parameters
-#' @return prints a data.frame
-#' @keywords user
-#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples 
-#' show_tableNames ()
-#' @export
-show_tableNames <- function (){
-  tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
-  DT::datatable(tabNames)
-}
-
 # set_tableNames ====
 #' @title set table names internally
 #' @param x.field character. Name of the x coordinate field.
@@ -303,23 +286,6 @@ set_testBlocks      <- function (geo = TRUE,
     
   return (newParamsList)
 }
-
-# showTests ====
-#' @title Show implemented tests and types of tests 
-#' @description prints a table with the column names
-#' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
-#' @return prints a dataframe
-#' @keywords user
-#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples
-#' showTests()
-#' @export
-
-showTests<- function (){
-  tabNames=readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
-  DT::datatable(tabNames)
-}
-
 
 # minimalSettings ====
 #' @title Load minimal settings for occTest 
