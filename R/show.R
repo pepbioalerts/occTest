@@ -1,6 +1,4 @@
 ### SHOW FUNCTIONS
-
-
 # show_tableNames ====
 #' @title Print naming conventions in occTest
 #' @description prints a table with the the conventions used for column names

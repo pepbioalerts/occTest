@@ -32,8 +32,6 @@ timeAccuracy function will implement different methods to assess the temporal sc
 #see examples in vignetteXtra-occTest
 }
 \seealso{
-
-
 Other analysis: 
 \code{\link{.nearestcell3}()},
 \code{\link{centroidDetection}()},

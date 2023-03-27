@@ -230,6 +230,7 @@ countryStatusRangeAnalysis=function(df,
                                     doRangeAnalysis=TRUE,
                                     verbose=FALSE) {
   
+  
 
   if (!doRangeAnalysis) {
     df$countryStatusRange_wrongNTV_value   <- NA

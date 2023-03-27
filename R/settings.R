@@ -225,15 +225,17 @@ set_testTypes <- function (countryStatusRange = TRUE,
                       geoenvLowAccuracy = TRUE,
                       timeAccuracy = TRUE) {
   
+  
   myTestDoParams= ls()
   targetList = defaultSettings()
   targetList = targetList$analysisSettings
   
 
   for (i in myTestDoParams){
-    a = targetList[[i]]
-    a[[grep(names(a),pattern = '^do')]] <-  get(i)
-    targetList[[i]] = a
+    a <- targetList[[i]]
+    #a[[grep(names(a),pattern = '^do')]] <-  get(i)
+    a[grep(names(a),pattern = '^do')] <-  get(i)
+    targetList[[i]] <- a
   }
   
   return (targetList)
@@ -262,7 +264,7 @@ set_testBlocks      <- function (geo = TRUE,
   
   #for testing
   #geo = TRUE; lu = TRUE; env = TRUE; time = TRUE
-  
+  browser ()
   objName = ls()
   paramsDF = list ()
   for (i in 1:length(objName)){
@@ -272,6 +274,9 @@ set_testBlocks      <- function (geo = TRUE,
   paramsDF = do.call(rbind,paramsDF)
   allMetadata = readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
   newSettings = dplyr::left_join(allMetadata,paramsDF,by='testBlock')
+  #activate accuracy? (we set to F if any geo or env is set to F in the blocks)
+  #geoEnvAccuracy has several mthods for geo and env. We take a stringent approach
+  geoenvLowAccuracySet = !any(unique (newSettings$activate [which (newSettings$testType == 'geoenvLowAccuracy')] == F))
   
   newParamsList = set_testTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
                            centroidDetection = unique (newSettings$activate [which (newSettings$testType == 'centroidDetection')]),
@@ -280,7 +285,8 @@ set_testBlocks      <- function (geo = TRUE,
                            institutionLocality = unique (newSettings$activate [which (newSettings$testType == 'institutionLocality')]),
                            geoOutliers = unique (newSettings$activate [which (newSettings$testType == 'geoOutliers')]),
                            envOutliers = unique (newSettings$activate [which (newSettings$testType == 'envOutliers')]),
-                           geoenvLowAccuracy = unique (newSettings$activate [which (newSettings$testType == 'geoenvLowAccuracy')]))
+                           geoenvLowAccuracy = geoenvLowAccuracySet
+                           )
 
   
     
