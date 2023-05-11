@@ -12,6 +12,7 @@ geoOutliers(
   .distance.parameter = 1000,
   .medianDeviation.parameter = 5,
   .samplingIntensThreshold.parameter = 0.1,
+  .mcp_percSample = 95,
   method = "all",
   .projString,
   do = TRUE,

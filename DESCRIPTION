@@ -51,6 +51,7 @@ Imports:
     graphics,
     dataPreparation,
     lubridate,
+    adehabitatHR,
     anytime
 Suggests:
     GNRS,

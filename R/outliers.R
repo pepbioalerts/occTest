@@ -201,3 +201,33 @@ findEnvOutliers=function(myPres,
     print(paste0(length(env.toss.id),' environmental outliers found'))
   env.toss.id
 }
+
+
+# mcpOutliers ====
+#' @title Find outlying occurrence data in geographical space from convex hulls
+#' @description Geographic outliers
+#' @details only works for WGS84 lat long 
+#' @param data a data.frame  with coordinate information
+#' @param xcoord character. Column with X coordinate information in data
+#' @param ycoord character. Column with Y coordinate information in data
+#' @param percentage numeric. Percentage of data used to build the minimum convex polygon
+#' @keywords internal
+#' @export
+#' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
+#' @author Coline CF Boonmann <colineboonman@@bio.au.dk >
+
+mcp_test = mcp.test = function(data,xcoord,ycoord,percentage=95){
+  rownames(data) = seq(1:nrow(data))
+  xy = na.omit(data[,c(xcoord,ycoord)])
+  xy = xy[!duplicated(xy),]
+  if(nrow(xy)>=5){
+    xy = sp::SpatialPoints(coords = xy, proj4string = sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+    MCP = adehabitatHR::mcp(xy,percent=percentage)
+    xy = as.data.frame(xy[MCP,])
+    outliers = c(!(rownames(data) %in% rownames(xy)))
+    return(outliers)
+  }else{
+    warning("N<5 bservations is not enough to run mcp outlier test.")
+    return (rep(NA,nrow (xy)))
+    }
+}

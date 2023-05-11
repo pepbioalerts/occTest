@@ -99,7 +99,10 @@
   dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = sp::CRS(wgs84))
   limits <- raster::extent(dat) + 1
   sp::proj4string(ref) <- wgs84
-  ref <- raster::crop(ref, limits)
+  #sometimes this breaks depending on the extent. 
+  #changing that to defensive programming (this may be slower but it is more sure)
+  ref2 <- try ({raster::crop(ref, limits)},silent=T)
+  if (class (ref2) != 'try-error') {ref <- ref2} 
   if (is.null(ref)) {
     out <- rep(TRUE, nrow(x))
   }

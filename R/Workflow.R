@@ -82,7 +82,6 @@ occTest = function(
   #set timer
   tictoc::tic('Initial checks and formatting')
   message('Initial checks and formatting started...')
-  
   #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
@@ -171,6 +170,7 @@ occTest = function(
   doGeoOutliers = analysisSettings$geoOutliers$doGeoOutliers
   methodGeoOutliers = analysisSettings$geoOutliers$methodGeoOutliers
   alpha.parameter = analysisSettings$geoOutliers$alpha.parameter
+  mcp.percSample = analysisSettings$geoOutliers$mcp_percSample
   
   doEnvOutliers = analysisSettings$envOutliers$doEnvOutliers
   methodEnvOutliers = analysisSettings$envOutliers$methodEnvOutliers
@@ -617,7 +617,6 @@ occTest = function(
                                  method = methodCentroidDetection,
                                  do= doCentroidDetection)
   tictoc::toc()
-  
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc::tic('Land Use Land Cover analysis')
   if(verbose) message('Land Use Land Cover analysis started ...')
@@ -659,11 +658,12 @@ occTest = function(
                            xf=x.field,
                            yf=y.field,
                            .alpha.parameter = alpha.parameter,
+                           .mcp_percSample = mcp.percSample,
                            do=doGeoOutliers,
                            method = methodGeoOutliers,
                            .projString = points.proj4string)
   tictoc::toc()
- 
+
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc::tic('Environmental outliers')
   if(verbose) message('Environmental outliers analysis started...')
@@ -677,7 +677,6 @@ occTest = function(
                              method = methodEnvOutliers,
                              do = doEnvOutliers)
   tictoc::toc()
-  
   ### ELEMENT 8: Coordinate accuracy
   tictoc::tic('geoEnvironmental accuracy')
   if(verbose) message('geoEnvironmental accuracy analysis started...')

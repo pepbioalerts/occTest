@@ -639,7 +639,6 @@ humanDetection <- function (df,
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
     if (alreadyDownloaded) myRef = rgdal::readOGR(dsn = newoutdir,layer = 'NE_urbanareas',verbose = FALSE)
     if (!alreadyDownloaded) myRef= NULL 
-    
     cc_urb_test =  .cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
     out$HumanDetection_UrbanAreas_value <- cc_urb_test
@@ -787,6 +786,7 @@ geoOutliers         <- function (df,
                                 .distance.parameter=1000,
                                 .medianDeviation.parameter=5,
                                 .samplingIntensThreshold.parameter=0.1,
+                                .mcp_percSample =95,
                                 method = 'all',
                                 .projString ,
                                 do=TRUE, verbose=FALSE){
@@ -812,7 +812,14 @@ geoOutliers         <- function (df,
                     geoOutliers_Grubbs_value=NA,
                     geoOutliers_Grubbs_test=NA,
                     geoOutliers_Grubbs_comments=NA,
+                    
+                    geoOutliers_mcp_value=NA,
+                    geoOutliers_mcp_test=NA,
+                    geoOutliers_mcp_comments=NA,
+                    
                     geoOutliers_score=NA
+                    
+                    
                     )[1:nrow (df),]
 
   row.names (out) <- NULL
@@ -824,6 +831,7 @@ geoOutliers         <- function (df,
   df$species <- 'MyFakeSp'
   rownames(df) <-1:nrow(df)
   xydat <- df[,c(xf,yf)]
+  
   if (nrow (xydat)<5) {warning('geoOutliers not perfomred. N<5'); return(out)}
 
   if (any (method %in% c('alphaHull','all'))){
@@ -996,7 +1004,6 @@ geoOutliers         <- function (df,
       out$geoOutliers_Grubbs_test = rep(NA,times=nrow(out))
       out$geoOutliers_Grubbs_comments = rep(paste('N<5. Analysis not run'),times=nrow(out))
       }
-    
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
       grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = FALSE),silent=TRUE)
@@ -1015,10 +1022,17 @@ geoOutliers         <- function (df,
       out$geoOutliers_Grubbs_test = as.logical(grubbs_tst)
       out$geoOutliers_Grubbs_comments = grubbs_comment
     }
-      
+  }
+  
+  if (any (method %in% c('mcp','all'))) {
+      xydat_mcpTest <- mcp_test(xydat,xf,yf,percentage=.mcp_percSample)
+      out$geoOutliers_mcp_value = xydat_mcpTest
+      out$geoOutliers_mcp_test = as.logical(xydat_mcpTest)
+      if (all(is.na(out$geoOutliers_mcp_value))) {
+        out$geoOutliers_mcp_comments = rep(paste('N<5. Analysis not run'),times=nrow(out)) 
+      }
     }
     
-
   out$geoOutliers_score <-  .gimme.score (out)
 
   return (out)
@@ -1109,13 +1123,13 @@ envOutliers  <- function (
 
       ev<-dat.environment[,i]
 
-      try (a<-biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
-      if (exists('a')){
+      a<- try (biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
+      if (exists('a') & all(class(a)!='try-error')){
         a<- as.data.frame (a)
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
         return (a)}
 
-      if (!exists('a')){
+      if (!exists('a') | any(class(a)=='try-error')){
         #in case there is no variation across the variable and then outliers function throws an error
         a <- data.frame (col1=rep (0,nrow(dat.environment)), col2 = rep (0,nrow(dat.environment)))
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )

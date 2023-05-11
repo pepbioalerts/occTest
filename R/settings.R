@@ -90,7 +90,8 @@ defaultSettings <- function (){
       geoOutliers = list (
         doGeoOutliers=TRUE,
         methodGeoOutliers='all',
-        alpha.parameter = 2
+        alpha.parameter = 2,
+        mcp_percSample =95
       )
       ,
       
@@ -386,7 +387,8 @@ minimalSettings <- function (){
       geoOutliers = list (
         doGeoOutliers=TRUE,
         methodGeoOutliers='all',
-        alpha.parameter = 2
+        alpha.parameter = 2,
+        mcp_percSample =95
       )
       ,
       
