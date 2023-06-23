@@ -84,60 +84,60 @@ presPercentile=function (xy,
 #' k <- sp::SpatialPoints(k)
 #' occTest::findSpatialOutliers(k)
 #' @export
-findSpatialOutliers=function(myPres,
-                             pvalSet=1e-5,
-                             checkPairs=TRUE,verbose=TRUE){
-
-  pres.inliers=myPres
-  sp.toss.coord=NULL
-  pval=0
-  #toss singles
-  while(pval<pvalSet){
-    dists=presPercentile(pres.inliers,percent=NULL)[[1]]$dist.from.centroid
-    gt=outliers::grubbs.test(dists)
-    #gt=dixon.test(dists)
-    #cot=chisq.out.test(dists,variance = var(dists),opposite = FALSE)
-    (pval=gt$p.value)
-    # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
-    if(gt$p.value<pvalSet){
-      toss=which.max(dists)
-      # IDs in the original data frame
-      sp.toss.coord=rbind(sp.toss.coord,sp::coordinates(pres.inliers)[toss,])
-      pres.inliers=pres.inliers[-toss,]
-      dists=dists[-toss]
-    }
-  }
-  # toss pairs
-  if(checkPairs){
-    if(length(pres.inliers)<31){
-      pval=0
-      # By turning off this loop, I'm ensuring that you can only toss 1 pair of outliers. with the loop, it tends to find lots of supposed outliers very confidently, but by eye, it tends to omit clusters
-      #while(pval<pvalSet){
-      dists=presPercentile(pres.inliers, percent=NULL)[[1]]$dist.from.centroid
-      gt=outliers::grubbs.test(dists,type=20)
-
-      #gt=dixon.test(dists)
-      #cot=chisq.out.test(dists,variance = var(dists),opposite = FALSE)
-      (pval=gt$p.value)
-      # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
-      if(gt$p.value<pvalSet){
-        toss=utils::tail(order(dists),2)
-        # IDs in the original data frame
-        sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
-        pres.inliers=pres.inliers[-toss,]
-      }
-      #}
-    }
-  }
-
-  if(!is.null(sp.toss.coord)){
-    coor=sp::coordinates(myPres)
-    sp.toss.id= apply(sp.toss.coord,1,function(x) which(x[1]==coor[,1] & x[2]==coor[,2]))
-  } else {sp.toss.id=NULL}
-  if (verbose)
-    print(paste0(length(sp.toss.id),' geographic outliers found'))
-  sp.toss.id
-}
+# findSpatialOutliers=function(myPres,
+#                              pvalSet=1e-5,
+#                              checkPairs=TRUE,verbose=TRUE){
+# 
+#   pres.inliers=myPres
+#   sp.toss.coord=NULL
+#   pval=0
+#   #toss singles
+#   while(pval<pvalSet){
+#     dists=presPercentile(pres.inliers,percent=NULL)[[1]]$dist.from.centroid
+#     gt=outliers::grubbs.test(dists)
+#     #gt=dixon.test(dists)
+#     #cot=chisq.out.test(dists,variance = var(dists),opposite = FALSE)
+#     (pval=gt$p.value)
+#     # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
+#     if(gt$p.value<pvalSet){
+#       toss=which.max(dists)
+#       # IDs in the original data frame
+#       sp.toss.coord=rbind(sp.toss.coord,sp::coordinates(pres.inliers)[toss,])
+#       pres.inliers=pres.inliers[-toss,]
+#       dists=dists[-toss]
+#     }
+#   }
+#   # toss pairs
+#   if(checkPairs){
+#     if(length(pres.inliers)<31){
+#       pval=0
+#       # By turning off this loop, I'm ensuring that you can only toss 1 pair of outliers. with the loop, it tends to find lots of supposed outliers very confidently, but by eye, it tends to omit clusters
+#       #while(pval<pvalSet){
+#       dists=presPercentile(pres.inliers, percent=NULL)[[1]]$dist.from.centroid
+#       gt=outliers::grubbs.test(dists,type=20)
+# 
+#       #gt=dixon.test(dists)
+#       #cot=chisq.out.test(dists,variance = var(dists),opposite = FALSE)
+#       (pval=gt$p.value)
+#       # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
+#       if(gt$p.value<pvalSet){
+#         toss=utils::tail(order(dists),2)
+#         # IDs in the original data frame
+#         sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
+#         pres.inliers=pres.inliers[-toss,]
+#       }
+#       #}
+#     }
+#   }
+# 
+#   if(!is.null(sp.toss.coord)){
+#     coor=sp::coordinates(myPres)
+#     sp.toss.id= apply(sp.toss.coord,1,function(x) which(x[1]==coor[,1] & x[2]==coor[,2]))
+#   } else {sp.toss.id=NULL}
+#   if (verbose)
+#     print(paste0(length(sp.toss.id),' geographic outliers found'))
+#   sp.toss.id
+# }
 
 # findEnvOutliers =====
 #' @title Find outlying occurrence data in environmental space
@@ -153,54 +153,54 @@ findSpatialOutliers=function(myPres,
 #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 #' @author Cory Merow <cory.merow@@gmail.com>
 
-findEnvOutliers=function(myPres,
-                         myEnv=NULL,
-                         pvalSet=1e-5,
-                         checkPairs=FALSE,verbose=TRUE){
-  #  for testing
-  #  myPres=presDF; pvalSet=1e-5; checkPairs=FALSE; myEnv=NULL
-  #  myEnv=env
-  #  myPres=myPres; env=myEnv; pvalSet=1e-5
-  if(!is.null(myEnv)){ p.env=raster::extract(myEnv,myPres)} else {p.env=myPres}
-  p.env=scale(p.env)
-  # remove variables that are the same for all observations
-  f=which(apply(p.env,2,function(x) !all(is.nan(x))))
-  p.env=p.env[,f]
-  pres.inliers=p.env
-  if (any (class (p.env) == 'numeric')) row.id = as.character(p.env)
-  if (any (class (p.env) %in% c('matrix','tibble','data.frame')))    row.id=apply( p.env, 1 , paste , collapse = "-" )
-  env.toss.id=NULL
-  pval=0
-  while(pval<pvalSet){
-    if (any (class (p.env) == 'numeric')) dists = p.env
-    if (any (class (p.env) %in% c('matrix','tibble','data.frame'))) dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
-    gt=outliers::grubbs.test(dists)
-    pval=gt$p.value
-    # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
-    if(gt$p.value<pvalSet){
-      toss=which.max(dists)
-      
-    
-      # IDs in the original data frame
-      if (!any (class (p.env) == 'numeric')) {
-        thisID=paste(p.env[toss,],collapse='-')
-        env.toss.id=c(env.toss.id,which(row.id == thisID))
-        p.env=p.env[-toss,]  
-      }
-      if (any (class (p.env) == 'numeric')) {
-        thisID=as.character(p.env[toss])
-        env.toss.id=c(env.toss.id,which(row.id == thisID))
-        p.env=p.env[-toss]  
-      }
-    
-    }
-  }
-  if(checkPairs) print('checkPairs not yet implemented')
-  env.toss.id=unique(env.toss.id)
-  if (verbose)
-    print(paste0(length(env.toss.id),' environmental outliers found'))
-  env.toss.id
-}
+# findEnvOutliers=function(myPres,
+#                          myEnv=NULL,
+#                          pvalSet=1e-5,
+#                          checkPairs=FALSE,verbose=TRUE){
+#   #  for testing
+#   #  myPres=presDF; pvalSet=1e-5; checkPairs=FALSE; myEnv=NULL
+#   #  myEnv=env
+#   #  myPres=myPres; env=myEnv; pvalSet=1e-5
+#   if(!is.null(myEnv)){ p.env=raster::extract(myEnv,myPres)} else {p.env=myPres}
+#   p.env=scale(p.env)
+#   # remove variables that are the same for all observations
+#   f=which(apply(p.env,2,function(x) !all(is.nan(x))))
+#   p.env=p.env[,f]
+#   pres.inliers=p.env
+#   if (any (class (p.env) == 'numeric')) row.id = as.character(p.env)
+#   if (any (class (p.env) %in% c('matrix','tibble','data.frame')))    row.id=apply( p.env, 1 , paste , collapse = "-" )
+#   env.toss.id=NULL
+#   pval=0
+#   while(pval<pvalSet){
+#     if (any (class (p.env) == 'numeric')) dists = p.env
+#     if (any (class (p.env) %in% c('matrix','tibble','data.frame'))) dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
+#     gt=outliers::grubbs.test(dists)
+#     pval=gt$p.value
+#     # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
+#     if(gt$p.value<pvalSet){
+#       toss=which.max(dists)
+#       
+#     
+#       # IDs in the original data frame
+#       if (!any (class (p.env) == 'numeric')) {
+#         thisID=paste(p.env[toss,],collapse='-')
+#         env.toss.id=c(env.toss.id,which(row.id == thisID))
+#         p.env=p.env[-toss,]  
+#       }
+#       if (any (class (p.env) == 'numeric')) {
+#         thisID=as.character(p.env[toss])
+#         env.toss.id=c(env.toss.id,which(row.id == thisID))
+#         p.env=p.env[-toss]  
+#       }
+#     
+#     }
+#   }
+#   if(checkPairs) print('checkPairs not yet implemented')
+#   env.toss.id=unique(env.toss.id)
+#   if (verbose)
+#     print(paste0(length(env.toss.id),' environmental outliers found'))
+#   env.toss.id
+# }
 
 
 # mcpOutliers ====

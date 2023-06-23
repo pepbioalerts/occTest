@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliers.R
 \name{mcp_test}
 \alias{mcp_test}
-\title{Find outlying occurrence data in geographical space from convex hulls}
+\title{Find outlying occurrence data in environmental space}
 \usage{
 mcp_test(data, xcoord, ycoord, percentage = 95)
 }
@@ -14,17 +14,49 @@ mcp_test(data, xcoord, ycoord, percentage = 95)
 \item{ycoord}{character. Column with Y coordinate information in data}
 
 \item{percentage}{numeric. Percentage of data used to build the minimum convex polygon}
+
+\item{myPres}{a `SpatialPointsDataFrame`}
+
+\item{myEnv}{a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)}
+
+\item{checkPairs}{logical. Default to FALSE (TRUE not implemented).}
+
+\item{pvalSet}{numeric; p-value used in Grubb's test for outlier (see package `outliers`)}
+
+\item{verbose}{logic. Should messages be printed out?}
 }
 \value{
+a numeric vector indicating which rows are spatial outliers.
+
+Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
+
 Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 }
 \description{
+Divide raster by the sum of all cells.
+
+Environmental outliers
+
 Geographic outliers
 }
 \details{
+Find outlying occurrence data in geographical space
+
+
+
 only works for WGS84 lat long
 }
+\examples{
+ 
+k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000))
+k <- sp::SpatialPoints(k)
+occTest::findSpatialOutliers(k)
+}
 \author{
+Cory Merow
+
+Cory Merow <cory.merow@gmail.com>
+
 Coline CF Boonmann <colineboonman@bio.au.dk >
 }
 \keyword{internal}

@@ -813,6 +813,14 @@ geoOutliers         <- function (df,
                     geoOutliers_Grubbs_test=NA,
                     geoOutliers_Grubbs_comments=NA,
                     
+                    geoOutliers_Dixon_value=NA,
+                    geoOutliers_Dixon_test=NA,
+                    geoOutliers_Dixon_comments=NA,
+                    
+                    geoOutliers_Rosner_value=NA,
+                    geoOutliers_Rosner_test=NA,
+                    geoOutliers_Rosner_comments=NA,
+
                     geoOutliers_mcp_value=NA,
                     geoOutliers_mcp_test=NA,
                     geoOutliers_mcp_comments=NA,
@@ -832,7 +840,7 @@ geoOutliers         <- function (df,
   rownames(df) <-1:nrow(df)
   xydat <- df[,c(xf,yf)]
   
-  if (nrow (xydat)<5) {warning('geoOutliers not perfomred. N<5'); return(out)}
+  if (nrow (xydat)<5) {warning('geoOutliers not performed N<5'); return(out)}
 
   if (any (method %in% c('alphaHull','all'))){
 
@@ -1006,21 +1014,64 @@ geoOutliers         <- function (df,
       }
     if (length (spdf)>5){
       grubbs_tst = rep(0,times=nrow(out))
-      grubbs.outl = try(occTest::findSpatialOutliers(myPres = spdf,verbose = FALSE),silent=TRUE)
-      
+      grubbs.outl = try(findOutlyingPoints(pres = spdf,spOutliers = T,envOutliers = F,verbose = F),silent=TRUE)
       if (inherits(grubbs.outl,what = 'try-error')) {
         grubbs_tst = rep(NA,times=nrow(out)) 
         grubbs_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
       }
       
       if (!inherits(grubbs.outl,what = 'try-error')) {
-        grubbs_tst [grubbs.outl] = 1
+        grubbs_tst <- as.numeric (grubbs.outl$spOutlier)
+        #grubbs_tst [grubbs.outl] = 1
         grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
       }
       
       out$geoOutliers_Grubbs_value = grubbs_tst
       out$geoOutliers_Grubbs_test = as.logical(grubbs_tst)
       out$geoOutliers_Grubbs_comments = grubbs_comment
+    }
+  }
+  
+  if (any (method %in% c('dixon','all','Dixon'))) {
+    spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
+    if (length (spdf)<=5) {
+      out$geoOutliers_Dixon_value = rep(NA,times=nrow(out))
+      out$geoOutliers_Dixon_test = rep(NA,times=nrow(out))
+      out$geoOutliers_Dixon_comments = rep(paste('N<5. Analysis not run'),times=nrow(out))
+    }
+    if (length (spdf)>5){
+      dixon_tst = rep(0,times=nrow(out))
+      dixon.outl = try(findOutlyingPoints(pres = spdf,spOutliers = T,method = 'dixon',envOutliers = F,verbose = F,),silent=TRUE)
+      if (inherits(dixon.outl,what = 'try-error')) {
+        dixon_tst = rep(NA,times=nrow(out)) 
+        dixon_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
+      }
+      if (!inherits(dixon.outl,what = 'try-error')) {dixon_tst <- as.numeric (dixon.outl$spOutlier)}
+      out$geoOutliers_Dixon_value = dixon_tst
+      out$geoOutliers_Dixon_test = as.logical(dixon_tst)
+      out$geoOutliers_Dixon_comments = NA
+    }
+  }
+  
+  if (any (method %in% c('rosner','all','Rosner'))) {
+    spdf = sp::SpatialPoints(coords = xydat,proj4string =.projString )
+    if (length (spdf)<=5) {
+      out$geoOutliers_Rosner_value = rep(NA,times=nrow(out))
+      out$geoOutliers_Rosner_test = rep(NA,times=nrow(out))
+      out$geoOutliers_Rosner_comments = rep(paste('N<5. Analysis not run'),times=nrow(out))
+    }
+    if (length (spdf)>5){
+      rosner_tst = rep(0,times=nrow(out))
+      rosner.outl = try(findOutlyingPoints(pres = spdf,spOutliers = T,method = 'rosner',
+                                           envOutliers = F,verbose = F,),silent=TRUE)
+      if (inherits(rosner.outl,what = 'try-error')) {
+        rosner_tst = rep(NA,times=nrow(out)) 
+        rosner_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
+      }
+      if (!inherits(rosner.outl,what = 'try-error')) {rosner_tst <- as.numeric (rosner.outl$spOutlier)}
+      out$geoOutliers_Rosner_value = rosner_tst
+      out$geoOutliers_Rosner_test = as.logical(rosner_tst)
+      out$geoOutliers_Rosner_comments = NA
     }
   }
   
@@ -1074,12 +1125,23 @@ envOutliers  <- function (
   #output results
   out = data.frame (envOutliers_missingEnv_value = NA,
                     envOutliers_missingEnv_test = NA,
+                    
                     envOutliers_bxp_value = NA,
                     envOutliers_bxp_test = NA,
                     envOutliers_bxp_comments = NA,
+                    
                     envOutliers_Grubbs_value=NA,
                     envOutliers_Grubbs_test=NA,
                     envOutliers_Grubbs_comments=NA,
+                    
+                    envOutliers_Dixon_value=NA,
+                    envOutliers_Dixon_test=NA,
+                    envOutliers_Dixon_comments=NA,
+                    
+                    envOutliers_Rosner_value=NA,
+                    envOutliers_Rosner_test=NA,
+                    envOutliers_Rosner_comments=NA,
+                    
                     envOutliers_score=NA
                     )[1:nrow (df),]
 
@@ -1091,7 +1153,7 @@ envOutliers  <- function (
   xydat <- df[,c(xf,yf)]
   
   if (nrow (xydat)<5) {
-    warning('envOutliers not perfomred. N<5')
+    warning('envOutliers not performed N<5')
     
     return(out)}
 
@@ -1150,23 +1212,80 @@ envOutliers  <- function (
 
   }
 
-  if (any (method %in% c('grubbs','all')))  {
-
-    #spdf = sp::SpatialPointsDataFrame(data = dat.environment[,-1],coords = df[,c(xf,yf)] ,proj4string =.projString )
-
+  if (any (method %in% c('grubbs','all','Grubbs')))  {
+    spdf = sp::SpatialPointsDataFrame (coords = xydat,
+                                       data =dat.environment %>% dplyr::select(-1) ,
+                                       proj4string =.projString )
     env.grubbs_tst = rep(0,times=nrow(out))
-    env.grubbs.outl = occTest::findEnvOutliers(myPres = dat.environment[,-1],myEnv = NULL,verbose = FALSE)
-    env.grubbs_tst [env.grubbs.outl] = 1
+    env.grubbs.outl = try(findOutlyingPoints(pres = spdf,
+                                             spOutliers = F,envOutliers = T,
+                                             method = 'grubbs',verbose = F),silent=TRUE)
+    
+    if (inherits(env.grubbs.outl,what = 'try-error')) {
+      env.grubbs_tst = rep(NA,times=nrow(out)) 
+      env.grubbs_comment <- rep (paste('Error in findSpatialOutliers'),times=nrow(out))
+    }
+    
+    if (!inherits(env.grubbs.outl,what = 'try-error')) {
+      env.grubbs_tst <- as.numeric (env.grubbs.outl$spOutlier)
+      #grubbs_tst [grubbs.outl] = 1
+      env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
+    }
+    
+    env.grubbs_tst <- as.numeric (env.grubbs.outl$envOutlier)
     env.grubbs_comment <- rep (paste('Pval= 1e-5'),times=nrow(out))
-    
-    
+
     out$envOutliers_Grubbs_value = env.grubbs_tst
     out$envOutliers_Grubbs_test = as.logical(env.grubbs_tst)
     out$envOutliers_Grubbs_comments = env.grubbs_comment
 
   }
 
-
+  if (any (method %in% c('dixon','all','Dixon')))  {
+    spdf = sp::SpatialPointsDataFrame (coords = xydat,
+                                       data =dat.environment %>% dplyr::select(-1) ,
+                                       proj4string =.projString )
+    env.dixon_tst = rep(0,times=nrow(out))
+    env.dixon.outl = try(findOutlyingPoints(pres = spdf,
+                                             spOutliers = F,envOutliers = T,
+                                             method = 'dixon',verbose = F),silent=TRUE)
+    
+    if (inherits(env.dixon.outl,what = 'try-error')) {
+      env.dixon_tst = rep(NA,times=nrow(out)) 
+      env.dixon_comment <- rep (paste('Error in findOutlyingPoints'),times=nrow(out))
+    }
+    if (!inherits(env.dixon.outl,what = 'try-error')) {
+      env.dixon_tst <- as.numeric (env.dixon.outl$envOutlier)
+      env.dixon_comment <- rep (NA,times=nrow(out))
+    }
+    out$envOutliers_Dixon_value = env.dixon_tst
+    out$envOutliers_Dixon_test = as.logical(env.dixon_tst)
+    out$envOutliers_Dixon_comments = env.dixon_comment
+    
+  }
+  
+  if (any (method %in% c('rosner','all','Rosner')))  {
+    spdf = sp::SpatialPointsDataFrame (coords = xydat,
+                                       data =dat.environment %>% dplyr::select(-1) ,
+                                       proj4string =.projString )
+    env.rosner_tst = rep(0,times=nrow(out))
+    env.rosner.outl = try(findOutlyingPoints(pres = spdf,
+                                            spOutliers = F,envOutliers = T,
+                                            method = 'rosner',verbose = F),silent=TRUE)
+    if (inherits(env.rosner.outl,what = 'try-error')) {
+      env.rosner_tst = rep(NA,times=nrow(out)) 
+      env.rosner_comment <- rep (paste('Error in findOutliers'),times=nrow(out))
+    }
+    if (!inherits(env.dixon.outl,what = 'try-error')) {
+      env.rosner_tst <- as.numeric (env.rosner.outl$envOutlier)
+      env.rosner_comment <- rep (NA,times=nrow(out))
+    }
+    out$envOutliers_Rosner_value = env.rosner_tst
+    out$envOutliers_Rosner_test = as.logical(env.rosner_tst)
+    out$envOutliers_Rosner_comments = env.rosner_comment
+    
+  }
+  
   out$envOutliers_score <-  .gimme.score (out)
   return (out)
 }
