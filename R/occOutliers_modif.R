@@ -47,14 +47,15 @@ findEnvOutliers=function(pres,
   #} else {p.env=pres}
   p.env=pres@data
   p.env=base::scale(p.env)
+  sp.toss.coord=NULL
+  sp.toss.id=NULL
   # remove variables that are the same for all observations
   f=which(apply(p.env,2,function(x) !all(is.nan(x))))
-  p.env=p.env[,f]
+  p.env=p.env[,f,drop=F]
   pres.inliers=p.env
   row.id=apply( p.env, 1 , paste , collapse = "-" )
   env.toss.id=NULL
   #dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
-  
   if(any(method=='grubbs')){
     pval=0
     #tmp.dists=dists
@@ -73,7 +74,7 @@ findEnvOutliers=function(pres,
         thisID=paste(p.env[toss,],collapse='-')
         env.toss.id=c(env.toss.id,which(row.id == thisID))
         #tmp.dists=tmp.dists[-toss]
-        p.env=p.env[-toss,]
+        p.env=p.env[-toss,,drop=F]
       }  
     }
     
@@ -355,7 +356,6 @@ findOutlyingPoints=function(pres,
   } else {sp.toss.id=NULL}
   
   if(envOutliers) {
-    
     if (class(pres)==c('SpatialPoints')) {
       #get them to become spdfs
       pres  = sp::SpatialPointsDataFrame(pres,

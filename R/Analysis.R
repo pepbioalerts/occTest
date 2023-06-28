@@ -582,13 +582,13 @@ humanDetection <- function (df,
                             .points.proj4string,
                             do=TRUE, verbose=FALSE,output.dir){
 
-  out <- data.frame (HumanDetection_HumanInfluence_value=NA,
-                     HumanDetection_HumanInfluence_test=NA,
-                     HumanDetection_HumanInfluence_comments= NA,
-                     HumanDetection_UrbanAreas_value=NA,
-                     HumanDetection_UrbanAreas_test=NA,
-                     HumanDetection_UrbanAreas_comments=NA,
-                     HumanDetection_score=NA
+  out <- data.frame (humanDetection_HumanInfluence_value=NA,
+                     humanDetection_HumanInfluence_test=NA,
+                     humanDetection_HumanInfluence_comments= NA,
+                     humanDetection_UrbanAreas_value=NA,
+                     humanDetection_UrbanAreas_test=NA,
+                     humanDetection_UrbanAreas_comments=NA,
+                     humanDetection_score=NA
                      )[1:nrow (df),]
   row.names(out) <- NULL
 
@@ -625,9 +625,9 @@ humanDetection <- function (df,
 
     hii.sp.pres <-( hii.sp.value >= .th.human.influence)
 
-    out$HumanDetection_HumanInfluence_value=hii.sp.value
-    out$HumanDetection_HumanInfluence_test=hii.sp.pres
-    out$HumanDetection_HumanInfluence_comments= paste('Threshold influence=',.th.human.influence)
+    out$humanDetection_HumanInfluence_value=hii.sp.value
+    out$humanDetection_HumanInfluence_test=hii.sp.pres
+    out$humanDetection_HumanInfluence_comments= paste('Threshold influence=',.th.human.influence)
 
   }
 
@@ -641,13 +641,13 @@ humanDetection <- function (df,
     if (!alreadyDownloaded) myRef= NULL 
     cc_urb_test =  .cc_urb_occTest(x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE,ref = myRef,outdir = output.dir )
     cc_urb_test <- (!  cc_urb_test) * 1
-    out$HumanDetection_UrbanAreas_value <- cc_urb_test
-    out$HumanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
-    out$HumanDetection_UrbanAreas_comments <- c('Urban areas from rnaturalearth')
+    out$humanDetection_UrbanAreas_value <- cc_urb_test
+    out$humanDetection_UrbanAreas_test <- as.logical(cc_urb_test) 
+    out$humanDetection_UrbanAreas_comments <- c('Urban areas from rnaturalearth')
   }
   
   #compute score
-  out$HumanDetection_score <-  .gimme.score (out)
+  out$humanDetection_score <-  .gimme.score (out)
 
 
   return (out)
@@ -1211,7 +1211,6 @@ envOutliers  <- function (
     out$envOutliers_bxp_comments = comments.outlier.env
 
   }
-
   if (any (method %in% c('grubbs','all','Grubbs')))  {
     spdf = sp::SpatialPointsDataFrame (coords = xydat,
                                        data =dat.environment %>% dplyr::select(-1) ,

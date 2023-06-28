@@ -362,7 +362,7 @@ occTest = function(
     coordIssues_coordConv_test = as.logical(coordIssues_coordConv_value)
     dat$coordIssues_coordConv_test = coordIssues_coordConv_test
     
-    if (all(is.na(coordIssues_coordConv_test)))      warning ('Coordinate Conversion test errors not perfomred due to internal error. Continuing without that test')
+    if (all(is.na(coordIssues_coordConv_test)))      warning ('Coordinate Conversion test errors not performed due to internal error. Continuing without that test')
     
     if (!all(is.na(coordIssues_coordConv_test)))     dat.Q.H3 = dat[coordIssues_coordConv_test,]
     if (!all(is.na(coordIssues_coordConv_test)))     dat = dat[!coordIssues_coordConv_test,]
@@ -694,7 +694,6 @@ occTest = function(
                               doParallel=doParallel,
                               mc.cores=mc.cores)
   tictoc::toc()
-  
   tictoc::tic('time accuracy')
   if(verbose) message('time accuracy analysis started...')
   Analysis.8 =  timeAccuracy (df=dat,

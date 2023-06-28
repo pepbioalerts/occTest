@@ -265,7 +265,6 @@ set_testBlocks      <- function (geo = TRUE,
   
   #for testing
   #geo = TRUE; lu = TRUE; env = TRUE; time = TRUE
-  browser ()
   objName = ls()
   paramsDF = list ()
   for (i in 1:length(objName)){
