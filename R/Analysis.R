@@ -393,7 +393,6 @@ centroidDetection <- function (df,
 
   if(!do) { return (out)}
   
-
   #Method BIEN
   if (any(method %in% c('BIEN','all'))){
     #load centroid data
@@ -437,13 +436,17 @@ centroidDetection <- function (df,
       country_ext <-  .coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=TRUE)
-    if (inherits(cleaned_countries,'error') | is.null(cleaned_countries)){
+    unique_country_ext_df <- unique (country_ext)
+    browser()
+    unique_clean_countries <- try({GNRS::GNRS_super_simple(country = unique_country_ext_df)},silent=T)
+    #cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=TRUE)
+    if (inherits(unique_clean_countries,'error') | is.null(unique_clean_countries)){
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
       out$centroidDetection_BIEN_comments <- 'Not performed. GNRS error'
       
     } else{
+      cleaned_countries <- dplyr::left_join(data.frame(country_verbatim=country_ext),unique_clean_countries)
       matchedCtry <- cleaned_countries$match_status=='full match'
       cleaned_countries <- cleaned_countries [matchedCtry,]
       maxValLoop = nrow(cleaned_countries)
