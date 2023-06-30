@@ -89,7 +89,6 @@ occTest = function(
   if(inherits(r.env,'SpatRaster')) stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
   
   sp.table <- as.data.frame (sp.table)
-    
   ### STEP 0: Load settings and study native and invasive countries ====
   if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::minimalSettings()
   

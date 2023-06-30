@@ -392,7 +392,6 @@ centroidDetection <- function (df,
   row.names(out) <- NULL
 
   if(!do) { return (out)}
-  
   #Method BIEN
   if (any(method %in% c('BIEN','all'))){
     #load centroid data
@@ -445,25 +444,25 @@ centroidDetection <- function (df,
       out$centroidDetection_BIEN_comments <- 'Not performed. GNRS error'
       
     } else{
-      cleaned_countries <- dplyr::left_join(data.frame(country_verbatim=country_ext),unique_clean_countries)
+      cleaned_countries <- suppressMessages(dplyr::left_join(data.frame(country_verbatim=country_ext),unique_clean_countries))
       matchedCtry <- cleaned_countries$match_status=='full match'
       cleaned_countries <- cleaned_countries [matchedCtry,]
-      maxValLoop = nrow(cleaned_countries)
+      #maxValLoop = nrow(cleaned_countries)
       for(i in 1:nrow(cleaned_countries)){
-        svMisc::progress(i,max.value = maxValLoop)
+        #svMisc::progress(i,max.value = maxValLoop)
         occurrences.df$country <- as.character(occurrences.df$country)
         occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
       }
       
       for(i in 1:nrow(cleaned_countries)){
-        svMisc::progress(i,max.value = maxValLoop)
+        #svMisc::progress(i,max.value = maxValLoop)
         occurrences.df$state_province <- as.character(occurrences.df$state_province)
         occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
                                               occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
       }
       
       for(i in 1:nrow(cleaned_countries)){
-        svMisc::progress(i,max.value = maxValLoop)
+        #svMisc::progress(i,max.value = maxValLoop)
         occurrences.df$county <- as.character(occurrences.df$county)
         occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
                                       occurrences.df$state_province ==cleaned_countries$state_province[i]&
@@ -835,7 +834,6 @@ geoOutliers         <- function (df,
   row.names (out) <- NULL
 
   if (!do) {return (out)}
-
 
   #prepare df for different methods of outliers in different packages
   df$species <- 'MyFakeSp'

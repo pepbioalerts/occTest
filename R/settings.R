@@ -21,12 +21,6 @@ defaultSettings <- function (){
   
   
     defaultSettings = list (
-    #grading Settings
-    # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
-    #                         qualifiers=TRUE,
-    #                         qualifier.label.scoping=c('A','B','C','D','E'))
-    # 
-    # ,
     #writing outputs settings
     writeoutSettings = list (#writing outputs
       output.dir=NULL,
@@ -318,13 +312,7 @@ minimalSettings <- function (){
   
   defaultSettings = list (
     
-    #grading Settings
-    # gradingSettings = list (grading.test.type = 'majority', #other options are 'strict' 'relaxed'
-    #                         qualifiers=TRUE,
-    #                         qualifier.label.scoping=c('A','B','C','D','E'))
-    # 
-    # ,
-    #writing outputs settings
+   
     writeoutSettings = list (#writing outputs
       output.dir=NULL,
       writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
@@ -385,7 +373,7 @@ minimalSettings <- function (){
       
       geoOutliers = list (
         doGeoOutliers=TRUE,
-        methodGeoOutliers='all',
+        methodGeoOutliers=c('alphaHull','distance','median','grubbs','dixon','rosner','mcp'),
         alpha.parameter = 2,
         mcp_percSample =95
       )
@@ -398,7 +386,7 @@ minimalSettings <- function (){
       )
       ,
       geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
-                                doGeoEnvAccuracy=TRUE,
+                                doGeoEnvAccuracy=FALSE,
                                 elev.quality.threshold = 100
       ),
       timeAccuracy= list (doTimeAccuracy = TRUE,
