@@ -617,8 +617,8 @@ occTest = function(
                                  do= doCentroidDetection)
   tictoc::toc()
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
-  tictoc::tic('Land Use Land Cover analysis')
-  if(verbose) message('Land Use Land Cover analysis started ...')
+  tictoc::tic('human influence detection analysis')
+  if(verbose) message('Land Use human influence detection analysis started ...')
   Analysis.2 = humanDetection (df = dat,
                                xf = x.field,
                                yf = y.field,

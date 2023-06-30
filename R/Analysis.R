@@ -437,7 +437,6 @@ centroidDetection <- function (df,
       occurrences.df$country <- country_ext
     }
     unique_country_ext_df <- unique (country_ext)
-    browser()
     unique_clean_countries <- try({GNRS::GNRS_super_simple(country = unique_country_ext_df)},silent=T)
     #cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=TRUE)
     if (inherits(unique_clean_countries,'error') | is.null(unique_clean_countries)){
