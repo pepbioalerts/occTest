@@ -115,6 +115,248 @@ defaultSettings <- function (){
   
 }
 
+# fullSettings ====
+#' @title Load full settings for occTest 
+#' @description Loads a list of lists with the different default parameters for analysi. 
+#' It avoids using  some functions of the pkg under development.
+#' @details it can be use internally or it can be used by a user to subsequently modify parameters
+#' @return list of lists with all different parameters to use in occTest function
+#' @keywords user
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
+#' #load default settings
+#' settings <- minimalSettings()
+#' @export
+
+fullSettings <- function (){
+  
+  #download info and files
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
+  outFile_hii = paste0(tempdir(),'/hii3.zip')
+  if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+  utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
+  outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
+  
+  
+  
+  defaultSettings = list (
+    #writing outputs settings
+    writeoutSettings = list (#writing outputs
+      output.dir=NULL,
+      writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
+      write.simple.output=FALSE,
+      write.full.output=FALSE,
+      output.base.filename="occTest")
+    ,
+    #tableSettings
+    tableSettings = list (taxonobservation.id = 'taxonobservationID',
+                          x.field = 'decimalLongitude',
+                          y.field = 'decimalLatitude',
+                          t.field = 'eventDate', #time field (date)  
+                          l.field = 'verbatimLocality', #locality field 
+                          c.field = 'countryCode', #country field field (date)   
+                          e.field = 'recordedElevation', #elevation recoreded  in meters
+                          a.field = 'coordinateUncertaintyInMeters', #coordinate uncertainty in meters
+                          ds.field = 'datasetName' #dataset field identifier
+    )
+    ,                     
+    #analysis settings
+    analysisSettings =list (
+      doCoastalReassignment = TRUE,
+      landSurfacePol = NULL,
+      geoSettings = list (
+        coordinate.decimal.precision = 4,
+        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+      )
+      ,
+      countryStatusRange = list (
+        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
+        countryfield.shapefile = 'iso_a3',
+        doRangeAnalysis=TRUE,
+        excludeUnknownRanges= FALSE,
+        excludeNotmatchCountry= FALSE,
+        doCountryRecordAnalysis=TRUE
+      )
+      ,
+      centroidDetection = list (doCentroidDetection=TRUE,
+                                methodCentroidDetection='all'
+      )
+      ,
+      humanDetection= list (doHumanDetection=TRUE,
+                            methodHumanDetection='all',
+                            th.human.influence = 45,
+                            ras.hii=raster::raster(outFile_hii)
+                            
+      )
+      ,
+      landUseType   = list (doLandUse=TRUE,
+                            methodLandUse='in',
+                            landUseCodes = NULL,
+                            ras.landUse=NULL #we need a default here to be downloaded
+      )
+      ,
+      institutionLocality = list (doInstitutionLocality=TRUE,
+                                  methodInstitutionLocality='all'
+      )
+      ,
+      
+      geoOutliers = list (
+        doGeoOutliers=TRUE,
+        methodGeoOutliers='all',
+        alpha.parameter = 2,
+        mcp_percSample =95
+      )
+      ,
+      
+      envOutliers = list (
+        doEnvOutliers=TRUE,
+        methodEnvOutliers='all',
+        th.perc.outenv =  0.2
+      ),
+      geoenvLowAccuracy = list (doGeoEnvAccuracy=TRUE,
+                                methodGeoEnvAccuracy='all',
+                                elev.quality.threshold = 100
+      ),
+      timeAccuracy= list (doTimeAccuracy = TRUE,
+                          methodTimeAccuracy = 'all',
+                          iniDate = NA,
+                          endDate = NA
+      )
+      
+    )#end analysis settings
+    
+  )#end all default settings
+  
+  
+  return (defaultSettings)
+  
+  
+  
+}
+
+# minimalSettings ====
+#' @title Load minimal settings for occTest 
+#' @description Loads a list of lists with the different default parameters for analysi. 
+#' It avoids using  some functions of the pkg under development.
+#' @details it can be use internally or it can be used by a user to subsequently modify parameters
+#' @return list of lists with all different parameters to use in occTest function
+#' @keywords user
+#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @examples 
+#' #load default settings
+#' settings <- minimalSettings()
+#' @export
+
+minimalSettings <- function (){
+  
+  #download info
+  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
+  outFile_hii = paste0(tempdir(),'/hii3.zip')
+  if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+  utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
+  outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
+  
+  
+  defaultSettings = list (
+    
+    
+    writeoutSettings = list (#writing outputs
+      output.dir=NULL,
+      writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
+      write.simple.output=FALSE,
+      write.full.output=FALSE,
+      output.base.filename="occTest")
+    ,
+    #tableSettings
+    tableSettings = list (taxonobservation.id = 'taxonobservationID',
+                          x.field = 'decimalLongitude',
+                          y.field = 'decimalLatitude',
+                          t.field = 'eventDate', #time field (date)  
+                          l.field = 'verbatimLocality', #locality field 
+                          c.field = 'countryCode', #country field field (date)   
+                          e.field = 'recordedElevation', #elevation recoreded  in meters
+                          a.field = 'coordinateUncertaintyInMeters', #coordinate uncertainty in meters
+                          ds.field = 'datasetName' #dataset field identifier
+    )
+    ,                     
+    #analysis settings
+    analysisSettings =list (
+      doCoastalReassignment = TRUE,
+      landSurfacePol = NULL,
+      geoSettings = list (
+        coordinate.decimal.precision = 4,
+        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+      )
+      ,
+      countryStatusRange = list (
+        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
+        countryfield.shapefile = 'iso_a3',
+        doRangeAnalysis=TRUE,
+        excludeUnknownRanges= FALSE,
+        excludeNotmatchCountry= FALSE,
+        doCountryRecordAnalysis=TRUE
+      )
+      ,
+      centroidDetection = list (doCentroidDetection=TRUE,
+                                methodCentroidDetection='CoordinateCleaner'
+      )
+      ,
+      humanDetection= list (doHumanDetection=TRUE,
+                            methodHumanDetection='all',
+                            th.human.influence = 45,
+                            ras.hii=raster::raster(outFile_hii)
+      )
+      ,
+      landUseType   = list (doLandUse=TRUE,
+                            methodLandUse='in',
+                            landUseCodes = NULL,
+                            ras.landUse=NULL #we need a default here to be downloaded
+      )
+      ,
+      institutionLocality = list (doInstitutionLocality=TRUE,
+                                  methodInstitutionLocality='all'
+      )
+      ,
+      
+      geoOutliers = list (
+        doGeoOutliers=TRUE,
+        methodGeoOutliers=c('alphaHull','distance','median','grubbs','dixon','rosner','mcp'),
+        alpha.parameter = 2,
+        mcp_percSample =95
+      )
+      ,
+      
+      envOutliers = list (
+        doEnvOutliers=TRUE,
+        methodEnvOutliers='all',
+        th.perc.outenv =  0.2
+      )
+      ,
+      geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
+                                doGeoEnvAccuracy=FALSE,
+                                elev.quality.threshold = 100
+      ),
+      timeAccuracy= list (doTimeAccuracy = TRUE,
+                          methodTimeAccuracy = 'all',
+                          iniDate = NA,
+                          endDate = NA
+      )
+    )#end analysis settings
+    
+  )#end all default settings
+  
+  
+  return (defaultSettings)
+  
+  
+  
+}
+
+
+
+
+
+
 # set_tableNames ====
 #' @title set table names internally
 #' @param x.field character. Name of the x coordinate field.
@@ -286,124 +528,4 @@ set_testBlocks      <- function (geo = TRUE,
     
   return (newParamsList)
 }
-
-# minimalSettings ====
-#' @title Load minimal settings for occTest 
-#' @description Loads a list of lists with the different default parameters for analysi. 
-#' It avoids using  some functions of the pkg under development.
-#' @details it can be use internally or it can be used by a user to subsequently modify parameters
-#' @return list of lists with all different parameters to use in occTest function
-#' @keywords user
-#' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples 
-#' #load default settings
-#' settings <- minimalSettings()
-#' @export
-
-minimalSettings <- function (){
-  
-  #download info
-  dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
-  outFile_hii = paste0(tempdir(),'/hii3.zip')
-  if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
-  utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
-  outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
-  
-  
-  defaultSettings = list (
-    
-   
-    writeoutSettings = list (#writing outputs
-      output.dir=NULL,
-      writeAllOutput=FALSE, #overwrites write.simple.output, write.full.output
-      write.simple.output=FALSE,
-      write.full.output=FALSE,
-      output.base.filename="occTest")
-    ,
-    #tableSettings
-    tableSettings = list (taxonobservation.id = 'taxonobservationID',
-                          x.field = 'decimalLongitude',
-                          y.field = 'decimalLatitude',
-                          t.field = 'eventDate', #time field (date)  
-                          l.field = 'verbatimLocality', #locality field 
-                          c.field = 'countryCode', #country field field (date)   
-                          e.field = 'recordedElevation', #elevation recoreded  in meters
-                          a.field = 'coordinateUncertaintyInMeters', #coordinate uncertainty in meters
-                          ds.field = 'datasetName' #dataset field identifier
-    )
-    ,                     
-    #analysis settings
-    analysisSettings =list (
-      doCoastalReassignment = TRUE,
-      landSurfacePol = NULL,
-      geoSettings = list (
-        coordinate.decimal.precision = 4,
-        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-      )
-      ,
-      countryStatusRange = list (
-        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
-        countryfield.shapefile = 'iso_a3',
-        doRangeAnalysis=TRUE,
-        excludeUnknownRanges= FALSE,
-        excludeNotmatchCountry= FALSE,
-        doCountryRecordAnalysis=TRUE
-      )
-      ,
-      centroidDetection = list (doCentroidDetection=TRUE,
-                                methodCentroidDetection='CoordinateCleaner'
-      )
-      ,
-      humanDetection= list (doHumanDetection=TRUE,
-                            methodHumanDetection='all',
-                            th.human.influence = 45,
-                            ras.hii=raster::raster(outFile_hii)
-      )
-      ,
-      landUseType   = list (doLandUse=TRUE,
-                            methodLandUse='in',
-                            landUseCodes = NULL,
-                            ras.landUse=NULL #we need a default here to be downloaded
-      )
-      ,
-      institutionLocality = list (doInstitutionLocality=TRUE,
-                                  methodInstitutionLocality='all'
-      )
-      ,
-      
-      geoOutliers = list (
-        doGeoOutliers=TRUE,
-        methodGeoOutliers=c('alphaHull','distance','median','grubbs','dixon','rosner','mcp'),
-        alpha.parameter = 2,
-        mcp_percSample =95
-      )
-      ,
-      
-      envOutliers = list (
-        doEnvOutliers=TRUE,
-        methodEnvOutliers='all',
-        th.perc.outenv =  0.2
-      )
-      ,
-      geoenvLowAccuracy = list (methodGeoEnvAccuracy='all',
-                                doGeoEnvAccuracy=FALSE,
-                                elev.quality.threshold = 100
-      ),
-      timeAccuracy= list (doTimeAccuracy = TRUE,
-                          methodTimeAccuracy = 'all',
-                          iniDate = NA,
-                          endDate = NA
-      )
-    )#end analysis settings
-    
-  )#end all default settings
-  
-  
-  return (defaultSettings)
-  
-  
-  
-}
-
-
 

@@ -77,7 +77,6 @@ occTest = function(
   mc.cores=2){
 
   tictoc::tic()
-  
   ### STEP 00: Initial checks ====
   #set timer
   tictoc::tic('Initial checks and formatting')
@@ -90,7 +89,7 @@ occTest = function(
   
   sp.table <- as.data.frame (sp.table)
   ### STEP 0: Load settings and study native and invasive countries ====
-  if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::minimalSettings()
+  if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::defaultSettings()
   
   #load table settings(old stuff, we  could attach the different labels)
   if(is.null(tableSettings)){ tableSettings = defaultSettings$tableSettings}
