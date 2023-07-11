@@ -596,7 +596,6 @@ occTest = function(
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc::tic('Centroid detection')
   if(verbose) message('Centroid detection started ...')
-
   Analysis.1 = centroidDetection(.r.env = r.env,
                                  df = dat,
                                  xf = x.field,

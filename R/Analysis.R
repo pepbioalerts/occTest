@@ -257,6 +257,8 @@ countryStatusRangeAnalysis=function(df,
       if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))
       }
       sp.xydat <- sp::SpatialPoints(xydat,proj4string = .points.proj4string)
+      if (!sp::identicalCRS(sp.xydat,.countries.shapefile))
+        .countries.shapefile = sp::spTransform(.countries.shapefile,raster::crs(sp.xydat))
       overlay.sp.xydat <- sp::over(sp.xydat, .countries.shapefile)
       fieldname  <- match(cfsf, names(overlay.sp.xydat))
       country_ext <- overlay.sp.xydat[, fieldname]
@@ -421,113 +423,107 @@ centroidDetection <- function (df,
     #### TO REPLACE BY A FUNCTION  .coords2country
     xydat <- df[,c(xf,yf)]
     if (!is.null(.countries.shapefile)){
-      
       if (is.null(.points.proj4string)) {.points.proj4string <- .countries.shapefile@proj4string; if(verbose) print (paste ('ASSUMING points in projection',.countries.shapefile@proj4string))}
       sp.xydat <- sp::SpatialPoints(xydat,proj4string = .points.proj4string)
+      if (!sp::identicalCRS(sp.xydat,.countries.shapefile))
+        .countries.shapefile = sp::spTransform(.countries.shapefile,raster::crs(sp.xydat))
       overlay.sp.xydat <- sp::over(sp.xydat, .countries.shapefile)
       country_ext <- overlay.sp.xydat[,cfsf]
       occurrences.df$country <- country_ext
-      
     }
-    
     #extract countries of the points with when a country shapefile is not provided
     if (is.null(.countries.shapefile)){
       country_ext <-  .coords2country (xydat)
       occurrences.df$country <- country_ext
     }
-    unique_country_ext_df <- unique (country_ext)
-    unique_clean_countries <- try({GNRS::GNRS_super_simple(country = unique_country_ext_df)},silent=T)
-    #cleaned_countries<-try ({GNRS::GNRS_super_simple(country = country_ext)},silent=TRUE)
-    if (inherits(unique_clean_countries,'error') | is.null(unique_clean_countries)){
+    unique_country_ext_df <- unique(country_ext)
+    unique_clean_countries <- try({
+      GNRS::GNRS_super_simple(country = unique_country_ext_df)
+    }, silent = T)
+    if (inherits(unique_clean_countries, "error") |
+        is.null(unique_clean_countries) |
+        inherits(unique_clean_countries, "try-error")) {
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
-      out$centroidDetection_BIEN_comments <- 'Not performed. GNRS error'
+      #Test whether the GNRS is installed and comment accordingly
+      if( library("TNRS",logical.return = TRUE,verbose = FALSE,quietly = TRUE) ){
+        out$centroidDetection_BIEN_comments <- "Not performed. GNRS error"
+      }else{
+        out$centroidDetection_BIEN_comments <- "Not performed. GNRS not installed."
+      }
       
-    } else{
-      cleaned_countries <- suppressMessages(dplyr::left_join(data.frame(country_verbatim=country_ext),unique_clean_countries))
-      matchedCtry <- cleaned_countries$match_status=='full match'
-      cleaned_countries <- cleaned_countries [matchedCtry,]
-      #maxValLoop = nrow(cleaned_countries)
-      for(i in 1:nrow(cleaned_countries)){
-        #svMisc::progress(i,max.value = maxValLoop)
+
+    }else {
+      cleaned_countries <- suppressMessages(dplyr::left_join(data.frame(country_verbatim = country_ext),
+                                                             unique_clean_countries))
+      matchedCtry <- cleaned_countries$match_status ==
+        "full match"
+      cleaned_countries <- cleaned_countries[matchedCtry,
+      ]
+      for (i in 1:nrow(cleaned_countries)) {
         occurrences.df$country <- as.character(occurrences.df$country)
-        occurrences.df$country[which(occurrences.df$country ==cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i]) 
+        occurrences.df$country[which(occurrences.df$country ==
+                                       cleaned_countries$country_verbatim[i])] <- unlist(cleaned_countries$country[i])
       }
-      
-      for(i in 1:nrow(cleaned_countries)){
-        #svMisc::progress(i,max.value = maxValLoop)
+      for (i in 1:nrow(cleaned_countries)) {
         occurrences.df$state_province <- as.character(occurrences.df$state_province)
-        occurrences.df$state_province[which(occurrences.df$country ==cleaned_countries$country[i] &
-                                              occurrences.df$state_province ==cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i]) 
+        occurrences.df$state_province[which(occurrences.df$country ==
+                                              cleaned_countries$country[i] & occurrences.df$state_province ==
+                                              cleaned_countries$state_province_verbatim[i])] <- unlist(cleaned_countries$state_province[i])
       }
-      
-      for(i in 1:nrow(cleaned_countries)){
-        #svMisc::progress(i,max.value = maxValLoop)
+      for (i in 1:nrow(cleaned_countries)) {
         occurrences.df$county <- as.character(occurrences.df$county)
-        occurrences.df$county[which(occurrences.df$country ==cleaned_countries$country[i] &
-                                      occurrences.df$state_province ==cleaned_countries$state_province[i]&
-                                      occurrences.df$county==cleaned_countries$county_parish_verbatim[i])] <- unlist(cleaned_countries$county_parish[i]) 
+        occurrences.df$county[which(occurrences.df$country ==
+                                      cleaned_countries$country[i] & occurrences.df$state_province ==
+                                      cleaned_countries$state_province[i] & occurrences.df$county ==
+                                      cleaned_countries$county_parish_verbatim[i])] <- unlist(cleaned_countries$county_parish[i])
       }
-      
-      
-      #Get relative distances
-      k <- centroid_assessment(occurrences = occurrences.df, centroid_data = centroid_data)
-      
-      #convert relative distances to binary using threshold
-      centroid_threshold <- 0.002 #smaller values require points to be closer to a centroid in order to be flagged
-      
-      k$is_centroid <- apply(X = k,MARGIN =  1,FUN = function(x){
-        y<-as.vector(stats::na.omit(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))
-        #print(y)
-        logiCentroid = any(as.numeric(y)<centroid_threshold)
+      k <- centroid_assessment(occurrences = occurrences.df,
+                               centroid_data = centroid_data)
+      centroid_threshold <- 0.002
+      k$is_centroid <- apply(X = k, MARGIN = 1, FUN = function(x) {
+        y <- as.vector(stats::na.omit(unlist(c(x["country_cent_dist_relative"],
+                                               x["state_cent_dist_relative"], x["county_cent_dist_relative"]))))
+        logiCentroid = any(as.numeric(y) < centroid_threshold)
         logiCentroid
       })
-      k$is_centroid_val <- apply(X = k,MARGIN =  1,FUN = function(x){
-        
-        #print(x)
-        if(all(is.na(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))){
-          
-          return(NA) 
-          
+      k$is_centroid_val <- apply(X = k, MARGIN = 1, FUN = function(x) {
+        if (all(is.na(c(x["country_cent_dist_relative"],
+                        x["state_cent_dist_relative"], x["county_cent_dist_relative"])))) {
+          return(NA)
         }
-        valOut = as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))[which.min(as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))]
+        valOut = as.numeric(unlist(c(x["country_cent_dist_relative"],
+                                     x["state_cent_dist_relative"], x["county_cent_dist_relative"])))[which.min(as.numeric(unlist(c(x["country_cent_dist_relative"],
+                                                                                                                                    x["state_cent_dist_relative"], x["county_cent_dist_relative"]))))]
         valOut
       })
-      
-      #construct comments
-      k$comments <-apply(X = k,MARGIN = 1,FUN = function(x){
-        #print(x)
-        if(x['is_centroid']==1){ineq<-"<="}else{ineq<-">"}
-        
-        if(all(is.na(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))){
-          
-          return("Centroid determination not conducted due to missing/unmatched political divison data" ) 
-          
+      k$comments <- apply(X = k, MARGIN = 1, FUN = function(x) {
+        if (x["is_centroid"] == 1) {
+          ineq <- "<="
         }
-        
+        else {
+          ineq <- ">"
+        }
+        if (all(is.na(c(x["country_cent_dist_relative"],
+                        x["state_cent_dist_relative"], x["county_cent_dist_relative"])))) {
+          return("Centroid determination not conducted due to missing/unmatched political divison data")
+        }
         paste("Centroid determination based on ",
-              c('country_cent_dist_relative','state_cent_dist_relative','county_cent_dist_relative')[which.min(as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))],
-              ": ",
-              as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative'])))[which.min(as.numeric(unlist(c(x['country_cent_dist_relative'],x['state_cent_dist_relative'],x['county_cent_dist_relative']))))],
-              ineq,
-              "threshold value of",
-              centroid_threshold
-              
-        )#paste
-        
-      } )#apply
-      
-      
-      colnames(k)[which(colnames(k)=="is_centroid")]<-"centroidDetection_BIEN_test"
-      colnames(k)[which(colnames(k)=="comments" )]<-"centroidDetection_BIEN_comments"
+              c("country_cent_dist_relative", "state_cent_dist_relative",
+                "county_cent_dist_relative")[which.min(as.numeric(unlist(c(x["country_cent_dist_relative"],
+                                                                           x["state_cent_dist_relative"], x["county_cent_dist_relative"]))))],
+              ": ", as.numeric(unlist(c(x["country_cent_dist_relative"],
+                                        x["state_cent_dist_relative"], x["county_cent_dist_relative"])))[which.min(as.numeric(unlist(c(x["country_cent_dist_relative"],
+                                                                                                                                       x["state_cent_dist_relative"], x["county_cent_dist_relative"]))))],
+              ineq, "threshold value of", centroid_threshold)
+      })
+      colnames(k)[which(colnames(k) == "is_centroid")] <- "centroidDetection_BIEN_test"
+      colnames(k)[which(colnames(k) == "comments")] <- "centroidDetection_BIEN_comments"
       out$centroidDetection_BIEN_value <- k$is_centroid_val
       out$centroidDetection_BIEN_test <- as.logical(k$centroidDetection_BIEN_test)
       out$centroidDetection_BIEN_comments <- k$centroidDetection_BIEN_comments
-      
     }
-    
-    
-  }
+    }
   #Method CoordinateCleaner
   if (any(method %in% c('CoordinateCleaner','all'))){
 
