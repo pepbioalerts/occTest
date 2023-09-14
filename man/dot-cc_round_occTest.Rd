@@ -53,6 +53,9 @@ a clean data.frame
 \description{
 own version of coordinate cleaner cc_round
 }
+\note{
+Turned off by default as it disappeared from CoordinateCleaner pkg
+}
 \seealso{
 \link[CoordinateCleaner]{CoordinateCleaner-package}
 }

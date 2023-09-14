@@ -1,14 +1,11 @@
 # .check.geospatial.dat ====
 #' @title Checks on the projection of the spatial data
 #' @description Verify that all data are in the same projection
-#' @param list.geospatial.objects A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'
+#' @param list.geospatial.objects A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.crs'
 #' @param verbose logical. Print messages?
 #' @author Josep M Serra Diaz
 #' @return None. Used to generate warning messages.
 #' @family checks
-#' @examples {
-#' example<-"goes here"
-#' }
 
 .check.geospatial.data <- function (list.geospatial.objects, verbose=FALSE)  {
 
@@ -18,7 +15,7 @@
   if (!is.list (list.geospatial.objects)) {stop ('list.geospatial.objects should be a list')}
 
   #pf <- parent.frame()
-  projections.in <- unlist (lapply (list.geospatial.objects, function(p) {raster::projection(p); return(p)} ))
+  projections.in <- unlist (lapply (list.geospatial.objects, function(p) {terra::crs(p); return(p)} ))
 
   if (any(is.na(projections.in))) {
     # id.obj <- which (is.na(projections.in))
@@ -45,7 +42,7 @@
 
 # .checkfields ====
 #' @title Checking main fields
-#' @descriptoin Verify that all main data fields are correctly populated.
+#' @description Verify that all main data fields are correctly populated.
 #' @details  checking main fields (inspired by \link[biogeo]{addmainfields} . 
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field

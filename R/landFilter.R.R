@@ -1,6 +1,6 @@
 # landSeaFilter ====
 #' @title Filter occurrence by habitat (terrestrial/non-Terrestrial)
-#' @description Filter the occurrence recoreds  according to whether they should be in land masses or not
+#' @description Filter the occurrence records according to whether they should be in land masses or not
 #' @param df Data.frame of species occurrences
 #' @param xf the field in the dataframe containing the x cordinates
 #' @param yf the field in the dataframe containing the y cordinates
@@ -8,7 +8,7 @@
 #' @param habPol sf polygon boject. Shows land masses
 #' @param verbose logical. Print messages? Default TRUE
 #' @return list
-#' @details 
+#' @details The user can define the habitat type and provide a an input landmass polygon
 #' @keywords filter
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples \donttest{
@@ -32,7 +32,7 @@ landSeaFilter             =function(df,
   } else { land = habPol }
   #select coordinates and load sf points
   xydat <- df[,c(xf,yf)]
-  pts = sf::st_as_sf(xydat,coords=c(1,2),crs=raster::crs(land))
+  pts = sf::st_as_sf(xydat,coords=c(1,2),crs=terra::crs(land))
   #intersect
   intersectMatrix <- sf::st_intersects(x = pts, y = land,sparse = TRUE)
   intersectMatrix <- Matrix::as.matrix(intersectMatrix)

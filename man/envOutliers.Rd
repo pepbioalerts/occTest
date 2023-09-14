@@ -12,7 +12,7 @@ envOutliers(
   .th.perc.outenv,
   .sp.name,
   method = "all",
-  .projString,
+  .points.crs,
   do = TRUE,
   verbose = FALSE
 )
@@ -32,7 +32,7 @@ envOutliers(
 
 \item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
 
-\item{.projString}{proj4string character. Indicate coordinate reference system}
+\item{.points.crs}{crs character. Indicate coordinate reference system}
 
 \item{do}{logical. Should tests be performed? Default TRUE}
 

@@ -21,7 +21,7 @@ findEnvOutliers(
 
 \item{checkPairs}{logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.}
 
-\item{kRosner}{integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.# @keywords}
+\item{kRosner}{integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.}
 }
 \value{
 Returns the indices of environmental outliers
@@ -37,9 +37,9 @@ myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
                             package='occOutliers'))
 myPres=myPres[complete.cases(myPres),]
 sp::coordinates(myPres)=c(1,2)
-myEnv=raster::stack(system.file('extdata/AllEnv.tif',package='occOutliers'))
+myEnv=terra::rast(system.file('extdata/AllEnv.tif',package='occOutliers'))
 names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-myPresDF=sp::SpatialPointsDataFrame(myPres,data.frame(raster::extract(myEnv,myPres)))
+myPresDF=sf::st_as_sf(myPres,data.frame(terra::extract(myEnv,myPres)))
 presOut=findEnvOutliers(pres=myPresDF,pvalSet=1e-5)
 }
 \author{

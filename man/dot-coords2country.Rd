@@ -6,8 +6,10 @@
 \usage{
 .coords2country(
   xydat,
+  xf = xf,
+  yf = yf,
   .countries.shapefile = NULL,
-  .points.proj4string = NULL,
+  .points.crs = NULL,
   ctryNameField = NULL,
   verbose = FALSE
 )
@@ -15,9 +17,13 @@
 \arguments{
 \item{xydat}{A dataframe with x and y coordinates}
 
+\item{xf}{character. name of the x coordinate field}
+
+\item{yf}{character. name of the y coordinate field}
+
 \item{.countries.shapefile}{SpatialPolygonsDataFrame of world countries and their associated ISO3 codes}
 
-\item{.points.proj4string}{Proj4string for the occurrence data}
+\item{.points.crs}{crs for the occurrence data}
 
 \item{ctryNameField}{character. Column name in .countries shapefile where ISO3 are indicated}
 
@@ -28,10 +34,6 @@ Factor with ISO3 codes for countries
 }
 \description{
 Extracts country ISO3 based on locations
-}
-\seealso{
-Other Geo: 
-\code{\link{.getSRTM}()}
 }
 \author{
 Josep M Serra Diaz

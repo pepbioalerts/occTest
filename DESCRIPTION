@@ -18,18 +18,20 @@ RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Date: 2023
 Imports:
+    stats,
+    dplyr,
     raster,
+    terra,
+    randomForest,
+    kernlab,
+    Rlof,
     data.table,
-    rgeos,
-    rgdal,
     biogeo,
     stringr,
     alphahull,
     plyr,
-    sp,
     sf,
     methods,
-    stats,
     utils,
     outliers,
     CoordinateCleaner,
@@ -37,12 +39,7 @@ Imports:
     rgbif,
     countrycode,
     rnaturalearth,
-    svMisc,
-    spocc,
-    dplyr,
-    tidyselect,
     lubridate,
-    magrittr,
     tibble,
     rnaturalearthdata,
     pingr,
@@ -51,9 +48,11 @@ Imports:
     Matrix,
     graphics,
     dataPreparation,
-    lubridate,
     adehabitatHR,
-    anytime
+    anytime,
+    EnvStats,
+    sp,
+    elevatr
 Suggests:
     GNRS,
     testthat,
@@ -64,5 +63,6 @@ Suggests:
     geosphere,
     originr,
     parallelsugar,
-    assertthat
+    assertthat,
+    geodata
 Additional_repositories: https://pepbioalerts.github.io/drat

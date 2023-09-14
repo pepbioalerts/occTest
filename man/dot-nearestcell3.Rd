@@ -21,7 +21,7 @@
 list
 }
 \description{
-SeaLand reassignment
+Reassign coastal coordinates as needed to be in
 }
 \details{
 (function inspired in nearestcell in biogeo but modified

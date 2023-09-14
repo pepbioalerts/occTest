@@ -15,9 +15,10 @@
 #' 
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
+#' ### devtools::install_github('pepbioalerts/vignette-Xtra')
 #'
 #' #load output from occTest
-#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 #' filtered_dataset <- occFilter (occTest_output)
 #' #inspect results
 #' names (filtered_dataset)
@@ -41,7 +42,7 @@ occFilter <- function (df,
   
   targetLevel = colMetaData %>% 
     dplyr::filter (phase != 'filter') %>%
-    dplyr::select(all_of(by))
+    dplyr::select(dplyr::all_of(by))
   
   basecateg = colMetaData %>% 
     dplyr::filter (phase != 'filter') %>%

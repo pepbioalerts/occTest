@@ -14,7 +14,7 @@ geoOutliers(
   .samplingIntensThreshold.parameter = 0.1,
   .mcp_percSample = 95,
   method = "all",
-  .projString,
+  .points.crs,
   do = TRUE,
   verbose = FALSE
 )
@@ -34,7 +34,7 @@ geoOutliers(
 
 \item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
 
-\item{.projString}{proj4string character. Indicate coordinate reference system}
+\item{.points.crs}{crs character. Indicate coordinate reference system}
 
 \item{do}{logical. Should tests be performed? Default TRUE}
 
@@ -44,7 +44,7 @@ geoOutliers(
 data.frame
 }
 \description{
-Detect geographic outliers
+Detect geographical outliers using several tests
 }
 \details{
 Methods implented are 'alphaHull', detecting species outside an alphaHull level (default 2), \cr

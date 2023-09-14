@@ -81,15 +81,14 @@ Examples: HumanDetection_HumanInfluence_value gives you the score of current hum
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
 #load environmental raster
-library (raster)
 library (sf)
 library (occTest)
 #load occurrence data
 occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
 #load environmental raster
-renv <- raster (system.file('ext/AllEnv.tif',package = 'occTest'))
+renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 #load elevation raster
-dem <- raster (system.file('ext/DEM.tif',package = 'occTest'))
+dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 #load settings
 settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
 #run occTest

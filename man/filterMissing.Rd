@@ -22,8 +22,8 @@ List with two dataframes: stay = coordinates missing and continue = occurrence t
 checks for missing coordinates in the occurrence dataframe
 }
 \examples{
-k <- data.frame (x=c(runif (n = 100),NA),y=c(runif (n = 100),1000))
-filterMissing(k,xf='x',yf='y')
+ds <- data.frame (x=c(runif (n = 100),NA),y=c(runif (n = 100),1000))
+filterMissing(ds,xf='x',yf='y')
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

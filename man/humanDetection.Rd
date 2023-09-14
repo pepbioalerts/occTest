@@ -11,7 +11,7 @@ humanDetection(
   method = "all",
   ras.hii,
   .th.human.influence,
-  .points.proj4string,
+  .points.crs,
   do = TRUE,
   verbose = FALSE,
   output.dir
@@ -30,7 +30,7 @@ humanDetection(
 
 \item{.th.human.influence}{numeric. Threhold to identify places of high human influence}
 
-\item{.points.proj4string}{proj4string argument for df}
+\item{.points.crs}{crs argument for df}
 
 \item{do}{logical. Should range analysis be performed? Default TRUE}
 

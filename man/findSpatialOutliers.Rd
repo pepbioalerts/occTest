@@ -8,7 +8,7 @@ findSpatialOutliers(
   pres,
   pvalSet = 1e-05,
   method = "grubbs",
-  checkPairs = TRUE,
+  checkPairs = FALSE,
   kRosner = NULL
 )
 }
@@ -33,11 +33,11 @@ Spatial outliers
 See Examples.
 }
 \examples{
-myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-                            package='occOutliers'))
-myPres=myPres[complete.cases(myPres),]
-sp::coordinates(myPres)=c(1,2)
-presOut=findSpatialOutliers(pres=myPres, pvalSet=1e-5)
+myPres=read.csv(system.file('./ext/exampleOccData.csv',
+                            package='occTest')) |> dplyr::select(c('MAPX','MAPY'))
+myPres = sf::st_as_sf(myPres[complete.cases(myPres),],
+                      coords =c('MAPX','MAPY'))
+presOut=occTest::findSpatialOutliers(pres=myPres, pvalSet=1e-5)
 
 }
 \author{

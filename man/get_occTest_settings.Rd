@@ -20,7 +20,7 @@ Get the settings used to create a  occTest or occFilter object
 ### visit vignetteXtra-occTest for more info
 
 #load output from occTest
-occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 get_occTest_settings(occTest_output)
 }
 \seealso{

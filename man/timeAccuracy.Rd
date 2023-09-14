@@ -4,7 +4,15 @@
 \alias{timeAccuracy}
 \title{Flag occurrences with temporal inaccuracies}
 \usage{
-timeAccuracy(df, tf, iniTime = NA, endTime = NA, do = T, method = "all")
+timeAccuracy(
+  df,
+  tf,
+  iniTime = NA,
+  endTime = NA,
+  do = T,
+  method = "all",
+  verbose = F
+)
 }
 \arguments{
 \item{df}{data.frame of species occurrences}
@@ -17,6 +25,8 @@ timeAccuracy(df, tf, iniTime = NA, endTime = NA, do = T, method = "all")
 
 \item{do}{logical. Should tests be performed? Default TRUE}
 
+\item{method}{character. Vector of methods to be used. See details. Default 'all'}
+
 \item{verbose}{logical. Print messages? Default FALSE}
 }
 \value{
@@ -27,9 +37,17 @@ Detect records with low temporal accuracy
 }
 \details{
 timeAccuracy function will implement different methods to assess the temporal scale of the parameters.\cr
+
+timeAccuracy methods .\cr
+Current implmented methods are:
+'noDate' : tests for an existing value in the date field. \cr
+'noDateFormatKnown' : tests for an known date format. \cr
+'outDateRange' : tests for dates within the iniTime and endTime interval.
 }
 \examples{
 #see examples in vignetteXtra-occTest
+#library devtools()
+#install_github ('vignetteXtra-occTest')
 }
 \seealso{
 Other analysis: 

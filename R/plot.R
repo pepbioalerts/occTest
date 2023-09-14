@@ -4,7 +4,7 @@
 NULL
 
 #' @title Display the filtering process
-#' @descriptions Display the filtering process 
+#' @description Display the filtering process 
 #' @details If \code{occFilter_list} is provided, display how the occurrences passed the different tests, otherwise only plot the coordinates filtering step
 #' @return list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 #' @keywords plot filter
@@ -16,7 +16,7 @@ NULL
 #' @seealso  {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 #' @examples 
 #' #load output from occTest
-#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 #' #filter dataset output from occTest
 #' filtered_occTest <- occFilter (occTest_output)
 #' #plot the outputs
@@ -38,7 +38,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   analysisSettings<-Settings$analysisSettings
   x_field<-tableSettings$x.field
   y_field<-tableSettings$y.field
-  points_CRS<-analysisSettings$geoSettings$points.proj4string
+  points_CRS<-analysisSettings$geoSettings$points.crs
   
   
   full_dataset<-x
@@ -47,16 +47,16 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
   
   # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
-  countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50)),silent = TRUE)
+  countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50,returnclass = c( "sf"))),silent = TRUE)
   if("try-error" %in% class(countries_natural_earth)) {
     dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/Pays_WGS84.rds'
     outFile = paste0(tempdir(),'/Pays_WGS84.rds')
     if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
     countries_natural_earth<-readRDS(outFile)
   }
-  
-  
-  if(raster::compareCRS(points_CRS,countries_natural_earth))countries_natural_earth<-st_transform(countries_natural_earth,crs=st_crs(points_CRS))
+  if(points_CRS != terra::crs(terra::vect(countries_natural_earth))) 
+  # if(terra::crs(points_CRS) == terra::crs(terra::vect(countries_natural_earth))) 
+    countries_natural_earth<-sf::st_transform(countries_natural_earth,crs=points_CRS)
   
   ## cran check return notes for variable used with the ggplot syntaxe used within a function
   ## we can disable si note by declaring these vairable beforehand
@@ -202,7 +202,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
 #' ### visit vignetteXtra-occTest for more info
 #'
 #' #load output from occTest
-#' occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+#' occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 #' get_occTest_settings(occTest_output)
 #' @export 
 

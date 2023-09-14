@@ -7,7 +7,7 @@
 .check.geospatial.data(list.geospatial.objects, verbose = FALSE)
 }
 \arguments{
-\item{list.geospatial.objects}{A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.proj4string'}
+\item{list.geospatial.objects}{A list of geospatial objects.Default list includes: 'countries.shapefile','r.env','r.dem','ras.hii','points.crs'}
 
 \item{verbose}{logical. Print messages?}
 }
@@ -16,11 +16,6 @@ None. Used to generate warning messages.
 }
 \description{
 Verify that all data are in the same projection
-}
-\examples{
-{
-example<-"goes here"
-}
 }
 \seealso{
 Other checks: 

@@ -47,11 +47,11 @@ defaultSettings <- function (){
       landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
-        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+        points.crs=sf::st_crs(4326)
       )
       ,
       countryStatusRange = list (
-        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
+        countries.shapefile=sf::st_as_sf (rnaturalearth::ne_countries(scale = 50)),
         countryfield.shapefile = 'iso_a3',
         doRangeAnalysis=TRUE,
         excludeUnknownRanges= FALSE,
@@ -66,7 +66,7 @@ defaultSettings <- function (){
       humanDetection= list (doHumanDetection=TRUE,
                            methodHumanDetection='all',
                            th.human.influence = 45,
-                           ras.hii=raster::raster(outFile_hii)
+                           ras.hii=terra::rast(outFile_hii)
 
       )
       ,
@@ -166,11 +166,11 @@ fullSettings <- function (){
       landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
-        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+        points.crs=sf::st_crs(4326)
       )
       ,
       countryStatusRange = list (
-        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
+        countries.shapefile=rnaturalearth::ne_countries(scale = 50,returnclass = c("sf")),
         countryfield.shapefile = 'iso_a3',
         doRangeAnalysis=TRUE,
         excludeUnknownRanges= FALSE,
@@ -185,7 +185,7 @@ fullSettings <- function (){
       humanDetection= list (doHumanDetection=TRUE,
                             methodHumanDetection='all',
                             th.human.influence = 45,
-                            ras.hii=raster::raster(outFile_hii)
+                            ras.hii=terra::rast(outFile_hii)
                             
       )
       ,
@@ -285,11 +285,11 @@ minimalSettings <- function (){
       landSurfacePol = NULL,
       geoSettings = list (
         coordinate.decimal.precision = 4,
-        points.proj4string=sp::CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+        points.crs=sf::st_crs(4326)
       )
       ,
       countryStatusRange = list (
-        countries.shapefile=rnaturalearth::ne_countries(scale = 50),
+        countries.shapefile=rnaturalearth::ne_countries(scale = 50,returnclass = c("sf")),
         countryfield.shapefile = 'iso_a3',
         doRangeAnalysis=TRUE,
         excludeUnknownRanges= FALSE,
@@ -304,7 +304,7 @@ minimalSettings <- function (){
       humanDetection= list (doHumanDetection=TRUE,
                             methodHumanDetection='all',
                             th.human.influence = 45,
-                            ras.hii=raster::raster(outFile_hii)
+                            ras.hii=terra::rast(outFile_hii)
       )
       ,
       landUseType   = list (doLandUse=TRUE,
@@ -413,7 +413,7 @@ set_tableNames <- function (x.field = NULL,
 #' @examples 
 #' defaultOutput <- set_writeout()
 #' #only modifying the names for the coordinates
-#' myTable_withMyOutput- set_writeout(writeAllOutput=T) 
+#' myTable_withMyOutput <- set_writeout(writeAllOutput=TRUE) 
 #' @export
 set_writeout <- function (output.dir = NULL,
                             writeAllOutput = NULL,

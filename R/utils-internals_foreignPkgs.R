@@ -164,28 +164,6 @@ ras_dist <- function (x, lat, lon, ras, weights)
   return(dist)
 }
 
-# .download  Non-exported function from raster ====
-#' @noRd
-#' setting warn to -1 by default to avoid long download messages from raster package that blur msgs of the main function
-.download <- function (aurl, filename, w = -1) 
-{
-  fn <- paste(tempfile(), ".download", sep = "")
-  res <- utils::download.file(url = aurl, destfile = fn, quiet = FALSE, 
-                              mode = "wb", cacheOK = TRUE)
-  if (res == 0) {
-    # w <- getOption("warn")
-    # on.exit(options(warn = w))
-    # options(warn = -1)
-    options(warn= w)
-    if (!file.rename(fn, filename)) {
-      file.copy(fn, filename)
-      file.remove(fn)
-    }
-  }
-  else {
-    stop("could not download the file")
-  }
-}
 
 
 # ne_as_sf  Non-exported function from rnaturalearth ====

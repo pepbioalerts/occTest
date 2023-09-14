@@ -33,15 +33,14 @@
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
 #' #load environmental raster
-#' library (raster)
 #' library (sf)
 #' library (occTest)
 #' #load occurrence data
 #' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
 #' #load environmental raster
-#' renv <- raster (system.file('ext/AllEnv.tif',package = 'occTest'))
+#' renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 #' #load elevation raster
-#' dem <- raster (system.file('ext/DEM.tif',package = 'occTest'))
+#' dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 #' #load settings
 #' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
 #' #run occTest
@@ -84,8 +83,10 @@ occTest = function(
   #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
+  if(!inherits(r.env,'SpatRaster')) stop('raster is not at SpatRaster object')
+  if(!is.null(r.dem)  & !inherits(r.dem,'SpatRaster')) stop('DEM raster is not at SpatRaster object')
   if(! pingr::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
-  if(inherits(r.env,'SpatRaster')) stop ('Sorry, occTest is not ready for terra pkg yet. Transform your environmental raster to a rasterLayer')
+  
   
   sp.table <- as.data.frame (sp.table)
   ### STEP 0: Load settings and study native and invasive countries ====
@@ -134,15 +135,14 @@ occTest = function(
     if(! ds.field %in% names(sp.table))   ds.field = NULL
   }
 
-  
   #load analysisSettings
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
-  points.proj4string = analysisSettings$geoSettings$points.proj4string
+  points.crs = analysisSettings$geoSettings$points.crs
   doCoastalReassignment = analysisSettings$doCoastalReassignment
   countries.shapefile = analysisSettings$countryStatusRange$countries.shapefile
   landSurfacePol = analysisSettings$landSurfacePol
-  if (any (class(countries.shapefile) %in% c('sf'))) {stop('sf not implemented, tramsform ctry polygons to Spatial object and rerun')}
+  if (!any (class(countries.shapefile) %in% c('sf'))) {countries.shapefile <- sf::st_as_sf(countries.shapefile)}
   countryfield.shapefile = analysisSettings$countryStatusRange$countryfield.shapefile
   doRangeAnalysis = analysisSettings$countryStatusRange$doRangeAnalysis
   excludeUnknownRanges = analysisSettings$countryStatusRange$excludeUnknownRanges
@@ -227,15 +227,10 @@ occTest = function(
                                   r.env,
                                   r.dem,
                                   ras.hii,
-                                  points.proj4string)
+                                  points.crs)
   x = sapply(potential.geosp.objects, is.null)
   actual.input.geosp.objects = potential.geosp.objects[-x]
   actual.input.geosp.objects =  .subsetlist.nonNULL(actual.input.geosp.objects)
-  
-  #the development should be in the direction of automatically check and transform
-  # .check.geospatial.data(list.geospatial.objects =actual.input.geosp.objects)
-  #lapply(actual.input.geosp.objects, function(x)raster::projection(x))
-  
   
   #CHECK 5
   #get into precision of decimals
@@ -248,7 +243,7 @@ occTest = function(
   #res is is in minutes...therefore(30 arcsec = 0.5 min)
   #if this is a projected data, we need to redo stuff and also tweak funcitons in biogeo
   #maybe add a warning or something in check geospatial data? idk
-  res.in.minutes = raster::res(r.env[[1]])[1] * 60
+  res.in.minutes = terra::res(r.env[[1]])[1] * 60
   
   tictoc::toc()
   
@@ -277,7 +272,7 @@ occTest = function(
     xydatTemporary = xydatTemporary[stats::complete.cases(xydatTemporary),]
     
     
-    checkCountries = occTest::nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+    checkCountries = nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
     if(resolveNativeCtry){
       ntv.ctry = c(ntv.ctry,checkCountries$ntvCtry)
       ntv.ctry = unique(ntv.ctry)
@@ -302,8 +297,7 @@ occTest = function(
   dat = Analysis.H$continue
   
   #valid coordinates in geographic projections and zero zero issues anc decimal conversion issues
-  if(as.character(points.proj4string)%in% 
-      c('+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0',"+proj=longlat +datum=WGS84 +no_defs")){
+  if(points.crs == sf::st_crs(4326)){
     
   
     coordIssues_invalidCoord_value =! CoordinateCleaner::cc_val(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=FALSE)
@@ -325,7 +319,7 @@ occTest = function(
                                                       obf = output.base.filename,
                                                       sp=sp,
                                                       as=analysisSettings,ws = writeoutSettings,ts =tableSettings)
-    if(any(class(status.out)=='occTest')) {return(status.out)}
+    if(any(inherits(status.out,'occTest'))) {return(status.out)}
     
     #zero zero long lat
     coordIssues_zeroCoord_value = ! CoordinateCleaner::cc_zero(x = dat,lon = x.field,lat = y.field,value='flagged',verbose=FALSE)
@@ -382,8 +376,7 @@ occTest = function(
       if(any(class(status.out)=='occTest')) {return(status.out)}
     
      } ############################
-  
-
+  if(points.crs != sf::st_crs(4326)){warning ('geovalid coordinate tests not implemented for this projection') } 
   
   #indicate issues of georeference and put them aside
   obj.issues = c('dat.Q.H','dat.Q.H1','dat.Q.H2','dat.Q.H3')
@@ -446,11 +439,12 @@ occTest = function(
   if(verbose){message("**** RESOLVING: duplicates ****")}
   
   #indicate duplicates with exact coordinates
-  Analysis.G = duplicatesexcludeAnalysis(df = dat,
+  Analysis.G <- duplicatesexcludeAnalysis(df = dat,
                                          xf = x.field,
                                          yf = y.field,
                                          resolution.in.minutes=res.in.minutes,
                                          raster.grid = r.env[[1]])
+  
   
   #here we merge together the two kind of duplicates, but maybe we would like to keep the relative duplicates for other purposes
   dat.Q.G = dplyr::bind_rows(Analysis.G$Dups.Grid, Analysis.G$Dups.Exact)
@@ -552,7 +546,7 @@ occTest = function(
   if(verbose) message('Resolving countryStatusRange Analysis started...')
   if(verbose & excludeUnknownRanges) message('INFO: parameters set so records in unknown ranges are filtered here. Make sure this is what you want')
   if(verbose & excludeNotmatchCountry) message('INFO: parameters set so records that do not match recorded country vs. coordinate countries are filtered here Make sure this is what you want')
-  Analysis.F=countryStatusRangeAnalysis(df=dat,
+  Analysis.F<-countryStatusRangeAnalysis(df=dat,
                                         xf = x.field,
                                         yf = y.field,
                                         .ntv.ctry = ntv.ctry,
@@ -561,14 +555,13 @@ occTest = function(
                                         .countries.shapefile =
                                           countries.shapefile,
                                         cfsf = countryfield.shapefile,
-                                        .points.proj4string =
-                                          points.proj4string,
+                                        .points.crs =
+                                          points.crs,
                                         excludeUnknownRanges = excludeUnknownRanges,
                                         excludeNotmatchCountry =
                                           excludeNotmatchCountry,
                                         doRangeAnalysis = doRangeAnalysis,
                                         verbose = TRUE)
-  
   if (nrow(Analysis.F$stay)!= 0 ) dat.Q.FALSE = Analysis.F$stay 
   dat = Analysis.F$continue
   
@@ -596,7 +589,7 @@ occTest = function(
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc::tic('Centroid detection')
   if(verbose) message('Centroid detection started ...')
-  Analysis.1 = centroidDetection(.r.env = r.env,
+  Analysis.1 <- centroidDetection(.r.env = r.env,
                                  df = dat,
                                  xf = x.field,
                                  yf = y.field,
@@ -606,8 +599,8 @@ occTest = function(
                                  idf = NULL,
                                  .ntv.ctry = ntv.ctry,
                                  .inv.ctry = inv.ctry,
-                                 .points.proj4string =
-                                   points.proj4string,
+                                 .points.crs =
+                                   points.crs,
                                  .countries.shapefile = countries.shapefile,
                                  cfsf=countryfield.shapefile,
                                  method = methodCentroidDetection,
@@ -616,10 +609,10 @@ occTest = function(
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc::tic('human influence detection analysis')
   if(verbose) message('Land Use human influence detection analysis started ...')
-  Analysis.2 = humanDetection (df = dat,
+  Analysis.2 <- humanDetection (df = dat,
                                xf = x.field,
                                yf = y.field,
-                               .points.proj4string =points.proj4string,
+                               .points.crs =points.crs,
                                ras.hii = ras.hii,
                                .th.human.influence =th.human.influence,
                                do = doHumanDetection,output.dir=output.dir)
@@ -628,18 +621,16 @@ occTest = function(
   ### ELEMENT : BOTANICAL GARDEN PLACEMENT -- FROM LOCALITY NAME
   tictoc::tic('Institution locality')
   if(verbose) message ('Institution locality started ...')
-  Analysis.3 = institutionLocality(df=dat,xf = x.field,yf=y.field,
+  Analysis.3 <- institutionLocality(df=dat,xf = x.field,yf=y.field,
                                    lf=l.field,
                                    do = doInstitutionLocality,
                                    method = methodInstitutionLocality)
-  
   tictoc::toc()
-  
   ### ELEMENT : land use
   tictoc::tic('Records in land use')
   if(verbose) message ('Records in land use started...')
   Analysis.4 = landUseSelect(df=dat,xf = x.field,yf=y.field,
-                             .points.proj4string =points.proj4string,
+                             .points.crs =points.crs,
                              .landUseCodes = landUseCodes,
                              ras.landUse = ras.landUse,
                              method = methodLandUseSelect,
@@ -650,33 +641,32 @@ occTest = function(
   ### ELEMENT : GEOGRAPHICAL OUTLIER
   tictoc::tic('geographic outliers detection')
   if(verbose) message('geographic outliers detection started')
-  Analysis.5 = geoOutliers(df=dat,
+  Analysis.5 <- geoOutliers(df=dat,
                            xf=x.field,
                            yf=y.field,
                            .alpha.parameter = alpha.parameter,
                            .mcp_percSample = mcp.percSample,
                            do=doGeoOutliers,
                            method = methodGeoOutliers,
-                           .projString = points.proj4string)
+                           .points.crs = points.crs)
   tictoc::toc()
 
   ### ELEMENT 7: ENVIRONMENTAL OUTLIER
   tictoc::tic('Environmental outliers')
   if(verbose) message('Environmental outliers analysis started...')
-
-  Analysis.6 = envOutliers(.r.env=r.env,
+  Analysis.6 <- envOutliers(.r.env=r.env,
                              df= dat, xf=x.field,
                              yf =y.field,
                              .th.perc.outenv = th.perc.outenv,
                              .sp.name = sp.name,
-                             .projString = points.proj4string,
+                             .points.crs = points.crs,
                              method = methodEnvOutliers,
                              do = doEnvOutliers)
   tictoc::toc()
   ### ELEMENT 8: Coordinate accuracy
   tictoc::tic('geoEnvironmental accuracy')
   if(verbose) message('geoEnvironmental accuracy analysis started...')
-  Analysis.7 = geoEnvAccuracy(df=dat,
+  Analysis.7 <- geoEnvAccuracy(df=dat,
                               xf = x.field,
                               yf = y.field,
                               af = a.field,
@@ -692,15 +682,15 @@ occTest = function(
   tictoc::toc()
   tictoc::tic('time accuracy')
   if(verbose) message('time accuracy analysis started...')
-  Analysis.8 =  timeAccuracy (df=dat,
+  Analysis.8 <-  timeAccuracy (df=dat,
                               tf= t.field,
                               method = methodTimeAccuracy,
                               iniTime = timeAccuracy_initial.date,
                               endTime = timeAccuracy_end.date,
-                              do = doTimeAccuracy)
+                             do = doTimeAccuracy)
   tictoc::toc()
   
-  ### SUMMARY ANALYSIS RESULTS(NEED TO BE IMPROVED !)
+  ### SUMMARY ANALYSIS RESULTS
   #this is important for development, need to specify the number of ELEMENTS of analysis
   #to sumarize the results later on we will need that number
   N_analysis = 8
@@ -717,7 +707,13 @@ occTest = function(
   
   #timer for the analytic processes
   tictoc::toc()
-
+    # #collect RAM info
+  # peakRAM_obj = grep (pattern = 'pr_',ls(),value = T)
+  # list_peakRAM = list()
+  # for(i in 1:length(peakRAM_obj)) {
+  #   list_peakRAM[[i]] = get(peakRAM_obj[i])
+  # }
+  # 
   ### STEP 9: BUILD FULL dataframe ====
   #load previous filtered objects
   previousFiltered = grep(pattern = 'dat.Q.',ls(),value = TRUE)
@@ -751,8 +747,7 @@ occTest = function(
   
   #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
   output.function = full.qaqc
-  tictoc::toc()
-  
+
   attr(output.function,"class")<-c("occTest",class(output.function))
  
   if(!return.spatial.data){

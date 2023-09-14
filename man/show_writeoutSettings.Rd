@@ -18,7 +18,7 @@ The function prints a guide to the list naming conventions used by occTest in th
          It does not require input parameters
 }
 \examples{
-show_tableNames ()
+show_writeoutSettings ()
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

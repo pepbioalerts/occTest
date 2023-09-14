@@ -10,16 +10,18 @@
 #' @keywords internal 
 #' @description  Divide raster by the sum of all cells.
 
-presPercentile=function (xy,
+.presPercentile=function (xy,
                          percent = 95,
                          unin = c("m", "km"),
                          unout = c("ha","km2", "m2")) {
 
-  if (!inherits(xy, "SpatialPoints"))
-    stop("xy should be of class SpatialPoints")
-  if (ncol(sp::coordinates(xy)) > 2)
-    stop("xy should be defined in two dimensions")
-  pfs <- sp::proj4string(xy)
+  if (!inherits(xy, "sf") & !inherits(xy, "Spatial") )
+    stop("xy should be of class sf or Spatial or sf")
+  if (!inherits(xy, "sf") )
+    xy <- sf::st_as_sf (xy)
+  #  if (ncol(sp::coordinates(xy)) > 2)
+  #    stop("xy should be defined in two dimensions")
+  pfs <- sf::st_crs(xy)
   if(!is.null(percent)){
     if (length(percent) > 1)
       stop("only one value is required for percent")
@@ -41,9 +43,9 @@ presPercentile=function (xy,
     id <- factor(rep("a", nrow(as.data.frame(xy))))
   }
 
-  if (min(table(id)) < 5) stop("At least 5 relocations are required to fit an home range")
+  if (min(table(id)) < 5) stop("At least 5 relocations are required to fit a home range")
   id <- factor(id)
-  xy <- as.data.frame(sp::coordinates(xy))
+  xy <- as.data.frame(sf::st_coordinates(xy))
   r <- split(xy, id)
   est.cdg <- function(xy) apply(xy, 2, mean)
   cdg <- lapply(r, est.cdg)
@@ -62,28 +64,28 @@ presPercentile=function (xy,
       acons <- key[di <= quantile(di, percent/100)]
     } else { acons=key }
     xy.t <- df.t[acons, ]
-    sp::coordinates(xy.t)=c(1,2)
+    xy.t <- st_as_sf(xy.t,coords = c(1,2),crs=4326)
     return(list(xy.t=xy.t,dist.from.centroid=di))
   })
   res
 }
 
 # findSpatialOutliers =====
-#' Find outlying occurrence data in geographical space
-#'
-#' @param myPres  raster* object
-#' @param pvalSet numeric. p value set to identify outliers
-#' @param checkPairs logical.  
-#' @param verbose logical. print messages
-#' @author Cory Merow
-#' @keywords internal
-#' @description  Divide raster by the sum of all cells.
-#' @return a numeric vector indicating which rows are spatial outliers.
-#' @examples  
-#' k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000))
-#' k <- sp::SpatialPoints(k)
-#' occTest::findSpatialOutliers(k)
-#' @export
+# Find outlying occurrence data in geographical space
+#
+# @param myPres  raster* object
+# @param pvalSet numeric. p value set to identify outliers
+# @param checkPairs logical.  
+# @param verbose logical. print messages
+# @author Cory Merow
+# @keywords internal
+# @description  Divide raster by the sum of all cells.
+# @return a numeric vector indicating which rows are spatial outliers.
+# @examples  
+# k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000))
+# k <- sp::SpatialPoints(k)
+# occTest::findSpatialOutliers(k)
+# @export
 # findSpatialOutliers=function(myPres,
 #                              pvalSet=1e-5,
 #                              checkPairs=TRUE,verbose=TRUE){
@@ -142,13 +144,13 @@ presPercentile=function (xy,
 # findEnvOutliers =====
 #' @title Find outlying occurrence data in environmental space
 #' @description Environmental outliers
-#' @details
 #' @param myPres a `SpatialPointsDataFrame`
 #' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
 #' @param checkPairs logical. Default to FALSE (TRUE not implemented).
 #' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
 #' @param verbose logic. Should messages be printed out?
 #' @keywords internal
+#' @importFrom raster extract
 #' @export
 #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 #' @author Cory Merow <cory.merow@@gmail.com>
@@ -213,17 +215,18 @@ presPercentile=function (xy,
 #' @param percentage numeric. Percentage of data used to build the minimum convex polygon
 #' @keywords internal
 #' @export
+#' @importFrom stats na.omit 
 #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 #' @author Coline CF Boonmann <colineboonman@@bio.au.dk >
 
-mcp_test = mcp.test = function(data,xcoord,ycoord,percentage=95){
+mcp_test =  function(data,xcoord,ycoord,percentage=95){
   rownames(data) = seq(1:nrow(data))
   xy = na.omit(data[,c(xcoord,ycoord)])
   xy = xy[!duplicated(xy),]
   if(nrow(xy)>=5){
-    xy = sp::SpatialPoints(coords = xy, proj4string = sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-    MCP = adehabitatHR::mcp(xy,percent=percentage)
-    xy = as.data.frame(xy[MCP,])
+    xy = sf::st_as_sf(xy,coords = c(xcoord,ycoord), crs = sf::st_crs(4326))
+    MCP = adehabitatHR::mcp(sf::as_Spatial(xy),percent=percentage)
+    xy = as.data.frame(sf::as_Spatial(xy)[MCP,])
     outliers = c(!(rownames(data) %in% rownames(xy)))
     return(outliers)
   }else{

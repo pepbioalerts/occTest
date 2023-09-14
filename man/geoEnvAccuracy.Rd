@@ -64,8 +64,6 @@ geoEnvAccuracy(
 \item{doParallel}{logical. Should computation use parallel functions? Default FALSE}
 
 \item{mc.cores}{numeric. How many cores to use? (used when doParallel = TRUE). Default 2}
-
-\item{tf}{character. column name in df containing the dataset with the date/time where the species is recorded}
 }
 \value{
 data.frame
@@ -86,6 +84,8 @@ Current implmented methods are:
 }
 \examples{
 #see examples in vignetteXtra-occTest
+#library
+#install_github ('vignetteXtra-occTest')
 }
 \seealso{
 \link[CoordinateCleaner]{cd_round}

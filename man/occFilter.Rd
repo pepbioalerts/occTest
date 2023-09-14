@@ -36,9 +36,10 @@ If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of te
 
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
+### devtools::install_github('pepbioalerts/vignette-Xtra')
 
 #load output from occTest
-occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 filtered_dataset <- occFilter (occTest_output)
 #inspect results
 names (filtered_dataset)

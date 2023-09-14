@@ -10,7 +10,7 @@
   category = c("cultural", "physical", "raster"),
   destdir = tempdir(),
   load = TRUE,
-  returnclass = c("sp", "sf")
+  returnclass = c("sf")
 )
 }
 \arguments{
@@ -22,7 +22,7 @@
 
 \item{load}{Raster of human influence index}
 
-\item{desetdir}{proj4string argument for dataframe}
+\item{desetdir}{crs argument for dataframe}
 }
 \value{
 spatial object or raster

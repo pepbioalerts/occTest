@@ -1,5 +1,5 @@
 ### SHOW FUNCTIONS
-# show_tableNames ====
+# show_tableSettings ====
 #' @title Print naming conventions in occTest
 #' @description prints a table with the the conventions used for column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. 
@@ -9,7 +9,7 @@
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' show_tableNames ()
+#' ts <- show_tableSettings ()
 #' @export
 show_tableSettings <- function (){
   tabNames=readRDS(system.file('ext/tableColumns.rds',package='occTest'))
@@ -28,7 +28,7 @@ show_tableSettings <- function (){
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' show_tableNames ()
+#' show_writeoutSettings ()
 #' @export
 show_writeoutSettings <- function (){
   tabNames=readRDS(system.file('ext/writeoutSettings_metadata.rds',package='occTest'))
@@ -47,7 +47,7 @@ show_writeoutSettings <- function (){
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' show_tableNames ()
+#' show_analysisSettings ()
 #' @export
 show_analysisSettings <- function (){
   tabNames=readRDS(system.file('ext/analysisSettings_metadata.rds',package='occTest'))
@@ -67,7 +67,7 @@ show_analysisSettings <- function (){
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples
-#' showTests()
+#' show_tests()
 #' @export
 
 show_tests<- function (){

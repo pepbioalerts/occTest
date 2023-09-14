@@ -12,16 +12,9 @@
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family spStatus
-#' @notes originr is a non-standard package. \cr
+#' @note originr is a non-standard package. \cr
 #' Working on updates and alternative workflows as the package has been abandonded \cr
 #' source code here: https://github.com/ropensci-archive/originr
-#' @examples \donttest{
-#' #needs spocc library
-#' df <- spocc::occ(query = 'Pseudotsuga menziesii')
-#' occ.data <- spocc::occ2df(df)
-#' nativeStatusCtry(spName = 'Pseudotsuga menziesii',xydat = occ.data[,2:3])
-#' }
-#' @export
 nativeStatusCtry <- function (spName,xydat, resolveNative=TRUE,resolveAlien=TRUE, verbose=TRUE){
 
 

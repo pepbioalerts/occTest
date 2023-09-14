@@ -12,7 +12,7 @@ centroidDetection(
   idf,
   .ntv.ctry,
   .inv.ctry,
-  .points.proj4string,
+  .points.crs,
   .r.env,
   .countries.shapefile,
   cfsf,
@@ -34,7 +34,7 @@ centroidDetection(
 
 \item{.inv.ctry}{character. ISO3 country codes where species are considered alien}
 
-\item{.points.proj4string}{Proj4string argument. Coordinate reference system}
+\item{.points.crs}{crs argument. Coordinate reference system}
 
 \item{.r.env}{raster. Raster of environmental variables considered in the analysis}
 
@@ -57,6 +57,8 @@ data.frame
 Identify occurrence records located near centroids.
 }
 \details{
+This is a wrapper function that encompasses different methods
+
 Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
 , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package.
 }

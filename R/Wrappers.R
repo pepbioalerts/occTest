@@ -19,30 +19,18 @@
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
 #' #load environmental raster
-#' library (raster)
 #' library (sf)
 #' library (occTest)
 #' #load occurrence data
 #' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
 #' #load environmental raster
-#' renv <- raster (system.file('ext/AllEnv.tif',package = 'occTest'))
-#' #load elevation raster
-#' dem <- raster (system.file('ext/DEM.tif',package = 'occTest'))
-#' #load settings
-#' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
-#' #run occTest
-#' out = occTest(sp.name='MyFake species',
-#'              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
-#'              tableSettings = settings$tableSettings,
-#'              writeoutSettings = settings$writeoutSettings,
-#'              analysisSettings = settings$analysisSettings,
-#'              r.env = renv,r.dem=dem)
-#' #filter
-#' occFilter(out)
+#' renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
+#' #run occSimpFilter
+#' out = occSimpFilter (spOcc=occData,
+#'                      env=renv,
+#'                      x='MAPX',y='MAPY')
 #' }
 #' @export
-
-#wallace simple wrapping function
 occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
                          date=NULL,isoCountry=NULL,
                          classification='majority',filterCols=TRUE ){
@@ -62,16 +50,10 @@ occSimpFilter = function(spOcc,env,speciesName='My species',x='x',y='y',
                             tableSettings =mySettings$tableSettings)
   
   #select records
-  output2 = occTest::occFilter(df = output,errorAcceptance = classification)
-
+  output2 = occFilter(df = output,errorAcceptance = classification)
+  output2$filteredDataset
   #to consider, maybe you do not want to drag all the columns for Wallace or any other thing, right
-  if (filterCols == TRUE) { output2$fitleredDataset[,names (spOcc)]} else {
-    output2$fitleredDataset
+  if (filterCols == TRUE) { output2$filteredDataset[,names (spOcc)]} else {
+    output2$filteredDataset
   }
-  
-  
-
-
-
-  
 }

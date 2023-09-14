@@ -23,7 +23,10 @@ landSeaFilter(df, xf, yf, habType = NULL, verbose = TRUE, habPol = NULL)
 list
 }
 \description{
-Filter the occurrence recoreds  according to whether they should be in land masses or not
+Filter the occurrence records according to whether they should be in land masses or not
+}
+\details{
+The user can define the habitat type and provide a an input landmass polygon
 }
 \examples{
 \donttest{

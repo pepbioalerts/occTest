@@ -26,7 +26,7 @@ If \code{occFilter_list} is provided, display how the occurrences passed the dif
 }
 \examples{
 #load output from occTest
-occTest_output <- readRDS (system.file('ext/out.rds',package = 'occTest'))
+occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 #filter dataset output from occTest
 filtered_occTest <- occFilter (occTest_output)
 #plot the outputs

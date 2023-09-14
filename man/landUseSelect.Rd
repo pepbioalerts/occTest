@@ -9,7 +9,7 @@ landUseSelect(
   xf,
   yf,
   method = "in",
-  .points.proj4string,
+  .points.crs,
   ras.landUse,
   .landUseCodes,
   do = TRUE,
@@ -26,7 +26,7 @@ landUseSelect(
 
 \item{method}{character. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)}
 
-\item{.points.proj4string}{proj4string character. Indicate coordinate reference system}
+\item{.points.crs}{crs character. Indicate coordinate reference system}
 
 \item{ras.landUse}{raster. Land use raster with integer codes for land use classes.}
 

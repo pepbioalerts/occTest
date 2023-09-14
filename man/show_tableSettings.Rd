@@ -18,7 +18,7 @@ The function prints a guide to column naming conventions used by occTest in thei
          It does not require input parameters
 }
 \examples{
-show_tableNames ()
+ts <- show_tableSettings ()
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

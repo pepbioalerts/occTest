@@ -30,14 +30,14 @@ duplicatesexcludeAnalysis(
 list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
 }
 \description{
-Duplicated records
+checks for duplicated coordinates in the occurrence data frame
 }
 \details{
 it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
 }
 \examples{
-k <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000),Reason=NA)
-duplicatesexcludeAnalysis(k,xf='x',yf='y',resolution.in.minutes=60)
+ds <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000),Reason=NA)
+duplicatesexcludeAnalysis(ds,xf='x',yf='y',resolution.in.minutes=60)
 }
 \seealso{
 Other analysis: 

@@ -34,7 +34,7 @@ Alternatively, the user can specify their own field names for the table
 \examples{
 defaultOutput <- set_writeout()
 #only modifying the names for the coordinates
-myTable_withMyOutput- set_writeout(writeAllOutput=T) 
+myTable_withMyOutput <- set_writeout(writeAllOutput=TRUE) 
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

@@ -5,7 +5,6 @@
 # .subsetlist.nonNULL ====
 #' @title Subset to non-NULL lists
 #' @description Subset a list removing NULL entries
-#' @details
 #' @param x List
 #' @return list
 #' @keywords internal
@@ -18,7 +17,6 @@
 # .subsetlist.isNA ====
 #' @title Subset to non-NA lists
 #' @description Subset a list removing NA entries
-#' @details
 #' @param x List
 #' @return list
 #' @keywords internal
@@ -130,8 +128,6 @@
 #' @keywords internal 
 #' @author Pep Serra-Diaz
 #' @note Internal function copied from utils wickham to know which is the os used by the computer
-#' @seealso 
-#' @aliases
 #' @family internal
 
 .get_os <- function() {

@@ -10,8 +10,8 @@ findOutlyingPoints(
   envOutliers = TRUE,
   method = "grubbs",
   pval = 1e-05,
-  checkPairs = TRUE,
-  kRosner = 3,
+  checkPairs = FALSE,
+  kRosner = 5,
   verbose = TRUE
 )
 }
@@ -40,20 +40,6 @@ Spatial or environmental outliers
 }
 \details{
 See Examples.
-}
-\examples{
-myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-                            package='occOutliers'))
-myPres=myPres[complete.cases(myPres),]
-sp::coordinates(myPres)=c(1,2)
-myEnv=raster::stack(system.file('extdata/AllEnv.tif',package='occOutliers'))
-names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-myPresDF=sp::SpatialPointsDataFrame(myPres,data.frame(raster::extract(myEnv,myPres)))
-presOut=findOutlyingPoints(pres=myPresDF,
-                           spOutliers=TRUE,
-                           envOutliers=TRUE,
-                           pval=1e-5)
-
 }
 \author{
 Cory Merow <cory.merow@gmail.com>

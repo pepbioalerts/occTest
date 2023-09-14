@@ -11,7 +11,7 @@ countryStatusRangeAnalysis(
   .ntv.ctry,
   .inv.ctry,
   .c.field,
-  .points.proj4string,
+  .points.crs,
   .countries.shapefile,
   cfsf,
   excludeUnknownRanges = FALSE,
@@ -33,7 +33,7 @@ countryStatusRangeAnalysis(
 
 \item{.c.field}{character. Country field in the species data.frame (df)}
 
-\item{.points.proj4string}{Proj4string for the occurrence data}
+\item{.points.crs}{crs for the occurrence data}
 
 \item{.countries.shapefile}{spatialPolygonDataFrame of political divisions}
 

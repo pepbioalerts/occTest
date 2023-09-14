@@ -53,6 +53,9 @@ a clean data.frame
 \description{
 own version of coordinate cleaner geographic outliers
 }
+\seealso{
+\link[CoordinateCleaner]{cc_outl}
+}
 \author{
 A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@agroparistech.fr)
 }

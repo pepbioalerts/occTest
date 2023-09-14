@@ -3,12 +3,11 @@
 # .ne_download_occTest ====
 #' @title Download quitely from neearth data (modified from original package)
 #' @description download from Natural Earth the country checklist
-#' @details
 #' @author Andy South (southandy@@gmail.com) rnaturalearth; Josep M Serra Diaz (modifs)
 #' @param scale Data.frame of species occurrences
 #' @param type the field in the dataframe containing the x coordinates
 #' @param category the field in the dataframe containing the y coordinates
-#' @param desetdir proj4string argument for dataframe
+#' @param desetdir crs argument for dataframe
 #' @param load Raster of human influence index
 #' @return spatial object or raster
 #' @keywords internal
@@ -19,7 +18,7 @@
                                     category = c("cultural", "physical", "raster"), 
                                     destdir = tempdir(), 
                                     load = TRUE, 
-                                    returnclass = c("sp", "sf")) {
+                                    returnclass = c("sf")) {
   category <- match.arg(category)
   returnclass <- match.arg(returnclass)
   file_name <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
@@ -29,16 +28,13 @@
   utils::download.file(file.path(address), zip_file <- tempfile(),quiet = TRUE)
   utils::unzip(zip_file, exdir = destdir)
   if (load & category == "raster") {
-    rst <- raster::raster(file.path(destdir, file_name, paste0(file_name, 
+    rst <- terra::rast(file.path(destdir, file_name, paste0(file_name, 
                                                                 ".tif")))
     return(rst)
   }
   else if (load) {
-    sp_object <- rgdal::readOGR(destdir, file_name, encoding = "UTF-8", 
-                                 stringsAsFactors = FALSE, use_iconv = TRUE,verbose = FALSE)
-    sp_object@data[sp_object@data == "-99" | sp_object@data == 
-                     "-099"] <- NA
-    return(ne_as_sf(sp_object, returnclass))
+    sf_object <- st_read(dsn = destdir,layer = file_name)
+    return(sf_object)
   }
   else {
     return(file_name)
@@ -73,7 +69,7 @@
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
     ref <- try(suppressWarnings(.ne_download_occTest(scale = "medium", 
-                                                 type = "urban_areas")), silent = TRUE)
+                                                 type = "urban_areas",returnclass = 'sf')), silent = TRUE)
     if (inherits(ref,"try-error") ) {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
                       rnaturalearth::ne_file_name(scale = "medium", 
@@ -82,32 +78,32 @@
       switch(value, clean = return(x), flagged = return(rep(NA, 
                                                             nrow(x))))
     }
-    sp::proj4string(ref) <- ""
+    ref <- sf::st_as_sf(ref)
     newoutdir = paste0(outdir,'/spatialData')
      dir.create(newoutdir,showWarnings = FALSE,recursive = TRUE)
-     rgdal::writeOGR(ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",overwrite_layer=TRUE)
-     
+     sf::st_write (ref,dsn = newoutdir,layer = 'NE_urbanareas',driver = "ESRI Shapefile",delete_dsn=T)
   }
   else {
-    if (!any(is(ref) == "Spatial")) {
-      ref <- as(ref, "Spatial")
+    if (!any(is(ref) == "sf")) {
+      ref <- sf::st_as_sf(ref)
     }
     #this line is in the original code of coordinate cleaner but I do not know why, I guess it comes from pkg reproj
     #ref <- reproj(ref)
   }
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-  dat <- sp::SpatialPoints(x[, c(lon, lat)], proj4string = sp::CRS(wgs84))
-  limits <- raster::extent(dat) + 1
-  sp::proj4string(ref) <- wgs84
+  dat <- sf::st_as_sf(x,coords = c(lon,lat),crs=terra::crs(wgs84))
+  limits <- terra::ext(dat) + 1
+  if(sf::st_crs(ref) != sf::st_crs(dat)) break ('points and urban areas not in the same projection (wgs84 typically)')
   #sometimes this breaks depending on the extent. 
   #changing that to defensive programming (this may be slower but it is more sure)
-  ref2 <- try ({raster::crop(ref, limits)},silent=T)
-  if (class (ref2) != 'try-error') {ref <- ref2} 
+  ref2 <- try ({terra::crop(terra::vect (ref), limits)},silent=T)
+  if (!inherits (ref2,'try-error')) {ref <- sf::st_as_sf(ref2)} 
   if (is.null(ref)) {
     out <- rep(TRUE, nrow(x))
   }
   else {
-    out <- is.na(sp::over(x = dat, y = ref)[, 1])
+    m <- sf::st_intersects (x = dat, y = ref)
+    out <- lengths(m) >0
   }
   if (verbose) {
     if (value == "clean") {
@@ -137,7 +133,7 @@
 #' @param min_occs integer. Minimum number of occurrences. Defaults to 7
 #' @param thinning logical. Should thinning be performed? Defaults to FALSE
 #' @param thinning_res double. Thinnning resolution. Defaults to 0.5
-#' @seealse \link[CoordinateCleaner]{cc_outl}
+#' @seealso \link[CoordinateCleaner]{cc_outl}
 #' @keywords internal
 #' @author A Zizka (original function) Josep M Serra-Diaz (adaptation to occTest pep.serradiaz@@agroparistech.fr)
 #' @return a clean data.frame 
@@ -250,24 +246,38 @@
       warnings("Could not retrive records number from GBIF, skipping sampling correction")
     }
     else {
-      ref <- rnaturalearth::ne_countries(scale = "medium")
-      sp::proj4string(ref) <- ""
+      ref <- rnaturalearth::ne_countries(scale = "medium",returnclass = 'sf')
+      sf::st_crs(ref) <- NA
       #change from AZizka: changed to iso_a2 because in vapply rgbiff:occ count looks for 2 digit country codes
-      area <- data.frame(country = ref@data$iso_a2, area = geosphere::areaPolygon(ref))
+      area <- data.frame(country = ref$iso_a2, area = sf::st_area(ref))
       area <- area[!is.na(area$area), ]
       area <- area[!is.na(area$country), ]
-      nrec <- vapply(area$country, FUN = function(k) {
-        rgbif::occ_count(country = k)
-      }, FUN.VALUE = 1)
-      nrec <- data.frame(country = area$country, recs = unlist(nrec), 
-                         row.names = NULL)
+      #load nrec data
+      dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/ctry_nrec_info.rds'
+      outFile = paste0(tempdir(),'/ctry_nrec_info.rds')
+      if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
+      nrec =  readRDS (outFile)
+      if (as.numeric (Sys.Date() - nrec$date) >120) {
+        download_file <- T } else {
+          download_file <- F
+          }
+      if (!download_file) 
+        nrec <- nrec$nrec
+      if (download_file) {
+        nrec <- vapply(area$country, FUN = function(k) {
+          rgbif::occ_count(country = k)
+        }, FUN.VALUE = 1)
+        nrec <- data.frame(country = area$country, recs = unlist(nrec), 
+                           row.names = NULL)
+      }
       nrec_norm <- dplyr::left_join(nrec, area, by = "country")
       nrec_norm$norm <- log(nrec_norm$recs/(nrec_norm$area/1e+06/100))
       
       #change from AZizka: commented out bc it introduces warnings that may freak out users (e.g. the etent of the coordinates may go beyond the world)
       #ref <- raster::crop(ref, raster::extent(pts) + 1)
       
-      country <- sp::over(x = pts, y = ref)[, "iso_a3"]
+      #country <- sp::over(x = pts, y = ref)[, "iso_a3"]
+      country <- sf::st_intersection(x = sf::st_as_sf(pts), y = ref)
       thresh <- stats::quantile(nrec_norm$norm, probs = sampling_thresh)
       s_flagged <- nrec_norm$norm[match(country, nrec_norm$country)]
       s_flagged <- s_flagged > thresh
@@ -322,7 +332,7 @@
 #' @param value character. Defaults to flagged
 #' @param verbose logical. Defaults to TRUE.
 #' @seealso \link[CoordinateCleaner]{CoordinateCleaner-package}
-#' @notes Turned off by default as it disappeared from CoordinateCleaner pkg
+#' @note Turned off by default as it disappeared from CoordinateCleaner pkg
 #' @return a clean data.frame 
 #' @import CoordinateCleaner
 #' @importFrom graphics title
@@ -818,10 +828,11 @@
 ## .cd_ddmm occTest ====
 #' @title Flag records with regular pattern interval
 #' @description own version of coordinate cleaner cc_round
-#' @details
 #' @keywords internal
 #' @author A Zizka (original author) Josep M Serra-Diaz (adapted from CoordinateCleaner)
 #' @return a clean data.frame 
+#' @import CoordinateCleaner
+
 
 .cd_ddmm_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
           ds = "dataset", pvalue = 0.025, diff = 1, mat_size = 1000, 

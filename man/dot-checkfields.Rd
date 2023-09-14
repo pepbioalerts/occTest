@@ -29,7 +29,7 @@
 Original dataframe, dat.  Used primarily to generate warning messages.
 }
 \description{
-Checking main fields
+Verify that all main data fields are correctly populated.
 }
 \details{
 checking main fields (inspired by \link[biogeo]{addmainfields} .

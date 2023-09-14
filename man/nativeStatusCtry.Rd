@@ -32,13 +32,10 @@ performs several queries based on the orignir package to identify native and inv
 \details{
 right now based on the package originr, which queries on Flora Europea, GISD or Native species resolver. Future implementation may query more databases.
 }
-\examples{
-\donttest{
-#needs spocc library
-df <- spocc::occ(query = 'Pseudotsuga menziesii')
-occ.data <- spocc::occ2df(df)
-nativeStatusCtry(spName = 'Pseudotsuga menziesii',xydat = occ.data[,2:3])
-}
+\note{
+originr is a non-standard package. \cr
+Working on updates and alternative workflows as the package has been abandonded \cr
+source code here: https://github.com/ropensci-archive/originr
 }
 \seealso{
 Other spStatus: 

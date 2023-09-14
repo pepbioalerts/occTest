@@ -1,30 +1,27 @@
 #### occOutliers env.r =====
 
 #' @title Find outlying occurrence data in environmental space
-#'
 #' @description Environmental outliers
-#'
 #' @details
 #' See Examples.
-#'
 #' @param pres a `SpatialPoints` or `SpatialPointsDataFrame` object describing the locations of species records. A `SpatialPointsDataFrame` containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
 #' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'
 #' @param pvalSet user-specified p-value for assessing the significance of Grubbs test statistic.
 #' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
-#' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.# @keywords
+#' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
 #' @export
-#'
 #' @examples
 #' myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
 #'                             package='occOutliers'))
 #' myPres=myPres[complete.cases(myPres),]
 #' sp::coordinates(myPres)=c(1,2)
-#' myEnv=raster::stack(system.file('extdata/AllEnv.tif',package='occOutliers'))
+#' myEnv=terra::rast(system.file('extdata/AllEnv.tif',package='occOutliers'))
 #' names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-#' myPresDF=sp::SpatialPointsDataFrame(myPres,data.frame(raster::extract(myEnv,myPres)))
+#' myPresDF=sf::st_as_sf(myPres,data.frame(terra::extract(myEnv,myPres)))
 #' presOut=findEnvOutliers(pres=myPresDF,pvalSet=1e-5)
 #' @return Returns the indices of environmental outliers
 #' @author Cory Merow <cory.merow@@gmail.com>
+#' @importFrom EnvStats rosnerTest
 # @note
 # @seealso
 # @references
@@ -39,13 +36,7 @@ findEnvOutliers=function(pres,
                          method='grubbs',
                          checkPairs=TRUE,
                          kRosner=NULL){
-  #  for testing
-  #  pres=presDF; pvalSet=1e-5; checkPairs=F; myEnv=NULL
-  #  myEnv=env
-  #  env=myEnv; pvalSet=1e-5
-  #if(!is.null(myEnv)){ p.env=raster::extract(myEnv,pres)
-  #} else {p.env=pres}
-  p.env=pres@data
+  p.env=sf::st_drop_geometry(pres)
   p.env=base::scale(p.env)
   sp.toss.coord=NULL
   sp.toss.id=NULL
@@ -92,13 +83,14 @@ findEnvOutliers=function(pres,
         
         #gt=dixon.test(dists)
         #cot=chisq.out.test(dists,variance = var(dists),opposite = FALSE)
-        (pval=gt$p.value)
+        pval=gt$p.value
         # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
         if(gt$p.value<pvalSet){
           toss=utils::tail(order(dists),2)
+          env.toss.id = toss
           # IDs in the original data frame
-          sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
-          pres.inliers=pres.inliers[-toss,]
+          # sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
+          # pres.inliers=pres.inliers[-toss,]
         }
         #}
       }	
@@ -127,7 +119,7 @@ findEnvOutliers=function(pres,
   
   if(any(method=='rosner')){
     dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
-    if(kRosner <= length(dists)) {
+    if(kRosner >= length(dists)) {
       warning('kRosner must be an integer less than the number of presence records, skipping this taxon')
       return(env.toss.id)
     }
@@ -159,13 +151,12 @@ findEnvOutliers=function(pres,
 #' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
 # @keywords
 #' @export
-#'
 #' @examples
-#' myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-#'                             package='occOutliers'))
-#' myPres=myPres[complete.cases(myPres),]
-#' sp::coordinates(myPres)=c(1,2)
-#' presOut=findSpatialOutliers(pres=myPres, pvalSet=1e-5)
+#' myPres=read.csv(system.file('./ext/exampleOccData.csv',
+#'                             package='occTest')) |> dplyr::select(c('MAPX','MAPY'))
+#' myPres = sf::st_as_sf(myPres[complete.cases(myPres),],
+#'                       coords =c('MAPX','MAPY'))
+#' presOut=occTest::findSpatialOutliers(pres=myPres, pvalSet=1e-5)
 #' 
 #' @return Returns the indices of spatial outliers
 #' @author Cory Merow <cory.merow@@gmail.com>
@@ -180,7 +171,7 @@ findEnvOutliers=function(pres,
 findSpatialOutliers=function(pres,
                              pvalSet=1e-5,
                              method='grubbs',
-                             checkPairs=TRUE,
+                             checkPairs=FALSE,
                              kRosner=NULL){
   #  for testing
   #   pvalSet=1e-5; checkPairs=T
@@ -191,7 +182,7 @@ findSpatialOutliers=function(pres,
     pval=0
     #tmp.dists=dists
     #toss singles
-    while(pval<pvalSet & length(pres.inliers)>3){
+    while(pval<pvalSet & nrow(pres.inliers)>3){
       # i want to recompute the distances once an outlier is removed because the outlier biased the centroid of the group, which influences distances
       dists=.presPercentile(pres.inliers,percent=NULL)[[1]]$dist.from.centroid
       gt=outliers::grubbs.test(dists)
@@ -206,7 +197,7 @@ findSpatialOutliers=function(pres,
       if(gt$p.value<pvalSet){
         toss=which.max(dists)
         # IDs in the original data frame
-        sp.toss.coord=rbind(sp.toss.coord,sp::coordinates(pres.inliers)[toss,])
+        sp.toss.coord=rbind(sp.toss.coord,sf::st_coordinates(pres.inliers)[toss,])
         pres.inliers=pres.inliers[-toss,]
         #tmp.dists=tmp.dists[-toss]
       }
@@ -234,14 +225,14 @@ findSpatialOutliers=function(pres,
         if(gt$p.value<pvalSet){
           toss=utils::tail(order(dists),2)
           # IDs in the original data frame
-          sp.toss.coord=rbind(sp.toss.coord, sp::coordinates(pres.inliers)[toss,])
+          sp.toss.coord=rbind(sp.toss.coord,sf::st_coordinates(pres.inliers)[toss,])
           pres.inliers=pres.inliers[-toss,]
         }
         #}
       }	
     }
     if(!is.null(sp.toss.coord)){
-      coor=sp::coordinates(pres)
+      coor=sf::st_coordinates(pres)
       sp.toss.id= apply(sp.toss.coord,1,function(x) which(x[1]==coor[,1] & x[2]==coor[,2]))
     } 
   } # end grubbs
@@ -252,7 +243,7 @@ findSpatialOutliers=function(pres,
   }
   
   if(any(method=='dixon')){
-    if(length(pres.inliers)<3 | length(pres.inliers)>30 ){
+    if(nrow(pres.inliers)<3 | nrow(pres.inliers)>30 ){
       warning('dixon test only applies to sample sizes between [3,30]. skipping this taxon')
       return(sp.toss.id)
     }
@@ -268,7 +259,7 @@ findSpatialOutliers=function(pres,
   
   if(any(method=='rosner')){
     dists=.presPercentile(pres.inliers,percent=NULL)[[1]]$dist.from.centroid
-    if(kRosner <= length(dists)) {
+    if(kRosner >= length(dists)) {
       warning('kRosner must be an integer less than the number of presence records, skipping this taxon')
       return(sp.toss.id)
     }
@@ -296,20 +287,6 @@ findSpatialOutliers=function(pres,
 #' @param verbose logical; print messages
 # @keywords
 #' @export
-#'
-#' @examples
-#' myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-#'                             package='occOutliers'))
-#' myPres=myPres[complete.cases(myPres),]
-#' sp::coordinates(myPres)=c(1,2)
-#' myEnv=raster::stack(system.file('extdata/AllEnv.tif',package='occOutliers'))
-#' names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-#' myPresDF=sp::SpatialPointsDataFrame(myPres,data.frame(raster::extract(myEnv,myPres)))
-#' presOut=findOutlyingPoints(pres=myPresDF,
-#'                            spOutliers=TRUE,
-#'                            envOutliers=TRUE,
-#'                            pval=1e-5)
-#' 
 #' @return Returns the SpatialPointsDataFrame provided with additional logical columns indicating spatial outliers (`spOutliers`) and environmental outliers ('`envOutliers`).
 #' @author Cory Merow <cory.merow@@gmail.com>
 # @note
@@ -326,23 +303,14 @@ findOutlyingPoints=function(pres,
                             envOutliers=TRUE,
                             method='grubbs',
                             pval=1e-5,
-                            checkPairs=TRUE,
-                            kRosner=3,
+                            checkPairs=FALSE,
+                            kRosner=5,
                             verbose=TRUE){
   
   #  for testing
   #  pres=myPresDF;  verbose=T
   #  envOutliers=T; spOutliers=T;  pval=1e-5; 
-  if(!any(class(pres)==c('SpatialPoints','SpatialPointsDataFrame'))) stop('Please make your presence data a SpatialPoints or SpatialPointsDataFrame object and try again')
   if(spOutliers) { 
-    
-      if (class(pres)==c('SpatialPoints')) {
-        #get them to become spdfs
-        pres  = sp::SpatialPointsDataFrame(pres,
-                                           data.frame(spOutlier= rep(NA,length(pres)))
-        )
-        
-      }
     sp.toss.id=findSpatialOutliers(pres=pres,pvalSet=pval,checkPairs=checkPairs,
                                    method=method,kRosner=kRosner)
     
@@ -356,13 +324,6 @@ findOutlyingPoints=function(pres,
   } else {sp.toss.id=NULL}
   
   if(envOutliers) {
-    if (class(pres)==c('SpatialPoints')) {
-      #get them to become spdfs
-      pres  = sp::SpatialPointsDataFrame(pres,
-                                         data.frame(envOutlier= rep(NA,length(pres)))
-      )
-      
-    }
     env.toss.id=findEnvOutliers(pres=pres,pvalSet=pval,checkPairs=checkPairs,
                                 method=method,kRosner=kRosner)
     if(is.null(env.toss.id)) pres$envOutlier=NA
@@ -382,13 +343,6 @@ findOutlyingPoints=function(pres,
 
 
 #### occOutliers
-
-
-
-
-
-
-
 #### occOutliers utils.r =====
 #' omit outlying pres
 #' @param xy data.frame with 2 columns
@@ -404,9 +358,9 @@ findOutlyingPoints=function(pres,
   # xy=pres; percent = NULL; unin = c("m", "km"); unout = c("ha","km2", "m2")
   #if (!inherits(xy, "SpatialPoints")) # not needed; i already check it
   #stop("xy should be of class SpatialPoints")
-  if (ncol(sp::coordinates(xy)) > 2)
+  if (ncol(sf::st_coordinates(xy)) > 2)
     stop("xy should be defined in two dimensions")
-  pfs <- sp::proj4string(xy)
+  pfs <- sp::crs(xy)
   if(!is.null(percent)){
     if (length(percent) > 1)
       stop("only one value is required for percent")
@@ -431,7 +385,7 @@ findOutlyingPoints=function(pres,
   
   if (min(table(id)) < 4) stop("must have 4 records to proceed")
   id <- factor(id)
-  xy <- as.data.frame(sp::coordinates(xy))
+  xy <- as.data.frame(sf::st_coordinates(xy))
   r <- split(xy, id)
   est.cdg <- function(xy) apply(xy, 2, mean)
   cdg <- lapply(r, est.cdg)
@@ -450,7 +404,7 @@ findOutlyingPoints=function(pres,
       acons <- key[di <= stats::quantile(di, percent/100)]
     } else { acons=key }
     xy.t <- df.t[acons, ]
-    sp::coordinates(xy.t)=c(1,2)
+    sf::st_coordinates(xy.t)=c(1,2)
     return(list(xy.t=xy.t,dist.from.centroid=di))
   })
   res

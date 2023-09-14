@@ -10,7 +10,7 @@ institutionLocality(
   yf,
   lf,
   method = "all",
-  .points.proj4string,
+  .points.crs,
   do = TRUE,
   verbose = FALSE
 )
@@ -26,7 +26,7 @@ institutionLocality(
 
 \item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
 
-\item{.points.proj4string}{proj4string argument for df}
+\item{.points.crs}{crs argument for df}
 
 \item{do}{logical. Should range analysis be performed?}
 
