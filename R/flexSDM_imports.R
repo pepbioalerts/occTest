@@ -28,7 +28,7 @@
 #' For further information about these methods, see Chapman (2005), Liu et al. (2018), and Velazco
 #' et al. (2022).
 #' @author Santiago J.E. Velazco
-#' @seealso \link[flexsdm]{env_outliers}
+#' @seealso flexsdm::env_outliers
 #' @return A tibble object with the same database used in 'data' argument and with seven additional columns, where 1 and 0 denote that a presence was detected or not as outliers
 #' \itemize{
 #'   \item .out_bxpt: outliers detected with Box-plot method

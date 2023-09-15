@@ -20,9 +20,9 @@
 
 \item{category}{the field in the dataframe containing the y coordinates}
 
-\item{load}{Raster of human influence index}
+\item{destdir}{crs argument for dataframe}
 
-\item{desetdir}{crs argument for dataframe}
+\item{load}{Raster of human influence index}
 }
 \value{
 spatial object or raster

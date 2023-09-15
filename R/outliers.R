@@ -141,19 +141,19 @@
 #   sp.toss.id
 # }
 
-# findEnvOutliers =====
-#' @title Find outlying occurrence data in environmental space
-#' @description Environmental outliers
-#' @param myPres a `SpatialPointsDataFrame`
-#' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
-#' @param checkPairs logical. Default to FALSE (TRUE not implemented).
-#' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
-#' @param verbose logic. Should messages be printed out?
-#' @keywords internal
-#' @importFrom raster extract
-#' @export
-#' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
-#' @author Cory Merow <cory.merow@@gmail.com>
+# # findEnvOutliers =====
+# #' @title Find outlying occurrence data in environmental space
+# #' @description Environmental outliers
+# #' @param myPres a `SpatialPointsDataFrame`
+# #' @param myEnv a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)
+# #' @param checkPairs logical. Default to FALSE (TRUE not implemented).
+# #' @param pvalSet numeric; p-value used in Grubb's test for outlier (see package `outliers`)
+# #' @param verbose logic. Should messages be printed out?
+# #' @keywords internal
+# #' @importFrom raster extract
+# #' @export
+# #' @return Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
+# #' @author Cory Merow <cory.merow@@gmail.com>
 
 # findEnvOutliers=function(myPres,
 #                          myEnv=NULL,

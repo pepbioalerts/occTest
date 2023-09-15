@@ -7,7 +7,7 @@
 #' @param scale Data.frame of species occurrences
 #' @param type the field in the dataframe containing the x coordinates
 #' @param category the field in the dataframe containing the y coordinates
-#' @param desetdir crs argument for dataframe
+#' @param destdir crs argument for dataframe
 #' @param load Raster of human influence index
 #' @return spatial object or raster
 #' @keywords internal
@@ -49,7 +49,7 @@
 #' @param x Data.frame of species occurrences
 #' @param lon character. Column name in x with decimal longitude values
 #' @param lat character. Column name in x with decimal latitude values
-#' @param a SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download(). 
+#' @param ref SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download(). 
 #' @param value character string. Defining the output value. See value.
 #' @param verbose logical. If TRUE reports the name of the test and the number of records flagged
 #' @param outdir output directory
@@ -93,7 +93,7 @@
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   dat <- sf::st_as_sf(x,coords = c(lon,lat),crs=terra::crs(wgs84))
   limits <- terra::ext(dat) + 1
-  if(sf::st_crs(ref) != sf::st_crs(dat)) break ('points and urban areas not in the same projection (wgs84 typically)')
+  if(sf::st_crs(ref) != sf::st_crs(dat)) stop ('points and urban areas not in the same projection (wgs84 typically)')
   #sometimes this breaks depending on the extent. 
   #changing that to defensive programming (this may be slower but it is more sure)
   ref2 <- try ({terra::crop(terra::vect (ref), limits)},silent=T)

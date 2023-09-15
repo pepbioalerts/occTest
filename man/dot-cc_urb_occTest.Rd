@@ -21,13 +21,13 @@
 
 \item{lat}{character. Column name in x with decimal latitude values}
 
+\item{ref}{SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download().}
+
 \item{value}{character string. Defining the output value. See value.}
 
 \item{verbose}{logical. If TRUE reports the name of the test and the number of records flagged}
 
 \item{outdir}{output directory}
-
-\item{a}{SpatialPolygonsDataFrame. Providing the geographic gazetteer with the urban areas. See details. By default rnaturalearth::ne_download(scale = 'medium', type = 'urban_areas'). Can be any SpatialPolygonsDataframe, but the structure must be identical to rnaturalearth::ne_download().}
 }
 \value{
 a clean data.frame

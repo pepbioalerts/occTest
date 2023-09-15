@@ -152,7 +152,7 @@ bind_rows(out_p, out_pa)
   }
 }
 \seealso{
-\link[flexsdm]{env_outliers}
+flexsdm::env_outliers
 }
 \author{
 Santiago J.E. Velazco

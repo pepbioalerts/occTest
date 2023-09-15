@@ -11,13 +11,17 @@
 #' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
 #' @export
 #' @examples
-#' myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-#'                             package='occOutliers'))
-#' myPres=myPres[complete.cases(myPres),]
-#' sp::coordinates(myPres)=c(1,2)
-#' myEnv=terra::rast(system.file('extdata/AllEnv.tif',package='occOutliers'))
-#' names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-#' myPresDF=sf::st_as_sf(myPres,data.frame(terra::extract(myEnv,myPres)))
+#' #select coordinates only
+#' myPres=read.csv(system.file('ext/exampleOccData.csv',
+#'                             package='occTest'))
+#' #select coordinates only
+#' myPres <- myPres[,2:3]
+#' myPres <- myPres[complete.cases(myPres),]
+#' #extract values
+#' myEnv <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+#' myPres <- sf::st_as_sf(myPres,coords = c(1,2))
+#' myPresDF <- cbind (myPres,data.frame(terra::extract(myEnv,myPres)))
+#' #find outliers
 #' presOut=findEnvOutliers(pres=myPresDF,pvalSet=1e-5)
 #' @return Returns the indices of environmental outliers
 #' @author Cory Merow <cory.merow@@gmail.com>
@@ -54,7 +58,7 @@ findEnvOutliers=function(pres,
       # do this within the loop to recompute the centroid ofter each outlier is removed
       dists=apply(p.env,1,function(x) sqrt(sum((x)^2)) )
       # this is close enough to fixed, in the outer function it'll report that everything was tossed
-      if(nrow(p.env)<3) break 
+      if(nrow(p.env)<3) {break} 
       gt=outliers::grubbs.test(dists)
       pval=gt$p.value
       # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found

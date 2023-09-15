@@ -351,7 +351,7 @@ countryStatusRangeAnalysis=function(df,
 #' @param df data.frame of species occurrences
 #' @param xf character. column name in df containing the x coordinates
 #' @param yf character. column name in df containing the y coordinates
-#' @param .c.field character. Country field in the species data.frame (df)
+#' @param cf character. Country field in the species data.frame (df)
 #' @param .ntv.ctry character. ISO3 country codes where species are considered native
 #' @param idf character. Column with the taxon observation ID.
 #' @param .inv.ctry character. ISO3 country codes where species are considered alien
@@ -1005,7 +1005,7 @@ geoOutliers         <- function (df,
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com). Mark Robertson (biogeo package)
 #' @seealso findEnvOutliers \link[biogeo]{outliers}
-#' @import stats 
+#' @importFrom stats complete.cases
 #' @export
 envOutliers  <- function (
                           df,

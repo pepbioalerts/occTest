@@ -28,6 +28,8 @@ centroidDetection(
 
 \item{yf}{character. column name in df containing the y coordinates}
 
+\item{cf}{character. Country field in the species data.frame (df)}
+
 \item{idf}{character. Column with the taxon observation ID.}
 
 \item{.ntv.ctry}{character. ISO3 country codes where species are considered native}
@@ -47,8 +49,6 @@ centroidDetection(
 \item{do}{logical. Should range analysis be performed? Default TRUE}
 
 \item{verbose}{logical. Print messages? Default FALSE}
-
-\item{.c.field}{character. Country field in the species data.frame (df)}
 }
 \value{
 data.frame

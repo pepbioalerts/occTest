@@ -2,7 +2,7 @@
 % Please edit documentation in R/outliers.R
 \name{mcp_test}
 \alias{mcp_test}
-\title{Find outlying occurrence data in environmental space}
+\title{Find outlying occurrence data in geographical space from convex hulls}
 \usage{
 mcp_test(data, xcoord, ycoord, percentage = 95)
 }
@@ -14,33 +14,17 @@ mcp_test(data, xcoord, ycoord, percentage = 95)
 \item{ycoord}{character. Column with Y coordinate information in data}
 
 \item{percentage}{numeric. Percentage of data used to build the minimum convex polygon}
-
-\item{myPres}{a `SpatialPointsDataFrame`}
-
-\item{myEnv}{a `RasterStack` of env layers. If NULL, it is assumed that `myPres` is a data.frame of the environmental values (columns) at presence locations (rows)}
-
-\item{checkPairs}{logical. Default to FALSE (TRUE not implemented).}
-
-\item{pvalSet}{numeric; p-value used in Grubb's test for outlier (see package `outliers`)}
-
-\item{verbose}{logic. Should messages be printed out?}
 }
 \value{
 Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
-
-Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
 }
 \description{
-Environmental outliers
-
 Geographic outliers
 }
 \details{
 only works for WGS84 lat long
 }
 \author{
-Cory Merow <cory.merow@gmail.com>
-
 Coline CF Boonmann <colineboonman@bio.au.dk >
 }
 \keyword{internal}

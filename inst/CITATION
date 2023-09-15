@@ -21,7 +21,6 @@ bibentry(bibtype = "article",
          number = 10,
          pages = 744-751,
          year = 2019,
-         note = sprintf("R package version %s", packageVersion("CoordinateCleaner")),
          doi = "10.1111/2041-210X.13152",
          url = "https://github.com/ropensci/CoordinateCleaner")
 
@@ -36,7 +35,6 @@ bibentry(bibtype = "article",
          number = 4,
          pages = 394-401,
          year = 2016,
-         note = sprintf("R package version %s", packageVersion("biogeo")),
          doi = "10.1111/ecog.02118")
 
 bibentry(bibtype = "article",
@@ -69,5 +67,4 @@ bibentry(bibtype = "article",
          number = 2,
          pages = 373-379,
          year = 2018,
-         note = sprintf("R package version %s", packageVersion("BIEN")),
          doi = "10.1111/2041-210X.12861")

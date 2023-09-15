@@ -33,13 +33,17 @@ Environmental outliers
 See Examples.
 }
 \examples{
-myPres=read.csv(system.file('extdata/SpeciesCSVs/Camissonia_tanacetifolia.csv',
-                            package='occOutliers'))
-myPres=myPres[complete.cases(myPres),]
-sp::coordinates(myPres)=c(1,2)
-myEnv=terra::rast(system.file('extdata/AllEnv.tif',package='occOutliers'))
-names(myEnv)=read.table(system.file('extdata/layerNames.csv',package='occOutliers'))[,1]
-myPresDF=sf::st_as_sf(myPres,data.frame(terra::extract(myEnv,myPres)))
+#select coordinates only
+myPres=read.csv(system.file('ext/exampleOccData.csv',
+                            package='occTest'))
+#select coordinates only
+myPres <- myPres[,2:3]
+myPres <- myPres[complete.cases(myPres),]
+#extract values
+myEnv <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+myPres <- sf::st_as_sf(myPres,coords = c(1,2))
+myPresDF <- cbind (myPres,data.frame(terra::extract(myEnv,myPres)))
+#find outliers
 presOut=findEnvOutliers(pres=myPresDF,pvalSet=1e-5)
 }
 \author{

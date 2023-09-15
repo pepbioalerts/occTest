@@ -1,12 +1,14 @@
 Package: occTest
 Title: Characterizing and Filtering Species Occurrence Data 
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person(given = "Josep M", family = "Serra-Diaz", email = "pep.agroparistech@gmail.com",
                     role = c("aut", "cre")),
              person(given = "Cory", family = "Merow", role = c("aut","ctb"), 
              comment = "Cory co-developped the structure for testing blocks"),
              person(given = "Jeremy", family = "Borderieux", role = c("aut","ctb"), 
              comment="Jeremy developped plotting and filtering functions"),
+             person(given = "Coline CF", family = "Boonman", role = c("aut","ctb"), 
+             comment = "Coline developped the mcp method of geographic outliers"),
              person(given = "Brian", family = "Maitner", role = c("aut","ctb"), 
              comment = "Brian developped and incorporated centroid and GNRS analysis")
              )
@@ -16,9 +18,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
-Date: 2023
+Date: 2023-09-13
 Imports:
-    stats,
     dplyr,
     raster,
     terra,

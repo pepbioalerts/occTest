@@ -180,7 +180,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   if(show_plot) for (current_plot in 1:length(list_of_ggplot)){
     print(list_of_ggplot[[current_plot]])
     if(current_plot!=length(list_of_ggplot))user_press<-readline(prompt="Press [enter] to see the next plot, type 'no' to stop plotting ")
-    if(trimws(tolower(user_press))=="no")break
+    if(trimws(tolower(user_press))=="no") print('plot not shown per your request')
   }
   
   if(s2_used)sf::sf_use_s2(TRUE)
