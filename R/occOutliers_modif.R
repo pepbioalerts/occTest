@@ -224,7 +224,7 @@ findSpatialOutliers=function(pres,
         # conservative way to toss outliers. this checks whether the single largest distance is an outlier. this is repeated until no more outliers are found
         if(is.na(pval)) {
           warning('p-value for grubbs test checking for pairs of outliers was NA. sample size is too small to implement the test')
-          break
+          #stop()
         }
         if(gt$p.value<pvalSet){
           toss=utils::tail(order(dists),2)
