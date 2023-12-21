@@ -9,7 +9,7 @@ geoEnvAccuracy(
   xf,
   yf,
   af,
-  dsf,
+  dsf = NULL,
   ef,
   method = "all",
   r.env,
@@ -27,46 +27,46 @@ geoEnvAccuracy(
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame}. Dataset of species occurrences with coordinates}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. column name in df containing the y coordinates}
 
-\item{af}{character. column name in df containing the coordinate uncertainty value (in the same)}
+\item{af}{\emph{character}. column name in df containing the coordinate uncertainty value (in the same)}
 
-\item{dsf}{character. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)}
+\item{dsf}{\emph{character}. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)}
 
-\item{ef}{character. column name in df containing the registered elevation for the record.}
+\item{ef}{\emph{character}. column name in df containing the registered elevation for the record.}
 
-\item{method}{character. Vector of methods to be used. See details. Default 'all'}
+\item{method}{\emph{character}. Vector of methods to be used. See details. Default 'all'}
 
-\item{r.env}{raster. Raster with environmental data}
+\item{r.env}{\emph{SpatRaster}. Raster with environmental data, typically temperature.}
 
-\item{accept.threshold.cell}{numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5}
+\item{accept.threshold.cell}{\emph{numeric}. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5}
 
-\item{accept.threshold.env}{numeric. Default 0.5}
+\item{accept.threshold.env}{\emph{numeric}. Acceptance threshold for how much percentage difference in an environmental variable you are willing to accept given a geographic accuracy. Default to 0.5}
 
-\item{bearing.classes}{numeric. Default to 10.}
+\item{bearing.classes}{\emph{integer}. Directions to analyze given accuracy. Default to 10.}
 
-\item{distance.classes}{integer. Default to 5.}
+\item{distance.classes}{\emph{integer}. Number of distance classes to analyze in terms of geographic accuracy. Default to 5.}
 
-\item{env.quantiles}{numeric. Default to c(0.3,0.7)}
+\item{env.quantiles}{\emph{numeric}. Max and min quantiles to identify environmental inaccuracies.  Default to c(0.3,0.7)}
 
-\item{elev.threshold}{numeric. Default to 100}
+\item{elev.threshold}{\emph{numeric}. Maximum difference accepted between target cell and cells within the geographic inaccuracy. Default to 100}
 
-\item{raster.elevation}{numeric. Default to 100}
+\item{raster.elevation}{\emph{SpatRaster}  Raster of a digital elevation model.}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 
-\item{do}{logical. Should tests be performed? Default TRUE}
+\item{do}{\emph{logical}. Should tests be performed? Default TRUE}
 
-\item{doParallel}{logical. Should computation use parallel functions? Default FALSE}
+\item{doParallel}{\emph{logical}. Should computation use parallel functions? Default FALSE}
 
-\item{mc.cores}{numeric. How many cores to use? (used when doParallel = TRUE). Default 2}
+\item{mc.cores}{\emph{numeric}. How many cores to use? (used when doParallel = TRUE). Default 2}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Detect records with low accuracy affecting environmental values
@@ -83,9 +83,17 @@ Current implmented methods are:
 'envDeviation' : assess whether the climate in a given record may be outside of the interval 30th-70th (default values) for a given variable due to coordinate uncertainty. \cr
 }
 \examples{
-#see examples in vignetteXtra-occTest
-#library
-#install_github ('vignetteXtra-occTest')
+\dontrun{
+
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+dem <- terra::rast(system.file('ext/DEM.tif',package='occTest'))
+geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M') ,ef = 'ELEVATION',
+               r.env = env[[1]],raster.elevation = dem)
+#see more examples in vignetteXtra-occTest
+#devtools::install_github ('vignetteXtra-occTest')
+}
 }
 \seealso{
 \link[CoordinateCleaner]{cd_round}

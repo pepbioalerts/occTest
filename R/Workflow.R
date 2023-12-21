@@ -6,13 +6,13 @@
 #' @param sp.name character. Name of the species.
 #' @param habitat NULL
 #' @param sp.table data.frame. Object with the coordinate data.
-#' @param r.env raster or rasterStack. Environmental data(e.g. typically climatic.
+#' @param r.env SpatRaster object. Environmental data(e.g. typically climatic.
 #' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
 #' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param gradingSettings list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions . 
 #' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
 #' @param return.spatial.data logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory
-#' @param r.dem raster. Elevation data (in meters).
+#' @param r.dem SpatRaster object. Elevation data (in meters).
 #' @param ntv.ctry character. vector with ISO3 code of the countries where species is considered native
 #' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
 #' @param resolveAlienCtry logical. To automatically try to detect  countries for which species is considered native
@@ -32,14 +32,14 @@
 #' @examples \donttest{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
-#' #load environmental raster
+#' #load environmental SpatRast
 #' library (sf)
 #' library (occTest)
 #' #load occurrence data
 #' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
-#' #load environmental raster
+#' #load environmental SpatRast
 #' renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
-#' #load elevation raster
+#' #load elevation SpatRast
 #' dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 #' #load settings
 #' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))

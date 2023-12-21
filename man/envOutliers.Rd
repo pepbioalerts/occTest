@@ -12,34 +12,34 @@ envOutliers(
   .th.perc.outenv,
   .sp.name,
   method = "all",
-  .points.crs,
+  .points.crs = NULL,
   do = TRUE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame}. Dataset of species occurrences with x and y coordinates}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. Column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. Column name in df containing the y coordinates}
 
-\item{.r.env}{raster. Raster with environmental data}
+\item{.r.env}{\emph{SpatRaster}.  Raster with environmental data}
 
-\item{.th.perc.outenv}{numeric. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.}
+\item{.th.perc.outenv}{\emph{numeric}. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.}
 
-\item{.sp.name}{Species name}
+\item{.sp.name}{\emph{character}.Species name}
 
-\item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+\item{method}{\emph{character}. Vector indicating methods to be used. See details. Default 'all'}
 
-\item{.points.crs}{crs character. Indicate coordinate reference system}
+\item{.points.crs}{\emph{character}.crs coding indicating coordinate reference system. If NULL it will assume "ESPG::4326"}
 
-\item{do}{logical. Should tests be performed? Default TRUE}
+\item{do}{\emph{logical}. Should tests be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Detect environmental outliers using different methods
@@ -49,6 +49,19 @@ Implemented methods are :\cr
 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
+}
+\examples{
+\dontrun{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- occ[,c('MAPX','MAPY')]
+occ <- occ[stats::complete.cases(occ),]
+env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+envOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',
+            .th.perc.outenv = 0.2,
+            .r.env = env,
+            .sp.name = 'MySpeciesName')
+}
 }
 \seealso{
 findEnvOutliers \link[biogeo]{outliers}

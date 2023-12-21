@@ -13,7 +13,7 @@ findEnvOutliers(
 )
 }
 \arguments{
-\item{pres}{a `SpatialPoints` or `SpatialPointsDataFrame` object describing the locations of species records. A `SpatialPointsDataFrame` containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`}
+\item{pres}{an `sf` points object describing the locations of species records.}
 
 \item{pvalSet}{user-specified p-value for assessing the significance of Grubbs test statistic.}
 

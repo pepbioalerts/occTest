@@ -7,24 +7,24 @@
 .nearestcell3(dat, rst, xf, yf, verbose = FALSE)
 }
 \arguments{
-\item{dat}{Data.frame of species occurrences}
+\item{dat}{\emph{data.frame} of species occurrences}
 
-\item{rst}{raster class object.}
+\item{rst}{\emph{SpatRast} class object with 1 being the target habitat (land or sea)}
 
-\item{xf}{the field in the data frame containing the x coordinators}
+\item{xf}{the column name in dat containing the x coordinators}
 
-\item{yf}{the field in the data frame containing the y coordinators}
+\item{yf}{the column name in dat containing the y coordinators}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-list
+\emph{list}
 }
 \description{
 Reassign coastal coordinates as needed to be in
 }
 \details{
-(function inspired in nearestcell in biogeo but modified
+function inspired in nearestcell in biogeo but modified
 }
 \seealso{
 original code at \link[biogeo]{nearestcell}

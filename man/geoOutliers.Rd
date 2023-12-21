@@ -20,28 +20,28 @@ geoOutliers(
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame}. Species occurrences data with x and y coordinates}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. Column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. Column name in df containing the y coordinates}
 
-\item{.alpha.parameter}{parameter setting for alphahull}
+\item{.alpha.parameter}{\emph{numeric}. Parameter setting for alphahull. Alpha parameter recommended is 2. No default}
 
-\item{.distance.parameter}{numeric. Maximum distance allowed. Default to 1000}
+\item{.distance.parameter}{\emph{numeric}. Maximum distance allowed. Default to 1000}
 
-\item{.medianDeviation.parameter}{numeric. Deviation parameter to . Default to 0.1}
+\item{.medianDeviation.parameter}{\emph{numeric}. Deviation parameter to . Default to 0.1}
 
-\item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+\item{method}{\emph{character}. Vector of methods to be used. See details. Default 'all'}
 
-\item{.points.crs}{crs character. Indicate coordinate reference system}
+\item{.points.crs}{\emph{character}. crs coding indicating coordinate reference system}
 
-\item{do}{logical. Should tests be performed? Default TRUE}
+\item{do}{\emph{logical}.. Should tests be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}.. Print messages? Default FALSE}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Detect geographical outliers using several tests
@@ -53,6 +53,13 @@ Methods implented are 'alphaHull', detecting species outside an alphaHull level 
 'median' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='mad'). See ?CoordinateCleaner::cc_outl \cr
 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
+}
+\examples{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- occ[,c('MAPX','MAPY')]
+occ <- occ[stats::complete.cases(occ),]
+geoOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',.alpha.parameter = 2)
 }
 \seealso{
 getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers

@@ -10,30 +10,30 @@ institutionLocality(
   yf,
   lf,
   method = "all",
-  .points.crs,
+  .points.crs = NULL,
   do = TRUE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. column name in df containing the y coordinates}
 
-\item{lf}{The locality field in df.}
+\item{lf}{\emph{character}.column name in df containing the locality names}
 
-\item{method}{charcter. Vector of methods to be used. See details. Default 'all'}
+\item{method}{\emph{character}. Vector of methods to be used. See details. Default 'all'}
 
-\item{.points.crs}{crs argument for df}
+\item{.points.crs}{\emph{character crs}. coordinate projection of the occurrences. Deafults to NULL which ends using "ESPG::4326"}
 
-\item{do}{logical. Should range analysis be performed?}
+\item{do}{\emph{logical}. Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical} Print messages? Default FALSE}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Detect occurrences potentially in biodiversity institutions using different methods
@@ -42,6 +42,15 @@ Detect occurrences potentially in biodiversity institutions using different meth
 current implemented methods are : \cr
 "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
+}
+\examples{
+\dontrun{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ <- occ_species_example[1:50,c('MAPX','MAPY','LOCALITYNAME')]
+institutionLocality(df=occ, xf = 'MAPX',yf = 'MAPY',lf='LOCALITYNAME')
+}
+
 }
 \seealso{
 \link[CoordinateCleaner]{cc_inst} \link[CoordinateCleaner]{cc_gbif}

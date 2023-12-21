@@ -7,16 +7,16 @@
 filterMissing(df, xf, yf, verbose = FALSE)
 }
 \arguments{
-\item{df}{dat.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{character. The field in the data.frame containing the x coordinates}
+\item{xf}{\emph{character}. The field in the data.frame containing the x coordinates}
 
-\item{yf}{character. The field in the data.frame containing the y coordinates}
+\item{yf}{\emph{character}. The field in the data.frame containing the y coordinates}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
+\emph{list} with two \emph{data.frame}: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 }
 \description{
 checks for missing coordinates in the occurrence dataframe

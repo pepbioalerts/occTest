@@ -19,7 +19,7 @@ occSimpFilter(
 \arguments{
 \item{spOcc}{data.frame. Object with the coordinate data.}
 
-\item{env}{raster or rasterStack. Environmental data (e.g. typically climatic).}
+\item{env}{SpatRaster object. Raster of environmental data (e.g. typically climatic).}
 
 \item{speciesName}{character. Name of the species.}
 
@@ -50,12 +50,12 @@ but this automatic implementation (occTest + occFilter) missses some analysis to
 \donttest{
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
-#load environmental raster
+#load environmental SpatRaster
 library (sf)
 library (occTest)
 #load occurrence data
 occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
-#load environmental raster
+#load environmental SpatRaster
 renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 #run occSimpFilter
 out = occSimpFilter (spOcc=occData,

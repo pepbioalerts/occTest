@@ -3,7 +3,7 @@
 #'Runs tests and validates data
 #' @param spOcc data.frame. Object with the coordinate data.
 #' @param speciesName character. Name of the species.
-#' @param env raster or rasterStack. Environmental data (e.g. typically climatic).
+#' @param env SpatRaster object. Raster of environmental data (e.g. typically climatic).
 #' @param x name of the field with the coordinate x. Default 'x'
 #' @param y name of the field with the coordinate y. Default 'y'
 #' @param date name of the field with the values of the reported timestamp of the record. Default NULL
@@ -18,12 +18,12 @@
 #' @examples \donttest{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
-#' #load environmental raster
+#' #load environmental SpatRaster
 #' library (sf)
 #' library (occTest)
 #' #load occurrence data
 #' occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
-#' #load environmental raster
+#' #load environmental SpatRaster
 #' renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 #' #run occSimpFilter
 #' out = occSimpFilter (spOcc=occData,

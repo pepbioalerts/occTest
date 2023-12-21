@@ -4,7 +4,7 @@
 #' @description Environmental outliers
 #' @details
 #' See Examples.
-#' @param pres a `SpatialPoints` or `SpatialPointsDataFrame` object describing the locations of species records. A `SpatialPointsDataFrame` containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
+#' @param pres an `sf` points object describing the locations of species records. 
 #' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'
 #' @param pvalSet user-specified p-value for assessing the significance of Grubbs test statistic.
 #' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
@@ -148,7 +148,7 @@ findEnvOutliers=function(pres,
 #'
 #' @details
 #' See Examples.
-#' @param pres a `SpatialPoints` or `SpatialPointsDataFrame` object describing the locations of species records. A `SpatialPointsDataFrame` containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
+#' @param pres a `sf` points object describing the locations of species records. 
 #' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'
 #' @param pvalSet user-specified p-value for assessing the significance of Grubbs test statistic.
 #' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
@@ -281,7 +281,7 @@ findSpatialOutliers=function(pres,
 #' @details
 #' See Examples.
 #'
-#' @param pres a `SpatialPoints` or `SpatialPointsDataFrame` object describing the locations of species records. A `SpatialPointsDataFrame` containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
+#' @param pres a `sf` points object describing the locations of species records. Am `sf` points object containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
 #' @param spOutliers logical; perform spatial outlier analysis
 #' @param envOutliers logical; perform environmental outlier analysis
 #' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'. Only a single value can be used; if mutliple tests are desired, call `findOuliers` multiple times specifying different methods.
@@ -358,10 +358,7 @@ findOutlyingPoints=function(pres,
 # @export
 # unin = c("m");  unout ='m2'
 .presPercentile=function (xy, percent = 95, unin = c("m", "km"), unout = c("ha","km2", "m2")) {
-  # for testing
-  # xy=pres; percent = NULL; unin = c("m", "km"); unout = c("ha","km2", "m2")
-  #if (!inherits(xy, "SpatialPoints")) # not needed; i already check it
-  #stop("xy should be of class SpatialPoints")
+  
   if (ncol(sf::st_coordinates(xy)) > 2)
     stop("xy should be defined in two dimensions")
   pfs <- sp::crs(xy)

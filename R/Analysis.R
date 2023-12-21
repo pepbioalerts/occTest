@@ -3,11 +3,11 @@
 # filterMissing ====
 #' @title Check for missing coordinates
 #' @description checks for missing coordinates in the occurrence dataframe
-#' @param df dat.frame of species occurrences
-#' @param xf character. The field in the data.frame containing the x coordinates
-#' @param yf character. The field in the data.frame containing the y coordinates
-#' @param verbose logical. Print messages? Default FALSE
-#' @return List with two dataframes: stay = coordinates missing and continue = occurrence that you can retain for further analysis
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf \emph{character}. The field in the data.frame containing the x coordinates
+#' @param yf \emph{character}. The field in the data.frame containing the y coordinates
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @return \emph{list} with two \emph{data.frame}: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -27,13 +27,13 @@ filterMissing <- function (df, xf , yf , verbose=FALSE){
 #' @title Duplicated records
 #' @description checks for duplicated coordinates in the occurrence data frame
 #' @details it differentiates the exact duplicates and the duplicates for a occurrences falling in the same pixel
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the data frame containing the x coordinators
-#' @param yf the field in the data frame containing the y coordinates
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf the column name in df containing the x coordinators
+#' @param yf the column name in df containing the y coordinators
 #' @param resolution.in.minutes the resolution of environmental data used, specified in minutes
-#' @param raster.grid An optional raster grid
-#' @param verbose logical. Print messages? Default FALSE
-#' @return list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
+#' @param raster.grid An optional \emph{SpatRast} object
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @return \emph{list} of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
@@ -87,13 +87,13 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 # SeaLand reassignment ====
 #' @title SeaLand reassignment
 #' @description Reassign coastal coordinates as needed to be in 
-#' @details (function inspired in nearestcell in biogeo but modified 
-#' @param dat Data.frame of species occurrences 
-#' @param rst raster class object.
-#' @param xf the field in the data frame containing the x coordinators
-#' @param yf the field in the data frame containing the y coordinators
-#' @param verbose logical. Print messages? Default FALSE
-#' @return list
+#' @details function inspired in nearestcell in biogeo but modified 
+#' @param dat \emph{data.frame} of species occurrences 
+#' @param rst \emph{SpatRast} class object with 1 being the target habitat (land or sea)
+#' @param xf the column name in dat containing the x coordinators
+#' @param yf the column name in dat containing the y coordinators
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @return \emph{list}
 #' @keywords internal
 #' @author Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)
 #' @family analysis
@@ -198,25 +198,39 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 # countryStatusRange analysis ====
 #' @title Range analysis
 #' @description Identify and filter species records based on countries where species is considered native or alien.
-#' @details It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
-#' @param df data.frame of species occurrences
-#' @param xf character. The field in the data.frame containing the x coordinates
-#' @param yf character. The field in the data.frame containing the y coordinates
-#' @param .ntv.ctry character. Native country in ISO3 coding
-#' @param .inv.ctry character. Invasive country in ISO3 coding
-#' @param .c.field character. Country field in the species data.frame (df)
-#' @param .points.crs crs for the occurrence data
+#' @details It returns a \emph{list} with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf \emph{character}. The field in df containing the x coordinates
+#' @param yf \emph{character}. The field in df containing the y coordinates
+#' @param .ntv.ctry \emph{character} Native country in ISO3 coding
+#' @param .inv.ctry \emph{character} Invasive country in ISO3 coding
+#' @param .c.field \emph{character} Country field in the species \emph{data.frame} (df)
+#' @param .points.crs \emph{crs} for the occurrence data
 #' @param .countries.shapefile spatialPolygonDataFrame of political divisions
-#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.
-#' @param excludeUnknownRanges logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE
-#' @param excludeNotmatchCountry Should records be if the reported country is different than the locatoin country? . Default FALSE
-#' @param doRangeAnalysis logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default FALSE
-#' @return list
+#' @param cfsf \emph{character} Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.
+#' @param excludeUnknownRanges \emph{logical}. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE
+#' @param excludeNotmatchCountry \emph{logical}. Should records be if the reported country is different than the locatoin country? . Default FALSE
+#' @param doRangeAnalysis \emph{logical} Should range analysis be performed?
+#' @param verbose \emph{logical} Print messages? Default FALSE
+#' @return \emph{list}
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
 #' @export
+#' @examples 
+#' library (occTest)
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ <- occ_species_example[1:10,c('MAPX','MAPY','COUNTRYRECORD')]
+#' #load a high resolution coastlines
+#' pol_ctry <- system.file('ext/countries.rds',package='occTest') |> readRDS()
+#' countryStatusRangeAnalysis(df=occ,
+#'                            xf = 'MAPX',yf = 'MAPY',
+#'                            .ntv.ctry = 'ESP',.inv.ctry = 'FRA',
+#'                            .c.field = 'COUNTRYRECORD',
+#'                            .countries.shapefile = sf::st_as_sf(pol_ctry),
+#'                            cfsf='ISO',
+#'                            .points.crs = sf::st_crs ('EPSG:4326'))
 countryStatusRangeAnalysis=function(df,
                                     xf,
                                     yf,
@@ -348,21 +362,14 @@ countryStatusRangeAnalysis=function(df,
 #' @title Centroid detection function
 #' @description Identify occurrence records located near centroids. 
 #' @details This is a wrapper function that encompasses different methods
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param cf character. Country field in the species data.frame (df)
-#' @param .ntv.ctry character. ISO3 country codes where species are considered native
-#' @param idf character. Column with the taxon observation ID.
-#' @param .inv.ctry character. ISO3 country codes where species are considered alien
-#' @param .points.crs crs argument. Coordinate reference system
-#' @param .r.env raster. Raster of environmental variables considered in the analysis
-#' @param .countries.shapefile spatialPolygonDataFrame of political divisions
-#' @param cfsf character. Column name of the .country spatialPolygonDataFrame indicating the country in ISO3 coding.
-#' @param method character. Vector with the methods to detect centroids
-#' @param do logical. Should range analysis be performed? Default TRUE
-#' @param verbose logical. Print messages? Default FALSE
-#' @return data.frame
+#' @param df \emph{data}.frame of species occurrences
+#' @param xf \emph{character}. column name in df containing the x coordinates
+#' @param yf \emph{character}. column name in df containing the y coordinates
+#' @param cf \emph{character}. Country field in the species data.frame (df)
+#' @param method \emph{character} Vector with the methods to detect centroids
+#' @param do \emph{logical} Should range analysis be performed? Default TRUE
+#' @param verbose \emph{character} Print messages? Default FALSE
+#' @return \emph{data.frame}
 #' @keywords internal
 #' @family analysis
 #' @details Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
@@ -370,20 +377,18 @@ countryStatusRangeAnalysis=function(df,
 #' @author Brian Maitner, Josep M Serra-Diaz, Cory Merow. Functions from CoordinateCleaner implemented by A Zizka (CoordinateCleaner)
 #' @seealso \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen} 
 #' @export
+#' @examples 
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
+#' centroidDetection(df=occ,xf='MAPX',yf = 'MAPY',cf = 'COUNTRYRECORD')
 
 centroidDetection <- function (df,
-                                xf,
-                                yf,
-                                cf,
-                                idf,
-                                .ntv.ctry,
-                                .inv.ctry,
-                                .points.crs,
-                                .r.env,
-                                .countries.shapefile,
-                                cfsf,
-                                 method='all',
-                                 do = TRUE, verbose=FALSE){
+                               xf,
+                               yf,
+                               cf,
+                               method='all',
+                               do = TRUE, verbose=FALSE){
   #table of outputs
   out = data.frame (centroidDetection_BIEN_value=NA,
                     centroidDetection_BIEN_test=NA,
@@ -392,10 +397,10 @@ centroidDetection <- function (df,
                     centroidDetection_CoordinateCleaner_test=NA,
                     centroidDetection_CoordinateCleaner_comment=NA,
                     centroidDetection_score=NA
-                    )[1:nrow (df),]
-
+  )[1:nrow (df),]
+  
   row.names(out) <- NULL
-
+  
   if(!do) { return (out)}
   #Method BIEN
   if (any(method %in% c('BIEN','all'))){
@@ -422,11 +427,11 @@ centroidDetection <- function (df,
       out$centroidDetection_BIEN_test <- NA
       out$centroidDetection_BIEN_comments <- 'error in bien_centroids'
     }
-      
+    
   }
   #Method CoordinateCleaner
   if (any(method %in% c('CoordinateCleaner','all'))){
-
+    
     cc_cap_test = CoordinateCleaner::cc_cap(x = df,lon =xf,lat=yf,value='flagged', verbose = FALSE)
     cc_cap_test = (!cc_cap_test) *1
     cc_cen_test <- CoordinateCleaner::cc_cen (x = df, lon =xf,lat=yf ,value='flagged', verbose = FALSE)
@@ -436,11 +441,11 @@ centroidDetection <- function (df,
     out$centroidDetection_CoordinateCleaner_comment = ''
     out$centroidDetection_CoordinateCleaner_comment [cc_cap_test==1] = 'capital centroid'
     out$centroidDetection_CoordinateCleaner_comment [cc_cen_test==1] = 'ctry/prov centroid'
-
+    
   }
   out$centroidDetection_score =  .gimme.score (x = out)
   return (out)
-
+  
 }
 
 # human detection ====
@@ -448,21 +453,18 @@ centroidDetection <- function (df,
 #' @description Detect occurrences in heavily human-impacted environments
 #' @details It uses several methods to detect records in high human influence records.\cr
 #' Current implemented methods are: \cr
-#' 'hii' using a raster and a threhold of human influence
+#' 'hii' using a raster and a threshold of human influence
 #' 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package. 
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the data frame containing the x coordinates
-#' @param yf the field in the data frame containing the y coordinates
-#' @param ras.hii Raster of human influence index
-#' @param .th.human.influence threshold of human influence index
-#' @param method character. Indicate which tests to use. Default 'all'. See Details
-#' @param .points.crs character. Points coordinate projection.
-#' @param ras.hii raster. Raster map of human influence index use
-#' @param .th.human.influence numeric. Threhold to identify places of high human influence
-#' @param .points.crs crs argument for df
-#' @param do logical. Should range analysis be performed? Default TRUE
-#' @param verbose logical. Print messages? Default FALSE
-#' @param output.dir character. Output directory 
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf \emph{character} the field in the data frame containing the x coordinates
+#' @param yf \emph{character} the field in the data frame containing the y coordinates
+#' @param ras.hii \emph{spatRaster} of human influence index
+#' @param .th.human.influence \emph{numeric} threshold of human influence index
+#' @param method \emph{character}. Indicate which tests to use. Default 'all'. See Details
+#' @param .points.crs \emph{crs} argument for df
+#' @param do \emph{logical}. Should range analysis be performed? Default TRUE
+#' @param verbose \emph{logical} Print messages? Default FALSE
+#' @param output.dir \emph{character}. Output directory 
 #' @return data.frame
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr). A Zizka (CoordinateCleaner functions)
@@ -470,6 +472,22 @@ centroidDetection <- function (df,
 #' @family analysis
 #' @export
 #' @import sf
+#' @examples 
+#' \dontrun{
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
+#' raster_humanImpact <- terra::rast(xmin=min(occ$MAPX)-1,
+#'                                   xmax=max(occ$MAPX)+1,
+#'                                   ymin=min(occ$MAPY)-1,
+#'                                   ymax=max(occ$MAPY)+1,
+#'                                   crs="EPSG:4326")
+#' set.seed(33)
+#' terra::values(raster_humanImpact) <- round(runif(terra::ncell(raster_humanImpact),
+#'                                                  min = 0,max=100),digits = 0)
+#' humanDetection(df=occ, xf='MAPX',yf = 'MAPY',ras.hii = raster_humanImpact,.th.human.influence = 50)
+#' }
+
 
 humanDetection <- function (df,
                             xf,
@@ -477,8 +495,8 @@ humanDetection <- function (df,
                             method='all',
                             ras.hii,
                             .th.human.influence,
-                            .points.crs,
-                            do=TRUE, verbose=FALSE,output.dir){
+                            .points.crs=NULL,
+                            do=TRUE, verbose=FALSE,output.dir=NULL){
 
   out <- data.frame (humanDetection_HumanInfluence_value=NA,
                      humanDetection_HumanInfluence_test=NA,
@@ -497,16 +515,14 @@ humanDetection <- function (df,
 
   #get species presence
   data.sp.pres <- as.data.frame (xydat)
+  if (is.null(.points.crs)) .points.crs <- "EPSG:4326"
   data.sp.pres <- sf::st_as_sf(data.sp.pres,coords=c(xf,yf),crs = .points.crs)
 
   #start human influence index test
   if (any (method %in% c('hii','all'))) {
-
-    class(ras.hii)=='RasterLayer'
-
     #accomodate projections
     if (is.null (.points.crs)) {sf::st_set_crs(data.sp.pres, value=terra::crs(ras.hii)) 
-      warning ('ASSUMING Points and HumanRaster data have the same projection')
+      warning ('ASSUMING Points and human influence raster have the same projection')
       }
     if (!is.null (.points.crs)) {sf::st_set_crs(data.sp.pres,value = .points.crs)}
     if (sf::st_crs(data.sp.pres) != terra::crs(ras.hii)){
@@ -536,6 +552,7 @@ humanDetection <- function (df,
 
     #check ref exists
     newoutdir = paste0(tempdir(),'/spatialData')
+    if (is.null(output.dir)) output.dir<-tempdir()
     alreadyDownloaded = file.exists (x = paste0(newoutdir,'/NE_urbanareas.shp'))
     if (alreadyDownloaded) myRef = sf_object <- st_read(dsn = newoutdir,layer = 'NE_urbanareas')
     if (!alreadyDownloaded) myRef= NULL 
@@ -556,15 +573,15 @@ humanDetection <- function (df,
 # Biodiversity institutions ====
 #' @title Detect biodiversity institutions  
 #' @description Detect occurrences potentially in biodiversity institutions using different methods
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param lf The locality field in df.
-#' @param method charcter. Vector of methods to be used. See details. Default 'all'
-#' @param .points.crs crs argument for df
-#' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default FALSE
-#' @return data.frame
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf \emph{character}. column name in df containing the x coordinates
+#' @param yf \emph{character}. column name in df containing the y coordinates
+#' @param lf \emph{character}.column name in df containing the locality names
+#' @param method \emph{character}. Vector of methods to be used. See details. Default 'all'
+#' @param .points.crs \emph{character crs}. coordinate projection of the occurrences. Deafults to NULL which ends using "ESPG::4326"
+#' @param do \emph{logical}. Should range analysis be performed?
+#' @param verbose \emph{logical} Print messages? Default FALSE
+#' @return \emph{data.frame}
 #' @details current implemented methods are : \cr
 #' "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 #' "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
@@ -572,12 +589,20 @@ humanDetection <- function (df,
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @seealso \link[CoordinateCleaner]{cc_inst} \link[CoordinateCleaner]{cc_gbif} 
 #' @export
+#' @examples
+#' \dontrun{
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ <- occ_species_example[1:50,c('MAPX','MAPY','LOCALITYNAME')]
+#' institutionLocality(df=occ, xf = 'MAPX',yf = 'MAPY',lf='LOCALITYNAME')
+#' }
+#' 
 institutionLocality <- function (df,
                                  xf,
                                  yf,
                                  lf,
                                  method='all',
-                                 .points.crs,
+                                 .points.crs=NULL,
                                  do=TRUE, verbose=FALSE
                                  ){
 
@@ -594,7 +619,8 @@ institutionLocality <- function (df,
   row.names (out) <- NULL
 
   if (!do) {return (out)}
-  
+  if (is.null(.points.crs)) .points.crs <- "EPSG:4326"
+
   #method fromBotanicLocalityName
   if (any (method %in% c('fromBotanicLocalityName','all'))) {
 
@@ -657,27 +683,33 @@ institutionLocality <- function (df,
 # geoOutliers ====
 #' @title Detect geographic outliers
 #' @description Detect geographical outliers using several tests
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param .alpha.parameter parameter setting for alphahull
-#' @param .distance.parameter numeric. Maximum distance allowed. Default to 1000
-#' @param .medianDeviation.parameter  numeric. Deviation parameter to . Default to 0.1
-#' @param method charcter. Vector of methods to be used. See details. Default 'all'
-#' @param .points.crs crs character. Indicate coordinate reference system
-#' @param do logical. Should tests be performed? Default TRUE
-#' @param verbose logical. Print messages? Default FALSE
+#' @param df \emph{data.frame}. Species occurrences data with x and y coordinates
+#' @param xf \emph{character}. Column name in df containing the x coordinates
+#' @param yf \emph{character}. Column name in df containing the y coordinates
+#' @param .alpha.parameter \emph{numeric}. Parameter setting for alphahull. Alpha parameter recommended is 2. No default 
+#' @param .distance.parameter \emph{numeric}. Maximum distance allowed. Default to 1000
+#' @param .medianDeviation.parameter  \emph{numeric}. Deviation parameter to . Default to 0.1
+#' @param method \emph{character}. Vector of methods to be used. See details. Default 'all'
+#' @param .points.crs \emph{character}. crs coding indicating coordinate reference system
+#' @param do \emph{logical}.. Should tests be performed? Default TRUE
+#' @param verbose \emph{logical}.. Print messages? Default FALSE
 #' @details Methods implented are 'alphaHull', detecting species outside an alphaHull level (default 2), \cr
 #' 'alphaHull' \cr
 #' 'distance' corresponds to 'distance' method in  CoordinateCleaner::cc_outl(method='distance'). See ?CoordinateCleaner::cc_outl \cr
 #' 'median' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='mad'). See ?CoordinateCleaner::cc_outl \cr
 #' 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
 #' 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
-#' @return data.frame
+#' @return \emph{data.frame}
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com)
 #' @seealso getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers
 #' @export
+#' @examples
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- occ[,c('MAPX','MAPY')]
+#' occ <- occ[stats::complete.cases(occ),]
+#' geoOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',.alpha.parameter = 2)
 
 geoOutliers         <- function (df,
                                 xf,
@@ -987,17 +1019,17 @@ geoOutliers         <- function (df,
 # env outliers ====
 #' @title Detect environmental outliers
 #' @description Detect environmental outliers using different methods
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param .r.env raster. Raster with environmental data
-#' @param .th.perc.outenv numeric. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.
-#' @param .sp.name Species name
-#' @param method charcter. Vector of methods to be used. See details. Default 'all'
-#' @param .points.crs crs character. Indicate coordinate reference system
-#' @param do logical. Should tests be performed? Default TRUE
-#' @param verbose logical. Print messages? Default FALSE
-#' @return data.frame
+#' @param df \emph{data.frame}. Dataset of species occurrences with x and y coordinates
+#' @param xf \emph{character}. Column name in df containing the x coordinates
+#' @param yf \emph{character}. Column name in df containing the y coordinates
+#' @param .r.env \emph{SpatRaster}.  Raster with environmental data
+#' @param .th.perc.outenv \emph{numeric}. Value from 0 to 1 to identify the rate of variables not passing the test to consider the record an environmental outlier.
+#' @param .sp.name \emph{character}.Species name
+#' @param method \emph{character}. Vector indicating methods to be used. See details. Default 'all'
+#' @param .points.crs \emph{character}.crs coding indicating coordinate reference system. If NULL it will assume "ESPG::4326"
+#' @param do \emph{logical}. Should tests be performed? Default TRUE
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @return \emph{data.frame}
 #' @details Implemented methods are :\cr
 #' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
 #' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
@@ -1007,6 +1039,18 @@ geoOutliers         <- function (df,
 #' @seealso findEnvOutliers \link[biogeo]{outliers}
 #' @importFrom stats complete.cases
 #' @export
+#' @examples
+#' \dontrun{
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- occ[,c('MAPX','MAPY')]
+#' occ <- occ[stats::complete.cases(occ),]
+#' env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+#' envOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',
+#'             .th.perc.outenv = 0.2,
+#'             .r.env = env,
+#'             .sp.name = 'MySpeciesName')
+#' }
 envOutliers  <- function (
                           df,
                           xf,
@@ -1015,7 +1059,7 @@ envOutliers  <- function (
                           .th.perc.outenv ,
                           .sp.name ,
                           method='all',
-                          .points.crs ,
+                          .points.crs=NULL ,
                           do=TRUE, verbose=FALSE){
 
   #output results
@@ -1063,6 +1107,12 @@ envOutliers  <- function (
                     )[1:nrow (df),]
 
   if (!do) {return (out)}
+  if (is.null(.points.crs)) {
+    .points.crs <- sf::st_crs(4326)
+    message('Reference coordinate system assumed to be ESPG::4326')
+  }
+    
+  
   #prepare df for different methods of outliers in different packages
   df$species <- 'MyFakeSp'
   rownames(df) <-1:nrow(df)
@@ -1275,26 +1325,26 @@ envOutliers  <- function (
 # geoEnvAccuracy ====
 #' @title Coordinate accuracy
 #' @description Detect records with low accuracy affecting environmental values
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param af character. column name in df containing the coordinate uncertainty value (in the same)
-#' @param dsf character. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)
-#' @param ef character. column name in df containing the registered elevation for the record. 
-#' @param method character. Vector of methods to be used. See details. Default 'all'
-#' @param r.env raster. Raster with environmental data
-#' @param accept.threshold.cell numeric. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5
-#' @param accept.threshold.env numeric. Default 0.5
-#' @param bearing.classes numeric. Default to 10.
-#' @param distance.classes integer. Default to 5.
-#' @param env.quantiles numeric. Default to c(0.3,0.7)
-#' @param elev.threshold numeric. Default to 100
-#' @param raster.elevation numeric. Default to 100
-#' @param do logical. Should tests be performed? Default TRUE
-#' @param verbose logical. Print messages? Default FALSE
-#' @param doParallel logical. Should computation use parallel functions? Default FALSE
-#' @param mc.cores numeric. How many cores to use? (used when doParallel = TRUE). Default 2 
-#' @return data.frame
+#' @param df \emph{data.frame}. Dataset of species occurrences with coordinates
+#' @param xf \emph{character}. column name in df containing the x coordinates
+#' @param yf \emph{character}. column name in df containing the y coordinates
+#' @param af \emph{character}. column name in df containing the coordinate uncertainty value (in the same)
+#' @param dsf \emph{character}. column name in df containing the dataset to which the record belongs to (e.g. Forest Inventory of Spain)
+#' @param ef \emph{character}. column name in df containing the registered elevation for the record. 
+#' @param method \emph{character}. Vector of methods to be used. See details. Default 'all'
+#' @param r.env \emph{SpatRaster}. Raster with environmental data, typically temperature. 
+#' @param accept.threshold.cell \emph{numeric}. Acceptance threshold for how much percentage of the Area of uncertainty in the cell we want to accept. Default to 0.5
+#' @param accept.threshold.env \emph{numeric}. Acceptance threshold for how much percentage difference in an environmental variable you are willing to accept given a geographic accuracy. Default to 0.5
+#' @param bearing.classes \emph{integer}. Directions to analyze given accuracy. Default to 10.
+#' @param distance.classes \emph{integer}. Number of distance classes to analyze in terms of geographic accuracy. Default to 5.
+#' @param env.quantiles \emph{numeric}. Max and min quantiles to identify environmental inaccuracies.  Default to c(0.3,0.7)
+#' @param elev.threshold \emph{numeric}. Maximum difference accepted between target cell and cells within the geographic inaccuracy. Default to 100
+#' @param raster.elevation \emph{SpatRaster}  Raster of a digital elevation model. 
+#' @param do \emph{logical}. Should tests be performed? Default TRUE
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @param doParallel \emph{logical}. Should computation use parallel functions? Default FALSE
+#' @param mc.cores \emph{numeric}. How many cores to use? (used when doParallel = TRUE). Default 2 
+#' @return \emph{data.frame}
 #' @keywords Analysis 
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), A Zizka (CoordinateCleaner package)
 #' @details Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
@@ -1309,9 +1359,18 @@ envOutliers  <- function (
 #' @seealso \link[CoordinateCleaner]{cd_round}
 #' @family analysis
 #' @examples 
-#' #see examples in vignetteXtra-occTest
-#' #library
-#' #install_github ('vignetteXtra-occTest')
+#' \dontrun{
+#' 
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+#' dem <- terra::rast(system.file('ext/DEM.tif',package='occTest'))
+#' geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M') ,ef = 'ELEVATION',
+#'                r.env = env[[1]],raster.elevation = dem)
+#'#see more examples in vignetteXtra-occTest
+#'#devtools::install_github ('vignetteXtra-occTest')
+#' }
+
 #' @export
 #' @importFrom elevatr get_elev_point
 #' @importFrom stats na.omit
@@ -1319,7 +1378,9 @@ envOutliers  <- function (
 geoEnvAccuracy  <- function (df,
                              xf,
                              yf,
-                             af,dsf,ef,
+                             af,
+                             dsf=NULL,
+                             ef,
 
                              
                              method='all',
@@ -1614,14 +1675,14 @@ geoEnvAccuracy  <- function (df,
 # timeAccuracy ====
 #' @title Flag occurrences with temporal inaccuracies
 #' @description Detect records with low temporal accuracy
-#' @param df data.frame of species occurrences
-#' @param tf character. column name in df containing the dataset with the date/time where the species is recorded
-#' @param iniTime character or Date. indicates the initial time point considered in year-month-day format. Defaults to NA.
-#' @param endTime character or Date. indicates the time point considered in year-month-day format. Defaults to NA.
-#' @param do logical. Should tests be performed? Default TRUE
-#' @param method character. Vector of methods to be used. See details. Default 'all'
-#' @param verbose logical. Print messages? Default FALSE
-#' @return data.frame
+#' @param df \emph{data.frame}. Dataset of species occurrences and their coordinates.
+#' @param tf \emph{character}. Column name in df containing the dataset with the date/time where the species is recorded
+#' @param iniTime \emph{character} or \emph{Date}. indicates the initial time point considered in year-month-day format. Defaults to NA.
+#' @param endTime \emph{character} or \emph{Date}. indicates the time point considered in year-month-day format. Defaults to NA.
+#' @param do \emph{logical}. Should tests be performed? Default TRUE
+#' @param method \emph{character}. Vector of methods to be used. See details. Default 'all'
+#' @param verbose \emph{logical}. Print messages? Default FALSE
+#' @return \emph{data.frame}
 #' @keywords Analysis 
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @details timeAccuracy function will implement different methods to assess the temporal scale of the parameters.\cr
@@ -1632,9 +1693,15 @@ geoEnvAccuracy  <- function (df,
 #' 'noDateFormatKnown' : tests for an known date format. \cr
 #' 'outDateRange' : tests for dates within the iniTime and endTime interval.
 #' @examples 
+#' \dontrun{
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' timeAccuracy(df = occ,tf = 'DATE',
+#'           iniTime = '2015-01-04',endTime = '2023-01-04')
 #' #see examples in vignetteXtra-occTest
 #' #library devtools()
 #' #install_github ('vignetteXtra-occTest')
+#' }
 #' @export
 timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
                            method='all',
@@ -1719,27 +1786,40 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
 # landUseSelect ====
 #' @title Selection of records within a specified land use 
 #' @description Selection of records within a specified land use 
-#' @param df data.frame of species occurrences
-#' @param xf character. column name in df containing the x coordinates
-#' @param yf character. column name in df containing the y coordinates
-#' @param method character. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)
-#' @param .points.crs crs character. Indicate coordinate reference system
-#' @param ras.landUse raster. Land use raster with integer codes for land use classes.
-#' @param .landUseCodes numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')
-#' @param do logical. Should range analysis be performed?
-#' @param verbose logical. Print messages? Default  FALSE
-#' @param output.dir character. Output directory
-#' @return data.frame
+#' @param df \emph{data.frame}. Dataset of species occurrences with their coordinates and other information.
+#' @param xf \emph{character}. column name in df containing the x coordinates
+#' @param yf \emph{character}. column name in df containing the y coordinates
+#' @param method \emph{character}. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)
+#' @param .points.crs \emph{character}. crs indicating coordinate reference system. Default to null, which assumes ESPG:4326
+#' @param ras.landUse \emph{SpatRaster} Land use raster with integer codes for land use classes.
+#' @param .landUseCodes \emph{numeric}. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')
+#' @param do \emph{logical}. Should range analysis be performed?
+#' @param verbose \emph{logical}. Print messages? Default  FALSE
+#' @param output.dir \emph{logical}. Output directory
+#' @return \emph{data.frame}
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @export
 #' @import sf
-
+#' @examples
+#' \dontrun{
+#' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' raster_landUse <- terra::rast(xmin=min(occ$MAPX)-1,
+#'                               xmax=max(occ$MAPX)+1,
+#'                               ymin=min(occ$MAPY)-1,
+#'                               #' ymax=max(occ$MAPY)+1,
+#'                               crs="EPSG:4326")
+#' terra::values(raster_landUse) <- c(rep (1,terra::ncell(raster_landUse)/2),
+#'                                    rep (2,terra::ncell(raster_landUse)/2))
+#' landUseSelect(df=occ,xf = 'MAPX',yf = 'MAPY',ras.landUse = raster_landUse,.landUseCodes = 1)                                                  
+#'}
+#' 
 landUseSelect <- function (df,
                            xf,
                            yf,
                            method='in', #out would be the other one
-                           .points.crs,
+                           .points.crs=NULL,
                            ras.landUse,
                            .landUseCodes,
                            do=TRUE, verbose=FALSE,output.dir){
@@ -1751,16 +1831,14 @@ landUseSelect <- function (df,
   row.names(out) <- NULL
   
   if (!do) {return (out)}
-  
-  #start human influence analysis
-  xydat <- df[,c(xf,yf)]
-  
   #get species presence
+  if (is.null(.points.crs)) .points.crs <- "EPSG:4326"
+  xydat <- df[,c(xf,yf)]
   data.sp.pres <- as.data.frame (xydat)
   data.sp.pres <- sf::st_as_sf(data.sp.pres,coords=c(xf,yf),crs = .points.crs)
   
   #start with land use raster
-  if(! inherits(ras.landUse,'RasterLayer')) {warning ('no raster of land use provided. Test not performed'); return (out)}
+  if(! inherits(ras.landUse,'SpatRaster')) {warning ('no raster of land use provided. Test not performed'); return (out)}
   
   #accommodate projections
   if (is.null (.points.crs)){sf::st_set_crs(data.sp.pres, value=terra::crs(ras.landUse)); warning ('ASSUMING Points and HumanRaster data have the same projection')}
@@ -1769,27 +1847,20 @@ landUseSelect <- function (df,
     if (is.na (terra::crs (ras.landUse)) ) {sf::st_set_crs (data.sp.pres,value = NA)  ; warning ('ASSUMING Points and HumanRaster data have the same projection')}
     if (!is.na (terra::crs (ras.landUse)) ) {data.sp.pres <- sf::st_transform(data.sp.pres, terra::crs(ras.landUse) )}
   }
-  
   lu.sp.pres <-terra::extract(ras.landUse, y = data.sp.pres, cells=FALSE, xy=TRUE)
   row.id.lu.NA <- which(is.na(lu.sp.pres[,2]))
   if (length (row.id.lu.NA) != 0) {
     output.comments <- rep (NA,length =nrow (xydat))
     output.comments [row.id.lu.NA] <- paste0('No land cover available for this record;' )
   }
-  
   lu.sp.value = lu.sp.pres[,2]
-  
   if (method %in% c('in','all'))   {lu.sp.pres <- ( lu.sp.value %in% .landUseCodes)}
   if (method %in% c('out'))        {lu.sp.pres <- (!lu.sp.value %in% .landUseCodes)}
-  
   out$landUse_wrongLU_value= !lu.sp.pres * 1
   out$landUse_wrongLU_test= !lu.sp.pres
   out$landUse_wrongLU_comments= paste(method,.landUseCodes)
-  
   #compute score
   out$landUse_score <-  .gimme.score (out)
-  
-  
   return (out)
 }
 

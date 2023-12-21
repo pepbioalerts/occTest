@@ -4,54 +4,25 @@
 \alias{centroidDetection}
 \title{Centroid detection function}
 \usage{
-centroidDetection(
-  df,
-  xf,
-  yf,
-  cf,
-  idf,
-  .ntv.ctry,
-  .inv.ctry,
-  .points.crs,
-  .r.env,
-  .countries.shapefile,
-  cfsf,
-  method = "all",
-  do = TRUE,
-  verbose = FALSE
-)
+centroidDetection(df, xf, yf, cf, method = "all", do = TRUE, verbose = FALSE)
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data}.frame of species occurrences}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. column name in df containing the y coordinates}
 
-\item{cf}{character. Country field in the species data.frame (df)}
+\item{cf}{\emph{character}. Country field in the species data.frame (df)}
 
-\item{idf}{character. Column with the taxon observation ID.}
+\item{method}{\emph{character} Vector with the methods to detect centroids}
 
-\item{.ntv.ctry}{character. ISO3 country codes where species are considered native}
+\item{do}{\emph{logical} Should range analysis be performed? Default TRUE}
 
-\item{.inv.ctry}{character. ISO3 country codes where species are considered alien}
-
-\item{.points.crs}{crs argument. Coordinate reference system}
-
-\item{.r.env}{raster. Raster of environmental variables considered in the analysis}
-
-\item{.countries.shapefile}{spatialPolygonDataFrame of political divisions}
-
-\item{cfsf}{character. Column name of the .country spatialPolygonDataFrame indicating the country in ISO3 coding.}
-
-\item{method}{character. Vector with the methods to detect centroids}
-
-\item{do}{logical. Should range analysis be performed? Default TRUE}
-
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{character} Print messages? Default FALSE}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Identify occurrence records located near centroids.
@@ -61,6 +32,12 @@ This is a wrapper function that encompasses different methods
 
 Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
 , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package.
+}
+\examples{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
+centroidDetection(df=occ,xf='MAPX',yf = 'MAPY',cf = 'COUNTRYRECORD')
 }
 \seealso{
 \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen}

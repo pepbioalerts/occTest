@@ -9,7 +9,7 @@ landUseSelect(
   xf,
   yf,
   method = "in",
-  .points.crs,
+  .points.crs = NULL,
   ras.landUse,
   .landUseCodes,
   do = TRUE,
@@ -18,31 +18,46 @@ landUseSelect(
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame}. Dataset of species occurrences with their coordinates and other information.}
 
-\item{xf}{character. column name in df containing the x coordinates}
+\item{xf}{\emph{character}. column name in df containing the x coordinates}
 
-\item{yf}{character. column name in df containing the y coordinates}
+\item{yf}{\emph{character}. column name in df containing the y coordinates}
 
-\item{method}{character. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)}
+\item{method}{\emph{character}. Select 'in' (default) when records are selected when inside specified land use types (type 'out' otherwise)}
 
-\item{.points.crs}{crs character. Indicate coordinate reference system}
+\item{.points.crs}{\emph{character}. crs indicating coordinate reference system. Default to null, which assumes ESPG:4326}
 
-\item{ras.landUse}{raster. Land use raster with integer codes for land use classes.}
+\item{ras.landUse}{\emph{SpatRaster} Land use raster with integer codes for land use classes.}
 
-\item{.landUseCodes}{numeric. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')}
+\item{.landUseCodes}{\emph{numeric}. Vector of specified land use codes to either select records (method 'in') or to exclude records (method 'out')}
 
-\item{do}{logical. Should range analysis be performed?}
+\item{do}{\emph{logical}. Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default  FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default  FALSE}
 
-\item{output.dir}{character. Output directory}
+\item{output.dir}{\emph{logical}. Output directory}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Selection of records within a specified land use
+}
+\examples{
+\dontrun{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+raster_landUse <- terra::rast(xmin=min(occ$MAPX)-1,
+                              xmax=max(occ$MAPX)+1,
+                              ymin=min(occ$MAPY)-1,
+                              #' ymax=max(occ$MAPY)+1,
+                              crs="EPSG:4326")
+terra::values(raster_landUse) <- c(rep (1,terra::ncell(raster_landUse)/2),
+                                   rep (2,terra::ncell(raster_landUse)/2))
+landUseSelect(df=occ,xf = 'MAPX',yf = 'MAPY',ras.landUse = raster_landUse,.landUseCodes = 1)                                                  
+}
+
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

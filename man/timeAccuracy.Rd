@@ -15,22 +15,22 @@ timeAccuracy(
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame}. Dataset of species occurrences and their coordinates.}
 
-\item{tf}{character. column name in df containing the dataset with the date/time where the species is recorded}
+\item{tf}{\emph{character}. Column name in df containing the dataset with the date/time where the species is recorded}
 
-\item{iniTime}{character or Date. indicates the initial time point considered in year-month-day format. Defaults to NA.}
+\item{iniTime}{\emph{character} or \emph{Date}. indicates the initial time point considered in year-month-day format. Defaults to NA.}
 
-\item{endTime}{character or Date. indicates the time point considered in year-month-day format. Defaults to NA.}
+\item{endTime}{\emph{character} or \emph{Date}. indicates the time point considered in year-month-day format. Defaults to NA.}
 
-\item{do}{logical. Should tests be performed? Default TRUE}
+\item{do}{\emph{logical}. Should tests be performed? Default TRUE}
 
-\item{method}{character. Vector of methods to be used. See details. Default 'all'}
+\item{method}{\emph{character}. Vector of methods to be used. See details. Default 'all'}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-data.frame
+\emph{data.frame}
 }
 \description{
 Detect records with low temporal accuracy
@@ -45,9 +45,15 @@ Current implmented methods are:
 'outDateRange' : tests for dates within the iniTime and endTime interval.
 }
 \examples{
+\dontrun{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+timeAccuracy(df = occ,tf = 'DATE',
+          iniTime = '2015-01-04',endTime = '2023-01-04')
 #see examples in vignetteXtra-occTest
 #library devtools()
 #install_github ('vignetteXtra-occTest')
+}
 }
 \seealso{
 Other analysis: 

@@ -11,32 +11,32 @@ humanDetection(
   method = "all",
   ras.hii,
   .th.human.influence,
-  .points.crs,
+  .points.crs = NULL,
   do = TRUE,
   verbose = FALSE,
-  output.dir
+  output.dir = NULL
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{the field in the data frame containing the x coordinates}
+\item{xf}{\emph{character} the field in the data frame containing the x coordinates}
 
-\item{yf}{the field in the data frame containing the y coordinates}
+\item{yf}{\emph{character} the field in the data frame containing the y coordinates}
 
-\item{method}{character. Indicate which tests to use. Default 'all'. See Details}
+\item{method}{\emph{character}. Indicate which tests to use. Default 'all'. See Details}
 
-\item{ras.hii}{raster. Raster map of human influence index use}
+\item{ras.hii}{\emph{spatRaster} of human influence index}
 
-\item{.th.human.influence}{numeric. Threhold to identify places of high human influence}
+\item{.th.human.influence}{\emph{numeric} threshold of human influence index}
 
-\item{.points.crs}{crs argument for df}
+\item{.points.crs}{\emph{crs} argument for df}
 
-\item{do}{logical. Should range analysis be performed? Default TRUE}
+\item{do}{\emph{logical}. Should range analysis be performed? Default TRUE}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical} Print messages? Default FALSE}
 
-\item{output.dir}{character. Output directory}
+\item{output.dir}{\emph{character}. Output directory}
 }
 \value{
 data.frame
@@ -47,8 +47,24 @@ Detect occurrences in heavily human-impacted environments
 \details{
 It uses several methods to detect records in high human influence records.\cr
 Current implemented methods are: \cr
-'hii' using a raster and a threhold of human influence
+'hii' using a raster and a threshold of human influence
 'urban' using a layer of urban areas. Method implemented in CoordinateCleaner package.
+}
+\examples{
+\dontrun{
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
+raster_humanImpact <- terra::rast(xmin=min(occ$MAPX)-1,
+                                  xmax=max(occ$MAPX)+1,
+                                  ymin=min(occ$MAPY)-1,
+                                  ymax=max(occ$MAPY)+1,
+                                  crs="EPSG:4326")
+set.seed(33)
+terra::values(raster_humanImpact) <- round(runif(terra::ncell(raster_humanImpact),
+                                                 min = 0,max=100),digits = 0)
+humanDetection(df=occ, xf='MAPX',yf = 'MAPY',ras.hii = raster_humanImpact,.th.human.influence = 50)
+}
 }
 \seealso{
 \link[CoordinateCleaner]{cc_urb} for CoordinateCleaner functions

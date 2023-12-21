@@ -118,10 +118,17 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
 
 
 
-### .ah2sf  ======
-# Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title
-# modified to support sf objects 17 Nov 2022
 
+
+
+### .ah2sf  ======
+#' @title Convert ahull object to sf object
+#' @description convert ahull object to sf object
+#' @param x {ahull} object
+#' @keywords internal
+#' @details
+#' Function written by Andrew Bevan, found on R-sig-Geo, and modified by Pascal Title.
+#' Modified to support sf objects 17 Nov 2022
 .ah2sf <- function(x, increment = 360, rnd = 10, crs = 4326, tol = 1e-4) {
   if (!inherits(x, "ahull")) {
     stop("x needs to be an ahull class object")
@@ -245,28 +252,6 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
     
     res <- sf::st_geometry(sf::st_cast(linesj, 'POLYGON'))
     
-    
-    # # Promote to SpatialLines
-    # lspl <- SpatialLines(linesj)
-    # # Convert lines to polygons
-    # # Pull out Lines slot and check which lines have start and end points that are the same
-    # lns <- slot(lspl, "lines")
-    # polys <- sapply(lns, function(x) { 
-    # crds <- slot(slot(x, "Lines")[[1]], "coords")
-    # identical(crds[1, ], crds[nrow(crds), ])
-    # }) 
-    # # Select those that do and convert to SpatialPolygons
-    # polyssl <- lspl[polys]
-    # list_of_Lines <- slot(polyssl, "lines")
-    # sppolys <- SpatialPolygons(list(Polygons(lapply(list_of_Lines, function(x) { Polygon(slot(slot(x, "Lines")[[1]], "coords")) }), ID = "1")), crs=crs)
-    # # Create a set of ids in a dataframe, then promote to SpatialPolygonsDataFrame
-    # hid <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "ID"))
-    # areas <- sapply(slot(sppolys, "polygons"), function(x) slot(x, "area"))
-    # df <- data.frame(hid,areas)
-    # names(df) <- c("HID","Area")
-    # rownames(df) <- df$HID
-    # res <- SpatialPolygonsDataFrame(sppolys, data=df)
-    # res <- res[which(res@data$Area > 0),]
   }	
   return(res)
 }

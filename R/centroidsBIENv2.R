@@ -17,7 +17,6 @@
 
 centroid_assessment_BIEN <- function(occurrences, centroid_data, relative_distance_threshold = 0.001){
   #checks for data format
-  
   if(!inherits(x = occurrences, what = "sf")){
     stop("Occurrences should be supplied as an sf data.frame")
   }
@@ -51,7 +50,7 @@ centroid_assessment_BIEN <- function(occurrences, centroid_data, relative_distan
     
   # check that country is an ISO3 code
     
-    if(any(!((nchar(occurrences$countryBIEN) == 3) | (is.na(occurrences$countryBIEN))))){
+    if(all(!((nchar(occurrences$countryBIEN) == 3) | (is.na(occurrences$countryBIEN))))){
       stop("Fields country or countryBIEN should be ISO3 codes")
     }
   

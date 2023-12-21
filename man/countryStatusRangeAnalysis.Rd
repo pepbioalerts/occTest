@@ -21,40 +21,55 @@ countryStatusRangeAnalysis(
 )
 }
 \arguments{
-\item{df}{data.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{character. The field in the data.frame containing the x coordinates}
+\item{xf}{\emph{character}. The field in df containing the x coordinates}
 
-\item{yf}{character. The field in the data.frame containing the y coordinates}
+\item{yf}{\emph{character}. The field in df containing the y coordinates}
 
-\item{.ntv.ctry}{character. Native country in ISO3 coding}
+\item{.ntv.ctry}{\emph{character} Native country in ISO3 coding}
 
-\item{.inv.ctry}{character. Invasive country in ISO3 coding}
+\item{.inv.ctry}{\emph{character} Invasive country in ISO3 coding}
 
-\item{.c.field}{character. Country field in the species data.frame (df)}
+\item{.c.field}{\emph{character} Country field in the species \emph{data.frame} (df)}
 
-\item{.points.crs}{crs for the occurrence data}
+\item{.points.crs}{\emph{crs} for the occurrence data}
 
 \item{.countries.shapefile}{spatialPolygonDataFrame of political divisions}
 
-\item{cfsf}{character. Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.}
+\item{cfsf}{\emph{character} Column name of the .country spatialPolygonDataFrame indicaing the country in ISO3 codeing.}
 
-\item{excludeUnknownRanges}{logical. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE}
+\item{excludeUnknownRanges}{\emph{logical}. Should records be filtered if located in countries outside .ntv.ctry or .inv.ctry? Defalut FALSE}
 
-\item{excludeNotmatchCountry}{Should records be if the reported country is different than the locatoin country? . Default FALSE}
+\item{excludeNotmatchCountry}{\emph{logical}. Should records be if the reported country is different than the locatoin country? . Default FALSE}
 
-\item{doRangeAnalysis}{logical. Should range analysis be performed?}
+\item{doRangeAnalysis}{\emph{logical} Should range analysis be performed?}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical} Print messages? Default FALSE}
 }
 \value{
-list
+\emph{list}
 }
 \description{
 Identify and filter species records based on countries where species is considered native or alien.
 }
 \details{
-It returns a list with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
+It returns a \emph{list} with two elements: stay (records that are excluded/filtered), continue (records that are not excluded from the filtering process)
+}
+\examples{
+library (occTest)
+sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
+occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ <- occ_species_example[1:10,c('MAPX','MAPY','COUNTRYRECORD')]
+#load a high resolution coastlines
+pol_ctry <- system.file('ext/countries.rds',package='occTest') |> readRDS()
+countryStatusRangeAnalysis(df=occ,
+                           xf = 'MAPX',yf = 'MAPY',
+                           .ntv.ctry = 'ESP',.inv.ctry = 'FRA',
+                           .c.field = 'COUNTRYRECORD',
+                           .countries.shapefile = sf::st_as_sf(pol_ctry),
+                           cfsf='ISO',
+                           .points.crs = sf::st_crs ('EPSG:4326'))
 }
 \seealso{
 Other analysis: 

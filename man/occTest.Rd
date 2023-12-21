@@ -32,7 +32,7 @@ occTest(
 
 \item{sp.table}{data.frame. Object with the coordinate data.}
 
-\item{r.env}{raster or rasterStack. Environmental data(e.g. typically climatic.}
+\item{r.env}{SpatRaster object. Environmental data(e.g. typically climatic.}
 
 \item{tableSettings}{list. Elements corresponding to different settings of the input occurrence table.}
 
@@ -44,7 +44,7 @@ occTest(
 
 \item{return.spatial.data}{logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory}
 
-\item{r.dem}{raster. Elevation data (in meters).}
+\item{r.dem}{SpatRaster object. Elevation data (in meters).}
 
 \item{ntv.ctry}{character. vector with ISO3 code of the countries where species is considered native}
 
@@ -80,14 +80,14 @@ Examples: HumanDetection_HumanInfluence_value gives you the score of current hum
 \donttest{
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
-#load environmental raster
+#load environmental SpatRast
 library (sf)
 library (occTest)
 #load occurrence data
 occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
-#load environmental raster
+#load environmental SpatRast
 renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
-#load elevation raster
+#load elevation SpatRast
 dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 #load settings
 settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))

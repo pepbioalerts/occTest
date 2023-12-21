@@ -14,20 +14,20 @@ duplicatesexcludeAnalysis(
 )
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{the field in the data frame containing the x coordinators}
+\item{xf}{the column name in df containing the x coordinators}
 
-\item{yf}{the field in the data frame containing the y coordinates}
+\item{yf}{the column name in df containing the y coordinators}
 
 \item{resolution.in.minutes}{the resolution of environmental data used, specified in minutes}
 
-\item{raster.grid}{An optional raster grid}
+\item{raster.grid}{An optional \emph{SpatRast} object}
 
-\item{verbose}{logical. Print messages? Default FALSE}
+\item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-list of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
+\emph{list} of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
 }
 \description{
 checks for duplicated coordinates in the occurrence data frame
