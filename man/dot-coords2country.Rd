@@ -15,22 +15,22 @@
 )
 }
 \arguments{
-\item{xydat}{A dataframe with x and y coordinates}
+\item{xydat}{\emph{data.frame} with x and y coordinates}
 
-\item{xf}{character. name of the x coordinate field}
+\item{xf}{\emph{character} name of the x coordinate field}
 
-\item{yf}{character. name of the y coordinate field}
+\item{yf}{\emph{character} name of the y coordinate field}
 
-\item{.countries.shapefile}{SpatialPolygonsDataFrame of world countries and their associated ISO3 codes}
+\item{.countries.shapefile}{\emph{multipolygon} sf objects  of world countries and their associated ISO3 codes}
 
-\item{.points.crs}{crs for the occurrence data}
+\item{.points.crs}{\emph{character} crs for the occurrence data}
 
-\item{ctryNameField}{character. Column name in .countries shapefile where ISO3 are indicated}
+\item{ctryNameField}{\emph{character} Column name in .countries shapefile where ISO3 are indicated}
 
-\item{verbose}{logical. Print messages?}
+\item{verbose}{\emph{logical} Print messages?}
 }
 \value{
-Factor with ISO3 codes for countries
+\emph{character} factor vector with ISO3 codes for countries
 }
 \description{
 Extracts country ISO3 based on locations

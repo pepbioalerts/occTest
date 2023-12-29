@@ -6,12 +6,12 @@ NULL
 #' @title Display the filtering process
 #' @description Display the filtering process 
 #' @details If \code{occFilter_list} is provided, display how the occurrences passed the different tests, otherwise only plot the coordinates filtering step
-#' @return list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
+#' @returns \emph{list} of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 #' @keywords plot filter
 #' @author Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
-#' @param x An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame 
-#' @param occFilter_list Optional, an occFilter object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}
-#' @param show_plot  Logical, should the plots be plotted ?
+#' @param x An \emph{occTest} object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame 
+#' @param occFilter_list Optional. An  \emph{occFilter} object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}
+#' @param show_plot   \emph{Logical} , should the plots be plotted ?
 #' @param ... not used
 #' @seealso  {\link[=occFilter]{occFilter}}  , {\link[=occTest]{occTest}}  , the {\link[=ggplot2]{ggplot2}} package
 #' @examples 
@@ -31,7 +31,6 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
     sf::sf_use_s2(FALSE)
     s2_used<-TRUE
   }
-  
   ## get settings
   Settings<- get_occTest_settings(x)
   tableSettings<-Settings$tableSettings
@@ -39,13 +38,9 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   x_field<-tableSettings$x.field
   y_field<-tableSettings$y.field
   points_CRS<-analysisSettings$geoSettings$points.crs
-  
-  
   full_dataset<-x
-  
   n_coords_missing<-sum(full_dataset$coordIssues_coordMissing_value)
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
-  
   # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
   countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50,returnclass = c( "sf"))),silent = TRUE)
   if("try-error" %in% class(countries_natural_earth)) {
@@ -70,15 +65,12 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   
   full_dataset<-full_dataset[!full_dataset$coordIssues_coordMissing_value,]
   full_dataset$Reason<-ifelse(is.na(full_dataset$Reason),"occurrences kept for later tests",full_dataset$Reason)
-  
   full_dataset_sf<-st_as_sf(full_dataset,coords=c(x_field,y_field),crs=st_crs(points_CRS))
   exten_of_plot_1<-st_bbox(full_dataset_sf)
-  
   pch_filtered<-ifelse(n_coords_filtered>5000,17,4)# to fasten the display for bigger dataset, we replace crosses with triangles
-  
   list_of_ggplot<-list()
-  ## first plot: filtering by bad coordinates
   
+  ## first plot: filtering by bad coordinates
   reasons<-unique(full_dataset[full_dataset$Reason!="occurrences kept for later tests",]$Reason)
   df_col<-data.frame(res=c("occurrences kept for later tests",reasons),
                      colors=c("grey45",c("brown","goldenrod","dodgerblue3","darkorchid3","forestgreen","lightblue3")[1:length(reasons)]),stringsAsFactors = FALSE)
@@ -192,25 +184,19 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
 
 #' @title Get occTest Settings
 #' @description Get the settings used to create a  occTest or occFilter object
-#' @return list of lists with all different parameters to use in  {\link[=occTest]{occTest}} 
+#' @returns a \emph{list} of lists with all different parameters to use in  {\link[=occTest]{occTest}} 
 #' @keywords occTest 
 #' @author Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
-#' @param x An occTest or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}
+#' @param x An \emph{occTest} or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}
 #' @seealso {\link[=occTest]{occTest}}; {\link[=occFilter]{occFilter}}
 #' @examples 
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
-#'
 #' #load output from occTest
 #' occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 #' get_occTest_settings(occTest_output)
 #' @export 
-
 get_occTest_settings<-function(x){
   if(!"occTest"%in%class(x) & !"occFilter"%in%class(x) ) warning("Not an occTest or an occFilter object, returning NULL instead of the list Settings")
   if(!"occTest"%in%class(x) & !"occFilter"%in%class(x) ) NULL  else  return(attr(x,"Settings"))
-  
 }
-  
-  
-

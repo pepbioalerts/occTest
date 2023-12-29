@@ -7,24 +7,32 @@
 mcp_test(data, xcoord, ycoord, percentage = 95)
 }
 \arguments{
-\item{data}{a data.frame  with coordinate information}
+\item{data}{\emph{data.frame}  with coordinate information}
 
-\item{xcoord}{character. Column with X coordinate information in data}
+\item{xcoord}{\emph{character}. Column with X coordinate information in data}
 
-\item{ycoord}{character. Column with Y coordinate information in data}
+\item{ycoord}{\emph{character}. Column with Y coordinate information in data}
 
-\item{percentage}{numeric. Percentage of data used to build the minimum convex polygon}
+\item{percentage}{\emph{numeric}. Percentage of data used to build the minimum convex polygon}
 }
 \value{
-Returns a list of SpatialPointsDataFrames with (1) good presence points (2) spatial outliers and (3) environmental outliers.
+Returns a \emph{logical} vectors detecting outliers
 }
 \description{
-Geographic outliers
+Computes minimum convex hulls and identifies outlying points
 }
 \details{
 only works for WGS84 lat long
 }
+\examples{
+myPres<-read.csv(system.file('./ext/exampleOccData.csv',package='occTest'))|>
+  dplyr::select(c('MAPX','MAPY'))
+mcp_test(data = myPres,xcoord = 'MAPX',ycoord = 'MAPY')
+}
+\seealso{
+\link[occTest]{geoOutliers}
+}
 \author{
-Coline CF Boonmann <colineboonman@bio.au.dk >
+Coline CF Boonmann <colineboonman@bio.au.dk>
 }
 \keyword{internal}

@@ -22,7 +22,7 @@ centroidDetection(df, xf, yf, cf, method = "all", do = TRUE, verbose = FALSE)
 \item{verbose}{\emph{character} Print messages? Default FALSE}
 }
 \value{
-\emph{data.frame}
+\emph{data.frame} with columns indicating the results of the test(s)
 }
 \description{
 Identify occurrence records located near centroids.
@@ -34,16 +34,19 @@ Current methods implemented for centroid detection are 'BIEN' (uses iterative pr
 , and method 'CoordinateCleaner' implementing methods used in \link[CoordinateCleaner]{CoordinateCleaner-package} package.
 }
 \examples{
+\dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ_species_example <- read.table(file = sp_file,header = TRUE ,sep = ',',as.is = TRUE)
 occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
 centroidDetection(df=occ,xf='MAPX',yf = 'MAPY',cf = 'COUNTRYRECORD')
+}
 }
 \seealso{
 \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen}
 
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},

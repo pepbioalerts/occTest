@@ -27,9 +27,10 @@ Reassign coastal coordinates as needed to be in
 function inspired in nearestcell in biogeo but modified
 }
 \seealso{
-original code at \link[biogeo]{nearestcell}
+inspired by the original code in the biogeo package.
 
 Other analysis: 
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},
@@ -38,7 +39,7 @@ Other analysis:
 \code{\link{timeAccuracy}()}
 }
 \author{
-Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)
+Mark Robertson and Veron Visser (original iogeo-package), Josep M Serra-Diaz (modifs)
 }
 \concept{analysis}
 \keyword{internal}

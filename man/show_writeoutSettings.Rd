@@ -7,7 +7,7 @@
 show_writeoutSettings()
 }
 \value{
-prints a data.frame
+prints a data.frame with the writeout parameters
 }
 \description{
 prints a table with the the conventions used for writoutSettings list

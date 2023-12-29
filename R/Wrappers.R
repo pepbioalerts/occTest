@@ -1,16 +1,16 @@
 #### FUNCTIONAL WRAPPERS
 ###### ========================================
 #'Runs tests and validates data
-#' @param spOcc data.frame. Object with the coordinate data.
-#' @param speciesName character. Name of the species.
-#' @param env SpatRaster object. Raster of environmental data (e.g. typically climatic).
-#' @param x name of the field with the coordinate x. Default 'x'
-#' @param y name of the field with the coordinate y. Default 'y'
-#' @param date name of the field with the values of the reported timestamp of the record. Default NULL
-#' @param isoCountry name of the field with the values of the reported country of the record. Default NULL
-#' @param classification character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'
-#' @param filterCols logical. Should only the initial input columns be retained in the output (the filtered dataframe)?
-#' @return a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
+#' @param spOcc \emph{data.frame}. Object with the coordinate data.
+#' @param env \emph{SpatRaster} object. Raster of environmental data (e.g. typically climatic).
+#' @param speciesName \emph{character}. Name of the target species.
+#' @param x \emph{character}. Name of the field in the data frame containing the x coordinates
+#' @param y \emph{character}. Name of the field in the data frame containing the y coordinates
+#' @param date \emph{character}. Name of the field with the values of the reported timestamp of the record. Default NULL
+#' @param isoCountry \emph{character}. Name of the field with the values of the reported country of the record. Default NULL
+#' @param classification \emph{character}.. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'
+#' @param filterCols \emph{logical}.. Should only the initial input columns be retained in the output (the filtered dataframe)?
+#' @returns a \emph{list} of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
 #' @note The majority of function parameters can be adjusted but we  provide default values. \cr 
 #' We recommend those default values if the user is to use the geospatial data included in the package.\cr
 #' but this automatic implementation (occTest + occFilter) missses some analysis to increase speed.

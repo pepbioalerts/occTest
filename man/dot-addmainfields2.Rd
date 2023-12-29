@@ -20,7 +20,7 @@ Original dataframe, dat.
 Incorporate fields in the initial data frame
 }
 \details{
-Inspired by \link[biogeo]{addmainfields} but modified (hence number 2 after the function original name)
+Inspired biogeo-package addmainfields but modified (hence number 2 after the function original name)
 }
 \seealso{
 Other checks: 

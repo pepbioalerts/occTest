@@ -5,7 +5,7 @@
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. 
 #'          These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
 #'          It does not require input parameters
-#' @return prints a data.frame
+#' @returns prints a data.frame with the tableSettings parameters
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -24,7 +24,7 @@ show_tableSettings <- function (){
 #' @details The function prints a guide to the list naming conventions used by occTest in their default parameters. 
 #'          These defaults can be changed via set_writeout. 
 #'          It does not require input parameters
-#' @return prints a data.frame
+#' @return prints a data.frame with the writeout parameters
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -43,7 +43,7 @@ show_writeoutSettings <- function (){
 #' @details The function prints a guide to the list naming conventions used by occTest in their default parameters. 
 #'          These defaults can be changed manually by the use. To follow the same structure we recommend loading defaultSettings() and then modify $analysisSettings based on that structure 
 #'          It does not require input parameters
-#' @return prints a data.frame
+#' @return prints a data.frame with the analysis settings
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -55,21 +55,16 @@ show_analysisSettings <- function (){
 }
 
 
-
-
-
-
 # show_tests ====
 #' @title Show implemented tests and types of tests 
 #' @description prints a table with the column names
 #' @details The function prints a guide to column naming conventions used by occTest in their default parameters. These defaults can be changed via set_tableNames, but the user may also decide to format their input table according to these naming conventions. 
-#' @return prints a dataframe
+#' @return prints a dataframe with the avaialble tests
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples
 #' show_tests()
 #' @export
-
 show_tests<- function (){
   tabNames=readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
   DT::datatable(tabNames)

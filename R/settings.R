@@ -1,16 +1,17 @@
 # defaultSettings ====
-#' @title load default settings for occTest
+#' @title Load default settings for occTest
 #' @description Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters. No input parameters are required
-#' @return list of lists with all different parameters to use in occProfile function
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
+#' \dontrun{
 #' #load default settings
 #' settings <- defaultSettings()
+#' }
 #' @export
 defaultSettings <- function (){
-  
   #download info and files
   dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
   outFile_hii = paste0(tempdir(),'/hii3.zip')
@@ -120,12 +121,13 @@ defaultSettings <- function (){
 #' @description Loads a list of lists with the different default parameters for analysi. 
 #' It avoids using  some functions of the pkg under development.
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
-#' @return list of lists with all different parameters to use in occTest function
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples 
+#' @examples \dontrun{
 #' #load default settings
-#' settings <- minimalSettings()
+#' settings <- fullSettings()
+#' }
 #' @export
 
 fullSettings <- function (){
@@ -239,12 +241,14 @@ fullSettings <- function (){
 #' @description Loads a list of lists with the different default parameters for analysi. 
 #' It avoids using  some functions of the pkg under development.
 #' @details it can be use internally or it can be used by a user to subsequently modify parameters
-#' @return list of lists with all different parameters to use in occTest function
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
+#' \dontrun{
 #' #load default settings
 #' settings <- minimalSettings()
+#' }
 #' @export
 
 minimalSettings <- function (){
@@ -371,13 +375,16 @@ minimalSettings <- function (){
 #' @description helper function to set the names for the fields in the input table (tableSettings). 
 #' By default it provides rbif like column names (not fully consistent yet tho). 
 #' Alternatively, the user can specify their own field names for the table
-#' @return list
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
+#' \dontrun{
 #' defaultTableNames <- set_tableNames()
 #' #only modifying the names for the coordinates
 #' myTable_withMyNames <- set_tableNames (x.field='x_coord',y.field = 'y_coord') 
+#' }
+
 #' @export
 set_tableNames <- function (x.field = NULL,
                            y.field = NULL,
@@ -407,7 +414,7 @@ set_tableNames <- function (x.field = NULL,
 #' @description helper function to set the options for the outputs (writeoutSettings) in occTest function. 
 #' Defaults values may be found 
 #' Alternatively, the user can specify their own field names for the table
-#' @return list
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -444,7 +451,7 @@ set_writeout <- function (output.dir = NULL,
 #' @param envOutliers logical. Should this test type be performed?
 #' @param geoenvLowAccuracy logical. Should this test type be performed?
 #' @param timeAccuracy logical. Should this test type be perfomed?
-#' @return list with user analysis settings
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
@@ -486,7 +493,7 @@ set_testTypes <- function (countryStatusRange = TRUE,
 #' @param lu logical. Should this family of tests be performed?
 #' @param env logical. Should this family of tests be performed?
 #' @param time logical. Should this family of tests be performed?
-#' @return list
+#' @returns a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 

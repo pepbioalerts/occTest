@@ -7,12 +7,12 @@
 reTest(occTest_result, my_new_test)
 }
 \arguments{
-\item{occTest_result}{data.frame or tibble. Output from an occTest project}
+\item{occTest_result}{\emph{data.frame} or tibble. Output from an occTest project}
 
-\item{my_new_test}{data.frame or tibble. New tests following the syntax of occTest (see Details)}
+\item{my_new_test}{\emph{data.frame} or \emph{tibble}. New tests following the syntax of occTest (see Details)}
 }
 \value{
-data frame with the new user-defined tests incorporated in the table and the testType_scores columns updated.
+\emph{data.frame with} the new user-defined tests incorporated in the table and the testType_scores columns updated.
 }
 \description{
 Reorganize an output from occTest columns to incorporate user defined tests.
@@ -28,30 +28,11 @@ where testTypes are the different tests types implemented in occTest
 \donttest{
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
-#load environmental raster
-library (terra)
-library (sf)
-library (occTest)
-#load occurrence data
-occData <- read.csv (system.file('ext/exampleOccData.csv',
-package = 'occTest'))
-#load environmental raster
-renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
-#load elevation raster
-dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
-#load settings
-settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
-#run occTest
-out = occTest(sp.name='MyFake species',
-             sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
-             tableSettings = settings$tableSettings,
-             writeoutSettings = settings$writeoutSettings,
-             analysisSettings = settings$analysisSettings,
-             r.env = renv,r.dem=dem)
-myNewTest <- data.frame (
-humanDetection_myInventedTest_test=sample (c(TRUE,FALSE),
-replace = TRUE,
-size = nrow(out)))
+out <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
+myNewTest <- data.frame (humanDetection_myInventedTest_test=sample (c(TRUE,FALSE),
+                                                                    replace = TRUE,
+                                                                    size = nrow(out)))
 out_test_new <- reTest(occTest_result = out, my_new_test = myNewTest)
+out_test_new
 }
 }

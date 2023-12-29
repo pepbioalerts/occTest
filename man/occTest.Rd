@@ -26,44 +26,44 @@ occTest(
 )
 }
 \arguments{
-\item{sp.name}{character. Name of the species.}
+\item{sp.name}{\emph{character}. Name of the species.}
 
-\item{habitat}{NULL}
+\item{habitat}{\emph{character}. Define the species habitat. Only "terrestrial" and "sea" implemented. Default to NULL.}
 
-\item{sp.table}{data.frame. Object with the coordinate data.}
+\item{sp.table}{\emph{data.frame.} Object with the coordinate data.}
 
-\item{r.env}{SpatRaster object. Environmental data(e.g. typically climatic.}
+\item{r.env}{\emph{SpatRaster}. Environmental data(e.g. typically climatic.}
 
-\item{tableSettings}{list. Elements corresponding to different settings of the input occurrence table.}
+\item{tableSettings}{\emph{list}. Elements corresponding to different settings of the input occurrence table.}
 
-\item{analysisSettings}{list. Elements corresponding to different settings of the analysis functions .}
+\item{analysisSettings}{\emph{list}. Elements corresponding to different settings of the analysis functions .}
 
-\item{writeoutSettings}{list. Elements corresponding to different settings of the analysis functions .}
+\item{writeoutSettings}{\emph{list}. Elements corresponding to different settings of the analysis functions .}
 
-\item{gradingSettings}{list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions .}
+\item{gradingSettings}{\emph{list}. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions .}
 
-\item{return.spatial.data}{logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory}
+\item{return.spatial.data}{\emph{logical}. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory}
 
-\item{r.dem}{SpatRaster object. Elevation data (in meters).}
+\item{r.dem}{\emph{SpatRaster} object. Elevation data (in meters).}
 
-\item{ntv.ctry}{character. vector with ISO3 code of the countries where species is considered native}
+\item{ntv.ctry}{\emph{character}. Vector with ISO3 code of the countries where species is considered native}
 
-\item{inv.ctry}{character. vector with ISO3 code of the countries where species is considered invasive}
+\item{inv.ctry}{\emph{character}. Vector with ISO3 code of the countries where species is considered invasive}
 
-\item{resolveAlienCtry}{logical. To automatically try to detect  countries for which species is considered native}
+\item{resolveAlienCtry}{\emph{logical}. To automatically try to detect  countries for which species is considered native}
 
-\item{resolveNativeCtry}{logical. To automatically try to detect  countries for which species is considered alien}
+\item{resolveNativeCtry}{\emph{logical}. To automatically try to detect  countries for which species is considered alien}
 
-\item{interactiveMode}{logical. Should prompts be ouput for some decisions taken by the workflow? Deafult FALSE,}
+\item{interactiveMode}{\emph{logical}. Should prompts be ouput for some decisions taken by the workflow? Deafult FALSE,}
 
-\item{verbose}{logical. Print workflow information? Default to FALSE}
+\item{verbose}{\emph{logical}. Print workflow information? Default to FALSE}
 
-\item{doParallel}{logical. Should some operations be run in parellel when possible? Default to FALSE}
+\item{doParallel}{\emph{logical}. Should some operations be run in parellel when possible? Default to FALSE}
 
-\item{mc.cores}{numeric. If doParallel is TRUE, then how many cores to use? Default to 2}
+\item{mc.cores}{\emph{numeric}. If doParallel is TRUE, then how many cores to use? Default to 2}
 }
 \value{
-data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score)
+\emph{data.frame} with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score)
 }
 \description{
 Perform tests for data quality in species occurrence  using several methods

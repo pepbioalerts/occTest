@@ -158,8 +158,9 @@ env_outliers <- function(data, x, y, pr_ab, id, env_layer) {
   var <- names(env_layer)
   
   out_list <- list()
-  occ_sp_01 <- data %>%
-    dplyr::select(x, y, id, pr_ab)
+  #occ_sp_01 <- data %>%
+  #  dplyr::select(x, y, id, pr_ab)
+  occ_sp_01 <- dplyr::select(data,x, y, id, pr_ab)
   
   occ_sp_01 <-
     occ_sp_01 %>% dplyr::mutate(
@@ -193,8 +194,10 @@ env_outliers <- function(data, x, y, pr_ab, id, env_layer) {
   }
   rm(complete_vec)
   
-  sp_env_1 <- sp_env_01 %>% dplyr::filter(pr_ab == 1)
-  occ_sp_01 <- occ_sp_01 %>% dplyr::select(-x, -y, -pr_ab)
+  sp_env_1 <-  sp_env_01 %>% 
+    dplyr::filter(.data$pr_ab == 1)
+  occ_sp_01 <- occ_sp_01 %>% 
+    dplyr::select(-x, -y, -pr_ab)
   
   p01 <- unique(sp_env_01$pr_ab) # vector for testing presence and absence
   
@@ -257,8 +260,7 @@ env_outliers <- function(data, x, y, pr_ab, id, env_layer) {
     rf <-
       randomForest::randomForest(
         sp_env_1[-1] %>% dplyr::mutate(
-          pr_ab =
-            factor(pr_ab)
+          pr_ab =factor(.data$pr_ab)
         ),
         ntree = 2000,
         proximity = TRUE

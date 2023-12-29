@@ -24,7 +24,7 @@ set_writeout(
 \item{output.base.filename}{character. Name of the country code field.}
 }
 \value{
-list
+a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 }
 \description{
 helper function to set the options for the outputs (writeoutSettings) in occTest function. 

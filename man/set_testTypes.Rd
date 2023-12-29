@@ -36,7 +36,7 @@ set_testTypes(
 \item{timeAccuracy}{logical. Should this test type be perfomed?}
 }
 \value{
-list with user analysis settings
+a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 }
 \description{
 function used to select which types of tests you want in occTest workflow (analysisSet)

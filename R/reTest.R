@@ -2,9 +2,9 @@
 #'Add tests to an occTest output
 #'
 #'Reorganize an output from occTest columns to incorporate user defined tests.
-#' @param occTest_result data.frame or tibble. Output from an occTest project
-#' @param my_test data.frame or tibble. New tests following the syntax of occTest (see Details)
-#' @return data frame with the new user-defined tests incorporated (see Details)
+#' @param occTest_result \emph{data.frame} or \emph{tibble}. Output from an occTest project
+#' @param my_test \emph{data.frame} or tibble. New tests following the syntax of occTest (see Details)
+#' @returns \emph{data.frame} with the new user-defined tests incorporated (see Details)
 #' @details
 #' my_test needs to follow the syntax of occTest testType_testMethod_test, testType_testMethod_value, testType_testMethod_comment 
 #' the parameter my_test needs to have at least a logical column with the convention [testType]_[testMethod]_[test]
@@ -58,9 +58,9 @@ addTest <- function (occTest_result, my_test){
 #'Updates occTest with new user-defined tests
 #'
 #'Reorganize an output from occTest columns to incorporate user defined tests.
-#' @param occTest_result data.frame or tibble. Output from an occTest project
-#' @param my_new_test data.frame or tibble. New tests following the syntax of occTest (see Details)
-#' @return data frame with the new user-defined tests incorporated in the table and the testType_scores columns updated.
+#' @param occTest_result \emph{data.frame} or tibble. Output from an occTest project
+#' @param my_new_test \emph{data.frame} or \emph{tibble}. New tests following the syntax of occTest (see Details)
+#' @returns \emph{data.frame with} the new user-defined tests incorporated in the table and the testType_scores columns updated.
 #' @details
 #' my_test needs to follow the syntax of occTest testType_testMethod_test, 
 #' testType_testMethod_value, testType_testMethod_comment 
@@ -70,34 +70,14 @@ addTest <- function (occTest_result, my_test){
 #' @examples \donttest{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
-#' #load environmental raster
-#' library (terra)
-#' library (sf)
-#' library (occTest)
-#' #load occurrence data
-#' occData <- read.csv (system.file('ext/exampleOccData.csv',
-#' package = 'occTest'))
-#' #load environmental raster
-#' renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
-#' #load elevation raster
-#' dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
-#' #load settings
-#' settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
-#' #run occTest
-#' out = occTest(sp.name='MyFake species',
-#'              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
-#'              tableSettings = settings$tableSettings,
-#'              writeoutSettings = settings$writeoutSettings,
-#'              analysisSettings = settings$analysisSettings,
-#'              r.env = renv,r.dem=dem)
-#' myNewTest <- data.frame (
-#' humanDetection_myInventedTest_test=sample (c(TRUE,FALSE),
-#' replace = TRUE,
-#' size = nrow(out)))
+#' out <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
+#' myNewTest <- data.frame (humanDetection_myInventedTest_test=sample (c(TRUE,FALSE),
+#'                                                                     replace = TRUE,
+#'                                                                     size = nrow(out)))
 #' out_test_new <- reTest(occTest_result = out, my_new_test = myNewTest)
+#' out_test_new
 #' }
 #' @export
-
 reTest <- function (occTest_result, my_new_test){
   myNew_occTest <- addTest(occTest_result = occTest_result ,my_test = my_new_test)
   names_score <- grep (names (myNew_occTest),pattern='_score$',value = T)
@@ -108,7 +88,6 @@ reTest <- function (occTest_result, my_new_test){
     myNewScore [which (is.nan(myNewScore))] <- NA
     myNew_occTest [, paste0(n,'_score')] <- myNewScore
   }
-  
   return (myNew_occTest)
 }
 

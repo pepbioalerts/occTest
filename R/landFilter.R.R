@@ -1,19 +1,19 @@
 # landSeaFilter ====
 #' @title Filter occurrence by habitat (terrestrial/non-Terrestrial)
 #' @description Filter the occurrence records according to whether they should be in land masses or not
-#' @param df Data.frame of species occurrences
-#' @param xf the field in the dataframe containing the x cordinates
-#' @param yf the field in the dataframe containing the y cordinates
-#' @param habType character. Define the species habitat. Only "terrestrial" and "sea" implemented. 
-#' @param habPol sf polygon boject. Shows land masses
-#' @param verbose logical. Print messages? Default TRUE
-#' @return list
+#' @param df \emph{data.frame} of species occurrences
+#' @param xf \emph{character}. The field in df containing the x coordinates
+#' @param yf \emph{character}. The field in df containing the y coordinates
+#' @param habType \emph{character}. Define the species habitat. Only "terrestrial" and "sea" implemented. 
+#' @param habPol \emph{polygon sf}. Multipolygon object indicating land masses
+#' @param verbose \emph{logical} Print messages? Default TRUE
+#' @returns \emph{list} of filtered and non-filtered occurrrence recprds by land use type
 #' @details The user can define the habitat type and provide a an input landmass polygon
 #' @keywords filter
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \donttest{
+#' @examples \dontrun{
 #' xyDF <- data.frame (x=c(0,42),y=c(0,1),Reason=NA)
-#' landSeaFilter(xyDF,xf='x',yf='y')
+#' landSeaFilter(df=xyDF,xf='x',yf='y')
 #' }
 #' @export
 

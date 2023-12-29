@@ -22,7 +22,7 @@ Original dataframe, dat.  Used primarily to generate warning messages.
 Verify that all main data fields are correctly structured
 }
 \details{
-Inspired by \link[biogeo]{checkdatastr} but modified (hence number 2 after the function original name)
+Inspired by biogeo-package checkdatastr, but modified (hence number 2 after the function original name)
 }
 \seealso{
 Other checks: 

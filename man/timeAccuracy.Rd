@@ -30,7 +30,7 @@ timeAccuracy(
 \item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect records with low temporal accuracy
@@ -47,7 +47,7 @@ Current implmented methods are:
 \examples{
 \dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 timeAccuracy(df = occ,tf = 'DATE',
           iniTime = '2015-01-04',endTime = '2023-01-04')
 #see examples in vignetteXtra-occTest
@@ -58,6 +58,7 @@ timeAccuracy(df = occ,tf = 'DATE',
 \seealso{
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},

@@ -17,6 +17,10 @@ filterMissing(df, xf, yf, verbose = FALSE)
 }
 \value{
 \emph{list} with two \emph{data.frame}: stay = coordinates missing and continue = occurrence that you can retain for further analysis
+
+named list containing a data frame with the drop records and one with the non-filtered records.
+
+named list containing a data frame with the drop records and one with the non-filtered records.
 }
 \description{
 checks for missing coordinates in the occurrence dataframe

@@ -33,7 +33,7 @@ institutionLocality(
 \item{verbose}{\emph{logical} Print messages? Default FALSE}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect occurrences potentially in biodiversity institutions using different methods
@@ -46,7 +46,7 @@ current implemented methods are : \cr
 \examples{
 \dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 occ <- occ_species_example[1:50,c('MAPX','MAPY','LOCALITYNAME')]
 institutionLocality(df=occ, xf = 'MAPX',yf = 'MAPY',lf='LOCALITYNAME')
 }

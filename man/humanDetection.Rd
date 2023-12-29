@@ -39,7 +39,7 @@ humanDetection(
 \item{output.dir}{\emph{character}. Output directory}
 }
 \value{
-data.frame
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect occurrences in heavily human-impacted environments
@@ -53,7 +53,7 @@ Current implemented methods are: \cr
 \examples{
 \dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
 raster_humanImpact <- terra::rast(xmin=min(occ$MAPX)-1,
                                   xmax=max(occ$MAPX)+1,
@@ -71,6 +71,7 @@ humanDetection(df=occ, xf='MAPX',yf = 'MAPY',ras.hii = raster_humanImpact,.th.hu
 
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},

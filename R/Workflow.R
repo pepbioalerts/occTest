@@ -3,25 +3,25 @@
 #'Occurrence tests 
 #'
 #'Perform tests for data quality in species occurrence  using several methods
-#' @param sp.name character. Name of the species.
-#' @param habitat NULL
-#' @param sp.table data.frame. Object with the coordinate data.
-#' @param r.env SpatRaster object. Environmental data(e.g. typically climatic.
-#' @param tableSettings list. Elements corresponding to different settings of the input occurrence table. 
-#' @param analysisSettings list. Elements corresponding to different settings of the analysis functions . 
-#' @param gradingSettings list. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions . 
-#' @param writeoutSettings list. Elements corresponding to different settings of the analysis functions . 
-#' @param return.spatial.data logical. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory
-#' @param r.dem SpatRaster object. Elevation data (in meters).
-#' @param ntv.ctry character. vector with ISO3 code of the countries where species is considered native
-#' @param inv.ctry character. vector with ISO3 code of the countries where species is considered invasive 
-#' @param resolveAlienCtry logical. To automatically try to detect  countries for which species is considered native
-#' @param resolveNativeCtry logical. To automatically try to detect  countries for which species is considered alien
-#' @param interactiveMode logical. Should prompts be ouput for some decisions taken by the workflow? Deafult FALSE,
-#' @param verbose logical. Print workflow information? Default to FALSE
-#' @param doParallel logical. Should some operations be run in parellel when possible? Default to FALSE
-#' @param mc.cores numeric. If doParallel is TRUE, then how many cores to use? Default to 2
-#' @return data frame with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score) 
+#' @param sp.name \emph{character}. Name of the species.
+#' @param habitat \emph{character}. Define the species habitat. Only "terrestrial" and "sea" implemented. Default to NULL.
+#' @param sp.table \emph{data.frame.} Object with the coordinate data.
+#' @param r.env \emph{SpatRaster}. Environmental data(e.g. typically climatic.
+#' @param tableSettings \emph{list}. Elements corresponding to different settings of the input occurrence table. 
+#' @param analysisSettings \emph{list}. Elements corresponding to different settings of the analysis functions . 
+#' @param gradingSettings \emph{list}. Not implemented yet. Defaults to NULL.Elements corresponding to different settings of the analysis functions . 
+#' @param writeoutSettings \emph{list}. Elements corresponding to different settings of the analysis functions . 
+#' @param return.spatial.data \emph{logical}. Should the spatial dataset of \code{analysisSettings} attached to the metadata?, default is FALSE to save memory
+#' @param r.dem \emph{SpatRaster} object. Elevation data (in meters).
+#' @param ntv.ctry \emph{character}. Vector with ISO3 code of the countries where species is considered native
+#' @param inv.ctry \emph{character}. Vector with ISO3 code of the countries where species is considered invasive 
+#' @param resolveAlienCtry \emph{logical}. To automatically try to detect  countries for which species is considered native
+#' @param resolveNativeCtry \emph{logical}. To automatically try to detect  countries for which species is considered alien
+#' @param interactiveMode \emph{logical}. Should prompts be ouput for some decisions taken by the workflow? Deafult FALSE,
+#' @param verbose \emph{logical}. Print workflow information? Default to FALSE
+#' @param doParallel \emph{logical}. Should some operations be run in parellel when possible? Default to FALSE
+#' @param mc.cores \emph{numeric}. If doParallel is TRUE, then how many cores to use? Default to 2
+#' @returns \emph{data.frame} with the tests performed (field $_test), specific comment for the tests ($_comments), the exact value of the test ($_value), and scores summarizing results across tests with an objective ($_score) 
 #' @note 
 #' The output dataframe allows users to classify or scrub the occurrences the way they want to. \cr
 #' The names of the columns in the output object have the following naming convention: \cr
@@ -239,16 +239,15 @@ occTest = function(
   }
   
   #CHECK 6
-  #need tweaking: this will only happen if the data is in geographic coordinates, because the unites will be in minutes
+  #need tweaking: this will only happen if the data is in geographic coordinates, because the units will be in minutes
   #res is is in minutes...therefore(30 arcsec = 0.5 min)
   #if this is a projected data, we need to redo stuff and also tweak funcitons in biogeo
   #maybe add a warning or something in check geospatial data? idk
   res.in.minutes = terra::res(r.env[[1]])[1] * 60
-  
   tictoc::toc()
   
   ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
-  #### NOT IMPLEMENTED YET !!!!!!!!! TO DEVELOP WITH BIEN GNRS/NRS ,...
+  #### NOT IMPLEMENTED YET !!!!!!!!! 
   #whatever the want we are going to set it to False from now
   if (any (c(interactiveMode,resolveNativeCtry,resolveAlienCtry))) message('Automatic resolving of native and non-native ranges not implemented yet')
   interactiveMode= FALSE
@@ -256,33 +255,28 @@ occTest = function(
   resolveAlienCtry = FALSE
   #set timer
   #tictoc::tic('Resolve native and invasive countries')
-
   #automatically resolve invasive and native countries for target species(not implemented yet)
-  
-  if(interactiveMode & is.null(ntv.ctry)){
-    resolveNativeCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
-  }
-  if(interactiveMode & is.null(inv.ctry)){
-    resolveAlienCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
-  }
-  if(any(resolveNativeCtry,resolveAlienCtry)){
-    if(verbose){message("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
-    
-    xydatTemporary = dat[,c(x.field,y.field)]
-    xydatTemporary = xydatTemporary[stats::complete.cases(xydatTemporary),]
-    
-    
-    checkCountries = nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
-    if(resolveNativeCtry){
-      ntv.ctry = c(ntv.ctry,checkCountries$ntvCtry)
-      ntv.ctry = unique(ntv.ctry)
-    }
-    if(resolveAlienCtry){
-      inv.ctry = c(inv.ctry,checkCountries$invCtry)
-      inv.ctry = unique(inv.ctry)
-    }
-    
-  }
+  # if(interactiveMode & is.null(ntv.ctry)){
+  #   resolveNativeCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species native range. Do you want to infer from global databases?")
+  # }
+  # if(interactiveMode & is.null(inv.ctry)){
+  #   resolveAlienCtry = if(interactive()) utils::askYesNo(default = FALSE,msg = "You have not provided countries for the species alien range. Do you want to infer from global databases?")
+  # }
+  # if(any(resolveNativeCtry,resolveAlienCtry)){
+  #   if(verbose){message("**** RESOLIVNG NATIVE AND INVASIVE RANGES ****")}
+  #   xydatTemporary = dat[,c(x.field,y.field)]
+  #   xydatTemporary = xydatTemporary[stats::complete.cases(xydatTemporary),]
+  #   checkCountries = nativeStatusCtry(spName = sp.name, xydat=xydatTemporary, resolveNative = resolveNativeCtry, resolveAlien = resolveAlienCtry ,verbose = verbose)
+  #   if(resolveNativeCtry){
+  #     ntv.ctry = c(ntv.ctry,checkCountries$ntvCtry)
+  #     ntv.ctry = unique(ntv.ctry)
+  #   }
+  #   if(resolveAlienCtry){
+  #     inv.ctry = c(inv.ctry,checkCountries$invCtry)
+  #     inv.ctry = unique(inv.ctry)
+  #   }
+  #   
+  # }
   #tictoc::toc()
   
   if(verbose){message("**** FILTERING PHASE STARTED  ****")}
@@ -589,20 +583,11 @@ occTest = function(
   ### ELEMENT : CENTROID ISSUE DETECTION
   tictoc::tic('Centroid detection')
   if(verbose) message('Centroid detection started ...')
-  Analysis.1 <- centroidDetection(.r.env = r.env,
+  Analysis.1 <- centroidDetection(
                                  df = dat,
                                  xf = x.field,
                                  yf = y.field,
                                  cf = c.field,
-                                 #to be changed according to definition of taxonobseration id
-                                 #idf = taxonobservation.id,
-                                 idf = NULL,
-                                 .ntv.ctry = ntv.ctry,
-                                 .inv.ctry = inv.ctry,
-                                 .points.crs =
-                                   points.crs,
-                                 .countries.shapefile = countries.shapefile,
-                                 cfsf=countryfield.shapefile,
                                  method = methodCentroidDetection,
                                  do= doCentroidDetection)
   tictoc::toc()

@@ -39,21 +39,21 @@ envOutliers(
 \item{verbose}{\emph{logical}. Print messages? Default FALSE}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect environmental outliers using different methods
 }
 \details{
 Implemented methods are :\cr
-'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
+'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (biogeo_outliers) \cr
 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
 }
 \examples{
 \dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 occ <- occ[,c('MAPX','MAPY')]
 occ <- occ[stats::complete.cases(occ),]
 env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
@@ -64,7 +64,7 @@ envOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',
 }
 }
 \seealso{
-findEnvOutliers \link[biogeo]{outliers}
+findEnvOutliers biogeo_outliers
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), Cory Merow (cmerow@gmail.com). Mark Robertson (biogeo package)

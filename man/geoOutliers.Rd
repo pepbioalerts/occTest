@@ -41,7 +41,7 @@ geoOutliers(
 \item{verbose}{\emph{logical}.. Print messages? Default FALSE}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect geographical outliers using several tests
@@ -55,11 +55,13 @@ Methods implented are 'alphaHull', detecting species outside an alphaHull level 
 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
 }
 \examples{
+\dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 occ <- occ[,c('MAPX','MAPY')]
 occ <- occ[stats::complete.cases(occ),]
 geoOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',.alpha.parameter = 2)
+}
 }
 \seealso{
 getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers

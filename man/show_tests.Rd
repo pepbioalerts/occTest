@@ -7,7 +7,7 @@
 show_tests()
 }
 \value{
-prints a dataframe
+prints a dataframe with the avaialble tests
 }
 \description{
 prints a table with the column names

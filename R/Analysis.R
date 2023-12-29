@@ -10,6 +10,8 @@
 #' @return \emph{list} with two \emph{data.frame}: stay = coordinates missing and continue = occurrence that you can retain for further analysis
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
+#' @returns named list containing a data frame with the drop records and one with the non-filtered records.
+#' @returns named list containing a data frame with the drop records and one with the non-filtered records.
 #' @examples 
 #' ds <- data.frame (x=c(runif (n = 100),NA),y=c(runif (n = 100),1000))
 #' filterMissing(ds,xf='x',yf='y')
@@ -37,6 +39,7 @@ filterMissing <- function (df, xf , yf , verbose=FALSE){
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
+#' @returns a \emph{list} of 3 \emph{data.frames} containing exact coordinte duplicates, grid duplicates (coordinates falling into the same grid cell) and non duplicated coordinates.
 #' @examples 
 #' ds <- data.frame (x=c(runif (n = 100),1000),y=c(runif (n = 100),1000),Reason=NA)
 #' duplicatesexcludeAnalysis(ds,xf='x',yf='y',resolution.in.minutes=60)
@@ -65,8 +68,8 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
   }
   #get dups in gridcell
   spp <- as.character(unique(df$Species))
-  xy <- data.frame(biogeo::coord2numeric(df[,xf]),
-                   biogeo::coord2numeric(df[,yf]))
+  xy <- data.frame(biogeo_coord2numeric(df[,xf]),
+                   biogeo_coord2numeric(df[,yf]))
   cid <- terra::cellFromXY(rst, xy)
   dups <- (duplicated(cid)) * 1
   df$duplicates_dupGrid_value = dups
@@ -95,9 +98,9 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @param verbose \emph{logical}. Print messages? Default FALSE
 #' @return \emph{list}
 #' @keywords internal
-#' @author Mark Robertson and Veron Visser (original \link[biogeo]{biogeo-package}), Josep M Serra-Diaz (modifs)
+#' @author Mark Robertson and Veron Visser (original iogeo-package), Josep M Serra-Diaz (modifs)
 #' @family analysis
-#' @seealso original code at \link[biogeo]{nearestcell}
+#' @seealso inspired by the original code in the biogeo package.
 .nearestcell3 <- function (dat,
                           rst,
                           xf,
@@ -106,8 +109,8 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
   dat$irow <- 1:nrow (dat)
   dat$Correction <- as.character(dat$Correction)
   fx <- which(dat$Exclude == 0)
-  x1 <- biogeo::coord2numeric(dat[,xf][fx])
-  y1 <- biogeo::coord2numeric(dat[,yf][fx])
+  x1 <- biogeo_coord2numeric(dat[,xf][fx])
+  y1 <- biogeo_coord2numeric(dat[,yf][fx])
   datid <- dat$irow[fx]
   dd <- data.frame(x1, y1)
   ce0 <- terra::cellFromXY(rst, dd)
@@ -212,7 +215,7 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @param excludeNotmatchCountry \emph{logical}. Should records be if the reported country is different than the locatoin country? . Default FALSE
 #' @param doRangeAnalysis \emph{logical} Should range analysis be performed?
 #' @param verbose \emph{logical} Print messages? Default FALSE
-#' @return \emph{list}
+#' @returns a \emph{list} of two \emph{data.frames} with filtered occurrence records (out of native and/or alien country) and non-filtered records (inside native/alien country)
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @family analysis
@@ -220,7 +223,7 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
 #' @examples 
 #' library (occTest)
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 #' occ <- occ_species_example[1:10,c('MAPX','MAPY','COUNTRYRECORD')]
 #' #load a high resolution coastlines
 #' pol_ctry <- system.file('ext/countries.rds',package='occTest') |> readRDS()
@@ -369,7 +372,7 @@ countryStatusRangeAnalysis=function(df,
 #' @param method \emph{character} Vector with the methods to detect centroids
 #' @param do \emph{logical} Should range analysis be performed? Default TRUE
 #' @param verbose \emph{character} Print messages? Default FALSE
-#' @return \emph{data.frame}
+#' @returns \emph{data.frame} with columns indicating the results of the test(s)
 #' @keywords internal
 #' @family analysis
 #' @details Current methods implemented for centroid detection are 'BIEN' (uses iterative procedure with threshold selection of distance to centroid)\cr
@@ -378,10 +381,13 @@ countryStatusRangeAnalysis=function(df,
 #' @seealso \link[CoordinateCleaner]{cc_cap} \link[CoordinateCleaner]{cc_cen} 
 #' @export
 #' @examples 
+#' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ_species_example <- read.table(file = sp_file,header = TRUE ,sep = ',',as.is = TRUE)
 #' occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
 #' centroidDetection(df=occ,xf='MAPX',yf = 'MAPY',cf = 'COUNTRYRECORD')
+#' }
+
 
 centroidDetection <- function (df,
                                xf,
@@ -465,7 +471,7 @@ centroidDetection <- function (df,
 #' @param do \emph{logical}. Should range analysis be performed? Default TRUE
 #' @param verbose \emph{logical} Print messages? Default FALSE
 #' @param output.dir \emph{character}. Output directory 
-#' @return data.frame
+#' @returns a \emph{data.frame} with the results of the tests
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr). A Zizka (CoordinateCleaner functions)
 #' @seealso \link[CoordinateCleaner]{cc_urb} for CoordinateCleaner functions
@@ -475,7 +481,7 @@ centroidDetection <- function (df,
 #' @examples 
 #' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 #' occ <- occ_species_example[1:50,c('MAPX','MAPY','COUNTRYRECORD')]
 #' raster_humanImpact <- terra::rast(xmin=min(occ$MAPX)-1,
 #'                                   xmax=max(occ$MAPX)+1,
@@ -581,7 +587,7 @@ humanDetection <- function (df,
 #' @param .points.crs \emph{character crs}. coordinate projection of the occurrences. Deafults to NULL which ends using "ESPG::4326"
 #' @param do \emph{logical}. Should range analysis be performed?
 #' @param verbose \emph{logical} Print messages? Default FALSE
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @details current implemented methods are : \cr
 #' "fromCoordinates" (use information on localities of institutions, from \link[CoordinateCleaner]{CoordinateCleaner-package}) \cr
 #' "fromBotanicLocalityName" (using information on locality names that include keywords of institutions)
@@ -592,7 +598,7 @@ humanDetection <- function (df,
 #' @examples
 #' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+#' occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 #' occ <- occ_species_example[1:50,c('MAPX','MAPY','LOCALITYNAME')]
 #' institutionLocality(df=occ, xf = 'MAPX',yf = 'MAPY',lf='LOCALITYNAME')
 #' }
@@ -647,14 +653,10 @@ institutionLocality <- function (df,
         
       })
       bot.garden <- as.numeric (bot.garden)
-      
       out$institutionLocality_fromBotanicLocalityName_value = bot.garden
       out$institutionLocality_fromBotanicLocalityName_test = as.logical (bot.garden)
       out$institutionLocality_fromBotanicLocalityName_comments = 'likely botanical garden'
-      
     }
-    
-
   }
   
   #method from Coordinates
@@ -699,17 +701,19 @@ institutionLocality <- function (df,
 #' 'median' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='mad'). See ?CoordinateCleaner::cc_outl \cr
 #' 'quantSamplingCorrected' corresponds to 'mad' method in  CoordinateCleaner::cc_outl(method='quantile'). See ?CoordinateCleaner::cc_outl \cr
 #' 'grubbs' implements Grubbs test to find spatial outliers. See ?findSpatialOutliers for details \cr
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com)
 #' @seealso getPointsOutAlphaHull, \link[CoordinateCleaner]{cc_outl}, findSpatialOutliers
 #' @export
 #' @examples
+#' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 #' occ <- occ[,c('MAPX','MAPY')]
 #' occ <- occ[stats::complete.cases(occ),]
 #' geoOutliers(df=occ,xf = 'MAPX',yf = 'MAPY',.alpha.parameter = 2)
+#' }
 
 geoOutliers         <- function (df,
                                 xf,
@@ -1029,20 +1033,21 @@ geoOutliers         <- function (df,
 #' @param .points.crs \emph{character}.crs coding indicating coordinate reference system. If NULL it will assume "ESPG::4326"
 #' @param do \emph{logical}. Should tests be performed? Default TRUE
 #' @param verbose \emph{logical}. Print messages? Default FALSE
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @details Implemented methods are :\cr
-#' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (\link[biogeo]{outliers}) \cr
+#' 'bxp' based on boxplot distribution (1.5 Interquartile range) in a variable to identify the record as outlier (biogeo_outliers) \cr
 #' 'Grubbs' based on Grubbs test. See ?findEnvOutliers \cr
 #' Regardless of the method, the function already tests for missing environmental variables and it outputs the result in the output data.frame
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Cory Merow (cmerow@@gmail.com). Mark Robertson (biogeo package)
-#' @seealso findEnvOutliers \link[biogeo]{outliers}
-#' @importFrom stats complete.cases
+#' @seealso findEnvOutliers biogeo_outliers
+#' @importFrom stats complete.cases 
+#' @importFrom rlang .data
 #' @export
 #' @examples
 #' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 #' occ <- occ[,c('MAPX','MAPY')]
 #' occ <- occ[stats::complete.cases(occ),]
 #' env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
@@ -1150,7 +1155,7 @@ envOutliers  <- function (
 
       ev<-dat.environment[,i]
 
-      a<- try (biogeo::outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
+      a<- try (biogeo_outliers(rid=1:nrow(dat.environment), species, dups, ev), silent=TRUE)
       if (exists('a') & all(class(a)!='try-error')){
         a<- as.data.frame (a)
         names (a) <- paste0(names(dat.environment)[i],c('-bxp','-rjk') )
@@ -1237,8 +1242,7 @@ envOutliers  <- function (
   }
   #compute if any flexsdm methods
   if (any (method %in% c('jack','all','svm','rf','rfout','lof'))){
-    dat.environment_flexsdm_pres <- dat.environment %>% 
-      tibble::add_column(pr_ab=1)
+    dat.environment_flexsdm_pres <-  tibble::add_column(dat.environment,pr_ab=1)
     #simulate absences 
     xy_vect <- terra::vect(dat.environment, geom=c("x", "y"),crs=terra::crs("epsg:4326"))
     d <- median (terra::distance(xy_vect),na.rm=T)
@@ -1288,33 +1292,33 @@ envOutliers  <- function (
   #add flexsdm outputs
   if (any (method %in% c('jack','all')))  {
     envOutliers_jack_value <- flexsdm_out %>% 
-      dplyr::filter (pr_ab==1) %>% 
+      dplyr::filter (.data$pr_ab==1) %>% 
       dplyr::pull(dplyr::ends_with('_jack'))
     envOutliers_jack_test <- as.logical (envOutliers_jack_value)
   }
   if (any (method %in% c('svm','all')))  {
     envOutliers_svm_value <- flexsdm_out %>% 
-      dplyr::filter (pr_ab==1) %>%
+      dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_svm'))
     envOutliers_svm_test <- as.logical (envOutliers_svm_value)
     envOutliers_svm_comment <- comment_abs_flexsdm
   }
   if (any (method %in% c('rf','all')))  {
     envOutliers_rf_value <- flexsdm_out %>%
-      dplyr::filter (pr_ab==1) %>%
+      dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_rf'))
     envOutliers_rf_test <- as.logical (envOutliers_rf_value)
     envOutliers_rf_comment <- comment_abs_flexsdm
   }
   if (any (method %in% c('rfout','all')))  {
     envOutliers_rfout_value <- flexsdm_out %>% 
-      dplyr::filter (pr_ab==1) %>%
+      dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_rfout'))
     envOutliers_rfout_test <- as.logical (envOutliers_rfout_value)
   }
   if (any (method %in% c('lof','all')))  {
     envOutliers_lof_value <- flexsdm_out %>% 
-      dplyr::filter (pr_ab==1) %>%
+      dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_lof'))
     envOutliers_lof_test <- as.logical (envOutliers_lof_value)
   }
@@ -1344,7 +1348,7 @@ envOutliers  <- function (
 #' @param verbose \emph{logical}. Print messages? Default FALSE
 #' @param doParallel \emph{logical}. Should computation use parallel functions? Default FALSE
 #' @param mc.cores \emph{numeric}. How many cores to use? (used when doParallel = TRUE). Default 2 
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @keywords Analysis 
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), A Zizka (CoordinateCleaner package)
 #' @details Geoenvironmental accuracy function will implement differnt methods to assess occurrence accuracy in environmnental and geographic space.\cr
@@ -1362,11 +1366,14 @@ envOutliers  <- function (
 #' \dontrun{
 #' 
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 #' env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
 #' dem <- terra::rast(system.file('ext/DEM.tif',package='occTest'))
-#' geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M') ,ef = 'ELEVATION',
-#'                r.env = env[[1]],raster.elevation = dem)
+#' geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',
+#'                 af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M'),
+#'                 ef = 'ELEVATION',
+#'                 r.env = env[[1]],
+#'                 raster.elevation = dem)
 #'#see more examples in vignetteXtra-occTest
 #'#devtools::install_github ('vignetteXtra-occTest')
 #' }
@@ -1682,7 +1689,7 @@ geoEnvAccuracy  <- function (df,
 #' @param do \emph{logical}. Should tests be performed? Default TRUE
 #' @param method \emph{character}. Vector of methods to be used. See details. Default 'all'
 #' @param verbose \emph{logical}. Print messages? Default FALSE
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @keywords Analysis 
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @details timeAccuracy function will implement different methods to assess the temporal scale of the parameters.\cr
@@ -1695,7 +1702,7 @@ geoEnvAccuracy  <- function (df,
 #' @examples 
 #' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 #' timeAccuracy(df = occ,tf = 'DATE',
 #'           iniTime = '2015-01-04',endTime = '2023-01-04')
 #' #see examples in vignetteXtra-occTest
@@ -1796,7 +1803,7 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
 #' @param do \emph{logical}. Should range analysis be performed?
 #' @param verbose \emph{logical}. Print messages? Default  FALSE
 #' @param output.dir \emph{logical}. Output directory
-#' @return \emph{data.frame}
+#' @returns a \emph{data.frame} with the results of the tests
 #' @keywords internal
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @export
@@ -1804,7 +1811,7 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
 #' @examples
 #' \dontrun{
 #' sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-#' occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+#' occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 #' raster_landUse <- terra::rast(xmin=min(occ$MAPX)-1,
 #'                               xmax=max(occ$MAPX)+1,
 #'                               ymin=min(occ$MAPY)-1,

@@ -48,7 +48,7 @@ countryStatusRangeAnalysis(
 \item{verbose}{\emph{logical} Print messages? Default FALSE}
 }
 \value{
-\emph{list}
+a \emph{list} of two \emph{data.frames} with filtered occurrence records (out of native and/or alien country) and non-filtered records (inside native/alien country)
 }
 \description{
 Identify and filter species records based on countries where species is considered native or alien.
@@ -59,7 +59,7 @@ It returns a \emph{list} with two elements: stay (records that are excluded/filt
 \examples{
 library (occTest)
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ_species_example <- read.table(file = sp_file,header = T,sep = ',',as.is = T)
+occ_species_example <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE)
 occ <- occ_species_example[1:10,c('MAPX','MAPY','COUNTRYRECORD')]
 #load a high resolution coastlines
 pol_ctry <- system.file('ext/countries.rds',package='occTest') |> readRDS()
@@ -74,6 +74,7 @@ countryStatusRangeAnalysis(df=occ,
 \seealso{
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{duplicatesexcludeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},

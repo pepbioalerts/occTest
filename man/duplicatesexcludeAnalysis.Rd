@@ -28,6 +28,8 @@ duplicatesexcludeAnalysis(
 }
 \value{
 \emph{list} of three components: Dups.Exact = exact duplicate records, Dups.Grid= duplicates within environmental gridcell, continue = dataframe with good records
+
+a \emph{list} of 3 \emph{data.frames} containing exact coordinte duplicates, grid duplicates (coordinates falling into the same grid cell) and non duplicated coordinates.
 }
 \description{
 checks for duplicated coordinates in the occurrence data frame
@@ -42,6 +44,7 @@ duplicatesexcludeAnalysis(ds,xf='x',yf='y',resolution.in.minutes=60)
 \seealso{
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{geoEnvAccuracy}()},

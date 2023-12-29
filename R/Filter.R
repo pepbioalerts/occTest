@@ -1,18 +1,19 @@
 # occFilter ====
 #' @title Filter occurrence records from occTest outputs
 #' @description Select occurrence records based on aggregated values of different tests
-#' @return list of 3 elements. 
+#' @returns a \emph{list} of 3 elements (data.frame): a filtered dataset according to the filtering rules,  
+#' a dataset of summary statistics, and a dataset containg the metadata for the filtering rules.
 #' @keywords filter
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr), Jeremy Borderieux (jeremy.borderieux@@agroparistech.fr)
-#' @param df data.frame. Output of  occTest
-#' @param by character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
-#' @param errorAcceptance  character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
-#' @param errorThreshold double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
-#' @param custom data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
+#' @param df \emph{data.frame}. Output of the \link[occTest]{occTest} function.
+#' @param by \emph{character}. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')
+#' @param errorAcceptance  \emph{character}. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'
+#' @param errorThreshold \emph{double}. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.
+#' @param custom \emph{data.frame} or equivalent (e.g \emph{tibble}), custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))
 #' @details If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
-#' @seealso showTests
+#' @importFrom rlang .data
+#' @seealso \link[occTest]{occTest} \link[occTest]{show_tests}
 #' @examples 
-#' 
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
 #' ### devtools::install_github('pepbioalerts/vignette-Xtra')
@@ -22,7 +23,6 @@
 #' filtered_dataset <- occFilter (occTest_output)
 #' #inspect results
 #' names (filtered_dataset)
-#' 
 #' @export
 
 occFilter <- function (df,
@@ -41,11 +41,11 @@ occFilter <- function (df,
   }
   
   targetLevel = colMetaData %>% 
-    dplyr::filter (phase != 'filter') %>%
+    dplyr::filter (.data$phase != 'filter') %>%
     dplyr::select(dplyr::all_of(by))
   
   basecateg = colMetaData %>% 
-    dplyr::filter (phase != 'filter') %>%
+    dplyr::filter (.data$phase != 'filter') %>%
     dplyr::select('method')
   
   myCategories = dplyr::bind_cols(targetLevel,basecateg) %>% unique
@@ -60,7 +60,7 @@ occFilter <- function (df,
   
   #get the scores for each category
   dfScores = lapply (uniqueTargetLevels, function (categ){
-    baseCategSelec = myCategories %>% dplyr::filter (targetLevel==categ) %>% dplyr::pull(var = 'baseLevel')
+    baseCategSelec = myCategories %>% dplyr::filter (.data$targetLevel==categ) %>% dplyr::pull(var = 'baseLevel')
     
     idCols = grep (pattern = paste0(baseCategSelec,collapse = '|'), names(dfFiltered),value = TRUE)
     idCols = grep (pattern ='_test', idCols,value = TRUE)
@@ -91,7 +91,7 @@ occFilter <- function (df,
   nDfScore = unlist(strsplit (names (dfScoreVals),split = '_score'))
    
   errorThresholdDf = colMetaData %>% 
-      dplyr::filter (phase != 'filter') %>%
+      dplyr::filter (.data$phase != 'filter') %>%
       dplyr::select(by,errorThreshold) %>%
       unique
    

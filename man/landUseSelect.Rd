@@ -39,7 +39,7 @@ landUseSelect(
 \item{output.dir}{\emph{logical}. Output directory}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Selection of records within a specified land use
@@ -47,7 +47,7 @@ Selection of records within a specified land use
 \examples{
 \dontrun{
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 raster_landUse <- terra::rast(xmin=min(occ$MAPX)-1,
                               xmax=max(occ$MAPX)+1,
                               ymin=min(occ$MAPY)-1,

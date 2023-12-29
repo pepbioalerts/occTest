@@ -13,27 +13,30 @@ findEnvOutliers(
 )
 }
 \arguments{
-\item{pres}{an `sf` points object describing the locations of species records.}
+\item{pres}{an \emph{sf} points object describing the locations of species records with their associated environmenal data.}
 
-\item{pvalSet}{user-specified p-value for assessing the significance of Grubbs test statistic.}
+\item{pvalSet}{\emph{numeric}. User-specified p-value for assessing the significance of Grubbs test statistic.}
 
-\item{method}{character; options are 'iqr', 'grubbs', 'dixon', 'rosner'}
+\item{method}{\emph{character}. Methods to identify outlying points options are 'iqr', 'grubbs', 'dixon', 'rosner'}
 
-\item{checkPairs}{logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.}
+\item{checkPairs}{\emph{logical}. check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.}
 
-\item{kRosner}{integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.}
+\item{kRosner}{\emph{numeric}. Number between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.}
 }
 \value{
+a vector with record indices considered outliers.
+
 Returns the indices of environmental outliers
 }
 \description{
 Environmental outliers
 }
 \details{
-See Examples.
+Perform outlier detaction in the environmental space for interquartile range (boxplot method), 
+Dixon (see \link[outliers]{dixon.test}), Rosner test (see Dixon (see \link[EnvStats]{rosnerTest})),
+and Grubbs (see Dixon (see \link[outliers]{grubbs.test})) tests.
 }
 \examples{
-#select coordinates only
 myPres=read.csv(system.file('ext/exampleOccData.csv',
                             package='occTest'))
 #select coordinates only
@@ -45,6 +48,17 @@ myPres <- sf::st_as_sf(myPres,coords = c(1,2))
 myPresDF <- cbind (myPres,data.frame(terra::extract(myEnv,myPres)))
 #find outliers
 presOut=findEnvOutliers(pres=myPresDF,pvalSet=1e-5)
+}
+\references{
+Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506.
+Dixon, W.J. (1951). Ratios involving extreme values. Ann. Math. Stat. 22, 1, 68-78.
+Rorabacher, D.B. (1991). Statistical Treatment for Rejection of Deviant Values: Critical Values of Dixon Q Parameter and Related Subrange Ratios at the 95 percent Confidence Level. Anal. Chem. 83, 2, 139-146.
+Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58.
+Rosner, B. (1975). On the Detection of Many Outliers. Technometrics 17, 221–227.
+Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier Procedure. Technometrics 25, 165–172.
+}
+\seealso{
+\link[occTest]{envOutliers} \link[occTest]{findOutlyingPoints} \link[outliers]{dixon.test} \link[outliers]{grubbs.test} \link[EnvStats]{rosnerTest}
 }
 \author{
 Cory Merow <cory.merow@gmail.com>

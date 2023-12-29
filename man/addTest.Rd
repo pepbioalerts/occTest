@@ -7,12 +7,12 @@
 addTest(occTest_result, my_test)
 }
 \arguments{
-\item{occTest_result}{data.frame or tibble. Output from an occTest project}
+\item{occTest_result}{\emph{data.frame} or \emph{tibble}. Output from an occTest project}
 
-\item{my_test}{data.frame or tibble. New tests following the syntax of occTest (see Details)}
+\item{my_test}{\emph{data.frame} or tibble. New tests following the syntax of occTest (see Details)}
 }
 \value{
-data frame with the new user-defined tests incorporated (see Details)
+\emph{data.frame} with the new user-defined tests incorporated (see Details)
 }
 \description{
 Reorganize an output from occTest columns to incorporate user defined tests.

@@ -32,7 +32,7 @@ Original dataframe, dat.  Used primarily to generate warning messages.
 Verify that all main data fields are correctly populated.
 }
 \details{
-checking main fields (inspired by \link[biogeo]{addmainfields} .
+checking main fields (inspired by biogeo-package addmainfields)
 }
 \seealso{
 Other checks: 

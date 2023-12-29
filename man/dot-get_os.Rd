@@ -18,12 +18,6 @@ This is implemented whan parallelizing functions
 \note{
 Internal function copied from utils wickham to know which is the os used by the computer
 }
-\seealso{
-Other internal: 
-\code{\link{lazylogic}()},
-\code{\link{rm.all}()},
-\code{\link{splitSpname}()}
-}
 \author{
 Pep Serra-Diaz
 }

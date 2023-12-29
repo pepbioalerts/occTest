@@ -3,15 +3,17 @@
 #' @title Find outlying occurrence data in environmental space
 #' @description Environmental outliers
 #' @details
-#' See Examples.
-#' @param pres an `sf` points object describing the locations of species records. 
-#' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'
-#' @param pvalSet user-specified p-value for assessing the significance of Grubbs test statistic.
-#' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
-#' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
+#' Perform outlier detaction in the environmental space for interquartile range (boxplot method), 
+#' Dixon (see \link[outliers]{dixon.test}), Rosner test (see Dixon (see \link[EnvStats]{rosnerTest})),
+#' and Grubbs (see Dixon (see \link[outliers]{grubbs.test})) tests. 
+#' @param pres an \emph{sf} points object describing the locations of species records with their associated environmenal data. 
+#' @param method \emph{character}. Methods to identify outlying points options are 'iqr', 'grubbs', 'dixon', 'rosner'
+#' @param pvalSet \emph{numeric}. User-specified p-value for assessing the significance of Grubbs test statistic.
+#' @param checkPairs \emph{logical}. check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
+#' @param kRosner \emph{numeric}. Number between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
+#' @returns a vector with record indices considered outliers. 
 #' @export
 #' @examples
-#' #select coordinates only
 #' myPres=read.csv(system.file('ext/exampleOccData.csv',
 #'                             package='occTest'))
 #' #select coordinates only
@@ -26,14 +28,14 @@
 #' @return Returns the indices of environmental outliers
 #' @author Cory Merow <cory.merow@@gmail.com>
 #' @importFrom EnvStats rosnerTest
-# @note
-# @seealso
-# @references
-# @aliases - a list of additional topic names that will be mapped to
-# this documentation when the user looks them up from the command
-# line.
-# @family - a family name. All functions that have the same family tag will be linked in the documentation.
-
+#' @seealso \link[occTest]{envOutliers} \link[occTest]{findOutlyingPoints} \link[outliers]{dixon.test} \link[outliers]{grubbs.test} \link[EnvStats]{rosnerTest}
+#' @references 
+#' Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506.
+#' Dixon, W.J. (1951). Ratios involving extreme values. Ann. Math. Stat. 22, 1, 68-78.
+#' Rorabacher, D.B. (1991). Statistical Treatment for Rejection of Deviant Values: Critical Values of Dixon Q Parameter and Related Subrange Ratios at the 95 percent Confidence Level. Anal. Chem. 83, 2, 139-146.
+#' Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58.
+#' Rosner, B. (1975). On the Detection of Many Outliers. Technometrics 17, 221–227.
+#' Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier Procedure. Technometrics 25, 165–172.
 findEnvOutliers=function(pres,
                          #myEnv=NULL,
                          pvalSet=1e-5,
@@ -139,38 +141,38 @@ findEnvOutliers=function(pres,
   unique(env.toss.id)
 }
 
-
-
 #### occOutliers spatial.r ====
 #' @title Find outlying occurrence data in geographic space
-#'
 #' @description Spatial outliers
-#'
 #' @details
-#' See Examples.
-#' @param pres a `sf` points object describing the locations of species records. 
-#' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'
-#' @param pvalSet user-specified p-value for assessing the significance of Grubbs test statistic.
-#' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
-#' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
-# @keywords
+#' Perform outlier detaction in the environmental space for interquartile range (boxplot method), 
+#' Dixon (see \link[outliers]{dixon.test}), Rosner test (see Dixon (see \link[EnvStats]{rosnerTest})),
+#' and Grubbs (see Dixon (see \link[outliers]{grubbs.test})) tests.
+#' @param pres an \emph{sf} points object describing the locations of species records with their associated environmenal data. 
+#' @param method \emph{character}. Methods to identify outlying points options are 'iqr', 'grubbs', 'dixon', 'rosner'
+#' @param pvalSet \emph{numeric}. User-specified p-value for assessing the significance of Grubbs test statistic.
+#' @param checkPairs \emph{logical}. check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
+#' @param kRosner \emph{numeric}. Number between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
+#' @returns a vector with record indices considered outliers. 
 #' @export
 #' @examples
 #' myPres=read.csv(system.file('./ext/exampleOccData.csv',
 #'                             package='occTest')) |> dplyr::select(c('MAPX','MAPY'))
 #' myPres = sf::st_as_sf(myPres[complete.cases(myPres),],
 #'                       coords =c('MAPX','MAPY'))
-#' presOut=occTest::findSpatialOutliers(pres=myPres, pvalSet=1e-5)
+#' findSpatialOutliers(pres=myPres, pvalSet=1e-5)
 #' 
-#' @return Returns the indices of spatial outliers
+#' @return Returns the indices of environmental outliers
 #' @author Cory Merow <cory.merow@@gmail.com>
-# @note
-# @seealso
-# @references
-# @aliases - a list of additional topic names that will be mapped to
-# this documentation when the user looks them up from the command
-# line.
-# @family - a family name. All functions that have the same family tag will be linked in the documentation.
+#' @importFrom EnvStats rosnerTest
+#' @seealso \link[occTest]{geoOutliers} \link[occTest]{findOutlyingPoints} \link[outliers]{dixon.test} \link[outliers]{grubbs.test} \link[EnvStats]{rosnerTest}
+#' @references 
+#' Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506.
+#' Dixon, W.J. (1951). Ratios involving extreme values. Ann. Math. Stat. 22, 1, 68-78.
+#' Rorabacher, D.B. (1991). Statistical Treatment for Rejection of Deviant Values: Critical Values of Dixon Q Parameter and Related Subrange Ratios at the 95 percent Confidence Level. Anal. Chem. 83, 2, 139-146.
+#' Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58.
+#' Rosner, B. (1975). On the Detection of Many Outliers. Technometrics 17, 221–227.
+#' Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier Procedure. Technometrics 25, 165–172.
 
 findSpatialOutliers=function(pres,
                              pvalSet=1e-5,
@@ -275,33 +277,43 @@ findSpatialOutliers=function(pres,
 }
 #### occOutliers findOutliers.r =====
 #' @title Find outlying occurrence data
-#'
-#' @description Spatial or environmental outliers
-#'
+#' @description This function is a wrapper to identify spatial or environmental outliers using different methods
 #' @details
-#' See Examples.
-#'
-#' @param pres a `sf` points object describing the locations of species records. Am `sf` points object containing the values of environmental variables to be used must be supplied if `envOutliers=TRUE`
+#' Perform outlier detaction in the environmental space for interquartile range (boxplot method), 
+#' Dixon (see \link[outliers]{dixon.test}), Rosner test (see Dixon (see \link[EnvStats]{rosnerTest})),
+#' and Grubbs (see Dixon (see \link[outliers]{grubbs.test})) tests.
+#' @param pres an \emph{sf} points object describing the locations of species records with their associated environmenal data. 
 #' @param spOutliers logical; perform spatial outlier analysis
 #' @param envOutliers logical; perform environmental outlier analysis
-#' @param method character; options are 'iqr', 'grubbs', 'dixon', 'rosner'. Only a single value can be used; if mutliple tests are desired, call `findOuliers` multiple times specifying different methods.
-#' @param pval user-specified p-value for assessing the significance of Grubbs test statistic.
-#' @param checkPairs logical; check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
-#' @param kRosner integer between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
-#' @param verbose logical; print messages
-# @keywords
+#' @param method \emph{character}. Methods to identify outlying points options are 'iqr', 'grubbs', 'dixon', 'rosner'
+#' @param pval \emph{numeric}. User-specified p-value for assessing the significance of Grubbs test statistic.
+#' @param checkPairs \emph{logical}. check for a single pair of outliers using the Grubbs test. This can only be performed for sample sizes <30. Only a single test is used because repeating it tends to throw out more points than seem reasonable, by eye. The value has no effect unless `method='grubbs'`.
+#' @param kRosner \emph{numeric}. Number between 1 and 10. Determines the number of outliers suspected with a Rosner test. The value has no effect unless `method='rosner'`.
+#' @param verbose \emph{logical}; print messages?
 #' @export
-#' @return Returns the SpatialPointsDataFrame provided with additional logical columns indicating spatial outliers (`spOutliers`) and environmental outliers ('`envOutliers`).
+#' @examples
+#' #select coordinates only
+#' myPres=read.csv(system.file('ext/exampleOccData.csv',
+#'                             package='occTest'))
+#' #select coordinates only
+#' myPres <- myPres[,2:3]
+#' myPres <- myPres[complete.cases(myPres),]
+#' #extract values
+#' myEnv <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
+#' myPres <- sf::st_as_sf(myPres,coords = c(1,2))
+#' myPresDF <- cbind (myPres,data.frame(terra::extract(myEnv,myPres)))
+#' #find outliers
+#' findOutlyingPoints(pres=myPresDF,pval=1e-5)
+#' @returns Returns an \emph{sf} polygon object  with additional logical columns indicating spatial outliers (`spOutliers`) and environmental outliers ('`envOutliers`).
 #' @author Cory Merow <cory.merow@@gmail.com>
-# @note
-# @seealso
-# @references
-# @aliases - a list of additional topic names that will be mapped to
-# this documentation when the user looks them up from the command
-# line.
-# @family - a family name. All functions that have the same family tag will be linked in the documentation.
-
-
+#' @seealso \link[occTest]{geoOutliers} \link[occTest]{findEnvOutliers} \link[occTest]{findSpatialOutliers} \link[outliers]{dixon.test} \link[outliers]{grubbs.test} \link[EnvStats]{rosnerTest}
+#' @references 
+#' Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506.
+#' Dixon, W.J. (1951). Ratios involving extreme values. Ann. Math. Stat. 22, 1, 68-78.
+#' Rorabacher, D.B. (1991). Statistical Treatment for Rejection of Deviant Values: Critical Values of Dixon Q Parameter and Related Subrange Ratios at the 95 percent Confidence Level. Anal. Chem. 83, 2, 139-146.
+#' Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58.
+#' Rosner, B. (1975). On the Detection of Many Outliers. Technometrics 17, 221–227.
+#' Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier Procedure. Technometrics 25, 165–172.
 findOutlyingPoints=function(pres,
                             spOutliers=TRUE,
                             envOutliers=TRUE,
@@ -310,10 +322,7 @@ findOutlyingPoints=function(pres,
                             checkPairs=FALSE,
                             kRosner=5,
                             verbose=TRUE){
-  
-  #  for testing
-  #  pres=myPresDF;  verbose=T
-  #  envOutliers=T; spOutliers=T;  pval=1e-5; 
+
   if(spOutliers) { 
     sp.toss.id=findSpatialOutliers(pres=pres,pvalSet=pval,checkPairs=checkPairs,
                                    method=method,kRosner=kRosner)
@@ -347,70 +356,6 @@ findOutlyingPoints=function(pres,
 
 
 #### occOutliers
-#### occOutliers utils.r =====
-#' omit outlying pres
-#' @param xy data.frame with 2 columns
-#' @param percent numeric on [0,100]
-#' @param unin character; input units. option are "m" and "km"
-#' @param unout character; input units. option are "ha","km2", "m2"
-# @param ... additional functions to be passed to \code{\link[raster]{writeRaster}}
-# @description  Divide raster by the sum of all cells.
-# @export
-# unin = c("m");  unout ='m2'
-.presPercentile=function (xy, percent = 95, unin = c("m", "km"), unout = c("ha","km2", "m2")) {
-  
-  if (ncol(sf::st_coordinates(xy)) > 2)
-    stop("xy should be defined in two dimensions")
-  pfs <- sp::crs(xy)
-  if(!is.null(percent)){
-    if (length(percent) > 1)
-      stop("only one value is required for percent")
-    if (percent > 100) {
-      warning("Using all relocations (percent>100)")
-      percent <- 100
-    }
-  }
-  unin <- match.arg(unin)
-  unout <- match.arg(unout)
-  if (inherits(xy, "SpatialPointsDataFrame")) {
-    if (ncol(xy) != 1) {
-      #warning("xy should contain only one column (the id of the animals), id ignored")
-      id <- factor(rep("a", nrow(as.data.frame(xy))))
-    } else {
-      id <- xy[[1]]
-      if (all(is.na(id))) id <- factor(rep("a", length(id)))
-    }
-  } else {
-    id <- factor(rep("a", nrow(as.data.frame(xy))))
-  }
-  
-  if (min(table(id)) < 4) stop("must have 4 records to proceed")
-  id <- factor(id)
-  xy <- as.data.frame(sf::st_coordinates(xy))
-  r <- split(xy, id)
-  est.cdg <- function(xy) apply(xy, 2, mean)
-  cdg <- lapply(r, est.cdg)
-  levid <- levels(id)
-  res =lapply(1:length(r), function(i) {
-    k <- levid[i]
-    df.t <- r[[levid[i]]]
-    cdg.t <- cdg[[levid[i]]]
-    dist.cdg <- function(xyt) {
-      d <- sqrt(((xyt[1] - cdg.t[1])^2) + ((xyt[2] - cdg.t[2])^2))
-      return(d)
-    }
-    di <- apply(df.t, 1, dist.cdg)
-    key <- c(1:length(di))
-    if(!is.null(percent)){
-      acons <- key[di <= stats::quantile(di, percent/100)]
-    } else { acons=key }
-    xy.t <- df.t[acons, ]
-    sf::st_coordinates(xy.t)=c(1,2)
-    return(list(xy.t=xy.t,dist.from.centroid=di))
-  })
-  res
-}
-
 #' find records mor than 1.5 times the interquartile range beyond the upper quartile 
 #' @param dists a numeric vector
 .iqrOutlier=function(dists){
@@ -426,5 +371,4 @@ findOutlyingPoints=function(pres,
 #' @description vectorized version of grep
 #' @param pattern character string containing a regular expression (or character string for ‘fixed = TRUE’) to be matched in the given character vector.  Coerced by ‘as.character’ to a character string if possible.  If a character vector of length 2 or more is supplied, the first element is used with  a warning.
 #' @param x a character vector where matches are sought, or an object which can be coerced by ‘as.character’ to a character vector.
-# @export
 .vgrep=function(pattern,x){mapply(function(y){grep(y,pattern)},x)}

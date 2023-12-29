@@ -2,12 +2,12 @@
 % Please edit documentation in R/settings.R
 \name{defaultSettings}
 \alias{defaultSettings}
-\title{load default settings for occTest}
+\title{Load default settings for occTest}
 \usage{
 defaultSettings()
 }
 \value{
-list of lists with all different parameters to use in occProfile function
+a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 }
 \description{
 Loads a list of lists with the different default parameters for analysis, outputs and grading needed in occTest
@@ -16,8 +16,10 @@ Loads a list of lists with the different default parameters for analysis, output
 it can be use internally or it can be used by a user to subsequently modify parameters. No input parameters are required
 }
 \examples{
+\dontrun{
 #load default settings
 settings <- defaultSettings()
+}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

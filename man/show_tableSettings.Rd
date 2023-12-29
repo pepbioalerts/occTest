@@ -7,7 +7,7 @@
 show_tableSettings()
 }
 \value{
-prints a data.frame
+prints a data.frame with the tableSettings parameters
 }
 \description{
 prints a table with the the conventions used for column names

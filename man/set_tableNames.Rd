@@ -36,7 +36,7 @@ set_tableNames(
 \item{taxonobservation.id}{character. Name of the taxon observartion id field.}
 }
 \value{
-list
+a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 }
 \description{
 helper function to set the names for the fields in the input table (tableSettings). 
@@ -44,9 +44,11 @@ By default it provides rbif like column names (not fully consistent yet tho).
 Alternatively, the user can specify their own field names for the table
 }
 \examples{
+\dontrun{
 defaultTableNames <- set_tableNames()
 #only modifying the names for the coordinates
 myTable_withMyNames <- set_tableNames (x.field='x_coord',y.field = 'y_coord') 
+}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

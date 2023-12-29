@@ -87,7 +87,7 @@
     if (!any(is(ref) == "sf")) {
       ref <- sf::st_as_sf(ref)
     }
-    #this line is in the original code of coordinate cleaner but I do not know why, I guess it comes from pkg reproj
+    #this line is in the original code of coordinate cleaner but I do not know why, I guess it comes from pkg re;proj
     #ref <- reproj(ref)
   }
   wgs84 <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -233,7 +233,9 @@
   flags <- as.numeric(as.vector(unlist(flags)))
   flags <- flags[!is.na(flags)]
   if (sampling_thresh > 0 & length(flags)>0) {
-    pts <- sp::SpatialPoints(x[flags, c(lon, lat)])
+    #pts <- sp::SpatialPoints(x[flags, c(lon, lat)])
+    pts <- sf::st_as_sf(x[flags, c(lon, lat)],coords=c(lon,lat))  
+    st_crs(pts) = 4326
     if (!requireNamespace("rnaturalearth", quietly = TRUE)) {
       stop("package 'rnaturalearth' not found. Needed for sampling_cor = TRUE", 
            call. = FALSE)
@@ -275,8 +277,8 @@
       
       #change from AZizka: commented out bc it introduces warnings that may freak out users (e.g. the etent of the coordinates may go beyond the world)
       #ref <- raster::crop(ref, raster::extent(pts) + 1)
-      
       #country <- sp::over(x = pts, y = ref)[, "iso_a3"]
+      if (is.na(sf::st_crs(ref))) sf::st_crs(ref)<-4326
       country <- sf::st_intersection(x = sf::st_as_sf(pts), y = ref)
       thresh <- stats::quantile(nrec_norm$norm, probs = sampling_thresh)
       s_flagged <- nrec_norm$norm[match(country, nrec_norm$country)]
@@ -312,7 +314,6 @@
   switch(value, clean = return(x[out, ]), flagged = return(out), 
          ids = return(flags))
 }
-
 
 # cc_round_occTest ====
 #' @title Flag records with regular pattern interval

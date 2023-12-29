@@ -66,7 +66,7 @@ geoEnvAccuracy(
 \item{mc.cores}{\emph{numeric}. How many cores to use? (used when doParallel = TRUE). Default 2}
 }
 \value{
-\emph{data.frame}
+a \emph{data.frame} with the results of the tests
 }
 \description{
 Detect records with low accuracy affecting environmental values
@@ -86,11 +86,14 @@ Current implmented methods are:
 \dontrun{
 
 sp_file <- system.file('ext/exampleOccData.csv',package='occTest')
-occ <- read.table(file = sp_file,header = T,sep = ',',as.is = T,nrows = 50)
+occ <- read.table(file = sp_file,header = TRUE,sep = ',',as.is = TRUE,nrows = 50)
 env <- terra::rast(system.file('ext/AllEnv.tif',package='occTest'))
 dem <- terra::rast(system.file('ext/DEM.tif',package='occTest'))
-geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M') ,ef = 'ELEVATION',
-               r.env = env[[1]],raster.elevation = dem)
+geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',
+                af = c('UNCERTAINTY_X_M','UNCERTAINTY_Y_M'),
+                ef = 'ELEVATION',
+                r.env = env[[1]],
+                raster.elevation = dem)
 #see more examples in vignetteXtra-occTest
 #devtools::install_github ('vignetteXtra-occTest')
 }
@@ -100,6 +103,7 @@ geoEnvAccuracy(df=occ,xf = 'MAPX',yf = 'MAPY',af = c('UNCERTAINTY_X_M','UNCERTAI
 
 Other analysis: 
 \code{\link{.nearestcell3}()},
+\code{\link{biogeo_outliers}()},
 \code{\link{centroidDetection}()},
 \code{\link{countryStatusRangeAnalysis}()},
 \code{\link{duplicatesexcludeAnalysis}()},

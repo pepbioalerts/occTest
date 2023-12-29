@@ -16,7 +16,7 @@ set_testBlocks(geo = TRUE, lu = TRUE, env = TRUE, time = TRUE)
 \item{time}{logical. Should this family of tests be performed?}
 }
 \value{
-list
+a \emph{list} with the parameter settings to run \link[occTest]{occTest}
 }
 \description{
 function used to select which groups of tests you want in occTest workflow

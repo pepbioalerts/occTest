@@ -13,18 +13,19 @@ occFilter(
 )
 }
 \arguments{
-\item{df}{data.frame. Output of  occTest}
+\item{df}{\emph{data.frame}. Output of the \link[occTest]{occTest} function.}
 
-\item{by}{character. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')}
+\item{by}{\emph{character}. Applying thresholds to either  blocks of test ('testBlock') or single test types ('testType')}
 
-\item{errorAcceptance}{character. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'}
+\item{errorAcceptance}{\emph{character}. Philosophy for filtering based on threshold. Option are majority, relaxed, strict. Default are 'relaxed'}
 
-\item{errorThreshold}{double. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.}
+\item{errorThreshold}{\emph{double}. Value from 0 to 1, specifying the threshold of wrong tests (potentally erroneous records) to filter. It overrides the parameters in thresholds. We recommend building that table based on the functio buildCustomThresholds.}
 
-\item{custom}{data.frame or equivalent, custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))}
+\item{custom}{\emph{data.frame} or equivalent (e.g \emph{tibble}), custom rules created adding a "errorThreshold" (ranging from 0, strict, to 1, relaxed) column to to the result of readRDS(system.file('ext/fieldMetadata.rds',package='occTest'))}
 }
 \value{
-list of 3 elements.
+a \emph{list} of 3 elements (data.frame): a filtered dataset according to the filtering rules,  
+a dataset of summary statistics, and a dataset containg the metadata for the filtering rules.
 }
 \description{
 Select occurrence records based on aggregated values of different tests
@@ -33,7 +34,6 @@ Select occurrence records based on aggregated values of different tests
 If errorAcceptance is used, a 'relaxed' philosophy corresponds to 0.7 (70% of tests of a block or type not passed), 'majority' corresponds to an errorAcceptance of 0.5, 'strict' corresponds to an errorAcceptance of 0.2.
 }
 \examples{
-
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
 ### devtools::install_github('pepbioalerts/vignette-Xtra')
@@ -43,10 +43,9 @@ occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTe
 filtered_dataset <- occFilter (occTest_output)
 #inspect results
 names (filtered_dataset)
-
 }
 \seealso{
-showTests
+\link[occTest]{occTest} \link[occTest]{show_tests}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr), Jeremy Borderieux (jeremy.borderieux@agroparistech.fr)

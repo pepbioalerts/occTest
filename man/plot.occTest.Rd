@@ -7,16 +7,16 @@
 \method{plot}{occTest}(x, occFilter_list = NULL, show_plot = FALSE, ...)
 }
 \arguments{
-\item{x}{An  occTest object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
+\item{x}{An \emph{occTest} object returned by  {\link[=occTest]{occTest}}, i.e. the unfiltered data.frame}
 
-\item{occFilter_list}{Optional, an occFilter object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}}
+\item{occFilter_list}{Optional. An  \emph{occFilter} object; a list returned by  {\link[=occFilter]{occFilter}}, the result of the filtering of \code{x}}
 
-\item{show_plot}{Logical, should the plots be plotted ?}
+\item{show_plot}{\emph{Logical} , should the plots be plotted ?}
 
 \item{...}{not used}
 }
 \value{
-list of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
+\emph{list} of ggplots objects, of varying length, depending on whether the filtering was done by testBlock or testType
 }
 \description{
 Display the filtering process

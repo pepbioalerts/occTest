@@ -2,14 +2,14 @@
 
 #.coords2country =====
 #' @title Extracts country ISO3 based on locations
-#' @param xydat A dataframe with x and y coordinates
-#' @param .countries.shapefile SpatialPolygonsDataFrame of world countries and their associated ISO3 codes
-#' @param .points.crs crs for the occurrence data
-#' @param xf character. name of the x coordinate field
-#' @param yf character. name of the y coordinate field
-#' @param ctryNameField character. Column name in .countries shapefile where ISO3 are indicated
-#' @param verbose logical. Print messages?
-#' @return Factor with ISO3 codes for countries 
+#' @param xydat \emph{data.frame} with x and y coordinates
+#' @param .countries.shapefile \emph{multipolygon} sf objects  of world countries and their associated ISO3 codes
+#' @param .points.crs \emph{character} crs for the occurrence data
+#' @param xf \emph{character} name of the x coordinate field
+#' @param yf \emph{character} name of the y coordinate field
+#' @param ctryNameField \emph{character} Column name in .countries shapefile where ISO3 are indicated
+#' @param verbose \emph{logical} Print messages?
+#' @return \emph{character} factor vector with ISO3 codes for countries 
 #' @family Geo
 #' @author Josep M Serra Diaz
 

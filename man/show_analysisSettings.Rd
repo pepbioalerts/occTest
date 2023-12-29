@@ -7,7 +7,7 @@
 show_analysisSettings()
 }
 \value{
-prints a data.frame
+prints a data.frame with the analysis settings
 }
 \description{
 prints a table with the the conventions used for analysisSettings list

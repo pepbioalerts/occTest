@@ -7,10 +7,10 @@
 get_occTest_settings(x)
 }
 \arguments{
-\item{x}{An occTest or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}}
+\item{x}{An \emph{occTest} or occFilter object returned by  {\link[=occTest]{occTest}} or  {\link[=occFilter]{occFilter}}}
 }
 \value{
-list of lists with all different parameters to use in  {\link[=occTest]{occTest}}
+a \emph{list} of lists with all different parameters to use in  {\link[=occTest]{occTest}}
 }
 \description{
 Get the settings used to create a  occTest or occFilter object
@@ -18,7 +18,6 @@ Get the settings used to create a  occTest or occFilter object
 \examples{
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
-
 #load output from occTest
 occTest_output <- readRDS (system.file('ext/output_occTest.rds',package = 'occTest'))
 get_occTest_settings(occTest_output)

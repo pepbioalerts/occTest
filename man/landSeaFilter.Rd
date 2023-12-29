@@ -7,20 +7,20 @@
 landSeaFilter(df, xf, yf, habType = NULL, verbose = TRUE, habPol = NULL)
 }
 \arguments{
-\item{df}{Data.frame of species occurrences}
+\item{df}{\emph{data.frame} of species occurrences}
 
-\item{xf}{the field in the dataframe containing the x cordinates}
+\item{xf}{\emph{character}. The field in df containing the x coordinates}
 
-\item{yf}{the field in the dataframe containing the y cordinates}
+\item{yf}{\emph{character}. The field in df containing the y coordinates}
 
-\item{habType}{character. Define the species habitat. Only "terrestrial" and "sea" implemented.}
+\item{habType}{\emph{character}. Define the species habitat. Only "terrestrial" and "sea" implemented.}
 
-\item{verbose}{logical. Print messages? Default TRUE}
+\item{verbose}{\emph{logical} Print messages? Default TRUE}
 
-\item{habPol}{sf polygon boject. Shows land masses}
+\item{habPol}{\emph{polygon sf}. Multipolygon object indicating land masses}
 }
 \value{
-list
+\emph{list} of filtered and non-filtered occurrrence recprds by land use type
 }
 \description{
 Filter the occurrence records according to whether they should be in land masses or not
@@ -29,9 +29,9 @@ Filter the occurrence records according to whether they should be in land masses
 The user can define the habitat type and provide a an input landmass polygon
 }
 \examples{
-\donttest{
+\dontrun{
 xyDF <- data.frame (x=c(0,42),y=c(0,1),Reason=NA)
-landSeaFilter(xyDF,xf='x',yf='y')
+landSeaFilter(df=xyDF,xf='x',yf='y')
 }
 }
 \author{

@@ -17,26 +17,26 @@ occSimpFilter(
 )
 }
 \arguments{
-\item{spOcc}{data.frame. Object with the coordinate data.}
+\item{spOcc}{\emph{data.frame}. Object with the coordinate data.}
 
-\item{env}{SpatRaster object. Raster of environmental data (e.g. typically climatic).}
+\item{env}{\emph{SpatRaster} object. Raster of environmental data (e.g. typically climatic).}
 
-\item{speciesName}{character. Name of the species.}
+\item{speciesName}{\emph{character}. Name of the target species.}
 
-\item{x}{name of the field with the coordinate x. Default 'x'}
+\item{x}{\emph{character}. Name of the field in the data frame containing the x coordinates}
 
-\item{y}{name of the field with the coordinate y. Default 'y'}
+\item{y}{\emph{character}. Name of the field in the data frame containing the y coordinates}
 
-\item{date}{name of the field with the values of the reported timestamp of the record. Default NULL}
+\item{date}{\emph{character}. Name of the field with the values of the reported timestamp of the record. Default NULL}
 
-\item{isoCountry}{name of the field with the values of the reported country of the record. Default NULL}
+\item{isoCountry}{\emph{character}. Name of the field with the values of the reported country of the record. Default NULL}
 
-\item{classification}{character. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'}
+\item{classification}{\emph{character}.. Indicates the thresholds philosophy applied to classify errors in occurrence data. Possible values 'strict','relaxed','custom'}
 
-\item{filterCols}{logical. Should only the initial input columns be retained in the output (the filtered dataframe)?}
+\item{filterCols}{\emph{logical}.. Should only the initial input columns be retained in the output (the filtered dataframe)?}
 }
 \value{
-a list of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
+a \emph{list} of two. First element is a data.frame with profiled occurrence records with their associated profiled labels. Second element is a dataframe with all outputs of the analysis implemented.
 }
 \description{
 Runs tests and validates data

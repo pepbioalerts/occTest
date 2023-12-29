@@ -43,7 +43,7 @@
 # .checkfields ====
 #' @title Checking main fields
 #' @description Verify that all main data fields are correctly populated.
-#' @details  checking main fields (inspired by \link[biogeo]{addmainfields} . 
+#' @details  checking main fields (inspired by biogeo-package addmainfields) 
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
@@ -92,7 +92,7 @@
 # .checkdatastr2 ====
 #' @title Check data structure
 #' @description Verify that all main data fields are correctly structured
-#' @details Inspired by \link[biogeo]{checkdatastr} but modified (hence number 2 after the function original name)
+#' @details Inspired by biogeo-package checkdatastr, but modified (hence number 2 after the function original name)
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param xf character. Name of the field where the x coordinate is stored (typically longitude). Default is x.field
 #' @param yf character. Name of the field where the y coordinate is stored (typically latitude). Default is y.field
@@ -119,7 +119,7 @@
 
 #' @title  Add main fields 
 #' @description Incorporate fields in the initial data frame
-#' @details Inspired by \link[biogeo]{addmainfields} but modified (hence number 2 after the function original name)
+#' @details Inspired biogeo-package addmainfields but modified (hence number 2 after the function original name)
 #' @param dat A dataframe containing occurrence data for checking.
 #' @param species character. Name of the species
 #' @param verbose logical. Print messages? Default FALSE
