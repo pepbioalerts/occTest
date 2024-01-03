@@ -54,7 +54,7 @@ Imports:
     utils,
 Suggests:
     GNRS,
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     rworldmap,
@@ -65,3 +65,4 @@ Suggests:
     assertthat,
     geodata
 Additional_repositories: https://pepbioalerts.github.io/drat
+Config/testthat/edition: 3
