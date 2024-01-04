@@ -85,7 +85,7 @@ occTest = function(
   if(missing(r.env)) stop('missing r.env')
   if(!inherits(r.env,'SpatRaster')) stop('raster is not at SpatRaster object')
   if(!is.null(r.dem)  & !inherits(r.dem,'SpatRaster')) stop('DEM raster is not at SpatRaster object')
-  if(! pingr::is_online()) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
+  if(! pingr::is_online(timeout=3)) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
   
   
   sp.table <- as.data.frame (sp.table)
@@ -249,7 +249,8 @@ occTest = function(
   ### STEP 1b [OPTIONAL]: Automatically solve native or invasive range  =====
   #### NOT IMPLEMENTED YET !!!!!!!!! 
   #whatever the want we are going to set it to False from now
-  if (any (c(interactiveMode,resolveNativeCtry,resolveAlienCtry))) message('Automatic resolving of native and non-native ranges not implemented yet')
+  if (any (c(interactiveMode,resolveNativeCtry,resolveAlienCtry))) 
+    message('Automatic resolving of native and non-native ranges not implemented yet')
   interactiveMode= FALSE
   resolveNativeCtry = FALSE
   resolveAlienCtry = FALSE
@@ -285,7 +286,6 @@ occTest = function(
   #set timer
   tictoc::tic('Filter major coordinate Issues')
   message('Filter major coordinate Issues started...')
-
   Analysis.H = filterMissing(df = dat,xf = x.field,yf = y.field)
   dat.Q.H = Analysis.H$stay
   dat = Analysis.H$continue
@@ -370,7 +370,18 @@ occTest = function(
       if(any(class(status.out)=='occTest')) {return(status.out)}
     
      } ############################
-  if(points.crs != sf::st_crs(4326)){warning ('geovalid coordinate tests not implemented for this projection') } 
+  if(points.crs != sf::st_crs(4326)){
+    warning ('geovalid coordinate tests not implemented for this projection') 
+    dat$coordIssues_invalidCoord_test = NA
+    dat$coordIssues_invalidCoord_value = NA
+    dat$coordIssues_invalidCoord_comment='Test not performed because not latlong projection'
+    dat$coordIssues_zeroCoord_test = NA
+    dat$coordIssues_zeroCoord_value = NA
+    dat$coordIssues_zeroCoord_comment = 'Test not performed because not latlong projection'
+    dat$coordIssues_coordConv_test = NA
+    dat$coordIssues_coordConv_value = NA
+    dat$coordIssues_coordConv_comment = 'Test not performed because not latlong projection'
+    } 
   
   #indicate issues of georeference and put them aside
   obj.issues = c('dat.Q.H','dat.Q.H1','dat.Q.H2','dat.Q.H3')
