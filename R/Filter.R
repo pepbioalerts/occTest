@@ -92,7 +92,7 @@ occFilter <- function (df,
    
   errorThresholdDf = colMetaData %>% 
       dplyr::filter (.data$phase != 'filter') %>%
-      dplyr::select(by,errorThreshold) %>%
+      dplyr::select(dplyr::all_of(by),errorThreshold) %>%
       unique
    
   names (errorThresholdDf) <- c('test','errorThreshold')

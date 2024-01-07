@@ -51,6 +51,8 @@ Imports:
     terra,
     tibble,
     tictoc,
+    tidyr,
+    utf8,
     utils,
 Suggests:
     GNRS,
@@ -60,7 +62,6 @@ Suggests:
     rworldmap,
     cleangeo,
     geosphere,
-    originr,
     parallelsugar,
     assertthat,
     geodata

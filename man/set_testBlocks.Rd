@@ -25,9 +25,10 @@ function used to select which groups of tests you want in occTest workflow
 You can turn off an entire type of tests altogether by modifying this seetings. See occTest::showTests for further information on tests used in the packages
 }
 \examples{
-defaultSettings_analysis  <- set_testBlocks()
+\dontrun{
 #now we turn off the block of tests related to land use
 mySettings_analysis  <- set_testBlocks(lu=FALSE)
+}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

@@ -1,4 +1,3 @@
-context("Workflow test")
 require(terra)
 require(sf)
 require (occTest)

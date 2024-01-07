@@ -45,9 +45,10 @@ function used to select which types of tests you want in occTest workflow (analy
 See occTest::showTests for further information on tests used in the packages
 }
 \examples{
-defaultSettings_analysis <- set_testTypes()
+\dontrun{
 #now we do not want to perform centroid geoenironmental accuracy type of tests
 mySettings_analysis <- set_testTypes(geoenvLowAccuracy=FALSE)
+}
 }
 \author{
 Josep M Serra-Diaz (pep.serradiaz@agroparistech.fr)

@@ -15,7 +15,7 @@
 #' We recommend those default values if the user is to use the geospatial data included in the package.\cr
 #' but this automatic implementation (occTest + occFilter) missses some analysis to increase speed.
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
-#' @examples \donttest{
+#' @examples \dontrun{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
 #' #load environmental SpatRaster

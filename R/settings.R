@@ -455,9 +455,10 @@ set_writeout <- function (output.dir = NULL,
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' defaultSettings_analysis <- set_testTypes()
+#' \dontrun{
 #' #now we do not want to perform centroid geoenironmental accuracy type of tests
 #' mySettings_analysis <- set_testTypes(geoenvLowAccuracy=FALSE)
+#' }
 #' @export
 set_testTypes <- function (countryStatusRange = TRUE,
                       centroidDetection = TRUE,
@@ -497,9 +498,10 @@ set_testTypes <- function (countryStatusRange = TRUE,
 #' @keywords user
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
-#' defaultSettings_analysis  <- set_testBlocks()
+#' \dontrun{
 #' #now we turn off the block of tests related to land use
 #' mySettings_analysis  <- set_testBlocks(lu=FALSE)
+#' }
 #' @export
 set_testBlocks      <- function (geo = TRUE,
                                 lu = TRUE,

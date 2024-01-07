@@ -420,15 +420,15 @@ centroidDetection <- function (df,
     outFile = paste0(tempdir(),'/centroids.rds')
     if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
     centroid_data =  readRDS (outFile)
-    centroid_data$countryISO3 <- countrycode::countrycode(sourcevar = centroid_data$country,origin = 'country.name' ,destination = 'iso3c')
+    centroid_data$countryISO3 <- countrycode::countrycode(sourcevar = utf8::utf8_encode(centroid_data$country),origin = 'country.name' ,destination = 'iso3c')
     bien_centroids <- try (centroid_assessment_BIEN (occ_sf,centroid_data),silent=T)
-    if (!class(bien_centroids) %in% 'try-error') {
+    if (!inherits(bien_centroids,'try-error')) {
       out$centroidDetection_BIEN_value <- bien_centroids$is_centroid
       out$centroidDetection_BIEN_test <- as.logical (bien_centroids$is_centroid)
       out$centroidDetection_BIEN_comments <- paste('centroid_dist =',bien_centroids$relative_distance)
     }
     
-    if (class(bien_centroids) %in% 'try-error') {
+    if (inherits(bien_centroids,'try-error')) {
       out$centroidDetection_BIEN_value <- NA
       out$centroidDetection_BIEN_test <- NA
       out$centroidDetection_BIEN_comments <- 'error in bien_centroids'
@@ -504,7 +504,7 @@ humanDetection <- function (df,
                             .points.crs=NULL,
                             do=TRUE, verbose=FALSE,output.dir=NULL){
 
-  out <- data.frame (humanDetection_HumanInfluence_value=NA,
+    out <- data.frame (humanDetection_HumanInfluence_value=NA,
                      humanDetection_HumanInfluence_test=NA,
                      humanDetection_HumanInfluence_comments= NA,
                      humanDetection_UrbanAreas_value=NA,
@@ -526,6 +526,17 @@ humanDetection <- function (df,
 
   #start human influence index test
   if (any (method %in% c('hii','all'))) {
+    #make sure you have a ras.hii functional
+    if (is.null(ras.hii) | inherits(ras.hii,'SpatRaster')){
+      message ('You want to do a human influence index test but you have not provided a raster of human influence')
+      message ("We will download one default for you")
+      dest_url_hii = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/hii3.zip'
+      outFile_hii = paste0(tempdir(),'/hii3.zip')
+      if (!file.exists(outFile_hii)) utils::download.file(url=dest_url_hii,destfile = outFile_hii)
+      utils::unzip(outFile_hii,exdir=dirname(outFile_hii))
+      outFile_hii = paste0(tools::file_path_sans_ext (outFile_hii),'.tif')
+      ras.hii <- terra::rast (outFile_hii)
+    }
     #accomodate projections
     if (is.null (.points.crs)) {sf::st_set_crs(data.sp.pres, value=terra::crs(ras.hii)) 
       warning ('ASSUMING Points and human influence raster have the same projection')

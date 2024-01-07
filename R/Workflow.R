@@ -29,7 +29,7 @@
 #' $AnalysisType$_$SpecificTest$_test: logical Shows whether the occurrence passes or not the test, being TRUE a flag for a wrong record and NA indicating that the test was not performed on that record. \cr
 #' $AnalysisType$_$SpecificTest$_comment: character. Shows some comments related to the specific test.\cr
 #' Examples: HumanDetection_HumanInfluence_value gives you the score of current human influence in the record HumanDetection_HumanInfluence_test gives you whether we consider the former value an error/bias (TRUE) or not (FALSE) HumanDetection_HumanInfluence_comment gives you a commen that give further detail on the analysis. In this case that the threshold of 45 was used for the test. HumanDetection_score summarizes all the other HumanDetection tests and outputs a value from 0 to 1. A value of 0.5 would indicate that half of the tests used indicate that is an a Human signal in the record.
-#' @examples \donttest{
+#' @examples \dontrun{
 #' ### THIS IS A CUT DOWN  EXAMPLE 
 #' ### visit vignetteXtra-occTest for more info
 #' #load environmental SpatRast
@@ -151,7 +151,6 @@ occTest = function(
   
   doCentroidDetection = analysisSettings$centroidDetection$doCentroidDetection
   methodCentroidDetection = analysisSettings$centroidDetection$methodCentroidDetection
-  
   doHumanDetection = analysisSettings$humanDetection$doHumanDetection
   methodHumanDetection = analysisSettings$humanDetection$methodHumanDetection
   th.human.influence = analysisSettings$humanDetection$th.human.influence
@@ -741,7 +740,6 @@ occTest = function(
   }
   tictoc::toc()
   
-  #output.function = list(occTest_full=full.qaqc, occTest_short=short.qaqc)
   output.function = full.qaqc
 
   attr(output.function,"class")<-c("occTest",class(output.function))

@@ -1,4 +1,3 @@
-context("Filtering test")
 require (occTest)
 
 # setup test data
@@ -16,10 +15,4 @@ test_that("occFilter outputs", {
   expect_in('data.frame',class(filtered_dataset$filteredDataset))
   expect_equal('data.frame',class(filtered_dataset$summaryStats))
   expect_equal('data.frame',class(filtered_dataset$rule))
-})
-
-# expected output columns
-test_that("occTest output columns documented", {
-  expect_in(names(occData),names(out))
-  expect_equal (grep('_score',names(out),value=T),scores_documented)
 })

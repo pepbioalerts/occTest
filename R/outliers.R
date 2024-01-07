@@ -88,7 +88,7 @@
 #' @returns Returns a \emph{logical} vectors detecting outliers
 #' @author Coline CF Boonmann <colineboonman@@bio.au.dk>
 
-mcp_test =  function(data,xcoord,ycoord,percentage=95){
+mcp_test <-  function(data,xcoord,ycoord,percentage=95){
   rownames(data) = seq(1:nrow(data))
   xy = na.omit(data[,c(xcoord,ycoord)])
   xy = xy[!duplicated(xy),]

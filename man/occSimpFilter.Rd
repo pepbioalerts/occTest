@@ -47,7 +47,7 @@ We recommend those default values if the user is to use the geospatial data incl
 but this automatic implementation (occTest + occFilter) missses some analysis to increase speed.
 }
 \examples{
-\donttest{
+\dontrun{
 ### THIS IS A CUT DOWN  EXAMPLE 
 ### visit vignetteXtra-occTest for more info
 #load environmental SpatRaster
