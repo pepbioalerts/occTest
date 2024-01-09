@@ -66,13 +66,14 @@
 #' require(dplyr)
 #' require(terra)
 #' require(ggplot2)
+#' require(occTest)
 #'
 #' # Environmental variables
 #' somevar <- system.file("external/somevar.tif", package = "flexsdm")
 #' somevar <- terra::rast(somevar)
 #'
 #' # Species occurrences
-#' data("spp")
+#' data("spp",package = "flexsdm")
 #' spp
 #' spp1 <- spp %>% dplyr::filter(species == "sp1")
 #'
@@ -83,7 +84,7 @@
 #' spp1 <- spp1 %>% mutate(idd = 1:nrow(spp1))
 #'
 #' # Detect outliers
-#' outs_1 <- env_outliers(
+#' outs_1 <- occTest:::env_outliers(
 #'   data = spp1,
 #'   pr_ab = "pr_ab",
 #'   x = "x",
@@ -111,7 +112,7 @@
 #'   facet_wrap(. ~ factor(.out_sum))
 #'
 #' # Detect outliers only with presences
-#' outs_2 <- env_outliers(
+#' outs_2 <- occTest:::env_outliers(
 #'   data = spp1 %>% dplyr::filter(pr_ab == 1),
 #'   pr_ab = "pr_ab",
 #'   x = "x",
