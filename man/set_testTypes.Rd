@@ -8,7 +8,7 @@ set_testTypes(
   countryStatusRange = TRUE,
   centroidDetection = TRUE,
   humanDetection = TRUE,
-  landUseType = TRUE,
+  landUse = TRUE,
   institutionLocality = TRUE,
   geoOutliers = TRUE,
   envOutliers = TRUE,
@@ -23,8 +23,6 @@ set_testTypes(
 
 \item{humanDetection}{logical. Should this test type be performed?}
 
-\item{landUseType}{logical. Should this test type be performed?}
-
 \item{institutionLocality}{logical. Should this test type be performed?}
 
 \item{geoOutliers}{logical. Should this test type be performed?}
@@ -34,6 +32,8 @@ set_testTypes(
 \item{geoenvLowAccuracy}{logical. Should this test type be performed?}
 
 \item{timeAccuracy}{logical. Should this test type be perfomed?}
+
+\item{landUseType}{logical. Should this test type be performed?}
 }
 \value{
 a \emph{list} with the parameter settings to run \link[occTest]{occTest}
@@ -46,7 +46,7 @@ See occTest::showTests for further information on tests used in the packages
 }
 \examples{
 \dontrun{
-#now we do not want to perform centroid geoenironmental accuracy type of tests
+#now we do not want to perform centroid geo-environmental accuracy type of tests
 mySettings_analysis <- set_testTypes(geoenvLowAccuracy=FALSE)
 }
 }

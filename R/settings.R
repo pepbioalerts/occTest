@@ -71,7 +71,7 @@ defaultSettings <- function (){
 
       )
       ,
-      landUseType   = list (doLandUse=TRUE,
+      landUse   = list (doLandUse=TRUE,
                              methodLandUse='in',
                              landUseCodes = NULL,
                              ras.landUse=NULL #we need a default here to be downloaded
@@ -191,7 +191,7 @@ fullSettings <- function (){
                             
       )
       ,
-      landUseType   = list (doLandUse=TRUE,
+      landUse   = list (doLandUse=TRUE,
                             methodLandUse='in',
                             landUseCodes = NULL,
                             ras.landUse=NULL #we need a default here to be downloaded
@@ -311,7 +311,7 @@ minimalSettings <- function (){
                             ras.hii=terra::rast(outFile_hii)
       )
       ,
-      landUseType   = list (doLandUse=TRUE,
+      landUse   = list (doLandUse=TRUE,
                             methodLandUse='in',
                             landUseCodes = NULL,
                             ras.landUse=NULL #we need a default here to be downloaded
@@ -456,14 +456,14 @@ set_writeout <- function (output.dir = NULL,
 #' @author Josep M Serra-Diaz (pep.serradiaz@@agroparistech.fr)
 #' @examples 
 #' \dontrun{
-#' #now we do not want to perform centroid geoenironmental accuracy type of tests
+#' #now we do not want to perform centroid geo-environmental accuracy type of tests
 #' mySettings_analysis <- set_testTypes(geoenvLowAccuracy=FALSE)
 #' }
 #' @export
 set_testTypes <- function (countryStatusRange = TRUE,
                       centroidDetection = TRUE,
                       humanDetection = TRUE,
-                      landUseType = TRUE,
+                      landUse = TRUE,
                       institutionLocality =TRUE,
                       geoOutliers = TRUE,
                       envOutliers = TRUE,
@@ -526,7 +526,7 @@ set_testBlocks      <- function (geo = TRUE,
   newParamsList = set_testTypes(countryStatusRange = unique (newSettings$activate [which (newSettings$testType == 'countryStatusRange')]),
                            centroidDetection = unique (newSettings$activate [which (newSettings$testType == 'centroidDetection')]),
                            humanDetection = unique (newSettings$activate [which (newSettings$testType == 'humanDetection')]),
-                           landUseType = unique (newSettings$activate [which (newSettings$testType == 'landUseType')]),
+                           landUse = unique (newSettings$activate [which (newSettings$testType == 'landUse')]),
                            institutionLocality = unique (newSettings$activate [which (newSettings$testType == 'institutionLocality')]),
                            geoOutliers = unique (newSettings$activate [which (newSettings$testType == 'geoOutliers')]),
                            envOutliers = unique (newSettings$activate [which (newSettings$testType == 'envOutliers')]),

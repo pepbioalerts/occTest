@@ -156,10 +156,10 @@ occTest = function(
   th.human.influence = analysisSettings$humanDetection$th.human.influence
   ras.hii = analysisSettings$humanDetection$ras.hii
   
-  doLandUseSelect = analysisSettings$landUseType$doLandUse
-  methodLandUseSelect = analysisSettings$landUseType$methodLandUse
-  landUseCodes = analysisSettings$landUseType$landUseCodes
-  ras.landUse = analysisSettings$landUseType$ras.landUse
+  doLandUseSelect = analysisSettings$landUse$doLandUse
+  methodLandUseSelect = analysisSettings$landUse$methodLandUse
+  landUseCodes = analysisSettings$landUse$landUseCodes
+  ras.landUse = analysisSettings$landUse$ras.landUse
 
   doInstitutionLocality = analysisSettings$institutionLocality$doInstitutionLocality
   methodInstitutionLocality = analysisSettings$institutionLocality$methodInstitutionLocality
