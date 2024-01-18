@@ -23,6 +23,8 @@ set_testTypes(
 
 \item{humanDetection}{logical. Should this test type be performed?}
 
+\item{landUse}{logical. Should this test type be performed?}
+
 \item{institutionLocality}{logical. Should this test type be performed?}
 
 \item{geoOutliers}{logical. Should this test type be performed?}
@@ -32,8 +34,6 @@ set_testTypes(
 \item{geoenvLowAccuracy}{logical. Should this test type be performed?}
 
 \item{timeAccuracy}{logical. Should this test type be perfomed?}
-
-\item{landUseType}{logical. Should this test type be performed?}
 }
 \value{
 a \emph{list} with the parameter settings to run \link[occTest]{occTest}
