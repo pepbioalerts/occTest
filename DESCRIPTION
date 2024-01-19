@@ -19,6 +19,7 @@ LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Date: 2023-09-13
+Depends: R (>= 3.5.0)
 Imports:
     adehabitatHR,
     alphahull,
@@ -64,6 +65,8 @@ Suggests:
     geosphere,
     parallelsugar,
     assertthat,
-    geodata
+    geodata,
+    piggyback,
+    tidyverse
 Additional_repositories: https://pepbioalerts.github.io/drat
 Config/testthat/edition: 3
