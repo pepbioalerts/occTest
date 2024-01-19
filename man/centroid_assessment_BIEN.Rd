@@ -31,6 +31,46 @@ This function is designed to use the BIEN centroid detection method which provid
 \note{
 Relative centroid distance is calculated as: (distance between the occurrence record and centroid)/(distance between centroid and the furthest from it within the region)
 }
+\examples{
+
+# Load required libraries
+
+library(occTest)
+library(piggyback)
+library(sf)
+library(tidyverse)
+
+# Create temporary directory to store the centroid data
+
+temp_dir <- tempdir()
+
+# Download the data from Github
+
+pb_download(file = "centroids_long_format.gpkg",
+           repo = "pepbioalerts/occTest",
+           tag = "data",
+           dest = temp_dir,
+           overwrite = TRUE)
+
+# Load centroid file
+
+centroids <- st_read(file.path(temp_dir,"centroids_long_format.gpkg"))
+
+# Load example data set
+
+occData <- read.csv(system.file('ext/exampleOccData.csv',
+                               package = 'occTest')) |>
+ filter(!is.na(MAPX) & !is.na(MAPY) ) |>
+ st_as_sf(coords = c("MAPX", "MAPY")) |>
+ mutate(country  = COUNTRYRECORD)
+
+
+# Run function and append to existing data
+
+occData |>
+ bind_rows(  centroid_assessment_BIEN(occurrences = occData,
+                                      centroid_data = centroids))
+}
 \author{
 Brian Maitner & Pep Serra-Diaz
 }

@@ -16,7 +16,46 @@
 #' relative_distance: Relative distance between the occurrence point and the nearest centroid (see note)
 #' centroid_distance: Distance (decimal degrees) between the occurrence point and the nearest centroid.
 #' dist_max: Furthest distance from the centroid within the political division. 
-
+#' @export
+#' @examples
+#' 
+#' # Load required libraries
+#'
+#' library(occTest)
+#' library(piggyback)
+#' library(sf)
+#' library(tidyverse)
+#'
+#'# Create temporary directory to store the centroid data
+#'
+#'temp_dir <- tempdir()
+#'
+#'# Download the data from Github
+#'
+#'pb_download(file = "centroids_long_format.gpkg",
+#'            repo = "pepbioalerts/occTest",
+#'            tag = "data",
+#'            dest = temp_dir,
+#'            overwrite = TRUE)
+#'
+#'# Load centroid file
+#'
+#'centroids <- st_read(file.path(temp_dir,"centroids_long_format.gpkg"))
+#'
+#'# Load example data set
+#'
+#'occData <- read.csv(system.file('ext/exampleOccData.csv',
+#'                                package = 'occTest')) |>
+#'  filter(!is.na(MAPX) & !is.na(MAPY) ) |>
+#'  st_as_sf(coords = c("MAPX", "MAPY")) |>
+#'  mutate(country  = COUNTRYRECORD)
+#'
+#'
+#'# Run function and append to existing data
+#'
+#'occData |>
+#'  bind_rows(  centroid_assessment_BIEN(occurrences = occData,
+#'                                       centroid_data = centroids))
 centroid_assessment_BIEN <- function(occurrences,
                                      centroid_data,
                                      relative_distance_threshold = 0.001){
@@ -34,7 +73,7 @@ centroid_assessment_BIEN <- function(occurrences,
   #add unique ID field
 
     occurrences <-
-      occurrences %>%
+      occurrences |>
       dplyr::mutate(cent_ID = 1:dplyr::n())
   
   ### NEW
@@ -75,7 +114,7 @@ centroid_assessment_BIEN <- function(occurrences,
     if (is.na(country_i) | country_i == ""){ next()}
     
     centroid_i <-
-      centroid_data %>%
+      centroid_data |>
       dplyr::filter(gid_0 == country_i &
                 is.na(gid_1) &
                 is.na(gid_2) )
@@ -84,7 +123,7 @@ centroid_assessment_BIEN <- function(occurrences,
     if (nrow (centroid_i)==0){ next()}
     
     occurrences_i <-
-      occurrences %>%
+      occurrences |>
       dplyr::filter(countryBIEN == country_i &
                 is.na(state_province) &
                 is.na(county) )
@@ -105,25 +144,25 @@ centroid_assessment_BIEN <- function(occurrences,
       
       #calculate minimum distances and get the closest centroid
         
-        dists_dd %>%
+        dists_dd |>
           apply(MARGIN = 1, FUN = which.min) -> dist_dd_index
         
-        dists_dd %>%
+        dists_dd |>
           apply(MARGIN = 1, FUN = min) -> mins_dd
       
         closest_centroids_i <- centroid_i[dist_dd_index,]
       
       closest_centroids_i <-
-        closest_centroids_i %>%
+        closest_centroids_i |>
         dplyr::mutate(cent_ID = occurrences_i$cent_ID,
                       centroid_distance = mins_dd,
-               relative_distance = centroid_distance/dist_max) %>%
+               relative_distance = centroid_distance/dist_max) |>
         sf::st_drop_geometry()
       
       if(nrow(closest_centroids_i) != nrow(occurrences_i)){
         stop("occurrence vs centroid mismatch in countries") }
       
-      country_centroids %>%
+      country_centroids |>
         dplyr::bind_rows(closest_centroids_i) -> country_centroids
       
       
@@ -131,10 +170,10 @@ centroid_assessment_BIEN <- function(occurrences,
       
       #stop("Do something if there aren't any centroids (NAs prob)")
       
-      occurrences_i %>%
-        dplyr::select(.data,cent_ID,country,state_province,county)%>%
-        dplyr::rename(county_parish=county)%>%
-        sf::st_drop_geometry(.data)%>%
+      occurrences_i |>
+        dplyr::select(.data,cent_ID,country,state_province,county)|>
+        dplyr::rename(county_parish=county)|>
+        sf::st_drop_geometry(.data)|>
         dplyr::bind_rows(country_centroids) -> country_centroids
       
       
@@ -150,12 +189,12 @@ centroid_assessment_BIEN <- function(occurrences,
   state_centroids <- NULL
   
   states <-
-    occurrences %>%
-    sf::st_drop_geometry() %>%
+    occurrences |>
+    sf::st_drop_geometry() |>
     dplyr::filter(!is.na(country) &
              !is.na(state_province)&
-             is.na(county))%>%
-    dplyr::select(country,state_province)%>%
+             is.na(county))|>
+    dplyr::select(country,state_province)|>
     unique()
   
   
@@ -168,13 +207,13 @@ centroid_assessment_BIEN <- function(occurrences,
     state_i <-states[i,'state_province']
     
     centroid_i <-
-      centroid_data %>%
+      centroid_data |>
       dplyr::filter( country == country_i &
                        state_province==state_i &
                 is.na(county_parish) )
     
     occurrences_i <-
-      occurrences %>%
+      occurrences |>
       dplyr::filter( country == country_i &
                        state_province==state_i &
                 is.na(county) )
@@ -186,10 +225,10 @@ centroid_assessment_BIEN <- function(occurrences,
       
       # dists_m <- st_distance(occurrences_i, centroid_i)
       # 
-      # dists %>%
+      # dists |>
       #   apply(MARGIN = 1, FUN = which.min) -> dist_m_index
       # 
-      # dists %>%
+      # dists |>
       #   apply(MARGIN = 1, FUN = min) -> mins_m
       
       
@@ -202,34 +241,34 @@ centroid_assessment_BIEN <- function(occurrences,
       
       dists_dd <- sf::st_distance(occurrences_i, centroid_i)
       
-      dists_dd %>%
+      dists_dd |>
         apply(MARGIN = 1, FUN = which.min) -> dist_dd_index
       
-      dists_dd %>%
+      dists_dd |>
         apply(MARGIN = 1, FUN = min) -> mins_dd
       
       closest_centroids_i <- centroid_i[dist_dd_index,]
       
       closest_centroids_i <-
-        closest_centroids_i %>%
+        closest_centroids_i |>
         dplyr::mutate(cent_ID = occurrences_i$cent_ID,
                centroid_distance = mins_dd,
-               relative_distance = centroid_distance/dist_max)%>%
+               relative_distance = centroid_distance/dist_max)|>
         sf::st_drop_geometry()
       
       if(nrow(closest_centroids_i) != nrow(occurrences_i)){
         stop("occurrence vs centroid mismatch in states")}
       
-      state_centroids %>%
+      state_centroids |>
         dplyr::bind_rows(closest_centroids_i) -> state_centroids
       
       
     }else{
       
-      occurrences_i %>%
-        dplyr::select(cent_ID,country,state_province,county)%>%
-        dplyr::rename(.data,county_parish=county)%>%
-        sf::st_drop_geometry(.data)%>%
+      occurrences_i |>
+        dplyr::select(cent_ID,country,state_province,county)|>
+        dplyr::rename(.data,county_parish=county)|>
+        sf::st_drop_geometry(.data)|>
         dplyr::bind_rows(state_centroids) -> state_centroids
       
       
@@ -240,10 +279,10 @@ centroid_assessment_BIEN <- function(occurrences,
   }#i state loop
   
   #check lengths
-  occurrences %>%
+  occurrences |>
     dplyr::filter(!is.na(country) &
              !is.na(state_province)&
-             is.na(county))%>%
+             is.na(county))|>
     sf::st_drop_geometry()->state_occs
   
   if(nrow(state_occs) > 0 ){
@@ -261,12 +300,12 @@ centroid_assessment_BIEN <- function(occurrences,
   county_centroids <- NULL
   
   counties <-
-    occurrences %>%
-    sf::st_drop_geometry(.data) %>%
+    occurrences |>
+    sf::st_drop_geometry(.data) |>
     dplyr::filter(!is.na(country) &
              !is.na(state_province)&
-             !is.na(county))%>%
-    dplyr::select(country,state_province,county)%>%
+             !is.na(county))|>
+    dplyr::select(country,state_province,county)|>
     unique()
   
   for(i in 1:nrow(counties)){
@@ -278,13 +317,13 @@ centroid_assessment_BIEN <- function(occurrences,
     county_i <- counties[i,'county']
     
     centroid_i <-
-      centroid_data %>%
+      centroid_data |>
       dplyr::filter( country == country_i &
                 state_province==state_i &
                 county_parish==county_i )
     
     occurrences_i <-
-      occurrences %>%
+      occurrences |>
       dplyr::filter( country == country_i &
                 state_province==state_i &
                 county==county_i )
@@ -299,10 +338,10 @@ centroid_assessment_BIEN <- function(occurrences,
       
       # dists_m <- st_distance(occurrences_i, centroid_i)
       # 
-      # dists %>%
+      # dists |>
       #   apply(MARGIN = 1, FUN = which.min) -> dist_m_index
       # 
-      # dists %>%
+      # dists |>
       #   apply(MARGIN = 1, FUN = min) -> mins_m
       
       
@@ -315,26 +354,26 @@ centroid_assessment_BIEN <- function(occurrences,
       
       dists_dd <- sf::st_distance(occurrences_i, centroid_i)
       
-      dists_dd %>%
+      dists_dd |>
         apply(MARGIN = 1, FUN = which.min) -> dist_dd_index
       
-      dists_dd %>%
+      dists_dd |>
         apply(MARGIN = 1, FUN = min) -> mins_dd
       
       closest_centroids_i <- centroid_i[dist_dd_index,]
       
       closest_centroids_i <-
-        closest_centroids_i %>%
+        closest_centroids_i |>
         dplyr::mutate(cent_ID = occurrences_i$cent_ID,
                centroid_distance = mins_dd,
-               relative_distance = centroid_distance/dist_max)%>%
+               relative_distance = centroid_distance/dist_max)|>
         sf::st_drop_geometry()
       
       if(nrow(closest_centroids_i) != nrow(occurrences_i)){
         stop("occurrence vs centroid mismatch in counties")}
       
       
-      county_centroids %>%
+      county_centroids |>
         dplyr::bind_rows(closest_centroids_i) -> county_centroids
       
       
@@ -343,10 +382,10 @@ centroid_assessment_BIEN <- function(occurrences,
       #stop("Do something if there aren't any centroids (NAs prob)")
       
       
-      occurrences_i %>%
-        dplyr::select(cent_ID, country, state_province, county) %>%
-        dplyr::rename(county_parish = county) %>%
-        sf::st_drop_geometry() %>%
+      occurrences_i |>
+        dplyr::select(cent_ID, country, state_province, county) |>
+        dplyr::rename(county_parish = county) |>
+        sf::st_drop_geometry() |>
         dplyr::bind_rows(county_centroids) -> county_centroids
       
       
@@ -365,17 +404,17 @@ centroid_assessment_BIEN <- function(occurrences,
   
   
   # combining output
-  country_centroids %>%
-    dplyr::bind_rows(state_centroids) %>%
+  country_centroids |>
+    dplyr::bind_rows(state_centroids) |>
     dplyr::bind_rows(county_centroids) -> all_centroids
   
   # add in NA's where no political information was included
   if (nrow(all_centroids) == 0) stop ('no political information matched country centroids')
   
-  occurrences %>% 
-    sf::st_drop_geometry() %>%
-    dplyr::filter(!cent_ID %in% (all_centroids %>% dplyr::pull(cent_ID)))%>%
-    dplyr::select(cent_ID)%>%
+  occurrences |> 
+    sf::st_drop_geometry() |>
+    dplyr::filter(!cent_ID %in% (all_centroids |> dplyr::pull(cent_ID)))|>
+    dplyr::select(cent_ID)|>
     dplyr::bind_rows(all_centroids) -> all_centroids
   
   
@@ -386,17 +425,17 @@ centroid_assessment_BIEN <- function(occurrences,
   
   #reorder and rename fields
 
-    all_centroids %>%
+    all_centroids |>
       dplyr::relocate(c("cent_ID","id","gid_0","gid_1","gid_2","country",
                         "state_province","county_parish","centroid_type",
-                        "relative_distance","centroid_distance","dist_max")) %>%
-      dplyr::arrange(cent_ID) %>%
-      tibble::remove_rownames() %>%
+                        "relative_distance","centroid_distance","dist_max")) |>
+      dplyr::arrange(cent_ID) |>
+      tibble::remove_rownames() |>
       dplyr::rename(county = county_parish)->    all_centroids
   
   # columns we don't need and that might cause join issues
   
-    all_centroids %>%
+    all_centroids |>
       dplyr::select("cent_ID","centroid_type","relative_distance",
              "centroid_distance","dist_max") -> all_centroids
   
@@ -409,16 +448,16 @@ centroid_assessment_BIEN <- function(occurrences,
     
   # evaluate relative distance vs threshold
     
-    occurrences %>%
+    occurrences |>
       dplyr::mutate(is_centroid = dplyr::case_when(relative_distance <= relative_distance_threshold ~ 1,
                                      relative_distance > relative_distance_threshold ~ 0)) -> occurrences
   
   # select only the important columns
     
-    occurrences %>%
+    occurrences |>
       dplyr::select("cent_ID","is_centroid","centroid_type","relative_distance",
-             "centroid_distance","dist_max")%>%
-      dplyr::select(-cent_ID)%>%
+             "centroid_distance","dist_max")|>
+      dplyr::select(-cent_ID)|>
       sf::st_drop_geometry(.data) -> occurrences
   
   return(occurrences)
