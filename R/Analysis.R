@@ -120,6 +120,7 @@ duplicatesexcludeAnalysis <- function (df, xf, yf,
     vals <- apply(vals,1,FUN = sum)
     f <- which(is.na(vals))
   } else {
+    vals <- apply(vals,1,FUN = sum) # JB+
     f <- which(is.na(vals))
   }
   if (length(f) == 0){ if(verbose) print ("There are no missing values") ; return (dat)}

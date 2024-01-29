@@ -91,6 +91,7 @@ renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 #load settings
 settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
+settings$writeoutSettings$output.dir<-tempdir()
 #run occTest
 out = occTest(sp.name='MyFake species',
              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',

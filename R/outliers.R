@@ -93,10 +93,15 @@ mcp_test <-  function(data,xcoord,ycoord,percentage=95){
   xy = na.omit(data[,c(xcoord,ycoord)])
   xy = xy[!duplicated(xy),]
   if(nrow(xy)>=5){
+    
     xy = sf::st_as_sf(xy,coords = c(xcoord,ycoord), crs = sf::st_crs(4326))
-    MCP = adehabitatHR::mcp(sf::as_Spatial(xy),percent=percentage)
-    xy = as.data.frame(sf::as_Spatial(xy)[MCP,])
-    outliers = c(!(rownames(data) %in% rownames(xy)))
+    xy$id = "JB_was_here"
+    MCP = adehabitatHR::mcp(sf::as_Spatial(xy),percent=percentage)|>
+      sf::st_as_sf()
+    xy$irow = 1:nrow(xy)
+    xy = suppressWarnings(sf::st_intersection(xy,MCP))
+    xy = as.data.frame(sf::as_Spatial(xy))
+    outliers = c(!(rownames(data) %in% xy$irow))
     return(outliers)
   }else{
     warning("N<5 bservations is not enough to run mcp outlier test.")
