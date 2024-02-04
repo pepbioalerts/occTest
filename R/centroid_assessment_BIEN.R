@@ -18,7 +18,7 @@
 #' dist_max: Furthest distance from the centroid within the political division. 
 #' @export
 #' @examples
-#' 
+#' \dontrun{
 #' # Load required libraries
 #'
 #' library(occTest)
@@ -56,6 +56,7 @@
 #'occData |>
 #'  bind_rows(  centroid_assessment_BIEN(occurrences = occData,
 #'                                       centroid_data = centroids))
+#'}                                       
 centroid_assessment_BIEN <- function(occurrences,
                                      centroid_data,
                                      relative_distance_threshold = 0.001){

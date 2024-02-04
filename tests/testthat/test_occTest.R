@@ -7,6 +7,8 @@ occData <- read.csv (system.file('ext/exampleOccData.csv',package = 'occTest'))
 renv <- terra::rast (system.file('ext/AllEnv.tif',package = 'occTest'))
 dem <- terra::rast (system.file('ext/DEM.tif',package = 'occTest'))
 settings <- readRDS (system.file('ext/exSettings.rds',package = 'occTest'))
+settings$writeoutSettings$output.dir <- tempdir()
+#perform test
 out = occTest(sp.name='MyFake species',
              sp.table = occData,ntv.ctry = 'ESP',inv.ctry = 'FRA',
              tableSettings = settings$tableSettings,

@@ -32,7 +32,7 @@ This function is designed to use the BIEN centroid detection method which provid
 Relative centroid distance is calculated as: (distance between the occurrence record and centroid)/(distance between centroid and the furthest from it within the region)
 }
 \examples{
-
+\dontrun{
 # Load required libraries
 
 library(occTest)
@@ -70,6 +70,7 @@ occData <- read.csv(system.file('ext/exampleOccData.csv',
 occData |>
  bind_rows(  centroid_assessment_BIEN(occurrences = occData,
                                       centroid_data = centroids))
+}                                       
 }
 \author{
 Brian Maitner & Pep Serra-Diaz
