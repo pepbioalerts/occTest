@@ -327,7 +327,7 @@ findOutlyingPoints=function(pres,
     sp.toss.id=findSpatialOutliers(pres=pres,pvalSet=pval,checkPairs=checkPairs,
                                    method=method,kRosner=kRosner)
     
-    if(is.null(sp.toss.id)) pres$spOutlier=NA
+    if(is.null(sp.toss.id)) pres$spOutlier=FALSE
     if(!is.null(sp.toss.id)) {
       pres$spOutlier=FALSE
       pres$spOutlier[sp.toss.id]=TRUE
@@ -339,7 +339,7 @@ findOutlyingPoints=function(pres,
   if(envOutliers) {
     env.toss.id=findEnvOutliers(pres=pres,pvalSet=pval,checkPairs=checkPairs,
                                 method=method,kRosner=kRosner)
-    if(is.null(env.toss.id)) pres$envOutlier=NA
+    if(is.null(env.toss.id)) pres$envOutlier=FALSE
     if(!is.null(env.toss.id)) {
       pres$envOutlier=FALSE
       pres$envOutlier[env.toss.id]=TRUE

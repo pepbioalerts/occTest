@@ -1254,6 +1254,7 @@ envOutliers  <- function (
   }
   #compute if any flexsdm methods
   if (any (method %in% c('jack','all','svm','rf','rfout','lof'))){
+    
     dat.environment_flexsdm_pres <-  tibble::add_column(dat.environment,pr_ab=1)
     #simulate absences 
     xy_vect <- terra::vect(dat.environment, geom=c("x", "y"),crs=terra::crs("epsg:4326"))
@@ -1303,36 +1304,36 @@ envOutliers  <- function (
   }
   #add flexsdm outputs
   if (any (method %in% c('jack','all')))  {
-    envOutliers_jack_value <- flexsdm_out %>% 
+    out$envOutliers_jack_value <- flexsdm_out %>% 
       dplyr::filter (.data$pr_ab==1) %>% 
       dplyr::pull(dplyr::ends_with('_jack'))
-    envOutliers_jack_test <- as.logical (envOutliers_jack_value)
+    out$envOutliers_jack_test <- as.logical (out$envOutliers_jack_value)
   }
   if (any (method %in% c('svm','all')))  {
-    envOutliers_svm_value <- flexsdm_out %>% 
+    out$envOutliers_svm_value <- flexsdm_out %>% 
       dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_svm'))
-    envOutliers_svm_test <- as.logical (envOutliers_svm_value)
-    envOutliers_svm_comment <- comment_abs_flexsdm
+    out$envOutliers_svm_test <- as.logical (out$envOutliers_svm_value)
+    if (exists('comment_abs_flexsdm')) out$envOutliers_svm_comment <- comment_abs_flexsdm
   }
   if (any (method %in% c('rf','all')))  {
-    envOutliers_rf_value <- flexsdm_out %>%
+    out$envOutliers_rf_value <- flexsdm_out %>%
       dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_rf'))
-    envOutliers_rf_test <- as.logical (envOutliers_rf_value)
-    envOutliers_rf_comment <- comment_abs_flexsdm
+    out$envOutliers_rf_test <- as.logical (out$envOutliers_rf_value)
+    if (exists('comment_abs_flexsdm')) out$envOutliers_rf_comment <- comment_abs_flexsdm
   }
   if (any (method %in% c('rfout','all')))  {
-    envOutliers_rfout_value <- flexsdm_out %>% 
+    out$envOutliers_rfout_value <- flexsdm_out %>% 
       dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_rfout'))
-    envOutliers_rfout_test <- as.logical (envOutliers_rfout_value)
+    out$envOutliers_rfout_test <- as.logical (out$envOutliers_rfout_value)
   }
   if (any (method %in% c('lof','all')))  {
-    envOutliers_lof_value <- flexsdm_out %>% 
+    out$envOutliers_lof_value <- flexsdm_out %>% 
       dplyr::filter (.data$pr_ab==1) %>%
       dplyr::pull(dplyr::ends_with('_lof'))
-    envOutliers_lof_test <- as.logical (envOutliers_lof_value)
+    out$envOutliers_lof_test <- as.logical (out$envOutliers_lof_value)
   }
   out$envOutliers_score <-  .gimme.score (out)
   return (out)

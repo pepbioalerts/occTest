@@ -143,7 +143,6 @@ list_of_plots
 You can add your own tests to an occTest functions, and reTest to get new ensembles of tests.
 
 ```r
-### Example 5 ====
 myNewTest <- data.frame (humanDetection_myInventedTest_test=sample (c(T,F),replace = T,size = nrow(out_qupe)))
 out_test_newAdded <- reTest(occTest_result = out_qupe, my_new_test =  myNewTest)
 df_compare <- data.frame (new_score= out_test_newAdded$humanDetection_score ,old_score = out_qupe$humanDetection_score)
