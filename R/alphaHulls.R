@@ -39,7 +39,6 @@ getPointsOutAlphaHull <- function(x,  alpha = 2, coordHeaders = c('Longitude', '
                                   #buff = 1000, parameter not implemented
                                   proj = "+proj=longlat +datum=WGS84",  
                                   verbose = FALSE, alphaCap = 20) {
-
   if (proj != "+proj=longlat +datum=WGS84") {
     stop("Currently, proj can only be '+proj=longlat +datum=WGS84'.")
   }
