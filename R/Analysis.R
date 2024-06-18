@@ -567,6 +567,7 @@ humanDetection <- function (df,
 
   #start urban areas
   if (any (method %in% c('urban','all')))  {
+    browser()
 
     #check ref exists
     newoutdir = paste0(tempdir(),'/spatialData')
@@ -739,7 +740,6 @@ geoOutliers         <- function (df,
                                 .points.crs ,
                                 do=TRUE, verbose=FALSE){
   
- 
   #build dataframe of all potential results
   out = data.frame (geoOutliers_alphaHull_value=NA,
                     geoOutliers_alphaHull_test=NA,
@@ -1254,11 +1254,16 @@ envOutliers  <- function (
   }
   #compute if any flexsdm methods
   if (any (method %in% c('jack','all','svm','rf','rfout','lof'))){
-    
     dat.environment_flexsdm_pres <-  tibble::add_column(dat.environment,pr_ab=1)
     #simulate absences 
     xy_vect <- terra::vect(dat.environment, geom=c("x", "y"),crs=terra::crs("epsg:4326"))
-    d <- median (terra::distance(xy_vect),na.rm=T)
+    if (length(xy_vect)>2000){
+      xy_vect2 <-xy_vect[sample(1:length(xy_vect),size = 2000,replace = F),]
+      d <- median (terra::distance(xy_vect),na.rm=T)
+      rm (xy_vect2)
+    } else {
+      d <- median (terra::distance(xy_vect),na.rm=T)
+    }
     comment_dist_flexsdm <- paste('buffer distance',d,'m')
     b_xy <- terra::buffer(xy_vect,width=d)
     r.env_crop <- terra::crop(.r.env,terra::ext(b_xy))

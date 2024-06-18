@@ -62,6 +62,7 @@
 .cc_urb_occTest <-  function (x, lon = "decimallongitude", lat = "decimallatitude", 
                         ref = NULL, value = "clean", verbose = FALSE,outdir) 
 {
+  browser()
   match.arg(value, choices = c("clean", "flagged"))
   if (verbose) {
     message("Testing urban areas")
@@ -103,7 +104,8 @@
   }
   else {
     m <- sf::st_intersects (x = dat, y = ref)
-    out <- lengths(m) >0
+    #remember we set to T the "good" recrods
+    out <- lengths(m) == 0
   }
   if (verbose) {
     if (value == "clean") {
