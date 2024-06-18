@@ -567,7 +567,6 @@ humanDetection <- function (df,
 
   #start urban areas
   if (any (method %in% c('urban','all')))  {
-    browser()
 
     #check ref exists
     newoutdir = paste0(tempdir(),'/spatialData')

@@ -84,7 +84,6 @@ occTest = function(
   #identify starting issues and convert to the right type of object
   if(missing(sp.table)) stop('missing sp.table')
   if(missing(r.env)) stop('missing r.env')
-  browser()
   if (any(grepl('-', names (r.env)))) stop('the character "-" is part of the raster layer names. This will bring a lot of issues downstream. Please modify layer names')
   if(!inherits(r.env,'SpatRaster')) stop('raster is not at SpatRaster object')
   if(!is.null(r.dem)  & !inherits(r.dem,'SpatRaster')) stop('DEM raster is not at SpatRaster object')
@@ -609,7 +608,6 @@ occTest = function(
   ### ELEMENT : HYPER-HUMAN ENVIRONMENT
   tictoc::tic('human influence detection analysis')
   if(verbose) message('Land Use human influence detection analysis started ...')
-  browser()
   Analysis.2 <- humanDetection (df = dat,
                                xf = x.field,
                                yf = y.field,
