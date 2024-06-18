@@ -426,9 +426,10 @@ centroid_assessment_BIEN <- function(occurrences,
   
   #reorder and rename fields
 
+  #@BM REMOVED centroid_type of the list bc not in the initial centroid db
     all_centroids |>
       dplyr::relocate(c("cent_ID","id","gid_0","gid_1","gid_2","country",
-                        "state_province","county_parish","centroid_type",
+                        "state_province","county_parish",#"centroid_type",
                         "relative_distance","centroid_distance","dist_max")) |>
       dplyr::arrange(cent_ID) |>
       tibble::remove_rownames() |>
@@ -437,7 +438,7 @@ centroid_assessment_BIEN <- function(occurrences,
   # columns we don't need and that might cause join issues
   
     all_centroids |>
-      dplyr::select("cent_ID","centroid_type","relative_distance",
+      dplyr::select("cent_ID","relative_distance",#"centroid_type",
              "centroid_distance","dist_max") -> all_centroids
   
   # combine with occurrence data
@@ -456,7 +457,7 @@ centroid_assessment_BIEN <- function(occurrences,
   # select only the important columns
     
     occurrences |>
-      dplyr::select("cent_ID","is_centroid","centroid_type","relative_distance",
+      dplyr::select("cent_ID","is_centroid","relative_distance",#"centroid_type",
              "centroid_distance","dist_max")|>
       dplyr::select(-cent_ID)|>
       sf::st_drop_geometry(.data) -> occurrences
