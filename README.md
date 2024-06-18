@@ -158,4 +158,6 @@ To download it (you can't just right-click on github), its easiest to install th
 You can then right-click on the vignette html to download 
 
 # Citation
-Under review 
+Read the full paper here:
+Serra‐Diaz, J. M., Borderieux, J., Maitner, B., Boonman, C. C., Park, D., Guo, W. Y., ... & Merow, C. (2024). occTest: An integrated approach for quality control of species occurrence data. Global Ecology and Biogeography, e13847.
+[https://doi.org/10.1111/geb.13847](https://doi.org/10.1111/geb.13847)
