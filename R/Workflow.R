@@ -137,6 +137,7 @@ occTest = function(
 
   #load analysisSettings
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
+  filterAtlas =analysisSettings$filterAtlas
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
   points.crs = analysisSettings$geoSettings$points.crs
   doCoastalReassignment = analysisSettings$doCoastalReassignment
@@ -345,11 +346,14 @@ occTest = function(
       ds.field = 'MyInventedCommonDataset'}
     #old version of function
     #outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=FALSE,diff=1.5)},silent=TRUE)
-    outDecimalTest = try({CoordinateCleaner::cd_round(x = dat.tmp,
-                                                       lon = x.field,lat = y.field,
-                                                       ds=ds.field , 
-                                                       value='flagged',verbose=FALSE,graphs = F)},silent=TRUE)
-    if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
+    if (!filterAtlas) outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
+    if (filterAtlas){
+      outDecimalTest = try({CoordinateCleaner::cd_round(x = dat.tmp,
+                                                        lon = x.field,lat = y.field,
+                                                        ds=ds.field , 
+                                                        value='flagged',verbose=FALSE,graphs = F)},silent=TRUE)
+    }
+    if (inherits(outDecimalTest,'try-error'))   outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
     coordIssues_coordConv_value = ! outDecimalTest #coord cleaner flags values opposite of us
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
     coordIssues_coordConv_test = as.logical(coordIssues_coordConv_value)

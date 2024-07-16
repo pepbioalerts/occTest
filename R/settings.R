@@ -44,6 +44,7 @@ defaultSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
+      filterAtlas =TRUE,
       doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
@@ -164,6 +165,7 @@ fullSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
+      filterAtlas =TRUE,
       doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
@@ -285,6 +287,7 @@ minimalSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
+      filterAtlas =TRUE,
       doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
