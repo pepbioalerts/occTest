@@ -82,7 +82,7 @@
     score<- x[,columns.for.scoring]
   }
   if (length(columns.for.scoring)==0){
-    stop("Issue: seems that no output columns *_test exist")
+    stop("Issue: no output columns *_test exist. Maybe occTest filter results initially due to quality issues?")
   }
   score
 }

@@ -75,7 +75,6 @@ occTest = function(
   verbose = FALSE,
   doParallel=FALSE,
   mc.cores=2){
-
   tictoc::tic()
   ### STEP 00: Initial checks ====
   #set timer
@@ -138,6 +137,7 @@ occTest = function(
 
   #load analysisSettings
   if(is.null(analysisSettings)) analysisSettings = defaultSettings$analysisSettings
+  filterAtlas =analysisSettings$filterAtlas
   coordinate.decimal.precision = analysisSettings$geoSettings$coordinate.decimal.precision
   points.crs = analysisSettings$geoSettings$points.crs
   doCoastalReassignment = analysisSettings$doCoastalReassignment
@@ -344,9 +344,17 @@ occTest = function(
     if(is.null(ds.field)){ warning('No dataset field provided, considering everything as a unique dataset')
       dat.tmp$MyInventedCommonDataset = 'TemporaryDatasetName' 
       ds.field = 'MyInventedCommonDataset'}
-    outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=FALSE,diff=1.5)},silent=TRUE)
-    if (class(outDecimalTest) %in% c('error','try-error'))     outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
-    coordIssues_coordConv_value = ! outDecimalTest
+    #old version of function
+    #outDecimalTest = try({ .cd_ddmm_occTest(x = dat.tmp,lon = x.field,lat = y.field,ds=ds.field , value='flagged',verbose=FALSE,diff=1.5)},silent=TRUE)
+    if (!filterAtlas) outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
+    if (filterAtlas){
+      outDecimalTest = try({CoordinateCleaner::cd_round(x = dat.tmp,
+                                                        lon = x.field,lat = y.field,
+                                                        ds=ds.field , 
+                                                        value='flagged',verbose=FALSE,graphs = F)},silent=TRUE)
+    }
+    if (inherits(outDecimalTest,'try-error'))   outDecimalTest = rep (NA,length.out=nrow (dat.tmp))
+    coordIssues_coordConv_value = ! outDecimalTest #coord cleaner flags values opposite of us
     dat$coordIssues_coordConv_value = coordIssues_coordConv_value
     coordIssues_coordConv_test = as.logical(coordIssues_coordConv_value)
     dat$coordIssues_coordConv_test = coordIssues_coordConv_test
@@ -456,9 +464,6 @@ occTest = function(
   
   #here we merge together the two kind of duplicates, but maybe we would like to keep the relative duplicates for other purposes
   dat.Q.G = dplyr::bind_rows(Analysis.G$Dups.Grid, Analysis.G$Dups.Exact)
-  if(nrow(dat.Q.G)== 0 ){rm(dat.Q.G)}
-  #if (exists('dat.Q.G')){ dat.Q.G$quality.grade = 'G'}
-  
   dat = Analysis.G$continue
   
   #check outputs and escape ifneedbe //
@@ -486,7 +491,6 @@ occTest = function(
   if(verbose){message("**** RESOLVING : sea/terrestrial reassignment ****")}
   #analysis of nearest cell next to the sea
   if (doCoastalReassignment) dat =  .nearestcell3(dat=dat,rst = r.env, xf=x.field, yf=y.field)
-  
   #check results and recheck dups ifneedbe
   if(inherits(dat,'list')){
     dat = dat[[1]]
@@ -514,10 +518,10 @@ occTest = function(
       dat.Q.G = rbind(dat.Q.G,dat.Q.G.second.time)
       dat = Analysis.G.second.time$continue
     }
-    
     rm(dat.Q.G.second.time)
-    
   }
+  if(nrow(dat.Q.G)== 0 ){rm(dat.Q.G)}
+  
   ### filter those that are still in the sea/land (depending on habitatType)
   Analysis.LandSea = occTest::landSeaFilter(df = dat, 
                                             xf= x.field, y= y.field, 
