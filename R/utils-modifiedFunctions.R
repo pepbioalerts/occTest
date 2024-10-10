@@ -252,9 +252,10 @@
       ref <- rnaturalearth::ne_countries(scale = "medium",returnclass = 'sf')
       sf::st_crs(ref) <- NA
       #change from AZizka: changed to iso_a2 because in vapply rgbiff:occ count looks for 2 digit country codes
-      area <- data.frame(country = ref$iso_a2, area = sf::st_area(ref))
+      area <- data.frame(country = ref$iso_a2_eh, area = sf::st_area(ref))
       area <- area[!is.na(area$area), ]
       area <- area[!is.na(area$country), ]
+      area <- subset(area, country != "-99")
       #load nrec data
       dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/ctry_nrec_info.rds'
       outFile = paste0(tempdir(),'/ctry_nrec_info.rds')
