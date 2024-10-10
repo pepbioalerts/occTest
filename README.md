@@ -2,11 +2,14 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/ropensci/ijtiff/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/ijtiff/actions)
 
-**occTest is currently under review and has been recently adapted to sf and terra packages. It will soon be submitted to CRAN once final checks are realized**
 
-A workflow for general testing of species occurrence records in geographical, environmental and temporal scale. The workflow is structured through set of algorithms to identify potential problems with species occurrence records by employing a hierarchical organization of multiple tests. 
+occTest is a workflow for general testing of species occurrence records in geographical, environmental and temporal scale. The workflow is structured through set of algorithms to identify potential problems with species occurrence records by employing a hierarchical organization of multiple tests. 
 
 The workflow has a hierarchical structure organized in testPhases (i.e. cleaning vs. testing), that encompass different testBlocks grouping different testTypes (e.g. environmental outlier detection) which may use different testMethods (e.g. Rosner test, jacknife,etc.). Four different testBlocks characterize potential problems in geographic, environmental, human influence, and temporal dimensions.  Filtering and plotting functions are incorporated to facilitate the interpretation of tests. 
+
+You can read the full details in this publication, which we encourage you to cite when using occTest:
+
+Serra‐Diaz, Josep M., Jeremy Borderieux, Brian Maitner, Coline CF Boonman, Daniel Park, Wen‐Yong Guo, Arnaud Callebaut, Brian J. Enquist, Jens‐C. Svenning, and Cory Merow. "**occTest: An integrated approach for quality control of species occurrence data**" Global Ecology and Biogeography (2024): e13847. DOI: [https://doi.org/10.1111/geb.13847](url)
 
 
 # Installation
