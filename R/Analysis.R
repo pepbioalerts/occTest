@@ -793,6 +793,7 @@ geoOutliers         <- function (df,
     if (nrow (df) > 5  & !is.na(.alpha.parameter)) {
       points.outside.alphahull <- try (getPointsOutAlphaHull  (xydat,alpha = .alpha.parameter), silent=TRUE)
       if (inherits(points.outside.alphahull, 'try-error')) points.outside.alphahull <- rep (NA,length.out=nrow (xydat))
+      if (length(points.outside.alphahull)==0) points.outside.alphahull <- rep (0,length.out=nrow (xydat))
       out.comments <- paste0('GeoIndicator alphaHull (Alpha=',.alpha.parameter,')')
     }
 
