@@ -147,9 +147,9 @@
 #' @return a clean data.frame 
 #' @import CoordinateCleaner
 .cc_outl_occTest <- function (x, lon = "decimallongitude", lat = "decimallatitude", 
-                       species = "species", method = "quantile", mltpl = 5, 
-                       tdi = 1000, value = "clean", sampling_thresh = 0, verbose = TRUE, 
-                       min_occs = 7, thinning = FALSE, thinning_res = 0.5) 
+                              species = "species", method = "quantile", mltpl = 5, 
+                              tdi = 1000, value = "clean", sampling_thresh = 0, verbose = TRUE, 
+                              min_occs = 7, thinning = FALSE, thinning_res = 0.5) 
 {
   match.arg(value, choices = c("clean", "flagged", 
                                "ids"))
@@ -263,7 +263,10 @@
       area <- area[!is.na(area$area), ]
       area <- area[!is.na(area$country), ]
       area <- subset(area, country != "-99")
+      area <- aggregate(area ~ country, data = area, sum)
       #load nrec data
+      # In the meantime, updated nrec data to kick the can down the line for another 120 days. 
+      #dest_url = 'https://raw.githubusercontent.com/mdpillet/occTest/master/ctry_nrec_info.rds'
       dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/ctry_nrec_info.rds'
       outFile = paste0(tempdir(),'/ctry_nrec_info.rds')
       if (!file.exists(outFile)) utils::download.file(url=dest_url,destfile = outFile)
@@ -271,15 +274,43 @@
       if (as.numeric (Sys.Date() - nrec$date) >120) {
         download_file <- T } else {
           download_file <- F
-          }
+        }
       if (!download_file) 
         nrec <- nrec$nrec
       if (download_file) {
-        nrec <- vapply(area$country, FUN = function(k) {
-          rgbif::occ_count(country = k)
-        }, FUN.VALUE = 1)
-        nrec <- data.frame(country = area$country, recs = unlist(nrec), 
-                           row.names = NULL)
+        ## original
+        # nrec <- vapply(area$country, FUN = function(k) {
+        #   rgbif::occ_count(country = k)
+        # }, FUN.VALUE = 1)
+        # nrec <- data.frame(country = area$country, recs = unlist(nrec),
+        #                    row.names = NULL)
+        ## avoiding overload of gbif api
+        nrec <- list()
+        for (k in area$country) {
+          attempt <- 1
+          success <- FALSE
+          while (attempt <= 3 && !success) {
+            res <- tryCatch({
+              rgbif::occ_count(country = k)
+            }, error = function(e) {
+              Sys.sleep(0.1)
+              # Should be NA or 0 on error to avoid problems?
+              NA
+            })
+            if (!is.na(res)) {
+              nrec[[k]] <- res
+              success <- TRUE
+            } else {
+              attempt <- attempt + 1
+            }
+          }
+          if (!success) {
+            nrec[[k]] <- NA
+          }
+        }
+        nrec <- data.frame(country = area$country, recs = unlist(nrec), row.names = NULL)
+        
+        
       }
       nrec_norm <- dplyr::left_join(nrec, area, by = "country")
       nrec_norm$norm <- log(nrec_norm$recs/(nrec_norm$area/1e+06/100))
@@ -323,7 +354,6 @@
   switch(value, clean = return(x[out, ]), flagged = return(out), 
          ids = return(flags))
 }
-
 # cc_round_occTest ====
 #' @title Flag records with regular pattern interval
 #' @description own version of coordinate cleaner cc_round
