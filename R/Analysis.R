@@ -1774,7 +1774,7 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
       if (all(is.na(vecTime))) {if (verbose) warning('all time stamps are NA')}
       if (!all(is.na(vecTime))){
         vecTime_date_formated <- anytime::anydate(vecTime)
-        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (vecTime!='\t'))
+        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (as.character(vecTime)!='\t'))
         vecTime_timeStamp  <- ifelse((is.na(vecTime) | (vecTime=='')| (vecTime=='\t')),yes = NA,no = T) 
         out$timeAccuracy_noDateFormatKnown_value = !vecTime_guessed *1 * vecTime_timeStamp
         out$timeAccuracy_noDateFormatKnown_test = (!vecTime_guessed) * vecTime_timeStamp
@@ -1790,7 +1790,7 @@ timeAccuracy  <- function (df,tf,iniTime=NA,endTime=NA,do=T,
       if (all(is.na(vecTime))) {if (verbose) warning('all time stamps are NA')}
       if (!all(is.na(vecTime))){
         vecTime_date_formated <- anytime::anydate(vecTime)
-        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (vecTime!='\t'))
+        vecTime_guessed <- !is.na (vecTime_date_formated) & (!is.na(vecTime) | (vecTime!='')| (as.character(vecTime)!='\t'))
         vecTime_timeStamp  <- ifelse((is.na(vecTime) | (vecTime=='')| (vecTime=='\t')),yes = NA,no = T) 
         it = lubridate::as_date(iniTime)
         et = lubridate::as_date(endTime)
