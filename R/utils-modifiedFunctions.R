@@ -21,10 +21,8 @@
                                     returnclass = c("sf")) {
   category <- match.arg(category)
   returnclass <- match.arg(returnclass)
-  file_name <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
-                                            full_url = FALSE)
-  address <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category, 
-                                          full_url = TRUE)
+  file_name <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category)
+  address <- rnaturalearth::ne_file_name(scale = scale, type = type, category = category)
   utils::download.file(file.path(address), zip_file <- tempfile(),quiet = TRUE)
   utils::unzip(zip_file, exdir = destdir)
   if (load & category == "raster") {
@@ -68,12 +66,21 @@
   }
   if (is.null(ref)) {
     #message("Downloading urban areas via rnaturalearth")
-    ref <- try(suppressWarnings(.ne_download_occTest(scale = "medium", 
-                                                 type = "urban_areas",returnclass = 'sf')), silent = TRUE)
+    #old to delete
+    # ref <- try(suppressWarnings(.ne_download_occTest(scale = "medium", 
+    #    type = "urban_areas",returnclass = 'sf')), silent = TRUE)
+    #new to keep
+    ref <- try(suppressWarnings(
+      rnaturalearth::ne_download(scale = "medium", 
+                                 type = "urban_areas",
+                                 returnclass = 'sf')), 
+      silent = TRUE)
+    
+
     if (inherits(ref,"try-error") ) {
       warning(sprintf("Gazetteer for urban areas not found at\n%s", 
                       rnaturalearth::ne_file_name(scale = "medium", 
-                                                  type = "urban_areas", full_url = TRUE)))
+                                                  type = "urban_areas")))
       warning("Skipping urban test")
       switch(value, clean = return(x), flagged = return(rep(NA, 
                                                             nrow(x))))

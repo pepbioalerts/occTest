@@ -16,7 +16,7 @@ Description: Perform multiple tests for potential errors in species occurrence d
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Date: 2023-09-13
 Depends: R (>= 3.5.0)

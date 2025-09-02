@@ -42,7 +42,7 @@ plot.occTest<-function(x,occFilter_list=NULL,show_plot=FALSE,...){
   n_coords_missing<-sum(full_dataset$coordIssues_coordMissing_value)
   n_coords_filtered<-sum(full_dataset$Exclude)-n_coords_missing
   # we extract up to date country boundaries, but if it fails, we have a local copy of the shape_file (2020)
-  countries_natural_earth<-try(st_as_sf(rnaturalearth::ne_countries(scale=50,returnclass = c( "sf"))),silent = TRUE)
+  countries_natural_earth<-try(sf::st_as_sf(rnaturalearth::ne_countries(scale=50,returnclass = c( "sf"))),silent = TRUE)
   if("try-error" %in% class(countries_natural_earth)) {
     dest_url = 'https://github.com/pepbioalerts/vignetteXTRA-occTest/raw/main/ext/Pays_WGS84.rds'
     outFile = paste0(tempdir(),'/Pays_WGS84.rds')
