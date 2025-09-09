@@ -45,8 +45,9 @@ occFilter <- function (df,
     dplyr::select(dplyr::all_of(by))
   
   basecateg = colMetaData %>% 
-    dplyr::filter (.data$phase != 'filter') %>%
-    dplyr::select('method')
+    dplyr::filter (.data$phase != 'filter') |> 
+    dplyr::mutate(methodLong = paste(testType,method,sep='_')) |> 
+    dplyr::select('methodLong')
   
   myCategories = dplyr::bind_cols(targetLevel,basecateg) %>% unique
   names (myCategories) = c('targetLevel','baseLevel')
