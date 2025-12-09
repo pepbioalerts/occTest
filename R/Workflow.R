@@ -89,7 +89,8 @@ occTest = function(
   if(! pingr::is_online(timeout=3)) stop('You seem not to have Internet connection. This package requires internet connection for several tests. Please go online')
   
   sp.table <- as.data.frame (sp.table)
-  ### STEP 0: Load settings and study native and invasive countries ====
+
+    ### STEP 0: Load settings and study native and invasive countries ====
   if (is.null(tableSettings) | is.null(analysisSettings) | is.null(writeoutSettings)) defaultSettings = occTest::defaultSettings()
   
   #load table settings(old stuff, we  could attach the different labels)
@@ -364,7 +365,7 @@ occTest = function(
     if (!all(is.na(coordIssues_coordConv_test)))     dat.Q.H3 = dat[coordIssues_coordConv_test,]
     if (!all(is.na(coordIssues_coordConv_test)))     dat = dat[!coordIssues_coordConv_test,]
 
-    if(ds.field == 'MyInventedCommonDataset')ds.field = NULL
+    if(ds.field == 'MyInventedCommonDataset') ds.field = NULL
     rm(dat.tmp)
     
     status.out= .status.tracker.and.escaping(dataset.to.continue = dat,

@@ -44,7 +44,7 @@ defaultSettings <- function (){
     ,                     
     #analysis settings
     analysisSettings =list (
-      filterAtlas =TRUE,
+      filterAtlas =FALSE, #set to FALSE because this func is very sensitive and throws away a lot of stuff
       doCoastalReassignment = TRUE,
       landSurfacePol = NULL,
       geoSettings = list (
